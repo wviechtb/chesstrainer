@@ -17,6 +17,13 @@ install.packages("remotes")
 remotes::install_github("wviechtb/chesstrainer")
 ```
 
+## To Do
+
+- [ ] Add en passent.
+- [ ] Add a board editor.
+- [ ] Allow saving of settings across sessions.
+- [ ] Allow branching in sequences (maybe, as this requires a major update).
+
 ## Meta
 
 The `chesstrainer` package is licensed under the [GNU General Public License Version 3](https://www.gnu.org/licenses/lgpl-3.0.txt). To report any issues or bugs, please go [here](https://github.com/wviechtb/chesstrainer/issues).
