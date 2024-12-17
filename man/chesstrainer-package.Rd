@@ -108,6 +108,14 @@
 
    }
 
+   \subsection{License Info}{
+
+      The chess pieces used in the package were obtained from \verb{https://commons.wikimedia.org/wiki/Category:SVG_chess_pieces} where they are available under the Creative Commons Attribution-Share Alike 3.0 Unported License.
+
+      The sound files used in the package were obtained from \verb{https://github.com/lichess-org/lila/tree/master} where they are available under the GNU Affero General Public License.
+
+   }
+
 }
 \note{
    The trainer makes extensive use of \code{\link{getGraphicsEvent}} to capture mouse movements and keyboard inputs. Only some graphics devices support this. If you receive the error message \sQuote{The graphics device does not support event handling}, then the default graphics device that was opened does not support event handling. For example, this will be the case for the \code{RStudioGD} graphics device that is used by RStudio. You can then try running \code{x11()} before starting the trainer with \code{play()}.
