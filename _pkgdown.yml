@@ -1,0 +1,52 @@
+url: https://wviechtb.github.io/chesstrainer/
+
+template:
+  package: preferably
+  #bootstrap: 5
+  params:
+    #bootswatch: cosmo
+    toggle: manual
+  opengraph:
+    #image:
+    #  src: man/figures/card.png
+    #  alt: "Alternative text describing the image"
+    twitter:
+      creator: "@wviechtb"
+      card: summary_large_image
+
+code:
+  width: 102
+
+home:
+  links:
+  - text: GitHub Repo
+    href: https://github.com/wviechtb/chesstrainer
+  - text: Author Website
+    href: https://www.wvbauer.com
+
+figures:
+  dev: grDevices::png
+  dpi: 192
+  dev.args: []
+  fig.ext: png
+  fig.width: 9
+  fig.height: 8
+  fig.retina: 2
+  fig.asp: ~
+
+navbar:
+  title: "chesstrainer"
+  left:
+    - icon: fa-home fa-lg
+      href: index.html
+    - text: Intro
+      href: reference/chesstrainer-package.html
+    - text: "Functions"
+      href: reference/index.html
+    - text: "Changelog"
+      href: news/index.html
+  right:
+   - text: Mastodon
+     href: https://scholar.social/@wviechtb
+   - text: GitHub
+     href: https://github.com/wviechtb/chesstrainer
