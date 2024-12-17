@@ -2,7 +2,7 @@
 \alias{chesstrainer-package}
 \alias{chesstrainer}
 \docType{package}
-\title{chesstrainer: Create and quiz yourself on chess lines}
+\title{chesstrainer: Create and Quiz Yourself on Chess Lines}
 \description{
 
    The purpose of the \pkg{chesstrainer} package is to create sequences of moves (lines), save them, and then quiz yourself on these sequences. This is especially useful for training openings, but can also be used for creating chess puzzles.
