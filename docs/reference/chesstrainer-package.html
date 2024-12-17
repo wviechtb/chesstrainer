@@ -41,7 +41,7 @@ After completing a sequence, the current score for the sequence is saved (togeth
 Managing and Selecting Sequences
 
 
-Using the &amp;lt;l&amp;gt; key, you can list all sequences, together with their current score, the number of times they have been played, and the current probability of selection. During &amp;#8216;play&amp;#8217; mode, you can use the &amp;lt;d&amp;gt; key to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.
+Using the &amp;lt;l&amp;gt; key, you can list all sequences, together with their current score, the number of times they have been played, and the current probability of selection. During &amp;#8216;play&amp;#8217; mode, you can use the Ctrl-&amp;lt;d&amp;gt; key to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.
 Using the &amp;lt;/&amp;gt; (or &amp;lt;.&amp;gt;) key, you can select a subset of the sequences. One can select sequences in various ways:
 
 by entering a search term (which is applied as a regular expression to the filenames of the sequences),
@@ -52,6 +52,7 @@ one can select sequences that have been played a minimum/maximum number of times
 
 
 Hitting &amp;lt;enter&amp;gt; at the prompt selects all sequences.
+By default, sequences are selected at random during &amp;#8216;play&amp;#8217; mode (as described above). However, one can toggle into a sequential mode with the &amp;lt;r&amp;gt; key. In that mode, sequences are played in order.
 
 
 
@@ -73,7 +74,7 @@ Note that sequences are quite personalized, since they involve going into a part
 Managing Players
 
 
-The trainer can be used by multiple players. A player can be selected with the &amp;lt;p&amp;gt; key. One can either enter a player number, the name of an existing player, or enter a new player name. The current player can be deleted with the &amp;lt;r&amp;gt; key. Since this deletes all progress information for this player from the sequence files, you will receive a prompt to confirm this.
+The trainer can be used by multiple players. A player can be selected with the &amp;lt;p&amp;gt; key. One can either enter a player number, the name of an existing player, or enter a new player name. The current player can be deleted with the Ctrl-&amp;lt;r&amp;gt; key. Since this deletes all progress information for this player from the sequence files, you will receive a prompt to confirm this.
 With &amp;lt;F2&amp;gt;, a leaderboard (based on the lowest average score) and player statistics are shown (i.e., the average score, the standard deviation of the scores, the minimum and maximum score, and the total number of sequences played). Sequences whose score was manually set to 0 are not included in these statistics.
 
 
@@ -220,7 +221,7 @@ The sound files used in the package were obtained from https://github.com/liches
 <h3 id="managing-and-selecting-sequences">Managing and Selecting Sequences<a class="anchor" aria-label="anchor" href="#managing-and-selecting-sequences"></a></h3>
 
 
-<p>Using the <code>&lt;l&gt;</code> key, you can list all sequences, together with their current score, the number of times they have been played, and the current probability of selection. During ‘play’ mode, you can use the <code>&lt;d&gt;</code> key to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.</p>
+<p>Using the <code>&lt;l&gt;</code> key, you can list all sequences, together with their current score, the number of times they have been played, and the current probability of selection. During ‘play’ mode, you can use the <code>Ctrl-&lt;d&gt;</code> key to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.</p>
 <p>Using the <code>&lt;/&gt;</code> (or <code>&lt;.&gt;</code>) key, you can select a subset of the sequences. One can select sequences in various ways:</p>
 <p></p><ul><li><p>by entering a search term (which is applied as a regular expression to the filenames of the sequences),</p></li>
 <li><p>by entering a sequence number (e.g., <code>2</code> to select the 2nd sequence),</p></li>
@@ -228,6 +229,7 @@ The sound files used in the package were obtained from https://github.com/liches
 <li><p>one can select sequences with a score above (or below) a certain value (e.g., by entering <code>score &gt;= 80</code>),</p></li>
 <li><p>one can select sequences that have been played a minimum/maximum number of times (e.g., by entering <code>played &lt;= 1</code>).</p></li>
 </ul><p>Hitting <code>&lt;enter&gt;</code> at the prompt selects all sequences.</p>
+<p>By default, sequences are selected at random during ‘play’ mode (as described above). However, one can toggle into a sequential mode with the <code>&lt;r&gt;</code> key. In that mode, sequences are played in order.</p>
 <p></p>
 </div>
 
@@ -249,7 +251,7 @@ The sound files used in the package were obtained from https://github.com/liches
 <h3 id="managing-players">Managing Players<a class="anchor" aria-label="anchor" href="#managing-players"></a></h3>
 
 
-<p>The trainer can be used by multiple players. A player can be selected with the <code>&lt;p&gt;</code> key. One can either enter a player number, the name of an existing player, or enter a new player name. The current player can be deleted with the <code>&lt;r&gt;</code> key. Since this deletes all progress information for this player from the sequence files, you will receive a prompt to confirm this.</p>
+<p>The trainer can be used by multiple players. A player can be selected with the <code>&lt;p&gt;</code> key. One can either enter a player number, the name of an existing player, or enter a new player name. The current player can be deleted with the <code>Ctrl-&lt;r&gt;</code> key. Since this deletes all progress information for this player from the sequence files, you will receive a prompt to confirm this.</p>
 <p>With <code>&lt;F2&gt;</code>, a leaderboard (based on the lowest average score) and player statistics are shown (i.e., the average score, the standard deviation of the scores, the minimum and maximum score, and the total number of sequences played). Sequences whose score was manually set to 0 are not included in these statistics.</p>
 <p></p>
 </div>

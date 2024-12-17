@@ -69,6 +69,8 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
    selected <- TRUE
    flip <- FALSE
    oldvolume <- volume
+   random <- TRUE
+   seqno <- 1
 
    run.all <- TRUE
 
@@ -144,9 +146,17 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
          if (all(scores == 0)) # in case all sequences have a score of 0
             scores <- rep(1, length(scores))
 
-         probvals <- scores^expval
-         probvals[scores == 0] <- 0 # in case of 0^0
-         sel <- sample(seq_len(k), 1L, prob=probvals)
+         if (random) {
+            probvals <- scores^expval
+            probvals[scores == 0] <- 0 # in case of 0^0
+            sel <- sample(seq_len(k), 1L, prob=probvals)
+         } else {
+            sel <- seqno
+            seqno <- seqno + 1
+            if (seqno > k)
+               seqno <- 1
+         }
+
          sub <- dat[[sel]]
 
          # overwrite defaults
@@ -316,9 +326,9 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
 
             click <- getGraphicsEvent(prompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
 
-            keys      <- c("q", " ", "n", "p", "e", "l", "-", "=", "+", "F1", "F2", "m", "/", ".", "w", "r", "u", "^", "[", "]", "i")
+            keys      <- c("q", " ", "n", "p", "e", "l", "-", "=", "+", "F1", "F2", "m", "/", ".", "w", "ctrl-R", "u", "^", "[", "]", "i", "r")
             keys.add  <- c("f", "z", "c", "s", "b", "0") #, "???")
-            keys.play <- c("z", "c", "s", "\b", "d", "h", "a", "Right", "o", "t")
+            keys.play <- c("z", "c", "s", "\b", "ctrl-D", "h", "a", "Right", "o", "t")
 
             if (mode == "add" && is.character(click) && !is.element(click, c(keys, keys.add)))
                next
@@ -369,9 +379,9 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                next
             }
 
-            # r to remove a player (starts a new round)
+            # ctrl-r to remove a player (starts a new round)
 
-            if (identical(click, "r")) {
+            if (identical(click, "ctrl-R")) {
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
                rmplayer <- readline(prompt=.text("rlydelplayer", player))
                if (.confirm(rmplayer)) {
@@ -558,9 +568,9 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                next
             }
 
-            # d to delete the current sequence (only in play mode)
+            # ctrl-d to delete the current sequence (only in play mode)
 
-            if (mode == "play" && identical(click, "d")) {
+            if (mode == "play" && identical(click, "Ctrl-D")) {
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
                answer <- readline(prompt=.text("rlydelseq"))
                if (identical(answer, "j")) {
@@ -647,6 +657,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
             if (identical(click, "/") || identical(click, ".")) {
 
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
+
                searchterm <- readline(prompt=.text("seqsearch"))
 
                if (identical(searchterm , "")) {
@@ -655,6 +666,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                   run.rnd <- FALSE
                   wait <- FALSE
                   mode <- "add"
+                  seqno <- 1
                   if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
                   next
                }
@@ -671,6 +683,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                      run.rnd <- FALSE
                      wait <- FALSE
                      mode <- "add"
+                     seqno <- 1
                   }
                   if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
                   next
@@ -687,6 +700,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                      run.rnd <- FALSE
                      wait <- FALSE
                      mode <- "add"
+                     seqno <- 1
                   }
                   if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
                   next
@@ -704,6 +718,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                      run.rnd <- FALSE
                      wait <- FALSE
                      mode <- "add"
+                     seqno <- 1
                   }
                   if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
                   next
@@ -723,6 +738,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                      run.rnd <- FALSE
                      wait <- FALSE
                      mode <- "add"
+                     seqno <- 1
                   }
                   if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
                   next
@@ -737,7 +753,9 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                   run.rnd <- FALSE
                   wait <- FALSE
                   mode <- "add"
+                  seqno <- 1
                }
+
                if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
                next
 
@@ -916,8 +934,25 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                next
             }
 
+            # r to toggle random/sequential mode
+
+            if (identical(click, "r")) {
+               if (random) {
+                  random <- FALSE
+                  .texttop(.text("randomoff"))
+                  Sys.sleep(1)
+                  .texttop(texttop)
+               } else {
+                  random <- TRUE
+                  .texttop(.text("randomon"))
+                  Sys.sleep(1)
+                  .texttop(texttop)
+               }
+               next
+            }
+
             #if (mode == "add" && identical(click, "b")) {
-            #   .texttop("Brett Editor")
+            #   .texttop("Board Editor")
             #   i <- 1
             #   comment <- ""
             #   newdat$moves <- newdat$moves[numeric(0),]

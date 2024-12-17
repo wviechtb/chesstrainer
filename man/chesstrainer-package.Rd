@@ -35,7 +35,7 @@
 
    \subsection{Managing and Selecting Sequences}{
 
-      Using the \code{<l>} key, you can list all sequences, together with their current score, the number of times they have been played, and the current probability of selection. During \sQuote{play} mode, you can use the \code{<d>} key to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.
+      Using the \code{<l>} key, you can list all sequences, together with their current score, the number of times they have been played, and the current probability of selection. During \sQuote{play} mode, you can use the \code{Ctrl-<d>} key to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.
 
       Using the \code{</>} (or \code{<.>}) key, you can select a subset of the sequences. One can select sequences in various ways:
 
@@ -48,6 +48,8 @@
       }
 
       Hitting \code{<enter>} at the prompt selects all sequences.
+
+      By default, sequences are selected at random during \sQuote{play} mode (as described above). However, one can toggle into a sequential mode with the \code{<r>} key. In that mode, sequences are played in order.
 
    }
 
@@ -71,7 +73,7 @@
 
    \subsection{Managing Players}{
 
-      The trainer can be used by multiple players. A player can be selected with the \code{<p>} key. One can either enter a player number, the name of an existing player, or enter a new player name. The current player can be deleted with the \code{<r>} key. Since this deletes all progress information for this player from the sequence files, you will receive a prompt to confirm this.
+      The trainer can be used by multiple players. A player can be selected with the \code{<p>} key. One can either enter a player number, the name of an existing player, or enter a new player name. The current player can be deleted with the \code{Ctrl-<r>} key. Since this deletes all progress information for this player from the sequence files, you will receive a prompt to confirm this.
 
       With \code{<F2>}, a leaderboard (based on the lowest average score) and player statistics are shown (i.e., the average score, the standard deviation of the scores, the minimum and maximum score, and the total number of sequences played). Sequences whose score was manually set to 0 are not included in these statistics.
 

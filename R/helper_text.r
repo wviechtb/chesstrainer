@@ -344,6 +344,18 @@
                          paste0("Language: Englisch")
    ))}
 
+   if (x == "randomon") {
+      return(switch(lang,
+                    de = "Schalte in den Zufallsmodus ...",
+                         "Switching to random mode ..."
+   ))}
+
+   if (x == "randomoff") {
+      return(switch(lang,
+                    de = "Schalte in den sequenziellen Modus ...",
+                         "Switching to sequential mode ..."
+   ))}
+
 }
 
 .confirm <- function(x) {

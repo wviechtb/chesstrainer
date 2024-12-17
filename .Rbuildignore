@@ -3,5 +3,5 @@
 ^\.gitignore$
 ^.*\.Rproj$
 ^\.Rproj\.user$
-notes.txt
-^LICENSE$
+^_pkgdown\.yml$
+^docs$
