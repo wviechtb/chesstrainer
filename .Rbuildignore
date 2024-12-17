@@ -1,0 +1,7 @@
+^\.git$
+^\.github$
+^\.gitignore$
+^.*\.Rproj$
+^\.Rproj\.user$
+notes.txt
+^LICENSE$
