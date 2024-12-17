@@ -81,7 +81,9 @@
 
    \subsection{Sound}{
 
-      The trainer plays various sounds (when playing moves, capturing pieces, when making a wrong move, or when completing a sequence). This may or may not work depending on your operating system and configuration. See the \code{\link{playsound}} function for further details.
+      The trainer plays various sounds (when playing moves, when capturing pieces, when making a wrong move, or when completing a sequence). This may or may not work depending on your operating system and configuration. See the \code{\link{playsound}} function for further details.
+
+      If sound is working, one can toggle the sound on/off with the \code{<m>} key. This can be useful if playing sounds adds too much lag. The sound volume can be decreased/increased with the \code{<[>} and \code{<]>} keys.
 
    }
 
@@ -91,12 +93,11 @@
 
       Clicking the right mouse button on a square adds a circle to the square. Dragging the mouse from one square to another while pressing the right mouse button draws an arrow. Those familiar with the \verb{https://lichess.org} website will recognize these visualizations.  Clicking with the left mouse button on a square, the \code{<u>} key, or making a move removes these visualizations.
 
-      Various settings can be adjusted while the trainer is running:
+      Various other settings can be adjusted while the trainer is running:
 
       \itemize{
       \item By default, there is a 0.5 second sleep time between moves played by the trainer. This can be decreased/increased with the \code{<->} and \code{<+>} keys.
       \item By default, the trainer waits after completing a sequence before starting a new sequence. One can toggle this pause on/off with the \code{<w>} key.
-      \item One can toggle the sound (if it is working) on/off with the \code{<m>} key. The sound volume can be decreased/increased with the \code{<[>} and \code{<]>} keys.
       \item With the \code{<i>} key, one can toggle the language of the trainer between English and German (author note: I wrote this trainer in part for my chess playing kids, which is the reason why a German translation is available).
       }
 

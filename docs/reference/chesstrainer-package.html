@@ -83,7 +83,8 @@ With &amp;lt;F2&amp;gt;, a leaderboard (based on the lowest average score) and p
 Sound
 
 
-The trainer plays various sounds (when playing moves, capturing pieces, when making a wrong move, or when completing a sequence). This may or may not work depending on your operating system and configuration. See the playsound function for further details.
+The trainer plays various sounds (when playing moves, when capturing pieces, when making a wrong move, or when completing a sequence). This may or may not work depending on your operating system and configuration. See the playsound function for further details.
+If sound is working, one can toggle the sound on/off with the &amp;lt;m&amp;gt; key. This can be useful if playing sounds adds too much lag. The sound volume can be decreased/increased with the &amp;lt;[&amp;gt; and &amp;lt;]&amp;gt; keys.
 
 
 
@@ -93,11 +94,10 @@ Other Options / Keyboard Shortcuts
 
 When playing a sequence, the graphical elements shown on the playing board are created by repeatedly drawing on top of the board. Therefore, when resizing the board, all elements are redrawn, which takes a few moments. With the &amp;lt;u&amp;gt; key, one can redraw the board in its current state, after which one can resize the board without having to wait for all previous graphical elements to be redrawn.
 Clicking the right mouse button on a square adds a circle to the square. Dragging the mouse from one square to another while pressing the right mouse button draws an arrow. Those familiar with the https://lichess.org website will recognize these visualizations.  Clicking with the left mouse button on a square, the &amp;lt;u&amp;gt; key, or making a move removes these visualizations.
-Various settings can be adjusted while the trainer is running:
+Various other settings can be adjusted while the trainer is running:
 
 By default, there is a 0.5 second sleep time between moves played by the trainer. This can be decreased/increased with the &amp;lt;-&amp;gt; and &amp;lt;+&amp;gt; keys.
 By default, the trainer waits after completing a sequence before starting a new sequence. One can toggle this pause on/off with the &amp;lt;w&amp;gt; key.
-One can toggle the sound (if it is working) on/off with the &amp;lt;m&amp;gt; key. The sound volume can be decreased/increased with the &amp;lt;[&amp;gt; and &amp;lt;]&amp;gt; keys.
 With the &amp;lt;i&amp;gt; key, one can toggle the language of the trainer between English and German (author note: I wrote this trainer in part for my chess playing kids, which is the reason why a German translation is available).
 
 
@@ -260,7 +260,8 @@ The sound files used in the package were obtained from https://github.com/liches
 <h3 id="sound">Sound<a class="anchor" aria-label="anchor" href="#sound"></a></h3>
 
 
-<p>The trainer plays various sounds (when playing moves, capturing pieces, when making a wrong move, or when completing a sequence). This may or may not work depending on your operating system and configuration. See the <code><a href="playsound.html">playsound</a></code> function for further details.</p>
+<p>The trainer plays various sounds (when playing moves, when capturing pieces, when making a wrong move, or when completing a sequence). This may or may not work depending on your operating system and configuration. See the <code><a href="playsound.html">playsound</a></code> function for further details.</p>
+<p>If sound is working, one can toggle the sound on/off with the <code>&lt;m&gt;</code> key. This can be useful if playing sounds adds too much lag. The sound volume can be decreased/increased with the <code>&lt;[&gt;</code> and <code>&lt;]&gt;</code> keys.</p>
 <p></p>
 </div>
 
@@ -270,10 +271,9 @@ The sound files used in the package were obtained from https://github.com/liches
 
 <p>When playing a sequence, the graphical elements shown on the playing board are created by repeatedly drawing on top of the board. Therefore, when resizing the board, all elements are redrawn, which takes a few moments. With the <code>&lt;u&gt;</code> key, one can redraw the board in its current state, after which one can resize the board without having to wait for all previous graphical elements to be redrawn.</p>
 <p>Clicking the right mouse button on a square adds a circle to the square. Dragging the mouse from one square to another while pressing the right mouse button draws an arrow. Those familiar with the <code>https://lichess.org</code> website will recognize these visualizations.  Clicking with the left mouse button on a square, the <code>&lt;u&gt;</code> key, or making a move removes these visualizations.</p>
-<p>Various settings can be adjusted while the trainer is running:</p>
+<p>Various other settings can be adjusted while the trainer is running:</p>
 <p></p><ul><li><p>By default, there is a 0.5 second sleep time between moves played by the trainer. This can be decreased/increased with the <code>&lt;-&gt;</code> and <code>&lt;+&gt;</code> keys.</p></li>
 <li><p>By default, the trainer waits after completing a sequence before starting a new sequence. One can toggle this pause on/off with the <code>&lt;w&gt;</code> key.</p></li>
-<li><p>One can toggle the sound (if it is working) on/off with the <code>&lt;m&gt;</code> key. The sound volume can be decreased/increased with the <code>&lt;[&gt;</code> and <code>&lt;]&gt;</code> keys.</p></li>
 <li><p>With the <code>&lt;i&gt;</code> key, one can toggle the language of the trainer between English and German (author note: I wrote this trainer in part for my chess playing kids, which is the reason why a German translation is available).</p></li>
 </ul><p>These settings can also be adjusted via the arguments of the <code><a href="play.html">play</a></code> function.</p>
 <p></p>

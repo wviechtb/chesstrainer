@@ -1,4 +1,4 @@
-play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, pause=TRUE, lang="en", ...) {
+play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, pause=TRUE, lang="en", random=TRUE, ...) {
 
    if (!is.element(lang, c("en","de")))
       stop("Argument 'lang' must be either 'en' or 'de'.", call.=FALSE)
@@ -69,7 +69,6 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
    selected <- TRUE
    flip <- FALSE
    oldvolume <- volume
-   random <- TRUE
    seqno <- 1
 
    run.all <- TRUE
@@ -934,7 +933,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                next
             }
 
-            # r to toggle random/sequential mode
+            # r to toggle between random/sequential mode
 
             if (identical(click, "r")) {
                if (random) {

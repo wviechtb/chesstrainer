@@ -6,7 +6,7 @@
 }
 \usage{
 play(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
-     expval=2, pause=TRUE, lang="en", \dots)
+     expval=2, pause=TRUE, lang="en", random=TRUE, \dots)
 }
 \arguments{
    \item{player}{character string to specify a player. If blank, the trainer will prompt for a (new) player name.}
@@ -17,6 +17,7 @@ play(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
    \item{expval}{numeric value to specify the exponent value for sequence scores to adjust the selection probabilities.}
    \item{pause}{logical to specify whether the trainer will pause after a completed sequence.}
    \item{lang}{character string to specify the language (either \code{"en"} for English or \code{"de"} for German).}
+   \item{random}{logical to specify whether sequences should be selected at random or sequentially.}
    \item{\dots}{other arguments}
 }
 \details{
