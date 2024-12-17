@@ -1,7 +1,5 @@
 play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, pause=TRUE, lang="en", ...) {
 
-   cat(c("\033[2J","\033[0;0H"))
-
    if (!is.element(lang, c("en","de")))
       stop("Argument 'lang' must be either 'en' or 'de'.", call.=FALSE)
 
