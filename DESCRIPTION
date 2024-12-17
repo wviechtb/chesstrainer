@@ -3,9 +3,9 @@ Version: 0.1-0
 Date: 2024-12-17
 Title: Chess Training Program
 Authors@R: person(given = "Wolfgang", family = "Viechtbauer", role = c("aut","cre"), email = "wvb@wvbauer.com", comment = c(ORCID = "0000-0003-3463-4063"))
-Depends: R (>= 4.4.0), png, shape
+Depends: R (>= 4.2.0), png, shape
 Imports: stats, graphics, grDevices, utils
 Description: Create and quiz yourself on chess lines.
-License: GPL (>=2)
+License: GPL-3
 URL: https://github.com/wviechtb/chesstrainer https://www.wvbauer.com
 BugReports: https://github.com/wviechtb/chesstrainer/issues
