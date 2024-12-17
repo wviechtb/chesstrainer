@@ -40,7 +40,7 @@
       Using the \code{</>} (or \code{<.>}) key, you can select a subset of the sequences. One can select sequences in various ways:
 
       \itemize{
-      \item by entering a search term (which is applied to the filenames of the sequences),
+      \item by entering a search term (which is applied as a regular expression to the filenames of the sequences),
       \item by entering a sequence number (e.g., \code{2} to select the 2nd sequence),
       \item by entering a sequence number range (e.g., \code{2-5} to select sequences 2 to 5),
       \item one can select sequences with a score above (or below) a certain value (e.g., by entering \code{score >= 80}),
@@ -48,6 +48,24 @@
       }
 
       Hitting \code{<enter>} at the prompt selects all sequences.
+
+   }
+
+   \subsection{Adding New Sequences}{
+
+      With \code{<space>}, you can switch into the \sQuote{add} mode. This is where you can enter new sequences. The first thing to decide is whether the player should play with white or black. With the \code{<f>} key, one can flip the board accordingly (the player always plays with the pieces at the bottom). Next, one has to decide whether some moves will automatically be played at the beginning of a sequence. If some moves should be played automatically, then one can simply make these moves on the board. Note that there is no check if the moves are legal and/or are played in the correct sequence, so care must be taken to do so appropriately. Once you arrive at the position where a player should start making moves, hit the \code{<z>} key (note that \sQuote{Show} at the bottom left then turns from \sQuote{Yes} to \sQuote{No}). Now continue playing the line as it should be played. The sequence should end with a move of the player. If you make a mistake when playing a move, use the \code{<b>} key to take the move back. Once the sequence is complete, use the \code{<s>} key to save the sequence. You will be prompted for a filename. Once the sequence has been saved, it will automatically become part of the sequences that may be selected in \sQuote{play} mode.
+
+      A sequence may also start immediately in the starting position. Here, you will hit the \code{<z>} key right at the beginning. Since it is then essentially impossible for a player to know what they should play (since there are many sensible moves one could make), you will have to instruct the player what they should do. Using the \code{<c>} key, you can add a comment to the current move which will be shown to the player. For example, you could tell the player to play the Spanish (Ruy Lopez) opening. You should then make the appropriate moves on the board.
+
+      Comments can be added to any move using the \code{<c>} key. At times this may be useful if one could venture into multiple sensible lines in a given position. You would then have to instruct the player to make a particular move.
+
+      If a sequence should start not at the starting position of a chess game, but later on, one can move the pieces into the desired position and then use the \code{<0>} key to make the current position the starting position for a particular sequence. This way, one can create chess puzzles, such as asking the player to find a mate in a certain number of moves. This is currently tedious (since one may have to move many pieces around and removing pieces is only possible by capturing pieces). In the future, the package will include a proper board editor.
+
+      When saving a sequence, the color of the pieces to be played is automatically prepended to the filename (i.e., as \code{w_} or \code{b_}). This can be useful when selecting sequences (e.g., using the search term \code{^w_} will select all sequences that start with \code{w_} and are hence sequences where the player plays with white).
+
+      Using the \code{<e>} key, one can edit a sequence. This is most useful for adding or removing comments in the \code{comment} column. Making adjustments to the other columns should only be done if their meaning is clear.
+
+      Note that sequences are quite personalized, since they involve going into a particular line that one deems most appropriate. Others may disagree and prefer a different line. Therefore, you should create sequences that you want to train yourself on, so you will be able to play them quickly from memory.
 
    }
 

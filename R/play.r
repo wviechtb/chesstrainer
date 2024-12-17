@@ -111,13 +111,11 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
       }
 
       scores.all <- sapply(dat, function(x) x$score[player])
-      if (is.null(scores.all[[1]]))
-         scores.all <- rep(100, length(scores.all))
-      scores.all[is.na(scores.all)] <- 100
+      scores.all[is.na(scores.all) | sapply(scores.all, is.null)] <- 100
+      scores.all <- unname(unlist(scores.all))
       played.all <- sapply(dat, function(x) x$played[player])
-      if (is.null(played.all[[1]]))
-         played.all <- rep(0, length(played.all))
-      played.all[is.na(played.all)] <- 0
+      played.all[is.na(played.all) | sapply(played.all, is.null)] <- 0
+      played.all <- unname(unlist(played.all))
 
       # apply selection of sequences
 
@@ -140,9 +138,8 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
          # select a sequence
 
          scores <- sapply(dat, function(x) x$score[player])
-         if (is.null(scores[[1]]))
-            scores <- rep(100, length(scores))
-         scores[is.na(scores)] <- 100
+         scores[is.na(scores) | sapply(scores, is.null)] <- 100
+         scores <- unname(unlist(scores))
 
          if (all(scores == 0)) # in case all sequences have a score of 0
             scores <- rep(1, length(scores))
@@ -499,13 +496,11 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
                if (length(tmp) > 0L) {
                   tmp.scores <- unname(sapply(tmp, function(x) x$score[player]))
-                  if (is.null(tmp.scores[[1]]))
-                     tmp.scores <- rep(100, length(tmp.scores))
-                  tmp.scores[is.na(tmp.scores)] <- 100
+                  tmp.scores[is.na(tmp.scores) | sapply(tmp.scores, is.null)] <- 100
+                  tmp.scores <- unname(unlist(tmp.scores))
                   tmp.played <- unname(sapply(tmp, function(x) x$played[player]))
-                  if (is.null(tmp.played[[1]]))
-                     tmp.played <- rep(0, length(tmp.played))
-                  tmp.played[is.na(tmp.played)] <- 0
+                  tmp.played[is.na(tmp.played) | sapply(tmp.played, is.null)] <- 0
+                  tmp.played <- unname(unlist(tmp.played))
                   tmp.probvals <- tmp.scores^expval
                   tmp.probvals[tmp.scores == 0] <- 0 # in case of 0^0
                   tmp.probvals <- round(100 * tmp.probvals / sum(tmp.probvals), digits=1)
@@ -530,16 +525,24 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                nplayers <- length(players)
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
                if (nplayers >= 1) {
-                  tmp.scores <- lapply(players, function(player) sapply(tmp, function(x) x$score[player]))
+                  tmp.scores <- lapply(players, function(player) {
+                     x <- lapply(tmp, function(x) x$score[player])
+                     x[sapply(x, is.null)] <- 100
+                     unlist(x)
+                  })
                   tmp.scores <- do.call(cbind, tmp.scores)
-                  rownames(tmp.scores) <- files
                   tmp.scores[is.na(tmp.scores)] <- 100
+                  rownames(tmp.scores) <- files
                   tmp.scores[tmp.scores == 0] <- NA_real_
                   mean.scores <- round(apply(tmp.scores, 2, mean, na.rm=TRUE))
                   sd.scores   <- round(apply(tmp.scores, 2, sd, na.rm=TRUE))
                   min.scores  <- apply(tmp.scores, 2, min, na.rm=TRUE)
                   max.scores  <- apply(tmp.scores, 2, max, na.rm=TRUE)
-                  tmp.played <- lapply(players, function(player) sapply(tmp, function(x) x$played[player]))
+                  tmp.played <- lapply(players, function(player) {
+                     x <- lapply(tmp, function(x) x$played[player])
+                     x[sapply(x, is.null)] <- 0
+                     unlist(x)
+                  })
                   tmp.played <- do.call(cbind, tmp.played)
                   tmp.played[is.na(tmp.played)] <- 0
                   total.played <- round(apply(tmp.played, 2, sum))
