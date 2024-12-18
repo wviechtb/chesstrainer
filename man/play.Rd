@@ -21,12 +21,9 @@ play(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
    \item{\dots}{other arguments}
 }
 \details{
-   This is the main function to start the chess trainer. See the \pkg{\link{chesstrainer-package}} documentation for an introduction to the package.
+   This is the main function to start the chess trainer. See the \pkg{\link{chesstrainer-package}} documentation for an introduction to the package and the purpose of these arguments.
 
-   All of the arguments above can be adjusted while the player is running.
-
-   Depending on the size of the plotting window and the screen resolution, one can adjust the line width value with some trial and error such that the rectangles that are drawn around squares are clearly visible, but do not overlap into adjacent squares.
-
+   All of the arguments above can also be adjusted while the player is running. Note that these settings are also automatically saved by the chess trainer across sessions.
 }
 \author{
    Wolfgang Viechtbauer (\email{wvb@wvbauer.com}).

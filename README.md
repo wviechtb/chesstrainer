@@ -21,8 +21,9 @@ remotes::install_github("wviechtb/chesstrainer")
 
 - [x] Add en passent.
 - [ ] Add a board editor.
-- [ ] Allow saving of settings across sessions.
-- [ ] Allow branching in sequences (maybe, as this requires a major update).
+- [x] Save settings across sessions.
+- [ ] Allow adjusting colors.
+- [ ] Allow branching in sequences (maybe, as this requires a more substantial update).
 
 ## Meta
 

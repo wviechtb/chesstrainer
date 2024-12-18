@@ -14,6 +14,12 @@
                          "Argument 'mode' must be either 'add' or 'play'."
    ))}
 
+   if (x == "createconfigdir") {
+      return(switch(lang,
+                    de = paste0("\nErstelle Standardverzeichnis f\U000000FCr Einstellungen: ", arg, "\n"),
+                         paste0("\nCreating default directory for settings: ", arg, "\n")
+   ))}
+
    if (x == "createseqdir") {
       return(switch(lang,
                     de = paste0("\nErstelle Standardverzeichnis f\U000000FCr Sequenzen: ", arg, "\n"),
@@ -22,8 +28,8 @@
 
    if (x == "dircreateerror") {
       return(switch(lang,
-                    de = "Standardverzeichnis f\U000000FCr Sequenzen kann nicht erstellt werden.",
-                         "Cannot create default sequence directory."
+                    de = "Verzeichnis f\U000000FCr kann nicht erstellt werden.",
+                         "Cannot create directory."
    ))}
 
    if (x == "copyseqs") {

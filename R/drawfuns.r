@@ -96,14 +96,6 @@
          .drawpiece(9-8, 9-4, "BR")
       }
 
-      print(x1)
-      print(y1)
-      print(x2)
-      print(y2)
-      print(pos[9-x1,9-y1])
-      print(pos[4,y2])
-      print(pos[5,y2])
-
       if (pos[9-x1,9-y1] == "WP" && x1 == 4 && (y2 == y1-1 || y2 == y1+1)) {
          isenpassent <- "w"
          pos[4,y2] <- ""

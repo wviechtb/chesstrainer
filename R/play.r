@@ -20,6 +20,47 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
 
    verbose <- isTRUE(ddd$verbose)
 
+   # create config directory and read/save settings
+
+   configdir <- tools::R_user_dir(package="chesstrainer", which="config")
+
+   if (!dir.exists(configdir)) {
+      cat(.text("createconfigdir", configdir))
+      success <- dir.create(configdir, recursive=TRUE)
+      if (!success)
+         stop(.text("dircreateerror"), call.=FALSE)
+      settings <- data.frame(player, mode, sleep, volume, lwd, expval, pause, lang, random)
+      saveRDS(settings, file=file.path(configdir, "settings.rds"))
+   } else {
+      if (file.exists(file.path(configdir, "settings.rds"))) {
+         # apply settings, but only for those that are equal to their defaults
+         settings <- readRDS(file.path(configdir, "settings.rds"))
+         if (player == "")
+            player <- settings$player
+         if (mode == "add")
+            mode <- settings$mode
+         if (sleep == 0.5)
+            sleep <- settings$sleep
+         if (volume == 0.5)
+            volume <- settings$volume
+         if (lwd == 2)
+            lwd <- settings$lwd
+         if (expval == 2)
+            expval <- settings$expval
+         if (pause)
+            pause <- settings$pause
+         if (lang == "en")
+            lang <- settings$lang
+         if (random)
+            random <- settings$random
+         settings <- data.frame(player, mode, sleep, volume, lwd, expval, pause, lang, random)
+         saveRDS(settings, file=file.path(configdir, "settings.rds"))
+      } else {
+         settings <- data.frame(player, mode, sleep, volume, lwd, expval, pause, lang, random)
+         saveRDS(settings, file=file.path(configdir, "settings.rds"))
+      }
+   }
+
    # create / check sequence directory
 
    if (is.null(ddd$seqdir)) {
@@ -112,10 +153,10 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
       }
 
       scores.all <- sapply(dat, function(x) x$score[player])
-      scores.all[is.na(scores.all) | sapply(scores.all, is.null)] <- 100
+      scores.all[is.na(scores.all) | .is.null(scores.all)] <- 100
       scores.all <- unname(unlist(scores.all))
       played.all <- sapply(dat, function(x) x$played[player])
-      played.all[is.na(played.all) | sapply(played.all, is.null)] <- 0
+      played.all[is.na(played.all) | .is.null(played.all)] <- 0
       played.all <- unname(unlist(played.all))
 
       # apply selection of sequences
@@ -139,7 +180,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
          # select a sequence
 
          scores <- sapply(dat, function(x) x$score[player])
-         scores[is.na(scores) | sapply(scores, is.null)] <- 100
+         scores[is.na(scores) | .is.null(scores)] <- 100
          scores <- unname(unlist(scores))
 
          if (all(scores == 0)) # in case all sequences have a score of 0
@@ -354,6 +395,8 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                } else {
                   mode <- "add"
                }
+               settings$mode <- mode
+               saveRDS(settings, file=file.path(configdir, "settings.rds"))
                run.rnd <- FALSE
                wait <- FALSE
                next
@@ -373,6 +416,8 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
                player <- .selectplayer(player, seqdir)
                if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+               settings$player <- player
+               saveRDS(settings, file=file.path(configdir, "settings.rds"))
                run.rnd <- FALSE
                wait <- FALSE
                next
@@ -419,6 +464,8 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                   Sys.sleep(1)
                   .texttop(texttop)
                }
+               settings$pause <- pause
+               saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
 
@@ -505,10 +552,10 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
                if (length(tmp) > 0L) {
                   tmp.scores <- unname(sapply(tmp, function(x) x$score[player]))
-                  tmp.scores[is.na(tmp.scores) | sapply(tmp.scores, is.null)] <- 100
+                  tmp.scores[is.na(tmp.scores) | .is.null(tmp.scores)] <- 100
                   tmp.scores <- unname(unlist(tmp.scores))
                   tmp.played <- unname(sapply(tmp, function(x) x$played[player]))
-                  tmp.played[is.na(tmp.played) | sapply(tmp.played, is.null)] <- 0
+                  tmp.played[is.na(tmp.played) | .is.null(tmp.played)] <- 0
                   tmp.played <- unname(unlist(tmp.played))
                   tmp.probvals <- tmp.scores^expval
                   tmp.probvals[tmp.scores == 0] <- 0 # in case of 0^0
@@ -605,6 +652,8 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                .texttop(.text("waittime", formatC(sleep, format="f", digits=2)))
                Sys.sleep(1)
                .texttop(texttop)
+               settings$sleep <- sleep
+               saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
 
@@ -613,6 +662,8 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                .texttop(.text("waittime", formatC(sleep, format="f", digits=2)))
                Sys.sleep(1)
                .texttop(texttop)
+               settings$sleep <- sleep
+               saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
 
@@ -624,12 +675,16 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                   .texttop(.text("soundon"))
                   Sys.sleep(1)
                   .texttop(texttop)
+                  settings$volume <- volume
+                  saveRDS(settings, file=file.path(configdir, "settings.rds"))
                } else {
                   oldvolume <- volume
                   volume <- 0
                   .texttop(.text("soundoff"))
                   Sys.sleep(1)
                   .texttop(texttop)
+                  settings$volume <- volume
+                  saveRDS(settings, file=file.path(configdir, "settings.rds"))
                }
                next
             }
@@ -642,6 +697,8 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                .texttop(.text("volume", formatC(volume, format="f", digits=2)))
                Sys.sleep(1)
                .texttop(texttop)
+               settings$volume <- volume
+               saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
             if (identical(click, "]")) {
@@ -650,6 +707,8 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                .texttop(.text("volume", formatC(volume, format="f", digits=2)))
                Sys.sleep(1)
                .texttop(texttop)
+               settings$volume <- volume
+               saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
 
@@ -912,6 +971,8 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                   } else {
                      cat(.text("setnewexpval", newexpval))
                      expval <- newexpval
+                     settings$expval <- expval
+                     saveRDS(settings, file=file.path(configdir, "settings.rds"))
                   }
                }
                if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
@@ -931,6 +992,8 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
                Sys.sleep(1)
                .texttop(texttop)
+               settings$lang <- lang
+               saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
 
@@ -948,6 +1011,8 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                   Sys.sleep(1)
                   .texttop(texttop)
                }
+               settings$random <- random
+               saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
 
@@ -958,6 +1023,8 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                .texttop(.text("lwdadj", lwd))
                Sys.sleep(0.5)
                .texttop(texttop)
+               settings$lwd <- lwd
+               saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
 
@@ -966,6 +1033,8 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                .texttop(.text("lwdadj", lwd))
                Sys.sleep(0.5)
                .texttop(texttop)
+               settings$lwd <- lwd
+               saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
 

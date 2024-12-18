@@ -10,7 +10,7 @@
 }
 \section{Starting the Trainer for the First Time}{
 
-   To start the trainer, run \code{play()} from the console (see the \code{\link{play}} function for some startup arguments that can be adjusted). When starting the trainer for the first time, a default directory is created where sequences will be stored. A few example sequences also come with the package and you will receive a prompt whether to copy these sequences to the sequence directory. To familiarize yourself with the trainer, it would be good to do so.
+   To start the trainer, run \code{play()} from the console (see the \code{\link{play}} function for some startup arguments that can be adjusted). When starting the trainer for the first time, a directory is created for storing settings and a directory where sequences will be stored. A few example sequences also come with the package and you will receive a prompt whether to copy these sequences to the sequence directory. To familiarize yourself with the trainer, it would be good to do so.
 
    You will then receive a prompt to enter a player name. Choose a name and hit enter.
 
@@ -99,7 +99,7 @@
    \item With the \code{<i>} key, the language of the trainer can be toggled between English and German (author note: I wrote this trainer in part for my chess playing kids, which is the reason why a German translation is available).
    }
 
-   These settings can also be adjusted via the arguments of the \code{\link{play}} function.
+   The settings are automatically stored in a file called \code{settings.rds} at \code{tools::R_user_dir(package="chesstrainer", which="config")} and are read in when starting the trainer.
 
 }
 \section{Backing Up Sequences}{
