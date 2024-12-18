@@ -141,8 +141,11 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
       files <- list.files(seqdir, pattern=".rds$")
       dat <- lapply(file.path(seqdir, files), readRDS)
 
-      if (player == "")
+      if (player == "") {
          player <- .selectplayer(player, seqdir, mustselect=TRUE)
+         settings$player <- player
+         saveRDS(settings, file=file.path(configdir, "settings.rds"))
+      }
 
       files.all <- files
       k.all <- length(files.all)
