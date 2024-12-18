@@ -21,7 +21,7 @@ playsound(sound, volume)
 
    \emph{For advanced users:}
 
-   If the sound is not working, but you know what the appropriate command is that will work on your system, you can write your own \code{playsound} function (see the code for \code{playsound} to use as a template). Then use \code{assignInNamespace("playsound", playsound, ns="chesstrainer")} to replace the \code{playsound()} function with your own version. Then use the example code below to test if sound is working.
+   If the sound is not working, but you know what the appropriate command is that will work on your system, you can write your own \code{playsound} function (see the code for \code{playsound} to use as a template). Then use \code{assignInNamespace("playsound", playsound, ns="chesstrainer")} to replace the \code{playsound()} function with your own version. Then use the example code below to test if the sound is working.
 
 }
 \author{

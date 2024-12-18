@@ -380,7 +380,7 @@
       cat("-/+     - decrease/increase the time between moves\n")
       cat("w       - pause between completed sequences on/off\n")
       cat("m       - sound on/off\n")
-      cat("[/]     - decrease/increase sound volume\n")
+      cat("[/]     - decrease/increase the sound volume\n")
       cat("u       - update/redraw the board\n")
       cat("^       - specify the exponent value\n")
       cat("i       - toggle the language (English/German)\n")
