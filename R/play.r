@@ -369,7 +369,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
 
             click <- getGraphicsEvent(prompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
 
-            keys      <- c("q", " ", "n", "p", "e", "l", "-", "=", "+", "F1", "F2", "m", "/", ".", "w", "ctrl-R", "u", "^", "[", "]", "i", "r", "(", ")")
+            keys      <- c("q", " ", "n", "p", "e", "l", "-", "=", "+", "F1", "F2", "F3", "m", "/", ".", "w", "ctrl-R", "u", "^", "[", "]", "i", "r", "(", ")")
             keys.add  <- c("f", "z", "c", "s", "b", "0") #, "???")
             keys.play <- c("z", "c", "s", "\b", "ctrl-D", "h", "a", "Right", "o", "t")
 
@@ -1054,6 +1054,18 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
 
             if (identical(click, "F1")) {
                .printhelp(...)
+               next
+            }
+
+            # F3 to print settings
+
+            if (identical(click, "F3")) {
+               settings <- data.frame(player, mode, sleep, volume, lwd, expval, pause, lang, random)
+               if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
+               tab <- t(settings)
+               colnames(tab) <- ""
+               print(tab, quote=FALSE)
+               if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
                next
             }
 
