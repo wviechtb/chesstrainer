@@ -59,8 +59,10 @@
    y2 <- unname(move[[4]])
 
    isrochade <- ""
+   isenpassent <- ""
 
    if (flip) {
+
       if (identical(c(x1,y1), c(9-1,9-5)) && pos[9-x1,9-y1] == "WK" && identical(c(x2,y2), c(9-1,9-7))) {
          isrochade <- "0-0"
          pos[1,6] <- "WR"
@@ -93,7 +95,26 @@
          .drawsquare(9-8, 9-4)
          .drawpiece(9-8, 9-4, "BR")
       }
+
+      print(x1)
+      print(y1)
+      print(x2)
+      print(y2)
+      print(pos[9-x1,9-y1])
+      print(pos[4,y2])
+      print(pos[5,y2])
+
+      if (pos[9-x1,9-y1] == "WP" && x1 == 4 && (y2 == y1-1 || y2 == y1+1)) {
+         isenpassent <- "w"
+         pos[4,y2] <- ""
+      }
+      if (pos[9-x1,9-y1] == "BP" && x1 == 5 && (y2 == y1-1 || y2 == y1+1)) {
+         isenpassent <- "b"
+         pos[5,y2] <- ""
+      }
+
    } else {
+
       if (identical(c(x1,y1), c(1,5)) && pos[x1,y1] == "WK" && identical(c(x2,y2), c(1,7))) {
          isrochade <- "0-0"
          pos[1,6] <- "WR"
@@ -126,31 +147,56 @@
          .drawsquare(8, 4)
          .drawpiece(8, 4, "BR")
       }
+
+      if (pos[x1,y1] == "WP" && x1 == 5 && (y2 == y1-1 || y2 == y1+1)) {
+         isenpassent <- "w"
+         pos[5,y2] <- ""
+      }
+      if (pos[x1,y1] == "BP" && x1 == 4 && (y2 == y1-1 || y2 == y1+1)) {
+         isenpassent <- "b"
+         pos[4,y2] <- ""
+      }
+
    }
 
    .drawsquare(x1, y1)
    .drawsquare(x2, y2)
 
+   if (isenpassent == "w") {
+      if (flip) {
+         .drawsquare(4, y2)
+      } else {
+         .drawsquare(5, y2)
+      }
+   }
+   if (isenpassent == "b") {
+      if (flip) {
+         .drawsquare(5, y2)
+      } else {
+         .drawsquare(4, y2)
+      }
+   }
+
    if (flip) {
       .drawpiece(x2, y2, pos[9-x1,9-y1])
-      if (pos[9-x2,9-y2] != "") {
+      if (pos[9-x2,9-y2] != "" || isenpassent != "") {
          playsound(system.file("sounds", "capture.ogg", package="chesstrainer"), volume=volume)
       } else {
          playsound(system.file("sounds", "move.ogg", package="chesstrainer"), volume=volume)
       }
-      iscapture <- pos[9-x2,9-y2] != ""
+      iscapture <- pos[9-x2,9-y2] != "" || isenpassent != ""
       piece1 <- ifelse(substr(pos[9-x1,9-y1], 2, 2) == "P", "", substr(pos[9-x1,9-y1], 2, 2))
       piece2 <- ifelse(substr(pos[9-x2,9-y2], 2, 2) == "P", "", substr(pos[9-x2,9-y2], 2, 2))
       pos[9-x2,9-y2] <- pos[9-x1,9-y1]
       pos[9-x1,9-y1] <- ""
    } else {
       .drawpiece(x2, y2, pos[x1,y1])
-      if (pos[x2,y2] != "") {
+      if (pos[x2,y2] != "" || isenpassent != "") {
          playsound(system.file("sounds", "capture.ogg", package="chesstrainer"), volume=volume)
       } else {
          playsound(system.file("sounds", "move.ogg", package="chesstrainer"), volume=volume)
       }
-      iscapture <- pos[x2,y2] != ""
+      iscapture <- pos[x2,y2] != "" || isenpassent != ""
       piece1 <- ifelse(substr(pos[x1,y1], 2, 2) == "P", "", substr(pos[x1,y1], 2, 2))
       piece2 <- ifelse(substr(pos[x2,y2], 2, 2) == "P", "", substr(pos[x2,y2], 2, 2))
       pos[x2,y2] <- pos[x1,y1]
@@ -160,15 +206,15 @@
    if (verbose) {
       if (flip) {
          if (identical(isrochade, "")) {
-            cat("\nMove: ", piece1, letters[9-y1], 9-x1, ifelse(iscapture, "x", "-"), piece2, letters[9-y2], 9-x2, "\n\n", sep="")
+            cat("Move: ", piece1, letters[9-y1], 9-x1, ifelse(iscapture, "x", "-"), piece2, letters[9-y2], 9-x2, "\n\n", sep="")
          } else {
-            cat("\nMove: ", isrochade, "\n\n", sep="")
+            cat("Move: ", isrochade, "\n\n", sep="")
          }
       } else {
          if (identical(isrochade, "")) {
-            cat("\nMove: ", piece1, letters[y1], x1, ifelse(iscapture, "x", "-"), piece2, letters[y2], x2, "\n\n", sep="")
+            cat("Move: ", piece1, letters[y1], x1, ifelse(iscapture, "x", "-"), piece2, letters[y2], x2, "\n\n", sep="")
          } else {
-            cat("\nMove: ", isrochade, "\n\n", sep="")
+            cat("Move: ", isrochade, "\n\n", sep="")
          }
       }
       printpos <- pos
