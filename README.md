@@ -11,7 +11,7 @@ You can read the documentation online at [https://wviechtb.github.io/chesstraine
 
 ## Installation
 
-The development version of the `esmpack` package can be installed with:
+The development version of the `chesstrainer` package can be installed with:
 ```r
 install.packages("remotes")
 remotes::install_github("wviechtb/chesstrainer")
