@@ -340,8 +340,8 @@
 
    if (x == "lang") {
       return(switch(lang,
-                    de = paste0("Sprache: Deutsch"),
-                         paste0("Language: Englisch")
+                    de = "Sprache: Deutsch",
+                         "Language: Englisch"
    ))}
 
    if (x == "randomon") {
@@ -354,6 +354,12 @@
       return(switch(lang,
                     de = "Schalte in den sequenziellen Modus ...",
                          "Switching to sequential mode ..."
+   ))}
+
+   if (x == "lwdadj") {
+      return(switch(lang,
+                    de = paste0("Linienbreite: ", arg),
+                         paste0("Line Width: ", arg)
    ))}
 
 }

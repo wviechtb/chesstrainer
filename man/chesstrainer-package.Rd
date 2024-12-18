@@ -93,6 +93,7 @@
    Various other settings can be adjusted while the trainer is running:
 
    \itemize{
+   \item With the \code{<(>} and \code{<)>} keys, the line width for drawing rectangles can be decreased/increased. With some trial and error, one can adjust this value such that the rectangles that are drawn around squares are clearly visible, but do not overlap into adjacent squares.
    \item By default, there is a 0.5 second sleep time between moves played by the trainer. This can be decreased/increased with the \code{<->} and \code{<+>} keys.
    \item By default, the trainer waits after completing a sequence before starting a new sequence. One can toggle this pause on/off with the \code{<w>} key.
    \item With the \code{<i>} key, the language of the trainer can be toggled between English and German (author note: I wrote this trainer in part for my chess playing kids, which is the reason why a German translation is available).

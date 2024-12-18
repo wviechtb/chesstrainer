@@ -23,7 +23,9 @@ play(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
 \details{
    This is the main function to start the chess trainer. See the \pkg{\link{chesstrainer-package}} documentation for an introduction to the package.
 
-   All of the arguments above can be adjusted while the player is running, except for \code{lwd}. Depending on the size of the plotting window and the screen resolution, one can adjust this value with some trial and error such that the rectangles that are drawn around squares are clearly visible, but do not overlap into adjacent squares.
+   All of the arguments above can be adjusted while the player is running.
+
+   Depending on the size of the plotting window and the screen resolution, one can adjust the line width value with some trial and error such that the rectangles that are drawn around squares are clearly visible, but do not overlap into adjacent squares.
 
 }
 \author{

@@ -325,7 +325,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
 
             click <- getGraphicsEvent(prompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
 
-            keys      <- c("q", " ", "n", "p", "e", "l", "-", "=", "+", "F1", "F2", "m", "/", ".", "w", "ctrl-R", "u", "^", "[", "]", "i", "r")
+            keys      <- c("q", " ", "n", "p", "e", "l", "-", "=", "+", "F1", "F2", "m", "/", ".", "w", "ctrl-R", "u", "^", "[", "]", "i", "r", "(", ")")
             keys.add  <- c("f", "z", "c", "s", "b", "0") #, "???")
             keys.play <- c("z", "c", "s", "\b", "ctrl-D", "h", "a", "Right", "o", "t")
 
@@ -893,7 +893,6 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                hasarrows <- FALSE
                circles <- matrix(c(0,0), nrow=1, ncol=2)
                .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
-               .drawsideindicator(i, flip)
                .texttop(texttop)
                if (mode == "add")
                   .drawsideindicator(i, flip)
@@ -949,6 +948,24 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                   Sys.sleep(1)
                   .texttop(texttop)
                }
+               next
+            }
+
+            # (/) to decrease/increase the lwd value
+
+            if (identical(click, "(")) {
+               lwd <- max(1, lwd - 1)
+               .texttop(.text("lwdadj", lwd))
+               Sys.sleep(0.5)
+               .texttop(texttop)
+               next
+            }
+
+            if (identical(click, ")")) {
+               lwd <- lwd + 1
+               .texttop(.text("lwdadj", lwd))
+               Sys.sleep(0.5)
+               .texttop(texttop)
                next
             }
 
@@ -1016,6 +1033,8 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                      .drawboard(pos, flip=flip)
                      hasarrows <- FALSE
                      circles <- matrix(c(0,0), nrow=1, ncol=2)
+                     if (mode == "add")
+                        .drawsideindicator(i, flip)
                   }
 
                }
