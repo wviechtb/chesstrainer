@@ -51,12 +51,12 @@
 
 }
 
-.updateboard <- function(pos, x1, y1, x2, y2, flip, volume, verbose) {
+.updateboard <- function(pos, move, flip, volume, verbose) {
 
-   x1 <- unname(x1)
-   y1 <- unname(y1)
-   x2 <- unname(x2)
-   y2 <- unname(y2)
+   x1 <- unname(move[[1]])
+   y1 <- unname(move[[2]])
+   x2 <- unname(move[[3]])
+   y2 <- unname(move[[4]])
 
    isrochade <- ""
 

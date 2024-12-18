@@ -207,7 +207,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
             }
 
             while (isTRUE(sub$moves$show[i])) {
-               pos <- .updateboard(pos, sub$moves$x1[i], sub$moves$y1[i], sub$moves$x2[i], sub$moves$y2[i], flip=flip, volume=volume, verbose=verbose)
+               pos <- .updateboard(pos, move=sub$moves[i,1:4], flip=flip, volume=volume, verbose=verbose)
                i <- i + 1
                texttop <- .texttop(sub$moves$comment[i])
                .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
@@ -517,6 +517,8 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                   names(tmp) <- c("Name", .text("played"), .text("score"), .text("prob"))
                   tmp$Name <- format(tmp$Name, justify="left")
                   names(tmp)[1] <- ""
+                  if (any(!selected))
+                     rownames(tmp) <- which(selected)
                   print(tmp, print.gap=2)
                } else {
                   cat(.text("zeroseqsfound"))
@@ -818,7 +820,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                circles <- matrix(c(0,0), nrow=1, ncol=2)
 
                for (i in 1:nrow(newdat$moves)) {
-                  pos <- .updateboard(pos, newdat$moves$x1[i], newdat$moves$y1[i], newdat$moves$x2[i], newdat$moves$y2[i], flip=flip, volume=volume, verbose=verbose)
+                  pos <- .updateboard(pos, move=sub$moves[i,1:4], flip=flip, volume=volume, verbose=verbose)
                   texttop <- .texttop(newdat$moves$comment[i])
                   .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
                   Sys.sleep(sleep)
@@ -847,7 +849,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                   i <- i - 1
                   newdat$moves <- newdat$moves[seq_len(i-1),,drop=FALSE]
                   for (j in seq_len(i-1)) {
-                     pos <- .updateboard(pos, newdat$moves$x1[j], newdat$moves$y1[j], newdat$moves$x2[j], newdat$moves$y2[j], flip=flip, volume=0, verbose=verbose)
+                     pos <- .updateboard(pos, move=sub$moves[j,1:4], flip=flip, volume=0, verbose=verbose)
                   }
                   comment <- ""
                   .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
@@ -876,7 +878,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                   .texttop(.text("waslastmove"))
                   next
                }
-               pos <- .updateboard(pos, sub$moves$x1[i], sub$moves$y1[i], sub$moves$x2[i], sub$moves$y2[i], flip=flip, volume=volume, verbose=verbose)
+               pos <- .updateboard(pos, move=sub$moves[i,1:4], flip=flip, volume=volume, verbose=verbose)
                i <- i + 1
                .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
                texttop <- .texttop(sub$moves$comment[i])
@@ -1043,7 +1045,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
 
          if (mode == "add" || all(c(click1.x==sub$moves$x1[i], click1.y==sub$moves$y1[i], click2.x==sub$moves$x2[i], click2.y==sub$moves$y2[i]))) {
 
-            pos <- .updateboard(pos, click1.x, click1.y, click2.x, click2.y, flip=flip, volume=volume, verbose=verbose)
+            pos <- .updateboard(pos, move=c(click1.x, click1.y, click2.x, click2.y), flip=flip, volume=volume, verbose=verbose)
             .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
 
          } else {
@@ -1110,7 +1112,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
             texttop <- .texttop(sub$moves$comment[i])
             .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
             Sys.sleep(sleep)
-            pos <- .updateboard(pos, sub$moves$x1[i], sub$moves$y1[i], sub$moves$x2[i], sub$moves$y2[i], flip=flip, volume=volume, verbose=verbose)
+            pos <- .updateboard(pos, move=sub$moves[i,1:4], flip=flip, volume=volume, verbose=verbose)
             texttop <- .texttop(sub$moves$comment[i])
             i <- i + 1
          }
