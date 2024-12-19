@@ -6,7 +6,7 @@
 - settings are now saved across sessions
 - properly handle en passent
 - help opens up in the plot, not in the console
-- move in long algebraic notation added to the sequence files
+- moves in long algebraic notation added to the sequence files
 
 # chesstrainer 0.1-0 (2024-12-17)
 

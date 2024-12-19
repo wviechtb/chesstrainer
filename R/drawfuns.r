@@ -56,8 +56,23 @@
 
    isrochade <- ""
    isenpassent <- ""
+   ispp <- ""
 
    if (flip) {
+      if (x1 == 2 && x2 == 4 && pos[9-x1,9-y1] == "BP")
+         ispp <- "b"
+      if (x1 == 7 && x2 == 5 && pos[9-x1,9-y1] == "WP")
+         ispp <- "w"
+   } else {
+      if (x1 == 2 && x2 == 4 && pos[x1,y1] == "WP")
+         ispp <- "w"
+      if (x1 == 7 && x2 == 5 && pos[x1,y1] == "BP")
+         ispp <- "b"
+   }
+
+   if (flip) {
+
+      # check for rochade
 
       if (identical(c(x1,y1), c(9-1,9-5)) && pos[9-x1,9-y1] == "WK" && identical(c(x2,y2), c(9-1,9-7))) {
          isrochade <- "0-0"
@@ -92,16 +107,22 @@
          .drawpiece(9-8, 9-4, "BR")
       }
 
-      if (pos[9-x1,9-y1] == "WP" && x1 == 4 && (y2 == y1-1 || y2 == y1+1)) {
+      # check for en passent
+
+      if (identical(attr(pos, "ispp"), "b") && pos[9-x1,9-y1] == "WP" && x1 == 4 && (y2 == y1-1 && attr(pos, "y1") == y1-1) || (y2 == y1+1) && attr(pos, "y1") == y1+1) {
          isenpassent <- "w"
          pos[4,y2] <- ""
+         .drawsquare(4, y2)
       }
-      if (pos[9-x1,9-y1] == "BP" && x1 == 5 && (y2 == y1-1 || y2 == y1+1)) {
+      if (identical(attr(pos, "ispp"), "w") && pos[9-x1,9-y1] == "BP" && x1 == 5 && (y2 == y1-1 && attr(pos, "y1") == y1-1) || (y2 == y1+1) && attr(pos, "y1") == y1+1) {
          isenpassent <- "b"
          pos[5,y2] <- ""
+         .drawsquare(5, y2)
       }
 
    } else {
+
+      # check for rochade
 
       if (identical(c(x1,y1), c(1,5)) && pos[x1,y1] == "WK" && identical(c(x2,y2), c(1,7))) {
          isrochade <- "0-0"
@@ -136,34 +157,23 @@
          .drawpiece(8, 4, "BR")
       }
 
-      if (pos[x1,y1] == "WP" && x1 == 5 && (y2 == y1-1 || y2 == y1+1)) {
+      # check for en passent
+
+      if (identical(attr(pos, "ispp"), "b") && pos[x1,y1] == "WP" && x1 == 5 && attr(pos, "y1") == y2) {
          isenpassent <- "w"
          pos[5,y2] <- ""
+         .drawsquare(5, y2)
       }
-      if (pos[x1,y1] == "BP" && x1 == 4 && (y2 == y1-1 || y2 == y1+1)) {
+      if (identical(attr(pos, "ispp"), "w") && pos[x1,y1] == "BP" && x1 == 4 && attr(pos, "y1") == y2) {
          isenpassent <- "b"
          pos[4,y2] <- ""
+         .drawsquare(4, y2)
       }
 
    }
 
    .drawsquare(x1, y1)
    .drawsquare(x2, y2)
-
-   if (isenpassent == "w") {
-      if (flip) {
-         .drawsquare(4, y2)
-      } else {
-         .drawsquare(5, y2)
-      }
-   }
-   if (isenpassent == "b") {
-      if (flip) {
-         .drawsquare(5, y2)
-      } else {
-         .drawsquare(4, y2)
-      }
-   }
 
    if (flip) {
       .drawpiece(x2, y2, pos[9-x1,9-y1])
@@ -228,7 +238,9 @@
       }
    }
 
-   comment(pos) <- move
+   attr(pos, "move") <- move
+   attr(pos, "ispp") <- ispp
+   attr(pos, "y1") <- y1
    return(pos)
 
 }

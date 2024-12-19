@@ -934,6 +934,9 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                comment <- ""
                newdat$moves <- newdat$moves[numeric(0),]
                newdat$pos <- pos
+               attr(newdat$pos, "move") <- NULL
+               attr(newdat$pos, "ispp") <- NULL
+               attr(newdat$pos, "y1") <- NULL
                next
             }
 
@@ -1166,7 +1169,11 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
 
             # if in add mode or if the move is correct, make the move
 
-            pos <- .updateboard(pos, move=c(click1.x, click1.y, click2.x, click2.y), flip=flip, volume=volume, verbose=verbose)
+            if (mode == "add") {
+               pos <- .updateboard(pos, move=c(click1.x, click1.y, click2.x, click2.y), flip=flip, volume=volume, verbose=verbose)
+            } else {
+               pos <- .updateboard(pos, move=c(click1.x, click1.y, click2.x, click2.y), flip=flip, volume=volume, verbose=verbose)
+            }
 
             .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
 
@@ -1235,7 +1242,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
 
             # in add move, add the current move to newdat
 
-            newdat$moves <- rbind(newdat$moves, data.frame(x1=click1.x, y1=click1.y, x2=click2.x, y2=click2.y, show=show, move=comment(pos), comment=comment))
+            newdat$moves <- rbind(newdat$moves, data.frame(x1=click1.x, y1=click1.y, x2=click2.x, y2=click2.y, show=show, move=attr(pos,"move"), comment=comment))
             comment <- ""
 
          } else {
