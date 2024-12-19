@@ -95,6 +95,6 @@
    cex <- (8.5 - 1.5) / max(maxsw, maxsh) * 0.95
 
    text(1+0.5, seq(8.5, 1.5, length.out=length(txt)), txt, pos=4, cex=cex,
-        family=.get("font.mono"), font=ifelse(grepl(":", txt), 2, 1))
+        family=.get("font.mono"), font=ifelse(grepl(":", txt), 2, 1), col=.get("col.help"))
 
 }

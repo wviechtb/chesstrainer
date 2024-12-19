@@ -25,6 +25,7 @@
    assign("col.square.d",  "#b58863", envir=.chesstrainer)
    assign("col.texttop",   "#b09d7f", envir=.chesstrainer)
    assign("col.textbot",   "#b09d7f", envir=.chesstrainer)
+   assign("col.help",      "#b09d7f", envir=.chesstrainer)
    assign("col.border",    "#63462e", envir=.chesstrainer)
    assign("col.hint",      "yellow", envir=.chesstrainer)
    assign("col.wrong",     "red", envir=.chesstrainer)

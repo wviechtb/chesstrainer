@@ -397,6 +397,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                run.all <- FALSE
                run.rnd <- FALSE
                wait <- FALSE
+               .quit()
                dev.off()
                next
             }

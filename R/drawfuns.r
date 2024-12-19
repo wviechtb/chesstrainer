@@ -273,3 +273,18 @@
    }
 
 }
+
+.quit <- function() {
+
+   cols <- col2rgb(.get("col.bg"))
+
+   steps <- 50
+
+   for (i in 1:steps) {
+      rect(0, 0, 10, 10, col=rgb(cols[1], cols[2], cols[3], 60, maxColorValue=255), border=NA)
+      Sys.sleep(1/steps)
+   }
+
+   rect(0, 0, 10, 10, col=.get("col.bg"), border=NA)
+
+}
