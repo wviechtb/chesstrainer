@@ -381,7 +381,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
 
             click <- getGraphicsEvent(prompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
 
-            keys      <- c("q", " ", "n", "p", "e", "l", "-", "=", "+", "F1", "F2", "F3", "m", "/", ".", "w", "ctrl-R", "u", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033")
+            keys      <- c("q", " ", "n", "p", "e", "l", "-", "=", "+", "F1", "F2", "F3", "m", "/", ".", "w", "ctrl-R", "u", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "F12")
             keys.add  <- c("f", "z", "c", "s", "b", "0") #, "???")
             keys.play <- c("z", "c", "s", "\b", "ctrl-D", "h", "a", "Right", "o", "t")
 
@@ -1075,6 +1075,13 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                colnames(tab) <- ""
                print(tab, quote=FALSE, print.gap=3)
                if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+               next
+            }
+
+            # F12 to toggle verbose on/off
+
+            if (identical(click, "F12")) {
+               verbose <- !verbose
                next
             }
 

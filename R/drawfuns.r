@@ -109,12 +109,12 @@
 
       # check for en passent
 
-      if (identical(attr(pos, "ispp"), "b") && pos[9-x1,9-y1] == "WP" && x1 == 4 && (y2 == y1-1 && attr(pos, "y1") == y1-1) || (y2 == y1+1) && attr(pos, "y1") == y1+1) {
+      if (identical(attr(pos, "ispp"), "b") && pos[9-x1,9-y1] == "WP" && x1 == 4 && attr(pos, "y1") == y2) {
          isenpassent <- "w"
          pos[4,y2] <- ""
          .drawsquare(4, y2)
       }
-      if (identical(attr(pos, "ispp"), "w") && pos[9-x1,9-y1] == "BP" && x1 == 5 && (y2 == y1-1 && attr(pos, "y1") == y1-1) || (y2 == y1+1) && attr(pos, "y1") == y1+1) {
+      if (identical(attr(pos, "ispp"), "w") && pos[9-x1,9-y1] == "BP" && x1 == 5 && attr(pos, "y1") == y2) {
          isenpassent <- "b"
          pos[5,y2] <- ""
          .drawsquare(5, y2)
