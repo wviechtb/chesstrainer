@@ -35,23 +35,24 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
       if (file.exists(file.path(configdir, "settings.rds"))) {
          # apply settings, but only for those that are equal to their defaults
          settings <- readRDS(file.path(configdir, "settings.rds"))
-         if (player == "")
+         mc <- as.list(match.call())
+         if (is.null(mc$player))
             player <- settings$player
-         if (mode == "add")
+         if (is.null(mc$mode))
             mode <- settings$mode
-         if (sleep == 0.5)
+         if (is.null(mc$sleep))
             sleep <- settings$sleep
-         if (volume == 0.5)
+         if (is.null(mc$volume))
             volume <- settings$volume
-         if (lwd == 2)
+         if (is.null(mc$lwd))
             lwd <- settings$lwd
-         if (expval == 2)
+         if (is.null(mc$expval))
             expval <- settings$expval
-         if (pause)
+         if (is.null(mc$pause))
             pause <- settings$pause
-         if (lang == "en")
+         if (is.null(mc$lang))
             lang <- settings$lang
-         if (random)
+         if (is.null(mc$random))
             random <- settings$random
          settings <- data.frame(player, mode, sleep, volume, lwd, expval, pause, lang, random)
          saveRDS(settings, file=file.path(configdir, "settings.rds"))
@@ -196,7 +197,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
          # set up the data frame for a new sequence
 
          newdat <- list(flip=flip, score=setNames(100, player), played=setNames(0, player),
-                        moves=data.frame(x1=numeric(), y1=numeric(), x2=numeric(), y2=numeric(), show=logical(), comment=character()))
+                        moves=data.frame(x1=numeric(), y1=numeric(), x2=numeric(), y2=numeric(), show=logical(), move=character(), comment=character()))
 
       } else {
 
@@ -1166,6 +1167,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
             # if in add mode or if the move is correct, make the move
 
             pos <- .updateboard(pos, move=c(click1.x, click1.y, click2.x, click2.y), flip=flip, volume=volume, verbose=verbose)
+
             .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
 
          } else {
@@ -1231,9 +1233,9 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
 
          if (mode == "add") {
 
-            # in add move, add current move to newdat
+            # in add move, add the current move to newdat
 
-            newdat$moves <- rbind(newdat$moves, data.frame(x1=click1.x, y1=click1.y, x2=click2.x, y2=click2.y, show=show, comment=comment))
+            newdat$moves <- rbind(newdat$moves, data.frame(x1=click1.x, y1=click1.y, x2=click2.x, y2=click2.y, show=show, move=comment(pos), comment=comment))
             comment <- ""
 
          } else {

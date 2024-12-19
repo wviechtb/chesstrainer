@@ -191,20 +191,22 @@
       pos[x1,y1] <- ""
    }
 
-   if (verbose) {
-      if (flip) {
-         if (identical(isrochade, "")) {
-            cat("Move: ", piece1, letters[9-y1], 9-x1, ifelse(iscapture, "x", "-"), piece2, letters[9-y2], 9-x2, "\n\n", sep="")
-         } else {
-            cat("Move: ", isrochade, "\n\n", sep="")
-         }
+   if (flip) {
+      if (identical(isrochade, "")) {
+         move <- paste0(piece1, letters[9-y1], 9-x1, ifelse(iscapture, "x", "-"), piece2, letters[9-y2], 9-x2)
       } else {
-         if (identical(isrochade, "")) {
-            cat("Move: ", piece1, letters[y1], x1, ifelse(iscapture, "x", "-"), piece2, letters[y2], x2, "\n\n", sep="")
-         } else {
-            cat("Move: ", isrochade, "\n\n", sep="")
-         }
+         move <- isrochade
       }
+   } else {
+      if (identical(isrochade, "")) {
+         move <- paste0(piece1, letters[y1], x1, ifelse(iscapture, "x", "-"), piece2, letters[y2], x2)
+      } else {
+         move <- isrochade
+      }
+   }
+
+   if (verbose) {
+      cat("Move: ", move, "\n\n", sep="")
       printpos <- pos
       printpos[printpos == ""] <- "."
       printpos[printpos == "WP"] <- "\U000265F"
@@ -226,6 +228,7 @@
       }
    }
 
+   comment(pos) <- move
    return(pos)
 
 }
@@ -281,10 +284,10 @@
    steps <- 50
 
    for (i in 1:steps) {
-      rect(0, 0, 10, 10, col=rgb(cols[1], cols[2], cols[3], 60, maxColorValue=255), border=NA)
+      rect(-1, -1, 11, 11, col=rgb(cols[1], cols[2], cols[3], 60, maxColorValue=255), border=NA)
       Sys.sleep(1/steps)
    }
 
-   rect(0, 0, 10, 10, col=.get("col.bg"), border=NA)
+   rect(-1, -1, 11, 11, col=.get("col.bg"), border=NA)
 
 }
