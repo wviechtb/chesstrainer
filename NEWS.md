@@ -1,4 +1,4 @@
-# chesstrainer 0.2-0 (2024-12-18)
+# chesstrainer 0.2-0 (2024-12-19)
 
 - changed `<r>` key to `<Ctrl-r>` and `<d>` key to `<Ctrl-d>`
 - added `<r>` key (and `random` argument) to toggle between random/sequential mode

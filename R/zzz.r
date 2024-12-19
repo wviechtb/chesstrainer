@@ -27,7 +27,7 @@
    assign("col.textbot",   "#b09d7f", envir=.chesstrainer)
    assign("col.hint",      "yellow", envir=.chesstrainer)
    assign("col.wrong",     "red", envir=.chesstrainer)
-   assign("col.selected",  "darkseagreen4", envir=.chesstrainer)
+   assign("col.rect",      "darkseagreen4", envir=.chesstrainer)
    assign("col.annot",     rgb(0,0.5,0,0.5), envir=.chesstrainer)
 
    # set fonts and sizes

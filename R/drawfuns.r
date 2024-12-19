@@ -5,7 +5,7 @@
    }
 }
 
-.drawboard <- function(pos, flip=FALSE, newplot=TRUE) {
+.drawboard <- function(pos, flip=FALSE) {
 
    bg <- .get("col.bg")
    fg <- .get("col.fg")
@@ -13,26 +13,22 @@
    if (dev.cur() == 1L)
       dev.new(bg=bg)
 
-   if (newplot) {
+   par(xpd=NA, pty="s", mar=rep(5,4)+0.2, fg=.get("col.fg"), bg=.get("col.bg"))
 
-      par(xpd=NA, pty="s", mar=rep(5,4)+0.2, fg=.get("col.fg"), bg=.get("col.bg"))
+   mat <- outer(1:8, 1:8, function(x,y) .is.even(x+y))
 
-      mat <- outer(1:8, 1:8, function(x,y) .is.even(x+y))
+   image(1:8+0.5, 1:8+0.5, col=c(.get("col.square.l"), .get("col.square.d")), mat, xaxs="i", yaxs="i", xlab="", ylab="", xaxt="n", yaxt="n", bty="n", useRaster=TRUE)
 
-      image(1:8+0.5, 1:8+0.5, col=c(.get("col.square.l"), .get("col.square.d")), mat, xaxs="i", yaxs="i", xlab="", ylab="", xaxt="n", yaxt="n", bty="n", useRaster=TRUE)
-
-      if (flip) {
-         par(mgp=c(3,0.5,0))
-         axis(side=1, 1:8+0.5, rev(LETTERS[1:8]), las=1, tick=FALSE, col.axis=fg)
-         par(mgp=c(3,0.8,0))
-         axis(side=2, 1:8+0.5, rev(1:8),          las=1, tick=FALSE, col.axis=fg)
-      } else {
-         par(mgp=c(3,0.5,0))
-         axis(side=1, 1:8+0.5, LETTERS[1:8],      las=1, tick=FALSE, col.axis=fg)
-         par(mgp=c(3,0.8,0))
-         axis(side=2, 1:8+0.5, 1:8,               las=1, tick=FALSE, col.axis=fg)
-      }
-
+   if (flip) {
+      par(mgp=c(3,0.5,0))
+      axis(side=1, 1:8+0.5, rev(LETTERS[1:8]), las=1, tick=FALSE, col.axis=fg)
+      par(mgp=c(3,0.8,0))
+      axis(side=2, 1:8+0.5, rev(1:8),          las=1, tick=FALSE, col.axis=fg)
+   } else {
+      par(mgp=c(3,0.5,0))
+      axis(side=1, 1:8+0.5, LETTERS[1:8],      las=1, tick=FALSE, col.axis=fg)
+      par(mgp=c(3,0.8,0))
+      axis(side=2, 1:8+0.5, 1:8,               las=1, tick=FALSE, col.axis=fg)
    }
 
    if (flip) {

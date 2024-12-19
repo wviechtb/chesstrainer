@@ -99,7 +99,7 @@
    \item With the \code{<i>} key, the language of the trainer can be toggled between English and German (author note: I wrote this trainer in part for my chess playing kids, which is the reason why a German translation is available).
    }
 
-   The settings are automatically stored in a file called \code{settings.rds} at \code{tools::R_user_dir(package="chesstrainer", which="config")} and are read in when starting the trainer.
+   The settings are automatically stored in a file called \code{settings.rds} at \code{tools::R_user_dir(package="chesstrainer", which="config")} and are read in when starting the trainer. The current settings can be shown with \code{<F3>}.
 
 }
 \section{Backing Up Sequences}{

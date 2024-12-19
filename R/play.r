@@ -55,6 +55,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
             random <- settings$random
          settings <- data.frame(player, mode, sleep, volume, lwd, expval, pause, lang, random)
          saveRDS(settings, file=file.path(configdir, "settings.rds"))
+         assign("lang", lang, envir=.chesstrainer)
       } else {
          settings <- data.frame(player, mode, sleep, volume, lwd, expval, pause, lang, random)
          saveRDS(settings, file=file.path(configdir, "settings.rds"))
@@ -107,8 +108,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
 
    # some defaults
 
-   selected <- TRUE
-   flip <- FALSE
+   selected <- list.files(seqdir, pattern=".rds$")
    oldvolume <- volume
    seqno <- 1
 
@@ -136,10 +136,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
       circles <- matrix(c(0,0), nrow=1, ncol=2)
       scoreadd <- 0
 
-      # load all sequences into 'dat'
-
-      files <- list.files(seqdir, pattern=".rds$")
-      dat <- lapply(file.path(seqdir, files), readRDS)
+      # select a player if no player is currently selected
 
       if (player == "") {
          player <- .selectplayer(player, seqdir, mustselect=TRUE)
@@ -147,7 +144,11 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
          saveRDS(settings, file=file.path(configdir, "settings.rds"))
       }
 
-      files.all <- files
+      # load all sequences into 'dat.all'
+
+      files.all <- list.files(seqdir, pattern=".rds$")
+      dat.all <- lapply(file.path(seqdir, files.all), readRDS)
+
       k.all <- length(files.all)
 
       if (mode == "play" && k.all == 0L) {
@@ -155,21 +156,33 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
          mode <- "add"
       }
 
-      scores.all <- sapply(dat, function(x) x$score[player])
+      scores.all <- sapply(dat.all, function(x) x$score[player])
       scores.all[is.na(scores.all) | .is.null(scores.all)] <- 100
       scores.all <- unname(unlist(scores.all))
-      played.all <- sapply(dat, function(x) x$played[player])
+      played.all <- sapply(dat.all, function(x) x$played[player])
       played.all[is.na(played.all) | .is.null(played.all)] <- 0
       played.all <- unname(unlist(played.all))
 
-      # apply selection of sequences
+      # apply selection to sequences
 
-      if (any(!selected)) {
-         files <- files.all[selected]
-         dat <- dat[selected]
-      }
+      files <- files.all[files.all %in% selected]
+      dat <- dat.all[files.all %in% selected]
 
       k <- length(files)
+
+      scores.selected <- sapply(dat, function(x) x$score[player])
+      scores.selected[is.na(scores.selected) | .is.null(scores.selected)] <- 100
+      scores.selected <- unname(unlist(scores.selected))
+      played.selected <- sapply(dat, function(x) x$played[player])
+      played.selected[is.na(played.selected) | .is.null(played.selected)] <- 0
+      played.selected <- unname(unlist(played.selected))
+
+      if (all(scores.selected == 0)) # in case all sequences have a score of 0
+         scores.selected <- rep(1, length(scores.selected))
+
+      probvals.selected <- scores.selected^expval
+      probvals.selected[scores.selected == 0] <- 0 # in case of 0^0
+      probvals.selected <- 100 * probvals.selected / sum(probvals.selected)
 
       if (mode == "add") {
 
@@ -182,17 +195,8 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
 
          # select a sequence
 
-         scores <- sapply(dat, function(x) x$score[player])
-         scores[is.na(scores) | .is.null(scores)] <- 100
-         scores <- unname(unlist(scores))
-
-         if (all(scores == 0)) # in case all sequences have a score of 0
-            scores <- rep(1, length(scores))
-
          if (random) {
-            probvals <- scores^expval
-            probvals[scores == 0] <- 0 # in case of 0^0
-            sel <- sample(seq_len(k), 1L, prob=probvals)
+            sel <- sample(seq_len(k), 1L, prob=probvals.selected)
          } else {
             sel <- seqno
             seqno <- seqno + 1
@@ -202,7 +206,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
 
          sub <- dat[[sel]]
 
-         # overwrite defaults
+         # overwrite defaults based on the current sequence
 
          seqname <- files[sel]
          if (is.null(sub$score))
@@ -315,7 +319,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                }
                empty.square <<- FALSE
                if (identical(buttons, 0L))
-                  .addrect(pos.x, pos.y, col=.get("col.selected"), lwd=lwd)
+                  .addrect(pos.x, pos.y, col=.get("col.rect"), lwd=lwd)
                return(NULL)
             }
 
@@ -327,7 +331,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                   pos.x <- squares[1]
                   pos.y <- squares[2]
 
-                  .addrect(pos.x, pos.y, col=.get("col.selected"), lwd=lwd)
+                  .addrect(pos.x, pos.y, col=.get("col.rect"), lwd=lwd)
 
                   if (isTRUE(pos.x != click2.x) || isTRUE(pos.y != click2.y))
                      .rmrect(click2.x, click2.y, lwd=lwd)
@@ -502,7 +506,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
 
             if (mode == "add" && identical(click, "s")) {
                .texttop(.text("saveseq"))
-               seqident <- sapply(dat, function(x) identical(newdat$moves[1:5], x$moves[1:5]))
+               seqident <- sapply(dat.all, function(x) identical(newdat$moves[1:5], x$moves[1:5]))
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
                if (any(seqident)) {
                   cat(.text("seqexists", files.all[which(seqident)[1]]))
@@ -551,24 +555,13 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
             # l to list all (selected) sequences
 
             if (identical(click, "l")) {
-               tmp <- lapply(file.path(seqdir, files), readRDS)
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
-               if (length(tmp) > 0L) {
-                  tmp.scores <- unname(sapply(tmp, function(x) x$score[player]))
-                  tmp.scores[is.na(tmp.scores) | .is.null(tmp.scores)] <- 100
-                  tmp.scores <- unname(unlist(tmp.scores))
-                  tmp.played <- unname(sapply(tmp, function(x) x$played[player]))
-                  tmp.played[is.na(tmp.played) | .is.null(tmp.played)] <- 0
-                  tmp.played <- unname(unlist(tmp.played))
-                  tmp.probvals <- tmp.scores^expval
-                  tmp.probvals[tmp.scores == 0] <- 0 # in case of 0^0
-                  tmp.probvals <- round(100 * tmp.probvals / sum(tmp.probvals), digits=1)
-                  tmp <- data.frame(files, tmp.played, tmp.scores, tmp.probvals)
+               if (k > 0L) {
+                  tmp <- data.frame(files, played.selected, scores.selected, formatC(probvals.selected, format="f", digits=1))
                   names(tmp) <- c("Name", .text("played"), .text("score"), .text("prob"))
                   tmp$Name <- format(tmp$Name, justify="left")
                   names(tmp)[1] <- ""
-                  if (any(!selected))
-                     rownames(tmp) <- which(selected)
+                  rownames(tmp) <- which(files.all %in% selected)
                   print(tmp, print.gap=2)
                } else {
                   cat(.text("zeroseqsfound"))
@@ -580,7 +573,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
             # F2 to get leaderboard and player statistics
 
             if (identical(click, "F2")) {
-               tmp <- lapply(file.path(seqdir, files), readRDS)
+               tmp <- lapply(file.path(seqdir, files.all), readRDS)
                tmp.scores <- lapply(tmp, function(x) x$score)
                players <- unique(unlist(lapply(tmp.scores, function(x) names(x))))
                nplayers <- length(players)
@@ -692,7 +685,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                next
             }
 
-            # [] to decrease/increase volume
+            # [] to decrease/increase the volume
 
             if (identical(click, "[")) {
                volume <- max(0, volume - 0.25)
@@ -725,7 +718,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
 
                if (identical(searchterm , "")) {
                   cat(.text("allseqselected"))
-                  selected <- TRUE
+                  selected <- list.files(seqdir, pattern=".rds$")
                   run.rnd <- FALSE
                   wait <- FALSE
                   mode <- "add"
@@ -741,8 +734,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                      cat(.text("noseqsfound"))
                   } else {
                      cat(.text("selseq12", c(tmp$seq.lo, tmp$seq.hi)))
-                     selected <- rep(FALSE, k.all)
-                     selected[tmp$seq.lo:tmp$seq.hi] <- TRUE
+                     selected <- list.files(seqdir, pattern=".rds$")[tmp$seq.lo:tmp$seq.hi]
                      run.rnd <- FALSE
                      wait <- FALSE
                      mode <- "add"
@@ -758,8 +750,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                      cat(.text("noseqfound"))
                   } else {
                      cat(.text("selseq", seqno))
-                     selected <- rep(FALSE, k.all)
-                     selected[seqno] <- TRUE
+                     selected <- list.files(seqdir, pattern=".rds$")[seqno]
                      run.rnd <- FALSE
                      wait <- FALSE
                      mode <- "add"
@@ -774,10 +765,11 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                if (!is.na(tmp$cutoff)) {
                   cat(.text("selseqscore", list(tmp$sign, tmp$cutoff)))
                   selected <- eval(parse(text = paste("scores.all", tmp$sign, tmp$cutoff)))
-                  if (all(!selected)) {
+                  selected <- list.files(seqdir, pattern=".rds$")[selected]
+                  if (length(selected) == 0L) {
                      cat(.text("noseqsfound"))
                   } else {
-                     cat(.text("numseqfound", sum(selected)))
+                     cat(.text("numseqfound", length(selected)))
                      run.rnd <- FALSE
                      wait <- FALSE
                      mode <- "add"
@@ -794,10 +786,11 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                   cutoff <- as.numeric(strsplit(searchterm, sign)[[1]][2])
                   cat(.text("selseqplayed", list(tmp$sign, cutoff)))
                   selected <- eval(parse(text = paste("played.all", tmp$sign, tmp$cutoff)))
-                  if (all(!selected)) {
+                  selected <- list.files(seqdir, pattern=".rds$")[selected]
+                  if (length(selected) == 0L) {
                      cat(.text("noseqsfound"))
                   } else {
-                     cat(.text("numseqfound", sum(selected)))
+                     cat(.text("numseqfound", length(selected)))
                      run.rnd <- FALSE
                      wait <- FALSE
                      mode <- "add"
@@ -808,11 +801,13 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                }
 
                cat(.text("seqsearchterm", searchterm))
+
                if (length(grep(searchterm, files.all)) == 0L) {
                   cat(.text("noseqsfound"))
                } else {
                   selected <- grepl(searchterm, files.all)
-                  cat(.text("numseqfound", sum(selected)))
+                  selected <- list.files(seqdir, pattern=".rds$")[selected]
+                  cat(.text("numseqfound", length(selected)))
                   run.rnd <- FALSE
                   wait <- FALSE
                   mode <- "add"
@@ -830,7 +825,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
                newscore <- readline(prompt=.text("newscore", score))
                if (grepl("^[0-9]+$", newscore)) {
-                  newscore <- as.numeric(newscore)
+                  newscore <- round(as.numeric(newscore))
                   newscore[newscore < 0] <- 0
                   cat(.text("setnewscore", newscore))
                   sub$score[player] <- newscore
@@ -905,7 +900,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                   } else {
                      pos <- newdat$pos
                   }
-                  .drawboard(pos, flip=flip, newplot=TRUE)
+                  .drawboard(pos, flip=flip)
                   hasarrows <- FALSE
                   circles <- matrix(c(0,0), nrow=1, ncol=2)
                   i <- i - 1
@@ -976,6 +971,8 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                      expval <- newexpval
                      settings$expval <- expval
                      saveRDS(settings, file=file.path(configdir, "settings.rds"))
+                     run.rnd <- FALSE
+                     wait <- FALSE
                   }
                }
                if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
@@ -1019,7 +1016,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                next
             }
 
-            # (/) to decrease/increase the lwd value
+            # (/) to decrease/increase the line width value
 
             if (identical(click, "(")) {
                lwd <- max(1, lwd - 1)
@@ -1050,7 +1047,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
             #   next
             #}
 
-            # F1 to print help
+            # F1 to print the help
 
             if (identical(click, "F1")) {
                .printhelp(...)
@@ -1064,7 +1061,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
                tab <- t(settings)
                colnames(tab) <- ""
-               print(tab, quote=FALSE)
+               print(tab, quote=FALSE, print.gap=3)
                if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
                next
             }
@@ -1114,6 +1111,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                } else {
 
                   # if other buttons were pressed, clear arrows/circles (if there are any)
+
                   if (hasarrows || nrow(circles) >= 2L) {
                      .drawboard(pos, flip=flip)
                      hasarrows <- FALSE
@@ -1135,28 +1133,36 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
          if (!run.rnd)
             next # jumps to [b] but since run.rnd is FALSE then jumps to [a]
 
+         # start and end positions of the mouse move are not the same
+
+         # if button 2 was used for the move, draw an arrow and go back to [b]
+
          if (identical(button, 2)) {
             shape::Arrows(click1.y+0.5, click1.x+0.5, click2.y+0.5, click2.x+0.5, lwd=lwd*4, col=.get("col.annot"), arr.type="triangle", arr.length=lwd*0.1, arr.width=lwd*0.1, ljoin=1)
             hasarrows <- TRUE
             next
          }
 
+         # if button 0 was used for the move and there are arrows/circles, redraw the board before making the move
+
          if (identical(button, 0) && (hasarrows || nrow(circles) >= 2L)) {
             .drawboard(pos, flip=flip)
             hasarrows <- FALSE
             circles <- matrix(c(0,0), nrow=1, ncol=2)
+            if (mode == "add")
+               .drawsideindicator(i, flip)
          }
 
          if (mode == "add" || all(c(click1.x==sub$moves$x1[i], click1.y==sub$moves$y1[i], click2.x==sub$moves$x2[i], click2.y==sub$moves$y2[i]))) {
 
-            if (mode == "add") {
-               pos <- .updateboard(pos, move=c(click1.x, click1.y, click2.x, click2.y), flip=flip, volume=volume, verbose=verbose)
-            } else {
-               pos <- .updateboard(pos, move=c(click1.x, click1.y, click2.x, click2.y), flip=flip, volume=volume, verbose=verbose)
-            }
+            # if in add mode or if the move is correct, make the move
+
+            pos <- .updateboard(pos, move=c(click1.x, click1.y, click2.x, click2.y), flip=flip, volume=volume, verbose=verbose)
             .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
 
          } else {
+
+            # if in play mode and the move was incorrect, adjust the score, and show that it was the wrong move
 
             if (score >= 1) {
                scoreadd <- min(50, 100-score)
@@ -1173,6 +1179,8 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
          }
 
          if (mode == "play" && i == nrow(sub$moves)) {
+
+            # end of the sequence in play mode
 
             .texttop(.text("welldone"))
             playsound(system.file("sounds", "complete.ogg", package="chesstrainer"), volume=volume)
@@ -1197,7 +1205,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
 
             }
 
-            # plot(0:25, 100 * 0.80^(0:25), type="o", pch=19, xlab="Played Correctly", ylab="Score", bty="l", ylim=c(0,100))
+            # adjust the score
 
             if (score >= 1)
                sub$score[player] <- ceiling(score * 0.80)
@@ -1207,27 +1215,36 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
             run.rnd <- FALSE
             next
 
-         }
+            # plot(0:25, 100 * 0.80^(0:25), type="o", pch=19, xlab="Played Correctly", ylab="Score", bty="l", ylim=c(0,100))
 
-         if (mode == "add") {
-            newdat$moves <- rbind(newdat$moves, data.frame(x1=click1.x, y1=click1.y, x2=click2.x, y2=click2.y, show=show, comment=comment))
-            comment <- ""
          }
 
          i <- i + 1
 
-         if (mode == "play") {
+         if (mode == "add") {
+
+            # in add move, add current move to newdat
+
+            newdat$moves <- rbind(newdat$moves, data.frame(x1=click1.x, y1=click1.y, x2=click2.x, y2=click2.y, show=show, comment=comment))
+            comment <- ""
+
+         } else {
+
+            # in play mode, let the trainer play the next move and increase i
+
             texttop <- .texttop(sub$moves$comment[i])
             .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
             Sys.sleep(sleep)
             pos <- .updateboard(pos, move=sub$moves[i,1:4], flip=flip, volume=volume, verbose=verbose)
             texttop <- .texttop(sub$moves$comment[i])
             i <- i + 1
+
          }
 
          .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
-
          hintval <- 0
+
+         # go to [b]
 
       }
 
