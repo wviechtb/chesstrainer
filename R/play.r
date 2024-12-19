@@ -86,6 +86,13 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
    if (file.access(seqdir, mode=2L) != 0L)
       stop(.text("nowriteaccess"), call.=FALSE)
 
+   # .random/.sequential files in sequence directory override random setting
+
+   if (file.exists(file.path(seqdir, ".sequential")))
+      random <- FALSE
+   if (file.exists(file.path(seqdir, ".random")))
+      random <- TRUE
+
    # create starting position matrix 'pos'
 
    pos <- matrix("", 8, 8)
@@ -373,7 +380,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
 
             click <- getGraphicsEvent(prompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
 
-            keys      <- c("q", " ", "n", "p", "e", "l", "-", "=", "+", "F1", "F2", "F3", "m", "/", ".", "w", "ctrl-R", "u", "^", "[", "]", "i", "r", "(", ")")
+            keys      <- c("q", " ", "n", "p", "e", "l", "-", "=", "+", "F1", "F2", "F3", "m", "/", ".", "w", "ctrl-R", "u", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033")
             keys.add  <- c("f", "z", "c", "s", "b", "0") #, "???")
             keys.play <- c("z", "c", "s", "\b", "ctrl-D", "h", "a", "Right", "o", "t")
 
@@ -614,7 +621,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
 
             # ctrl-d to delete the current sequence (only in play mode)
 
-            if (mode == "play" && identical(click, "Ctrl-D")) {
+            if (mode == "play" && identical(click, "ctrl-D")) {
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
                answer <- readline(prompt=.text("rlydelseq"))
                if (identical(answer, "j")) {
@@ -943,9 +950,9 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                next
             }
 
-            # u to update board
+            # u (and Escape) to update board
 
-            if (identical(click, "u")) {
+            if (identical(click, "u") || identical(click, "\033") || identical(click, "ctrl-[")) {
                .drawboard(pos, flip=flip)
                hasarrows <- FALSE
                circles <- matrix(c(0,0), nrow=1, ncol=2)
@@ -1050,7 +1057,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
             # F1 to print the help
 
             if (identical(click, "F1")) {
-               .printhelp(...)
+               .printhelp(lwd=lwd)
                next
             }
 
