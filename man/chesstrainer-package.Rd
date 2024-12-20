@@ -65,6 +65,8 @@
 
    The \code{<e>} key opens up the \code{\link[=edit]{data editor}} on the data frame that contains the moves for the current sequence. This is most useful for adding or removing comments in the \code{comment} column. Making adjustments to the other columns should only be done if their meaning is clear.
 
+   With the \code{<?>} key, one can find all sequences that start in the same way as the moves that have been entered so far. If any matching sequences are found, a prompt will ask if they should be selected.
+
    In \sQuote{play} mode, the \code{<a>} key will create a copy of the current sequence, which can then be extended with additional moves and saved as a new sequence. This is useful for creating multiple branching lines from a given sequence.
 
    Note that sequences are quite personalized, since they involve going into a particular line that one deems most appropriate. Others may disagree and prefer a different line. Therefore, you should create sequences that you want to train yourself on, so you will be able to play them quickly from memory.

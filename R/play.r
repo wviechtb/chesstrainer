@@ -419,7 +419,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
             click <- getGraphicsEvent(prompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
 
             keys      <- c("q", " ", "n", "p", "e", "l", "-", "=", "+", "F1", "F2", "F3", "m", "/", ".", "w", "ctrl-R", "u", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "F12", "F4", "F5")
-            keys.add  <- c("f", "z", "c", "s", "b", "0") #, "???")
+            keys.add  <- c("f", "z", "c", "s", "b", "0", "?") #, "???")
             keys.play <- c("z", "c", "s", "\b", "ctrl-D", "h", "a", "Right", "o", "t")
 
             if (mode == "add" && is.character(click) && !is.element(click, c(keys, keys.add)))
@@ -577,6 +577,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
                   playsound(system.file("sounds", "complete.ogg", package="chesstrainer"), volume=volume)
                   run.rnd <- FALSE
                   wait <- FALSE
+                  seqno <- 1
                }
                if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
                next
@@ -619,7 +620,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
             if (mode == "play" && identical(click, "ctrl-D")) {
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
                answer <- readline(prompt=.text("rlydelseq"))
-               if (identical(answer, "j")) {
+               if (.confirm(answer)) {
                   cat(.text("delseq"))
                   file.remove(file.path(seqdir, seqname))
                   run.rnd <- FALSE
@@ -821,6 +822,34 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
 
             }
 
+            # ? to find all sequences that start in the same way (only in add mode)
+
+            if (mode == "add" && identical(click, "?")) {
+               seqident <- sapply(dat.all, function(x) identical(newdat$moves[1:(i-1),1:4], x$moves[1:(i-1),1:4]))
+               if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
+               if (any(seqident)) {
+                  cat(.text("seqsmatch"))
+                  tmp <- data.frame(Name=files.all[seqident])
+                  tmp$Name <- format(tmp$Name, justify="left")
+                  names(tmp)[1] <- ""
+                  rownames(tmp) <- which(seqident)
+                  print(tmp, print.gap=2)
+                  cat("\n")
+                  selmatches <- readline(prompt=.text("selmatches"))
+                  if (identical(selmatches, "") || .confirm(selmatches)) {
+                     cat(.text("selmatchesconfirm"))
+                     selected <- files.all[seqident]
+                     run.rnd <- FALSE
+                     wait <- FALSE
+                     seqno <- 1
+                  }
+               } else {
+                  cat(.text("noseqsfound"))
+               }
+               if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+               next
+            }
+
             # o to edit the score for the current sequence (only in play mode)
 
             if (mode == "play" && identical(click, "o")) {
@@ -832,8 +861,6 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
                   cat(.text("setnewscore", newscore))
                   sub$score[player] <- newscore
                   saveRDS(sub, file=file.path(seqdir, seqname))
-                  run.rnd <- FALSE
-                  wait <- FALSE
                }
                if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
                next

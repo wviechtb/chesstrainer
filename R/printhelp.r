@@ -42,7 +42,8 @@
       "c       - add a comment to the current move",
       "0       - make the current position the starting position",
       "b       - take back move",
-      "s       - save the sequence"
+      "s       - save the sequence",
+      "?       - find all sequences that start in the same way"
       )
 
    }
@@ -87,7 +88,8 @@
       "c       - Kommentar zum aktuellen Zug hinzuf\U000000FCgen",
       "0       - aktuelle Position zur Ausgangsposition machen",
       "b       - Zug zur\U000000FCcknehmen",
-      "s       - Sequenz abspeichern"
+      "s       - Sequenz abspeichern",
+      "?       - alle Sequenzen mit dem gleichen Anfang finden"
       )
 
    }

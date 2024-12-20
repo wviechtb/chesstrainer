@@ -272,6 +272,24 @@
                          paste0("Searching for sequences with string '", arg, "' ...\n")
    ))}
 
+   if (x == "seqsmatch") {
+      return(switch(lang,
+                    de = "Sequenzen mit dem gleichen Anfang: \n",
+                         "Sequences with the same beginning: \n"
+   ))}
+
+   if (x == "selmatches") {
+      return(switch(lang,
+                    de = "Diese Sequenzen selektieren? (J/n): ",
+                         "Select these sequences? (Y/n): "
+   ))}
+
+   if (x == "selmatchesconfirm") {
+      return(switch(lang,
+                    de = "Sequenzen selektiert.\n",
+                         "Sequences selected.\n"
+   ))}
+
    if (x == "waittime") {
       return(switch(lang,
                     de = paste0("Zeit zwischen den Z\U000000FCgen: ", arg),
@@ -411,6 +429,8 @@
 .confirm <- function(x) {
 
    lang <- .get("lang")
+
+   x <- tolower(x)
 
    if (lang == "en")
       return(identical(x, "y"))

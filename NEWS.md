@@ -9,6 +9,7 @@
 - moves in long algebraic notation are added to the sequence files
 - colors can be adjusted and are stored across sessions
 - text sizes for text at the top and bottom can be adjusted and are stored across sessions
+- added `<?>` key to find all sequences that start in the same way as the moves that have been entered so far
 
 # chesstrainer 0.1-0 (2024-12-17)
 
