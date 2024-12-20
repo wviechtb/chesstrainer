@@ -8,6 +8,7 @@
 - help opens up in the plot, not in the console
 - moves in long algebraic notation added to the sequence files
 - colors can be adjusted and are stored across sessions
+- text sizes for text at the top and bottom can be adjusted and are stored across sessions
 
 # chesstrainer 0.1-0 (2024-12-17)
 

@@ -386,6 +386,26 @@
                          paste0("Enter color (current value is '", arg, "'): ")
    ))}
 
+
+
+   if (x == "cexcurrent") {
+      return(switch(lang,
+                    de = "Aktuelle Einstellungen:\n",
+                         "Current settings:\n"
+   ))}
+
+   if (x == "cexwhich") {
+      return(switch(lang,
+                    de = "Gr\U000000F6\U000000DFe \U000000E4ndern (<Zahl> w\U000000E4hlen oder <Enter> zum Verlassen): ",
+                         "Change size (choose a <number> or <enter> to quit): "
+   ))}
+
+   if (x == "cexval") {
+      return(switch(lang,
+                    de = paste0("Gr\U000000F6\U000000DFe eingeben (jetztiger Wert ist ", arg, "): "),
+                         paste0("Enter size (current value is ", arg, "): ")
+   ))}
+
 }
 
 .confirm <- function(x) {

@@ -1,7 +1,7 @@
 .is.even <- function(x) x %% 2 == 0
 
 .get <- function(x)
-   get(x, envir=.chesstrainer)
+   get(x, envir=.chesstrainer)[[1]]
 
 .is.null <- function(x) {
 
@@ -40,6 +40,8 @@
          if (colno < 1 || colno > nrow(tab))
             next
          col <- readline(prompt=.text("colval", tab[colno,2]))
+         if (identical(col, ""))
+            next
          assign(tab[colno,1], col, envir=.chesstrainer)
          .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop="Lorem ipsum")
          .addrect(4, 5, col=.get("col.hint"), lwd=lwd)
@@ -48,6 +50,40 @@
          .addcircle(4, 6, lwd=lwd)
          .drawsideindicator(i, flip)
          .drawsideindicator(i+1, flip, clear=FALSE)
+      }
+   }
+
+   invisible()
+
+}
+
+.cexpick <- function(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, lwd) {
+
+   cat(.text("cexcurrent"))
+
+   tab <- data.frame(cex = c("cex.top", "cex.bot"),
+                     val = c(.get("cex.top"), .get("cex.bot")))
+   names(tab) <- c("", "")
+   print(tab, right=FALSE, print.gap=3)
+
+   cat("\n")
+
+   .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop="Lorem ipsum")
+
+   while (TRUE) {
+      resp <- readline(prompt=.text("cexwhich"))
+      if (identical(resp, ""))
+         break
+      if (grepl("^[0-9]+$", resp)) {
+         cexno <- round(as.numeric(resp))
+         if (cexno < 1 || cexno > nrow(tab))
+            next
+         cex <- readline(prompt=.text("cexval", tab[cexno,2]))
+         if (identical(cex, ""))
+            next
+         cex <- as.numeric(cex)
+         assign(tab[cexno,1], cex, envir=.chesstrainer)
+         .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop="Lorem ipsum")
       }
    }
 

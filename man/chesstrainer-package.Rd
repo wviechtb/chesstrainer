@@ -103,6 +103,8 @@
 
    With \code{<F4>}, one can adjust the colors. The colors are automatically stored in a file called \code{colors.rds} at \code{tools::R_user_dir(package="chesstrainer", which="config")} and are read in when starting the trainer.
 
+   With \code{<F5>}, one can adjust the size of the text at the top and the bottom. The text sizes are automatically stored in \code{settings.rds} and are read in when starting the trainer.
+
 }
 \section{Backing Up Sequences}{
 

@@ -68,6 +68,8 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
          settings <- data.frame(player, mode, sleep, volume, lwd, cex.top, cex.bot, expval, pause, random, lang)
          saveRDS(settings, file=file.path(configdir, "settings.rds"))
          assign("lang", lang, envir=.chesstrainer)
+         assign("cex.top", cex.top, envir=.chesstrainer)
+         assign("cex.bot", cex.bot, envir=.chesstrainer)
       } else {
          settings <- data.frame(player, mode, sleep, volume, lwd, cex.top, cex.bot, expval, pause, random, lang)
          saveRDS(settings, file=file.path(configdir, "settings.rds"))
@@ -415,7 +417,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
 
             click <- getGraphicsEvent(prompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
 
-            keys      <- c("q", " ", "n", "p", "e", "l", "-", "=", "+", "F1", "F2", "F3", "m", "/", ".", "w", "ctrl-R", "u", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "F12", "F4")
+            keys      <- c("q", " ", "n", "p", "e", "l", "-", "=", "+", "F1", "F2", "F3", "m", "/", ".", "w", "ctrl-R", "u", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "F12", "F4", "F5")
             keys.add  <- c("f", "z", "c", "s", "b", "0") #, "???")
             keys.play <- c("z", "c", "s", "\b", "ctrl-D", "h", "a", "Right", "o", "t")
 
@@ -1120,6 +1122,23 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
                          "col.hint"=.get("col.hint"), "col.wrong"=.get("col.wrong"), "col.rect"=.get("col.rect"), "col.annot"=.get("col.annot"),
                          "col.side.w"=.get("col.side.w"), "col.side.b"=.get("col.side.b"))
                saveRDS(cols, file=file.path(configdir, "colors.rds"))
+               next
+            }
+
+            # F5 to adjust cex values
+
+            if (identical(click, "F5")) {
+               if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
+               .cexpick(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, lwd)
+               if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop)
+               hasarrows <- FALSE
+               circles <- matrix(c(0,0), nrow=1, ncol=2)
+               cex.top <- .get("cex.top")
+               cex.bot <- .get("cex.bot")
+               settings$cex.top <- cex.top
+               settings$cex.bot <- cex.bot
+               saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
 

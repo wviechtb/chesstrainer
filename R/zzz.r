@@ -34,7 +34,7 @@
    assign("col.side.w",      "white",          envir=.chesstrainer)
    assign("col.side.b",      "black",          envir=.chesstrainer)
 
-   # set fonts and sizes
+   # set default fonts and sizes
 
    assign("font.mono", "mono", envir=.chesstrainer)
    assign("cex.top",  1.4, envir=.chesstrainer)
