@@ -20,7 +20,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
 
    verbose <- isTRUE(ddd$verbose)
 
-   # create config directory and read/save settings
+   # create config directory and read/save settings and colors
 
    configdir <- tools::R_user_dir(package="chesstrainer", which="config")
 
@@ -31,6 +31,11 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
          stop(.text("dircreateerror"), call.=FALSE)
       settings <- data.frame(player, mode, sleep, volume, lwd, expval, pause, lang, random)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
+      cols <- c("col.bg"=.get("col.bg"), "col.fg"=.get("col.fg"), "col.square.l"=.get("col.square.l"), "col.square.d"=.get("col.square.d"),
+                "col.texttop"=.get("col.texttop"), "col.textbot"=.get("col.textbot"), "col.help"=.get("col.help"), "col.help.border"=.get("col.help.border"),
+                "col.hint"=.get("col.hint"), "col.wrong"=.get("col.wrong"), "col.rect"=.get("col.rect"), "col.annot"=.get("col.annot"),
+                "col.side.w"=.get("col.side.w"), "col.side.b"=.get("col.side.b"))
+      saveRDS(cols, file=file.path(configdir, "colors.rds"))
    } else {
       if (file.exists(file.path(configdir, "settings.rds"))) {
          # apply settings, but only for those that are equal to their defaults
@@ -60,6 +65,29 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
       } else {
          settings <- data.frame(player, mode, sleep, volume, lwd, expval, pause, lang, random)
          saveRDS(settings, file=file.path(configdir, "settings.rds"))
+      }
+      if (file.exists(file.path(configdir, "colors.rds"))) {
+         cols <- readRDS(file.path(configdir, "colors.rds"))
+         assign("col.bg",          cols["col.bg"],          envir=.chesstrainer)
+         assign("col.fg",          cols["col.fg"],          envir=.chesstrainer)
+         assign("col.square.l",    cols["col.square.l"],    envir=.chesstrainer)
+         assign("col.square.d",    cols["col.square.d"],    envir=.chesstrainer)
+         assign("col.texttop",     cols["col.texttop"],     envir=.chesstrainer)
+         assign("col.textbot",     cols["col.textbot"],     envir=.chesstrainer)
+         assign("col.help",        cols["col.help"],        envir=.chesstrainer)
+         assign("col.help.border", cols["col.help.border"], envir=.chesstrainer)
+         assign("col.hint",        cols["col.hint"],        envir=.chesstrainer)
+         assign("col.wrong",       cols["col.wrong"],       envir=.chesstrainer)
+         assign("col.rect",        cols["col.rect"],        envir=.chesstrainer)
+         assign("col.annot",       cols["col.annot"],       envir=.chesstrainer)
+         assign("col.side.w",      cols["col.side.w"],      envir=.chesstrainer)
+         assign("col.side.b",      cols["col.side.b"],      envir=.chesstrainer)
+      } else {
+         cols <- c("col.bg"=.get("col.bg"), "col.fg"=.get("col.fg"), "col.square.l"=.get("col.square.l"), "col.square.d"=.get("col.square.d"),
+                   "col.texttop"=.get("col.texttop"), "col.textbot"=.get("col.textbot"), "col.help"=.get("col.help"), "col.help.border"=.get("col.help.border"),
+                   "col.hint"=.get("col.hint"), "col.wrong"=.get("col.wrong"), "col.rect"=.get("col.rect"), "col.annot"=.get("col.annot"),
+                   "col.side.w"=.get("col.side.w"), "col.side.b"=.get("col.side.b"))
+         saveRDS(cols, file=file.path(configdir, "colors.rds"))
       }
    }
 
@@ -381,7 +409,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
 
             click <- getGraphicsEvent(prompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
 
-            keys      <- c("q", " ", "n", "p", "e", "l", "-", "=", "+", "F1", "F2", "F3", "m", "/", ".", "w", "ctrl-R", "u", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "F12")
+            keys      <- c("q", " ", "n", "p", "e", "l", "-", "=", "+", "F1", "F2", "F3", "m", "/", ".", "w", "ctrl-R", "u", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "F12", "F4")
             keys.add  <- c("f", "z", "c", "s", "b", "0") #, "???")
             keys.play <- c("z", "c", "s", "\b", "ctrl-D", "h", "a", "Right", "o", "t")
 
@@ -459,11 +487,9 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
             if (mode == "add" && identical(click, "f")) {
                flip <- !flip
                newdat$flip <- flip
-               .drawboard(pos, flip=flip)
+               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop)
                hasarrows <- FALSE
                circles <- matrix(c(0,0), nrow=1, ncol=2)
-               .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
-               .drawsideindicator(i, flip)
                next
             }
 
@@ -958,13 +984,9 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
             # u (and Escape) to update board
 
             if (identical(click, "u") || identical(click, "\033") || identical(click, "ctrl-[")) {
-               .drawboard(pos, flip=flip)
+               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop)
                hasarrows <- FALSE
                circles <- matrix(c(0,0), nrow=1, ncol=2)
-               .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
-               .texttop(texttop)
-               if (mode == "add")
-                  .drawsideindicator(i, flip)
                next
             }
 
@@ -1078,6 +1100,23 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                next
             }
 
+            # F4 to adjust colors
+
+            if (identical(click, "F4")) {
+               if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
+               .colorpick(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, lwd)
+               if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop)
+               hasarrows <- FALSE
+               circles <- matrix(c(0,0), nrow=1, ncol=2)
+               cols <- c("col.bg"=.get("col.bg"), "col.fg"=.get("col.fg"), "col.square.l"=.get("col.square.l"), "col.square.d"=.get("col.square.d"),
+                         "col.texttop"=.get("col.texttop"), "col.textbot"=.get("col.textbot"), "col.help"=.get("col.help"), "col.help.border"=.get("col.help.border"),
+                         "col.hint"=.get("col.hint"), "col.wrong"=.get("col.wrong"), "col.rect"=.get("col.rect"), "col.annot"=.get("col.annot"),
+                         "col.side.w"=.get("col.side.w"), "col.side.b"=.get("col.side.b"))
+               saveRDS(cols, file=file.path(configdir, "colors.rds"))
+               next
+            }
+
             # F12 to toggle verbose on/off
 
             if (identical(click, "F12")) {
@@ -1132,7 +1171,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                   # if other buttons were pressed, clear arrows/circles (if there are any)
 
                   if (hasarrows || nrow(circles) >= 2L) {
-                     .drawboard(pos, flip=flip)
+                     .drawboard(pos, flip)
                      hasarrows <- FALSE
                      circles <- matrix(c(0,0), nrow=1, ncol=2)
                      if (mode == "add")
@@ -1165,7 +1204,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
          # if button 0 was used for the move and there are arrows/circles, redraw the board before making the move
 
          if (identical(button, 0) && (hasarrows || nrow(circles) >= 2L)) {
-            .drawboard(pos, flip=flip)
+            .drawboard(pos, flip)
             hasarrows <- FALSE
             circles <- matrix(c(0,0), nrow=1, ncol=2)
             if (mode == "add")

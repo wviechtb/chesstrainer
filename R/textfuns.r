@@ -368,6 +368,24 @@
                          paste0("Line Width: ", arg)
    ))}
 
+   if (x == "colcurrent") {
+      return(switch(lang,
+                    de = "Aktuelle Farbeinstellungen:\n",
+                         "Current color settings:\n"
+   ))}
+
+   if (x == "colwhich") {
+      return(switch(lang,
+                    de = "Farbe \U000000E4ndern (<Zahl> w\U000000E4hlen oder <Enter> zum Verlassen): ",
+                         "Change color (choose a <number> or <enter> to quit): "
+   ))}
+
+   if (x == "colval") {
+      return(switch(lang,
+                    de = paste0("Farbe eingeben (jetztiger Wert ist '", arg, "'): "),
+                         paste0("Enter color (current value is '", arg, "'): ")
+   ))}
+
 }
 
 .confirm <- function(x) {

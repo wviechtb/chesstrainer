@@ -265,27 +265,39 @@
    return(text)
 }
 
-.drawsideindicator <- function(i, flip) {
+.drawsideindicator <- function(i, flip, clear=TRUE) {
 
    indsize <- 0.18
 
+   if (clear) {
+      rect(9.25, 1.0, 9.25+indsize, 1.0+indsize, border=NA, col=.get("col.bg"))
+      rect(9.25, 9.0, 9.25+indsize, 9.0-indsize, border=NA, col=.get("col.bg"))
+   }
+
    if (flip) {
       if (!.is.even(i)) {
-         rect(9.25, 1.0, 9.25+indsize, 1.0+indsize, border=NA, col=.get("col.bg"))
-         rect(9.25, 9.0, 9.25+indsize, 9.0-indsize, border=NA, col="white")
+         rect(9.25, 9.0, 9.25+indsize, 9.0-indsize, border=NA, col=.get("col.side.w"))
       } else {
-         rect(9.25, 9.0, 9.25+indsize, 9.0-indsize, border=NA, col=.get("col.bg"))
-         rect(9.25, 1.0, 9.25+indsize, 1.0+indsize, border=NA, col="black")
+         rect(9.25, 1.0, 9.25+indsize, 1.0+indsize, border=NA, col=.get("col.side.b"))
       }
    } else {
       if (.is.even(i)) {
-         rect(9.25, 1.0, 9.25+indsize, 1.0+indsize, border=NA, col=.get("col.bg"))
-         rect(9.25, 9.0, 9.25+indsize, 9.0-indsize, border=NA, col="black")
+         rect(9.25, 9.0, 9.25+indsize, 9.0-indsize, border=NA, col=.get("col.side.b"))
       } else {
-         rect(9.25, 9.0, 9.25+indsize, 9.0-indsize, border=NA, col=.get("col.bg"))
-         rect(9.25, 1.0, 9.25+indsize, 1.0+indsize, border=NA, col="white")
+         rect(9.25, 1.0, 9.25+indsize, 1.0+indsize, border=NA, col=.get("col.side.w"))
       }
    }
+
+}
+
+.redrawall <- function(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop) {
+
+   .drawboard(pos, flip)
+   .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
+   .texttop(texttop)
+   if (mode == "add")
+      .drawsideindicator(i, flip)
+   invisible()
 
 }
 

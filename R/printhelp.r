@@ -25,6 +25,7 @@
       "F1      - print help (<Escape> to close it)",
       "F2      - show the leaderboard and player statistics",
       "F3      - show current settings",
+      "F4      - adjust colors",
       "q       - quit the trainer",
       "",
       "Only in play mode:",
@@ -68,6 +69,7 @@
       "F1      - Hilfe drucken (<Escape> um sie zu schlie\U000000DFen)",
       "F2      - Rangliste und Spielerstatistiken anzeigen",
       "F3      - Einstellungen anzeigen",
+      "F4      - Farben ausw\U000000E4hlen",
       "q       - Trainer beenden",
       "",
       "Nur im Spiel Modus:",
@@ -88,7 +90,7 @@
 
    }
 
-   rect(1+0.2, 1+0.2, 9-0.2, 9-0.2, col=.get("col.bg"), border=.get("col.border"), lwd=lwd+3)
+   rect(1+0.2, 1+0.2, 9-0.2, 9-0.2, col=.get("col.bg"), border=.get("col.help.border"), lwd=lwd+3)
 
    maxsw <- max(sapply(txt, strwidth, family=.get("font.mono")))
    maxsh <- max(sapply(txt, strheight, family=.get("font.mono"))) * length(txt)
