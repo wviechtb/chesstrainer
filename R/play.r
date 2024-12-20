@@ -614,48 +614,6 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
                next
             }
 
-            # F2 to get leaderboard and player statistics
-
-            if (identical(click, "F2")) {
-               tmp <- lapply(file.path(seqdir, files.all), readRDS)
-               tmp.scores <- lapply(tmp, function(x) x$score)
-               players <- unique(unlist(lapply(tmp.scores, function(x) names(x))))
-               nplayers <- length(players)
-               if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
-               if (nplayers >= 1) {
-                  tmp.scores <- lapply(players, function(player) {
-                     x <- lapply(tmp, function(x) x$score[player])
-                     x[sapply(x, is.null)] <- 100
-                     unlist(x)
-                  })
-                  tmp.scores <- do.call(cbind, tmp.scores)
-                  tmp.scores[is.na(tmp.scores)] <- 100
-                  rownames(tmp.scores) <- files
-                  tmp.scores[tmp.scores == 0] <- NA_real_
-                  mean.scores <- round(apply(tmp.scores, 2, mean, na.rm=TRUE))
-                  sd.scores   <- round(apply(tmp.scores, 2, sd, na.rm=TRUE))
-                  min.scores  <- apply(tmp.scores, 2, min, na.rm=TRUE)
-                  max.scores  <- apply(tmp.scores, 2, max, na.rm=TRUE)
-                  tmp.played <- lapply(players, function(player) {
-                     x <- lapply(tmp, function(x) x$played[player])
-                     x[sapply(x, is.null)] <- 0
-                     unlist(x)
-                  })
-                  tmp.played <- do.call(cbind, tmp.played)
-                  tmp.played[is.na(tmp.played)] <- 0
-                  total.played <- round(apply(tmp.played, 2, sum))
-                  tmp <- data.frame(players, mean.scores, sd.scores, min.scores, max.scores, total.played)
-                  names(tmp) <- c(.text("player"), .text("score"), "SD", "Min", "Max", .text("played"))
-                  tmp <- tmp[order(tmp[[2]]),]
-                  rownames(tmp) <- NULL
-                  print(tmp)
-               } else {
-                  cat(.text("noleader"))
-               }
-               if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
-               next
-            }
-
             # ctrl-d to delete the current sequence (only in play mode)
 
             if (mode == "play" && identical(click, "ctrl-D")) {
@@ -1081,19 +1039,23 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
                next
             }
 
-            #if (mode == "add" && identical(click, "b")) {
-            #   .texttop("Board Editor")
-            #   i <- 1
-            #   comment <- ""
-            #   newdat$moves <- newdat$moves[numeric(0),]
-            #   #click <- getGraphicsEvent(prompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=function(key) return(key))
-            #   next
-            #}
-
             # F1 to print the help
 
             if (identical(click, "F1")) {
                .printhelp(lwd=lwd)
+               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop)
+               hasarrows <- FALSE
+               circles <- matrix(c(0,0), nrow=1, ncol=2)
+               next
+            }
+
+            # F2 to get leaderboard and player statistics
+
+            if (identical(click, "F2")) {
+               .leaderboard(seqdir, files, lwd)
+               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop)
+               hasarrows <- FALSE
+               circles <- matrix(c(0,0), nrow=1, ncol=2)
                next
             }
 
@@ -1149,6 +1111,15 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
                verbose <- !verbose
                next
             }
+
+            #if (mode == "add" && identical(click, "b")) {
+            #   .texttop("Board Editor")
+            #   i <- 1
+            #   comment <- ""
+            #   newdat$moves <- newdat$moves[numeric(0),]
+            #   #click <- getGraphicsEvent(prompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=function(key) return(key))
+            #   next
+            #}
 
             ##################################################################
 

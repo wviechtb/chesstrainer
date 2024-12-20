@@ -18,7 +18,7 @@
 
    In play mode, information is shown at the bottom about the current mode, the player name, the name of the current sequence, the current move number and the total number of moves of the sequence, the score (see below), and the number of times that the sequence has been played.
 
-   With \code{<F1>}, you can receive an overview of all keyboard shortcuts (use \code{<Escape>} to close it). You can quit the trainer with the \code{<q>} key.
+   With \code{<F1>}, you can receive an overview of all keyboard shortcuts. You can quit the trainer with the \code{<q>} key.
 
 }
 \section{The Score}{
