@@ -1,9 +1,9 @@
 .printinfo <- function(mode, show, player, seqname, score, played, i, totalmoves) {
 
    lang <- .get("lang")
-   cex  <- .get("cex.info")
+   cex  <- .get("cex.bot")
    font <- .get("font.mono")
-   col  <- .get("col.textbot")
+   col  <- .get("col.bot")
 
    rect(-2, -2, 12, 0.6, col=.get("col.bg"), border=NA)
 

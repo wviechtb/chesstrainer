@@ -5,8 +5,9 @@
    Function to start the chess trainer.
 }
 \usage{
-play(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
-     expval=2, pause=TRUE, lang="en", random=TRUE, \dots)
+play(player="", mode="add", sleep=0.5, volume=0.5,
+     lwd=2, cex.top=1.4, cex.bot=0.7,
+     expval=2, pause=TRUE, random=TRUE, lang="en", \dots)
 }
 \arguments{
    \item{player}{character string to specify a player. If blank, the trainer will prompt for a (new) player name.}
@@ -14,10 +15,12 @@ play(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
    \item{sleep}{numeric value to specify the time (in seconds) between moves.}
    \item{volume}{numeric value to specify the sound volume (as a proportion between 0 and 1).}
    \item{lwd}{numeric value to specify the line width for drawing rectangles.}
+   \item{cex.top}{numeric value to specify the size for text at the top.}
+   \item{cex.bot}{numeric value to specify the size for text at the bottom.}
    \item{expval}{numeric value to specify the exponent value for sequence scores to adjust the selection probabilities.}
    \item{pause}{logical to specify whether the trainer should pause after a completed sequence.}
-   \item{lang}{character string to specify the language (either \code{"en"} for English or \code{"de"} for German).}
    \item{random}{logical to specify whether sequences should be selected at random or sequentially.}
+   \item{lang}{character string to specify the language (either \code{"en"} for English or \code{"de"} for German).}
    \item{\dots}{other arguments}
 }
 \details{

@@ -23,8 +23,8 @@
    assign("col.fg",          "#7a6d59",        envir=.chesstrainer)
    assign("col.square.l",    "#f0d9b5",        envir=.chesstrainer)
    assign("col.square.d",    "#b58863",        envir=.chesstrainer)
-   assign("col.texttop",     "#b09d7f",        envir=.chesstrainer)
-   assign("col.textbot",     "#b09d7f",        envir=.chesstrainer)
+   assign("col.top",         "#b09d7f",        envir=.chesstrainer)
+   assign("col.bot",         "#b09d7f",        envir=.chesstrainer)
    assign("col.help",        "#b09d7f",        envir=.chesstrainer)
    assign("col.help.border", "#63462e",        envir=.chesstrainer)
    assign("col.hint",        "yellow",         envir=.chesstrainer)
@@ -37,7 +37,8 @@
    # set fonts and sizes
 
    assign("font.mono", "mono", envir=.chesstrainer)
-   assign("cex.info", 0.7, envir=.chesstrainer)
+   assign("cex.top",  1.4, envir=.chesstrainer)
+   assign("cex.bot",  0.7, envir=.chesstrainer)
 
    # welcome message
 

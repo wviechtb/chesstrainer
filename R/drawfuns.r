@@ -260,7 +260,7 @@
 .texttop <- function(text) {
    rect(-2, 9.2, 12, 10, col=.get("col.bg"), border=NA)
    if (!identical(text, "")) {
-      text(5, 9.5, text, cex=1.4, col=.get("col.texttop"))
+      text(5, 9.5, text, cex=.get("cex.top"), col=.get("col.top"))
    }
    return(text)
 }

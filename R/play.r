@@ -1,4 +1,4 @@
-play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, pause=TRUE, lang="en", random=TRUE, ...) {
+play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.4, cex.bot=0.7, expval=2, pause=TRUE, random=TRUE, lang="en", ...) {
 
    if (!is.element(lang, c("en","de")))
       stop("Argument 'lang' must be either 'en' or 'de'.", call.=FALSE)
@@ -14,6 +14,8 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
    volume[volume < 0] <- 0
    volume[volume > 1] <- 1
    lwd[lwd < 1] <- 1
+   cex.top[cex.top < 0.1] <- 0.1
+   cex.bot[cex.bot < 0.1] <- 0.1
    expval[expval < 0] <- 0
 
    ddd <- list(...)
@@ -29,10 +31,10 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
       success <- dir.create(configdir, recursive=TRUE)
       if (!success)
          stop(.text("dircreateerror"), call.=FALSE)
-      settings <- data.frame(player, mode, sleep, volume, lwd, expval, pause, lang, random)
+      settings <- data.frame(player, mode, sleep, volume, lwd, cex.top, cex.bot, expval, pause, random, lang)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       cols <- c("col.bg"=.get("col.bg"), "col.fg"=.get("col.fg"), "col.square.l"=.get("col.square.l"), "col.square.d"=.get("col.square.d"),
-                "col.texttop"=.get("col.texttop"), "col.textbot"=.get("col.textbot"), "col.help"=.get("col.help"), "col.help.border"=.get("col.help.border"),
+                "col.top"=.get("col.top"), "col.bot"=.get("col.bot"), "col.help"=.get("col.help"), "col.help.border"=.get("col.help.border"),
                 "col.hint"=.get("col.hint"), "col.wrong"=.get("col.wrong"), "col.rect"=.get("col.rect"), "col.annot"=.get("col.annot"),
                 "col.side.w"=.get("col.side.w"), "col.side.b"=.get("col.side.b"))
       saveRDS(cols, file=file.path(configdir, "colors.rds"))
@@ -51,19 +53,23 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
             volume <- settings$volume
          if (is.null(mc$lwd))
             lwd <- settings$lwd
+         if (is.null(mc$cex.top))
+            cex.top <- settings$cex.top
+         if (is.null(mc$cex.bot))
+            cex.bot <- settings$cex.bot
          if (is.null(mc$expval))
             expval <- settings$expval
          if (is.null(mc$pause))
             pause <- settings$pause
-         if (is.null(mc$lang))
-            lang <- settings$lang
          if (is.null(mc$random))
             random <- settings$random
-         settings <- data.frame(player, mode, sleep, volume, lwd, expval, pause, lang, random)
+         if (is.null(mc$lang))
+            lang <- settings$lang
+         settings <- data.frame(player, mode, sleep, volume, lwd, cex.top, cex.bot, expval, pause, random, lang)
          saveRDS(settings, file=file.path(configdir, "settings.rds"))
          assign("lang", lang, envir=.chesstrainer)
       } else {
-         settings <- data.frame(player, mode, sleep, volume, lwd, expval, pause, lang, random)
+         settings <- data.frame(player, mode, sleep, volume, lwd, cex.top, cex.bot, expval, pause, random, lang)
          saveRDS(settings, file=file.path(configdir, "settings.rds"))
       }
       if (file.exists(file.path(configdir, "colors.rds"))) {
@@ -72,8 +78,8 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
          assign("col.fg",          cols["col.fg"],          envir=.chesstrainer)
          assign("col.square.l",    cols["col.square.l"],    envir=.chesstrainer)
          assign("col.square.d",    cols["col.square.d"],    envir=.chesstrainer)
-         assign("col.texttop",     cols["col.texttop"],     envir=.chesstrainer)
-         assign("col.textbot",     cols["col.textbot"],     envir=.chesstrainer)
+         assign("col.top",         cols["col.top"],         envir=.chesstrainer)
+         assign("col.bot",         cols["col.bot"],         envir=.chesstrainer)
          assign("col.help",        cols["col.help"],        envir=.chesstrainer)
          assign("col.help.border", cols["col.help.border"], envir=.chesstrainer)
          assign("col.hint",        cols["col.hint"],        envir=.chesstrainer)
@@ -84,7 +90,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
          assign("col.side.b",      cols["col.side.b"],      envir=.chesstrainer)
       } else {
          cols <- c("col.bg"=.get("col.bg"), "col.fg"=.get("col.fg"), "col.square.l"=.get("col.square.l"), "col.square.d"=.get("col.square.d"),
-                   "col.texttop"=.get("col.texttop"), "col.textbot"=.get("col.textbot"), "col.help"=.get("col.help"), "col.help.border"=.get("col.help.border"),
+                   "col.top"=.get("col.top"), "col.bot"=.get("col.bot"), "col.help"=.get("col.help"), "col.help.border"=.get("col.help.border"),
                    "col.hint"=.get("col.hint"), "col.wrong"=.get("col.wrong"), "col.rect"=.get("col.rect"), "col.annot"=.get("col.annot"),
                    "col.side.w"=.get("col.side.w"), "col.side.b"=.get("col.side.b"))
          saveRDS(cols, file=file.path(configdir, "colors.rds"))
@@ -1091,7 +1097,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
             # F3 to print settings
 
             if (identical(click, "F3")) {
-               settings <- data.frame(player, mode, sleep, volume, lwd, expval, pause, lang, random)
+               settings <- data.frame(player, mode, sleep, volume, lwd, cex.top, cex.bot, expval, pause, random, lang)
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
                tab <- t(settings)
                colnames(tab) <- ""
@@ -1110,7 +1116,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, expval=2, 
                hasarrows <- FALSE
                circles <- matrix(c(0,0), nrow=1, ncol=2)
                cols <- c("col.bg"=.get("col.bg"), "col.fg"=.get("col.fg"), "col.square.l"=.get("col.square.l"), "col.square.d"=.get("col.square.d"),
-                         "col.texttop"=.get("col.texttop"), "col.textbot"=.get("col.textbot"), "col.help"=.get("col.help"), "col.help.border"=.get("col.help.border"),
+                         "col.top"=.get("col.top"), "col.bot"=.get("col.bot"), "col.help"=.get("col.help"), "col.help.border"=.get("col.help.border"),
                          "col.hint"=.get("col.hint"), "col.wrong"=.get("col.wrong"), "col.rect"=.get("col.rect"), "col.annot"=.get("col.annot"),
                          "col.side.w"=.get("col.side.w"), "col.side.b"=.get("col.side.b"))
                saveRDS(cols, file=file.path(configdir, "colors.rds"))
