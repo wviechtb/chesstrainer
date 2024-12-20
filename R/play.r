@@ -67,9 +67,6 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
             lang <- settings$lang
          settings <- data.frame(player, mode, sleep, volume, lwd, cex.top, cex.bot, expval, pause, random, lang)
          saveRDS(settings, file=file.path(configdir, "settings.rds"))
-         assign("lang", lang, envir=.chesstrainer)
-         assign("cex.top", cex.top, envir=.chesstrainer)
-         assign("cex.bot", cex.bot, envir=.chesstrainer)
       } else {
          settings <- data.frame(player, mode, sleep, volume, lwd, cex.top, cex.bot, expval, pause, random, lang)
          saveRDS(settings, file=file.path(configdir, "settings.rds"))
@@ -98,6 +95,10 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
          saveRDS(cols, file=file.path(configdir, "colors.rds"))
       }
    }
+
+   assign("lang", lang, envir=.chesstrainer)
+   assign("cex.top", cex.top, envir=.chesstrainer)
+   assign("cex.bot", cex.bot, envir=.chesstrainer)
 
    # create / check sequence directory
 
