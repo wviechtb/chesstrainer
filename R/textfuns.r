@@ -352,7 +352,7 @@
 
    if (x == "random") {
       return(switch(lang,
-                    de = paste0("Schalte in den", ifelse(arg, "Zufallsmodus", "sequenziellen Modus"), " ..."),
+                    de = paste0("Schalte in den ", ifelse(arg, "Zufallsmodus", "sequenziellen Modus"), " ..."),
                          paste0("Switching to ", ifelse(arg, "random", "sequential"), " mode ...")
    ))}
 

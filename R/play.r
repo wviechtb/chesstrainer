@@ -263,7 +263,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
       # draw board and add info at the bottom
 
       .drawboard(pos, flip=flip)
-      .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
+      .printinfo(mode, show, player, seqname, score, played, i, totalmoves, random)
 
       # check for getGraphicsEvent() capabilities of the current plotting device
 
@@ -291,12 +291,12 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
                pos <- .updateboard(pos, move=sub$moves[i,1:4], flip=flip, volume=volume, verbose=verbose)
                i <- i + 1
                texttop <- .texttop(sub$moves$comment[i])
-               .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
+               .printinfo(mode, show, player, seqname, score, played, i, totalmoves, random)
                Sys.sleep(sleep)
             }
 
             show <- FALSE
-            .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
+            .printinfo(mode, show, player, seqname, score, played, i, totalmoves, random)
 
          } else {
 
@@ -473,7 +473,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
             if (mode == "add" && identical(click, "f")) {
                flip <- !flip
                newdat$flip <- flip
-               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, sidetoplay)
+               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, sidetoplay, random)
                hasarrows <- FALSE
                circles <- matrix(c(0,0), nrow=1, ncol=2)
                next
@@ -498,7 +498,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
                .texttop(.text("showmoves", show))
                Sys.sleep(1)
                .texttop(texttop)
-               .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
+               .printinfo(mode, show, player, seqname, score, played, i, totalmoves, random)
                next
             }
 
@@ -605,7 +605,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
                   .addrect(sub$moves$x2[i], sub$moves$y2[i], col=.get("col.hint"), lwd=lwd)
                if (hintval <= 2)
                   score <- min(100, score + 25)
-               .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
+               .printinfo(mode, show, player, seqname, score, played, i, totalmoves, random)
                next
             }
 
@@ -823,7 +823,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
                      .texttop(.text("setscoreback", score))
                      Sys.sleep(1)
                      .texttop(texttop)
-                     .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
+                     .printinfo(mode, show, player, seqname, score, played, i, totalmoves, random)
                      scoreadd <- 0
                   }
                } else {
@@ -844,7 +844,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
                         sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                      }
                      comment <- ""
-                     .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
+                     .printinfo(mode, show, player, seqname, score, played, i, totalmoves, random)
                      .drawsideindicator(sidetoplay, flip)
                   }
                }
@@ -879,14 +879,14 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
                for (i in 1:nrow(newdat$moves)) {
                   pos <- .updateboard(pos, move=newdat$moves[i,1:4], flip=flip, volume=volume, verbose=verbose)
                   texttop <- .texttop(newdat$moves$comment[i])
-                  .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
+                  .printinfo(mode, show, player, seqname, score, played, i, totalmoves, random)
                   Sys.sleep(sleep)
                }
 
                i <- i + 1
                sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                show <- FALSE
-               .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
+               .printinfo(mode, show, player, seqname, score, played, i, totalmoves, random)
                .drawsideindicator(sidetoplay, flip)
                next
 
@@ -905,7 +905,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
                attr(newdat$pos, "move") <- NULL
                attr(newdat$pos, "ispp") <- NULL
                attr(newdat$pos, "y1") <- NULL
-               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, sidetoplay)
+               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, sidetoplay, random)
                sidetoplay <- ifelse(flip, "b", "w")
                .drawsideindicator(sidetoplay, flip)
                next
@@ -920,7 +920,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
                }
                pos <- .updateboard(pos, move=sub$moves[i,1:4], flip=flip, volume=volume, verbose=verbose)
                i <- i + 1
-               .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
+               .printinfo(mode, show, player, seqname, score, played, i, totalmoves, random)
                texttop <- .texttop(sub$moves$comment[i])
                hintval <- 0
                next
@@ -929,7 +929,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
             # u (and Escape) to update board
 
             if (identical(click, "u") || identical(click, "\033") || identical(click, "ctrl-[")) {
-               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, sidetoplay)
+               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, sidetoplay, random)
                hasarrows <- FALSE
                circles <- matrix(c(0,0), nrow=1, ncol=2)
                next
@@ -968,7 +968,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
                }
                assign("lang", lang, envir=.chesstrainer)
                .texttop(.text("lang"))
-               .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
+               .printinfo(mode, show, player, seqname, score, played, i, totalmoves, random)
                Sys.sleep(1)
                .texttop(texttop)
                settings$lang <- lang
@@ -980,7 +980,8 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
 
             if (identical(click, "r")) {
                random <- !random
-               .texttop(.text("randomo", random))
+               .texttop(.text("random", random))
+               .printinfo(mode, show, player, seqname, score, played, i, totalmoves, random)
                Sys.sleep(1)
                .texttop(texttop)
                settings$random <- random
@@ -1008,7 +1009,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
 
             if (identical(click, "F1")) {
                .printhelp(lwd=lwd)
-               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, sidetoplay)
+               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, sidetoplay, random)
                hasarrows <- FALSE
                circles <- matrix(c(0,0), nrow=1, ncol=2)
                next
@@ -1018,7 +1019,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
 
             if (identical(click, "F2")) {
                .leaderboard(seqdir, files, lwd)
-               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, sidetoplay)
+               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, sidetoplay, random)
                hasarrows <- FALSE
                circles <- matrix(c(0,0), nrow=1, ncol=2)
                next
@@ -1042,7 +1043,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
                .colorpick(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, lwd)
                if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
-               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, sidetoplay)
+               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, sidetoplay, random)
                hasarrows <- FALSE
                circles <- matrix(c(0,0), nrow=1, ncol=2)
                cols <- c("col.bg"=.get("col.bg"), "col.fg"=.get("col.fg"),
@@ -1060,7 +1061,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
                .cexpick(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, lwd)
                if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
-               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, sidetoplay)
+               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, sidetoplay, random)
                hasarrows <- FALSE
                circles <- matrix(c(0,0), nrow=1, ncol=2)
                cex.top <- .get("cex.top")
@@ -1101,7 +1102,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
                attr(newdat$pos, "ispp") <- NULL
                attr(newdat$pos, "y1") <- NULL
                sidetoplay <- ifelse(flip, "b", "w")
-               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, sidetoplay)
+               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, sidetoplay, random)
                next
             }
 
@@ -1117,6 +1118,9 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
             }
 
             # when clicking too fast, click may not be registered
+
+            if (is.null(click1.x) || is.null(click2.x) || is.null(click1.y) || is.null(click2.y))
+               next
 
             if (is.na(click1.x) || is.na(click2.x) || is.na(click1.y) || is.na(click2.y))
                next
@@ -1192,7 +1196,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
 
             pos <- .updateboard(pos, move=c(click1.x, click1.y, click2.x, click2.y), flip=flip, volume=volume, verbose=verbose)
 
-            .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
+            .printinfo(mode, show, player, seqname, score, played, i, totalmoves, random)
 
          } else {
 
@@ -1233,7 +1237,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
                   newdat$played <- setNames(0, player)
                   show <- FALSE
                   .texttop(" ")
-                  .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
+                  .printinfo(mode, show, player, seqname, score, played, i, totalmoves, random)
                   next
                }
 
@@ -1268,7 +1272,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
             # in play mode, let the trainer play the next move and increase i
 
             texttop <- .texttop(sub$moves$comment[i])
-            .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
+            .printinfo(mode, show, player, seqname, score, played, i, totalmoves, random)
             Sys.sleep(sleep)
             pos <- .updateboard(pos, move=sub$moves[i,1:4], flip=flip, volume=volume, verbose=verbose)
             texttop <- .texttop(sub$moves$comment[i])
@@ -1277,7 +1281,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
 
          }
 
-         .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
+         .printinfo(mode, show, player, seqname, score, played, i, totalmoves, random)
          hintval <- 0
 
          # go to [b]

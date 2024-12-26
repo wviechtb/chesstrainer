@@ -138,6 +138,9 @@
 
       # when clicking too fast, click may not be registered, so start over
 
+      if (is.null(click1.x) || is.null(click2.x) || is.null(click1.y) || is.null(click2.y))
+         next
+
       if (is.na(click1.x) || is.na(click2.x) || is.na(click1.y) || is.na(click2.y))
          next
 
