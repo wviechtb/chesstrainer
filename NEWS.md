@@ -1,4 +1,4 @@
-# chesstrainer 0.2-0 (2024-12-20)
+# chesstrainer 0.4-0 (2024-12-26)
 
 - changed `<r>` key to `<Ctrl-r>` and `<d>` key to `<Ctrl-d>`
 - added `<r>` key (and `random` argument) to toggle between random/sequential mode
@@ -9,7 +9,9 @@
 - moves in long algebraic notation are added to the sequence files
 - colors can be adjusted and are stored across sessions
 - text sizes for text at the top and bottom can be adjusted and are stored across sessions
-- added `<?>` key to find all sequences that start in the same way as the moves that have been entered so far
+- added `<?>` key to find all sequences that start with the same moves entered so far
+- the `<t>` key is now used for taking back moves (in add mode) or a score adjustment (in play mode)
+- added a board editor (which can be opened in add mode with the `<b>` key)
 
 # chesstrainer 0.1-0 (2024-12-17)
 

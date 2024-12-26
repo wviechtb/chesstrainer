@@ -1,7 +1,7 @@
 .is.even <- function(x) x %% 2 == 0
 
 .get <- function(x)
-   get(x, envir=.chesstrainer)[[1]]
+   unname(get(x, envir=.chesstrainer))
 
 .is.null <- function(x) {
 
@@ -16,8 +16,8 @@
 
    cat(.text("colcurrent"))
 
-   tab <- data.frame(col = c("col.bg", "col.fg", "col.square.l", "col.square.d", "col.top", "col.bot", "col.help", "col.help.border", "col.hint", "col.wrong", "col.rect", "col.annot", "col.side.w", "col.side.b"),
-                     val = c(.get("col.bg"), .get("col.fg"), .get("col.square.l"), .get("col.square.d"), .get("col.top"), .get("col.bot"), .get("col.help"), .get("col.help.border"), .get("col.hint"), .get("col.wrong"), .get("col.rect"), .get("col.annot"), .get("col.side.w"), .get("col.side.b")))
+   tab <- data.frame(col = c("col.bg", "col.fg", "col.square.l", "col.square.d", "col.square.be", "col.top", "col.bot", "col.help", "col.help.border", "col.hint", "col.wrong", "col.rect", "col.annot", "col.side.w", "col.side.b"),
+                     val = c(.get("col.bg"), .get("col.fg"), .get("col.square.l"), .get("col.square.d"), .get("col.square.be"), .get("col.top"), .get("col.bot"), .get("col.help"), .get("col.help.border"), .get("col.hint"), .get("col.wrong"), .get("col.rect"), .get("col.annot"), .get("col.side.w"), .get("col.side.b")))
    names(tab) <- c("", "")
    print(tab, right=FALSE, print.gap=3)
 
@@ -27,6 +27,10 @@
    .addrect(4, 5, col=.get("col.hint"), lwd=lwd)
    .addrect(4, 3, col=.get("col.wrong"), lwd=lwd)
    .addrect(4, 4, col=.get("col.rect"), lwd=lwd)
+   .drawsquare(0, 4, col=.get("col.square.be"))
+   .drawsquare(0, 5, col=.get("col.square.be"))
+   .addrect(0, 4, offset=0.028, .get("col.bg"), lwd+2)
+   .addrect(0, 5, offset=0.028, .get("col.bg"), lwd+2)
    .addcircle(4, 6, lwd=lwd)
    .drawsideindicator(i, flip)
    .drawsideindicator(i+1, flip, clear=FALSE)
@@ -47,6 +51,10 @@
          .addrect(4, 5, col=.get("col.hint"), lwd=lwd)
          .addrect(4, 3, col=.get("col.wrong"), lwd=lwd)
          .addrect(4, 4, col=.get("col.rect"), lwd=lwd)
+         .drawsquare(0, 4, col=.get("col.square.be"))
+         .drawsquare(0, 5, col=.get("col.square.be"))
+         .addrect(0, 4, offset=0.028, .get("col.bg"), lwd+2)
+         .addrect(0, 5, offset=0.028, .get("col.bg"), lwd+2)
          .addcircle(4, 6, lwd=lwd)
          .drawsideindicator(i, flip)
          .drawsideindicator(i+1, flip, clear=FALSE)

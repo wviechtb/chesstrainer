@@ -33,7 +33,8 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
          stop(.text("dircreateerror"), call.=FALSE)
       settings <- data.frame(player, mode, sleep, volume, lwd, cex.top, cex.bot, expval, pause, random, lang)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
-      cols <- c("col.bg"=.get("col.bg"), "col.fg"=.get("col.fg"), "col.square.l"=.get("col.square.l"), "col.square.d"=.get("col.square.d"),
+      cols <- c("col.bg"=.get("col.bg"), "col.fg"=.get("col.fg"),
+                "col.square.l"=.get("col.square.l"), "col.square.d"=.get("col.square.d"), "col.square.be"=.get("col.square.be"),
                 "col.top"=.get("col.top"), "col.bot"=.get("col.bot"), "col.help"=.get("col.help"), "col.help.border"=.get("col.help.border"),
                 "col.hint"=.get("col.hint"), "col.wrong"=.get("col.wrong"), "col.rect"=.get("col.rect"), "col.annot"=.get("col.annot"),
                 "col.side.w"=.get("col.side.w"), "col.side.b"=.get("col.side.b"))
@@ -77,6 +78,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
          assign("col.fg",          cols["col.fg"],          envir=.chesstrainer)
          assign("col.square.l",    cols["col.square.l"],    envir=.chesstrainer)
          assign("col.square.d",    cols["col.square.d"],    envir=.chesstrainer)
+         assign("col.square.be",   cols["col.square.be"],   envir=.chesstrainer)
          assign("col.top",         cols["col.top"],         envir=.chesstrainer)
          assign("col.bot",         cols["col.bot"],         envir=.chesstrainer)
          assign("col.help",        cols["col.help"],        envir=.chesstrainer)
@@ -88,7 +90,8 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
          assign("col.side.w",      cols["col.side.w"],      envir=.chesstrainer)
          assign("col.side.b",      cols["col.side.b"],      envir=.chesstrainer)
       } else {
-         cols <- c("col.bg"=.get("col.bg"), "col.fg"=.get("col.fg"), "col.square.l"=.get("col.square.l"), "col.square.d"=.get("col.square.d"),
+         cols <- c("col.bg"=.get("col.bg"), "col.fg"=.get("col.fg"),
+                   "col.square.l"=.get("col.square.l"), "col.square.d"=.get("col.square.d"), "col.square.be"=.get("col.square.be"),
                    "col.top"=.get("col.top"), "col.bot"=.get("col.bot"), "col.help"=.get("col.help"), "col.help.border"=.get("col.help.border"),
                    "col.hint"=.get("col.hint"), "col.wrong"=.get("col.wrong"), "col.rect"=.get("col.rect"), "col.annot"=.get("col.annot"),
                    "col.side.w"=.get("col.side.w"), "col.side.b"=.get("col.side.b"))
@@ -131,25 +134,9 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
    if (file.exists(file.path(seqdir, ".random")))
       random <- TRUE
 
-   # create starting position matrix 'pos'
+   # get starting position matrix 'pos'
 
-   pos <- matrix("", 8, 8)
-   pos[2,] <- "WP"
-   pos[1,1] <- pos[1,8] <- "WR"
-   pos[1,2] <- pos[1,7] <- "WN"
-   pos[1,3] <- pos[1,6] <- "WB"
-   pos[1,4] <- "WQ"
-   pos[1,5] <- "WK"
-   pos[7,] <- "BP"
-   pos[8,1] <- pos[8,8] <- "BR"
-   pos[8,2] <- pos[8,7] <- "BN"
-   pos[8,3] <- pos[8,6] <- "BB"
-   pos[8,4] <- "BQ"
-   pos[8,5] <- "BK"
-   colnames(pos) <- LETTERS[1:8]
-   rownames(pos) <- 1:8
-
-   start.pos <- pos
+   start.pos <- .get("pos")
 
    # some defaults
 
@@ -180,6 +167,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
       hasarrows <- FALSE
       circles <- matrix(c(0,0), nrow=1, ncol=2)
       scoreadd <- 0
+      sidetoplay <- "w"
 
       # select a player if no player is currently selected
 
@@ -312,7 +300,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
 
          } else {
 
-            .drawsideindicator(i, flip)
+            .drawsideindicator(sidetoplay, flip)
 
          }
 
@@ -402,25 +390,18 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
             }
 
             mouseup <- function(buttons, x, y) {
-               move <- c(click1.x, click1.y, click2.x, click2.y, buttons)
-               empty.square <- FALSE
                if (identical(buttons, 0L)) {
                   .rmrect(click1.x, click1.y, lwd=lwd)
                   .rmrect(click2.x, click2.y, lwd=lwd)
                }
-               click1.x <<- NULL
-               click1.y <<- NULL
-               click2.x <<- NULL
-               click2.y <<- NULL
-               button <- 0L
-               return(move)
+               return(1)
             }
 
             click <- getGraphicsEvent(prompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
 
-            keys      <- c("q", " ", "n", "p", "e", "l", "-", "=", "+", "F1", "F2", "F3", "m", "/", ".", "w", "ctrl-R", "u", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "F12", "F4", "F5")
-            keys.add  <- c("f", "z", "c", "s", "b", "0", "?") #, "???")
-            keys.play <- c("z", "c", "s", "\b", "ctrl-D", "h", "a", "Right", "o", "t")
+            keys      <- c("q", " ", "n", "p", "e", "l", "-", "=", "+", "F1", "F2", "F3", "m", "/", ".", "w", "t", "ctrl-R", "u", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "F12", "F4", "F5")
+            keys.add  <- c("f", "z", "c", "s", "0", "?", "b")
+            keys.play <- c("z", "c", "s", "\b", "ctrl-D", "h", "a", "Right", "o")
 
             if (mode == "add" && is.character(click) && !is.element(click, c(keys, keys.add)))
                next
@@ -443,11 +424,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
             # <space> to select the mode (play versus add) (starts a new round)
 
             if (identical(click, " ")) {
-               if (mode == "add") {
-                  mode <- "play"
-               } else {
-                  mode <- "add"
-               }
+               mode <- ifelse(mode == "add", "play", "add")
                settings$mode <- mode
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                run.rnd <- FALSE
@@ -496,7 +473,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
             if (mode == "add" && identical(click, "f")) {
                flip <- !flip
                newdat$flip <- flip
-               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop)
+               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, sidetoplay)
                hasarrows <- FALSE
                circles <- matrix(c(0,0), nrow=1, ncol=2)
                next
@@ -506,15 +483,9 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
 
             if (identical(click, "w")) {
                pause <- !pause
-               if (pause) {
-                  .texttop(.text("pauseon"))
-                  Sys.sleep(1)
-                  .texttop(texttop)
-               } else {
-                  .texttop(.text("pauseoff"))
-                  Sys.sleep(1)
-                  .texttop(texttop)
-               }
+               .texttop(.text("pause", pause))
+               Sys.sleep(1)
+               .texttop(texttop)
                settings$pause <- pause
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
@@ -524,15 +495,9 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
 
             if (mode == "add" && identical(click, "z")) {
                show <- !show
-               if (show) {
-                  .texttop(.text("showmoveson"))
-                  Sys.sleep(1)
-                  .texttop(texttop)
-               } else {
-                  .texttop(.text("showmovesoff"))
-                  Sys.sleep(1)
-                  .texttop(texttop)
-               }
+               .texttop(.text("showmoves", show))
+               Sys.sleep(1)
+               .texttop(texttop)
                .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
                next
             }
@@ -644,20 +609,14 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
                next
             }
 
-            # -+ to decrease/increase the time between moves
+            # -/+ to decrease/increase the time between moves
 
-            if (identical(click, "-")) {
-               sleep <- max(0, sleep - 0.25)
-               .texttop(.text("waittime", formatC(sleep, format="f", digits=2)))
-               Sys.sleep(1)
-               .texttop(texttop)
-               settings$sleep <- sleep
-               saveRDS(settings, file=file.path(configdir, "settings.rds"))
-               next
-            }
-
-            if (identical(click, "=") || identical(click, "+")) {
-               sleep <- min(2, sleep + 0.25)
+            if (identical(click, "-") || identical(click, "=") || identical(click, "+")) {
+               if (identical(click, "-")) {
+                  sleep <- max(0, sleep - 0.25)
+               } else {
+                  sleep <- min(2, sleep + 0.25)
+               }
                .texttop(.text("waittime", formatC(sleep, format="f", digits=2)))
                Sys.sleep(1)
                .texttop(texttop)
@@ -671,37 +630,26 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
             if (identical(click, "m")) {
                if (volume == 0) {
                   volume <- oldvolume
-                  .texttop(.text("soundon"))
-                  Sys.sleep(1)
-                  .texttop(texttop)
-                  settings$volume <- volume
-                  saveRDS(settings, file=file.path(configdir, "settings.rds"))
                } else {
                   oldvolume <- volume
                   volume <- 0
-                  .texttop(.text("soundoff"))
-                  Sys.sleep(1)
-                  .texttop(texttop)
-                  settings$volume <- volume
-                  saveRDS(settings, file=file.path(configdir, "settings.rds"))
                }
-               next
-            }
-
-            # [] to decrease/increase the volume
-
-            if (identical(click, "[")) {
-               volume <- max(0, volume - 0.25)
-               oldvolume <- volume
-               .texttop(.text("volume", formatC(volume, format="f", digits=2)))
+               .texttop(.text("sound", volume > 0))
                Sys.sleep(1)
                .texttop(texttop)
                settings$volume <- volume
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
-            if (identical(click, "]")) {
-               volume <- min(1, volume + 0.25)
+
+            # [/] to decrease/increase the volume
+
+            if (identical(click, "[") || identical(click, "]")) {
+               if (identical(click, "[")) {
+                  volume <- max(0, volume - 0.25)
+               } else {
+                  volume <- min(1, volume + 0.25)
+               }
                oldvolume <- volume
                .texttop(.text("volume", formatC(volume, format="f", digits=2)))
                Sys.sleep(1)
@@ -866,16 +814,39 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
                next
             }
 
-            # t to take back a score adjustment due to a wrong move (only in play mode)
+            # t to take back a score adjustment due to a wrong move (in play mode) or take back a move (in add mode)
 
-            if (mode == "play" && identical(click, "t")) {
-               if (scoreadd > 0) {
-                  score <- score - scoreadd
-                  .texttop(.text("setscoreback", score))
-                  Sys.sleep(1)
-                  .texttop(texttop)
-                  .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
-                  scoreadd <- 0
+            if (identical(click, "t")) {
+               if (mode == "play") {
+                  if (scoreadd > 0) {
+                     score <- score - scoreadd
+                     .texttop(.text("setscoreback", score))
+                     Sys.sleep(1)
+                     .texttop(texttop)
+                     .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
+                     scoreadd <- 0
+                  }
+               } else {
+                  if (i > 1) {
+                     if (is.null(newdat$pos)) {
+                        pos <- start.pos
+                     } else {
+                        pos <- newdat$pos
+                     }
+                     .drawboard(pos, flip=flip)
+                     hasarrows <- FALSE
+                     circles <- matrix(c(0,0), nrow=1, ncol=2)
+                     i <- i - 1
+                     newdat$moves <- newdat$moves[seq_len(i-1),,drop=FALSE]
+                     sidetoplay <- "w"
+                     for (j in seq_len(i-1)) {
+                        pos <- .updateboard(pos, move=newdat$moves[j,1:4], flip=flip, volume=0, verbose=verbose)
+                        sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
+                     }
+                     comment <- ""
+                     .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
+                     .drawsideindicator(sidetoplay, flip)
+                  }
                }
                next
             }
@@ -913,35 +884,12 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
                }
 
                i <- i + 1
+               sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                show <- FALSE
                .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
-               .drawsideindicator(i, flip)
+               .drawsideindicator(sidetoplay, flip)
                next
 
-            }
-
-            # b key to take back a move (only in add mode)
-
-            if (mode == "add" && identical(click, "b")) {
-               if (i > 1) {
-                  if (is.null(newdat$pos)) {
-                     pos <- start.pos
-                  } else {
-                     pos <- newdat$pos
-                  }
-                  .drawboard(pos, flip=flip)
-                  hasarrows <- FALSE
-                  circles <- matrix(c(0,0), nrow=1, ncol=2)
-                  i <- i - 1
-                  newdat$moves <- newdat$moves[seq_len(i-1),,drop=FALSE]
-                  for (j in seq_len(i-1)) {
-                     pos <- .updateboard(pos, move=newdat$moves[j,1:4], flip=flip, volume=0, verbose=verbose)
-                  }
-                  comment <- ""
-                  .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
-                  .drawsideindicator(i, flip)
-               }
-               next
             }
 
             # 0 to make current position the starting position (only in add mode)
@@ -957,6 +905,9 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
                attr(newdat$pos, "move") <- NULL
                attr(newdat$pos, "ispp") <- NULL
                attr(newdat$pos, "y1") <- NULL
+               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, sidetoplay)
+               sidetoplay <- ifelse(flip, "b", "w")
+               .drawsideindicator(sidetoplay, flip)
                next
             }
 
@@ -978,7 +929,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
             # u (and Escape) to update board
 
             if (identical(click, "u") || identical(click, "\033") || identical(click, "ctrl-[")) {
-               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop)
+               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, sidetoplay)
                hasarrows <- FALSE
                circles <- matrix(c(0,0), nrow=1, ncol=2)
                next
@@ -1028,17 +979,10 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
             # r to toggle between random/sequential mode
 
             if (identical(click, "r")) {
-               if (random) {
-                  random <- FALSE
-                  .texttop(.text("randomoff"))
-                  Sys.sleep(1)
-                  .texttop(texttop)
-               } else {
-                  random <- TRUE
-                  .texttop(.text("randomon"))
-                  Sys.sleep(1)
-                  .texttop(texttop)
-               }
+               random <- !random
+               .texttop(.text("randomo", random))
+               Sys.sleep(1)
+               .texttop(texttop)
                settings$random <- random
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
@@ -1046,8 +990,12 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
 
             # (/) to decrease/increase the line width value
 
-            if (identical(click, "(")) {
-               lwd <- max(1, lwd - 1)
+            if (identical(click, "(") || identical(click, ")")) {
+               if (identical(click, "(")) {
+                  lwd <- max(1, lwd - 1)
+               } else {
+                  lwd <- lwd + 1
+               }
                .texttop(.text("lwdadj", lwd))
                Sys.sleep(0.5)
                .texttop(texttop)
@@ -1056,31 +1004,21 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
                next
             }
 
-            if (identical(click, ")")) {
-               lwd <- lwd + 1
-               .texttop(.text("lwdadj", lwd))
-               Sys.sleep(0.5)
-               .texttop(texttop)
-               settings$lwd <- lwd
-               saveRDS(settings, file=file.path(configdir, "settings.rds"))
-               next
-            }
-
-            # F1 to print the help
+            # F1 to show the help
 
             if (identical(click, "F1")) {
                .printhelp(lwd=lwd)
-               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop)
+               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, sidetoplay)
                hasarrows <- FALSE
                circles <- matrix(c(0,0), nrow=1, ncol=2)
                next
             }
 
-            # F2 to get leaderboard and player statistics
+            # F2 to show the leaderboard and player statistics
 
             if (identical(click, "F2")) {
                .leaderboard(seqdir, files, lwd)
-               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop)
+               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, sidetoplay)
                hasarrows <- FALSE
                circles <- matrix(c(0,0), nrow=1, ncol=2)
                next
@@ -1104,10 +1042,11 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
                .colorpick(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, lwd)
                if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
-               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop)
+               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, sidetoplay)
                hasarrows <- FALSE
                circles <- matrix(c(0,0), nrow=1, ncol=2)
-               cols <- c("col.bg"=.get("col.bg"), "col.fg"=.get("col.fg"), "col.square.l"=.get("col.square.l"), "col.square.d"=.get("col.square.d"),
+               cols <- c("col.bg"=.get("col.bg"), "col.fg"=.get("col.fg"),
+                         "col.square.l"=.get("col.square.l"), "col.square.d"=.get("col.square.d"), "col.square.be"=.get("col.square.be"),
                          "col.top"=.get("col.top"), "col.bot"=.get("col.bot"), "col.help"=.get("col.help"), "col.help.border"=.get("col.help.border"),
                          "col.hint"=.get("col.hint"), "col.wrong"=.get("col.wrong"), "col.rect"=.get("col.rect"), "col.annot"=.get("col.annot"),
                          "col.side.w"=.get("col.side.w"), "col.side.b"=.get("col.side.b"))
@@ -1121,7 +1060,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
                .cexpick(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, lwd)
                if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
-               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop)
+               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, sidetoplay)
                hasarrows <- FALSE
                circles <- matrix(c(0,0), nrow=1, ncol=2)
                cex.top <- .get("cex.top")
@@ -1136,27 +1075,39 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
 
             if (identical(click, "F12")) {
                verbose <- !verbose
+               .texttop(.text("verbose", verbose))
+               Sys.sleep(0.5)
+               .texttop(texttop)
                next
             }
 
-            #if (mode == "add" && identical(click, "b")) {
-            #   .texttop("Board Editor")
-            #   i <- 1
-            #   comment <- ""
-            #   newdat$moves <- newdat$moves[numeric(0),]
-            #   #click <- getGraphicsEvent(prompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=function(key) return(key))
-            #   next
-            #}
+            # b to start the board editor (only in add mode)
+
+            if (mode == "add" && identical(click, "b")) {
+               out <- .boardeditor(pos, flip, lwd, verbose)
+               pos <- out$pos
+               colnames(pos) <- LETTERS[1:8]
+               rownames(pos) <- 1:8
+               flip <- out$flip
+               i <- 1
+               show <- FALSE
+               comment <- ""
+               hasarrows <- FALSE
+               circles <- matrix(c(0,0), nrow=1, ncol=2)
+               newdat$moves <- newdat$moves[numeric(0),]
+               newdat$pos <- pos
+               newdat$flip <- flip
+               attr(newdat$pos, "move") <- NULL
+               attr(newdat$pos, "ispp") <- NULL
+               attr(newdat$pos, "y1") <- NULL
+               sidetoplay <- ifelse(flip, "b", "w")
+               .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, sidetoplay)
+               next
+            }
 
             ##################################################################
 
             # if click is an actual click (and drag) on the board
-
-            click1.x <- click[1]
-            click1.y <- click[2]
-            click2.x <- click[3]
-            click2.y <- click[4]
-            button   <- click[5]
 
             if (verbose) {
                cat("Click 1: ", click1.x, ", ", click1.y, sep="")
@@ -1174,7 +1125,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
 
             if (click1.x == click2.x && click1.y == click2.y) {
 
-               if (identical(button, 2)) {
+               if (identical(button, 2L)) {
 
                   # if the right button was pressed, then draw a circle on the square
                   # (or if the square already has a circle, remove the circle)
@@ -1199,7 +1150,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
                      hasarrows <- FALSE
                      circles <- matrix(c(0,0), nrow=1, ncol=2)
                      if (mode == "add")
-                        .drawsideindicator(i, flip)
+                        .drawsideindicator(sidetoplay, flip)
                   }
 
                }
@@ -1219,7 +1170,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
 
          # if button 2 was used for the move, draw an arrow and go back to [b]
 
-         if (identical(button, 2)) {
+         if (identical(button, 2L)) {
             shape::Arrows(click1.y+0.5, click1.x+0.5, click2.y+0.5, click2.x+0.5, lwd=lwd*4, col=.get("col.annot"), arr.type="triangle", arr.length=lwd*0.1, arr.width=lwd*0.1, ljoin=1)
             hasarrows <- TRUE
             next
@@ -1227,23 +1178,19 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
 
          # if button 0 was used for the move and there are arrows/circles, redraw the board before making the move
 
-         if (identical(button, 0) && (hasarrows || nrow(circles) >= 2L)) {
+         if (identical(button, 0L) && (hasarrows || nrow(circles) >= 2L)) {
             .drawboard(pos, flip)
             hasarrows <- FALSE
             circles <- matrix(c(0,0), nrow=1, ncol=2)
             if (mode == "add")
-               .drawsideindicator(i, flip)
+               .drawsideindicator(sidetoplay, flip)
          }
 
          if (mode == "add" || all(c(click1.x==sub$moves$x1[i], click1.y==sub$moves$y1[i], click2.x==sub$moves$x2[i], click2.y==sub$moves$y2[i]))) {
 
             # if in add mode or if the move is correct, make the move
 
-            if (mode == "add") {
-               pos <- .updateboard(pos, move=c(click1.x, click1.y, click2.x, click2.y), flip=flip, volume=volume, verbose=verbose)
-            } else {
-               pos <- .updateboard(pos, move=c(click1.x, click1.y, click2.x, click2.y), flip=flip, volume=volume, verbose=verbose)
-            }
+            pos <- .updateboard(pos, move=c(click1.x, click1.y, click2.x, click2.y), flip=flip, volume=volume, verbose=verbose)
 
             .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
 
@@ -1307,6 +1254,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
          }
 
          i <- i + 1
+         sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
 
          if (mode == "add") {
 
@@ -1325,6 +1273,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
             pos <- .updateboard(pos, move=sub$moves[i,1:4], flip=flip, volume=volume, verbose=verbose)
             texttop <- .texttop(sub$moves$comment[i])
             i <- i + 1
+            sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
 
          }
 

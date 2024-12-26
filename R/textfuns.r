@@ -86,40 +86,22 @@
                          paste0("Really delete player '", arg, "'? (y/N): ")
    ))}
 
-   if (x == "pauseon") {
+   if (x == "pause") {
       return(switch(lang,
-                    de = "Pause an ...",
-                         "Pause on ..."
+                    de = paste0("Pause ", ifelse(arg, "an", "aus"), " ..."),
+                         paste0("Pause ", ifelse(arg, "on", "off"), " ...")
    ))}
 
-   if (x == "pauseoff") {
+   if (x == "showmoves") {
       return(switch(lang,
-                    de = "Pause aus ...",
-                         "Pause off ..."
+                    de = paste0("Zug zeigen ", ifelse(arg, "an", "aus"), " ..."),
+                         paste0("Show moves ", ifelse(arg, "on", "off"), " ...")
    ))}
 
-   if (x == "showmoveson") {
+   if (x == "sound") {
       return(switch(lang,
-                    de = "Zug zeigen an ...",
-                         "Show moves on ..."
-   ))}
-
-   if (x == "showmovesoff") {
-      return(switch(lang,
-                    de = "Zug zeigen aus ...",
-                         "Show moves off ..."
-   ))}
-
-   if (x == "soundon") {
-      return(switch(lang,
-                    de = "Sound an ...",
-                         "Sound on ..."
-   ))}
-
-   if (x == "soundoff") {
-      return(switch(lang,
-                    de = "Sound aus ...",
-                         "Sound off ..."
+                    de = paste0("Sound ", ifelse(arg, "an", "aus"), " ..."),
+                         paste0("Sound ", ifelse(arg, "on", "off"), " ...")
    ))}
 
    if (x == "comment") {
@@ -298,7 +280,7 @@
 
    if (x == "volume") {
       return(switch(lang,
-                    de = paste0("Lautst\U000000E4rke : ", arg),
+                    de = paste0("Lautst\U000000E4rke: ", arg),
                          paste0("Sound volume: ", arg)
    ))}
 
@@ -368,16 +350,10 @@
                          "Language: Englisch"
    ))}
 
-   if (x == "randomon") {
+   if (x == "random") {
       return(switch(lang,
-                    de = "Schalte in den Zufallsmodus ...",
-                         "Switching to random mode ..."
-   ))}
-
-   if (x == "randomoff") {
-      return(switch(lang,
-                    de = "Schalte in den sequenziellen Modus ...",
-                         "Switching to sequential mode ..."
+                    de = paste0("Schalte in den", ifelse(arg, "Zufallsmodus", "sequenziellen Modus"), " ..."),
+                         paste0("Switching to ", ifelse(arg, "random", "sequential"), " mode ...")
    ))}
 
    if (x == "lwdadj") {
@@ -422,6 +398,12 @@
       return(switch(lang,
                     de = paste0("Gr\U000000F6\U000000DFe eingeben (jetztiger Wert ist ", arg, "): "),
                          paste0("Enter size (current value is ", arg, "): ")
+   ))}
+
+   if (x == "verbose") {
+      return(switch(lang,
+                    de = paste0("Verbose: ", ifelse(arg, "An", "Aus")),
+                         paste0("Verbose: ", ifelse(arg, "On", "Off"))
    ))}
 
 }

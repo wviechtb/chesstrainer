@@ -7,28 +7,30 @@
 
 .drawboard <- function(pos, flip=FALSE) {
 
-   bg <- .get("col.bg")
-   fg <- .get("col.fg")
+   col.bg <- .get("col.bg")
+   col.fg <- .get("col.fg")
+   col.square.l <- .get("col.square.l")
+   col.square.d <- .get("col.square.d")
 
    if (dev.cur() == 1L)
-      dev.new(bg=bg)
+      dev.new(bg=col.bg)
 
-   par(xpd=NA, pty="s", mar=rep(5,4)+0.2, fg=.get("col.fg"), bg=.get("col.bg"))
+   par(xpd=NA, pty="s", mar=rep(5.2,4), fg=col.fg, bg=col.bg)
 
    mat <- outer(1:8, 1:8, function(x,y) .is.even(x+y))
 
-   image(1:8+0.5, 1:8+0.5, col=c(.get("col.square.l"), .get("col.square.d")), mat, xaxs="i", yaxs="i", xlab="", ylab="", xaxt="n", yaxt="n", bty="n", useRaster=TRUE)
+   image(1:8+0.5, 1:8+0.5, mat, col=c(col.square.l, col.square.d), xaxs="i", yaxs="i", xlab="", ylab="", xaxt="n", yaxt="n", bty="n", useRaster=TRUE)
 
    if (flip) {
       par(mgp=c(3,0.5,0))
-      axis(side=1, 1:8+0.5, rev(LETTERS[1:8]), las=1, tick=FALSE, col.axis=fg)
+      axis(side=1, 1:8+0.5, rev(LETTERS[1:8]), las=1, tick=FALSE, col.axis=col.fg)
       par(mgp=c(3,0.8,0))
-      axis(side=2, 1:8+0.5, rev(1:8),          las=1, tick=FALSE, col.axis=fg)
+      axis(side=2, 1:8+0.5, rev(1:8),          las=1, tick=FALSE, col.axis=col.fg)
    } else {
       par(mgp=c(3,0.5,0))
-      axis(side=1, 1:8+0.5, LETTERS[1:8],      las=1, tick=FALSE, col.axis=fg)
+      axis(side=1, 1:8+0.5, LETTERS[1:8],      las=1, tick=FALSE, col.axis=col.fg)
       par(mgp=c(3,0.8,0))
-      axis(side=2, 1:8+0.5, 1:8,               las=1, tick=FALSE, col.axis=fg)
+      axis(side=2, 1:8+0.5, 1:8,               las=1, tick=FALSE, col.axis=col.fg)
    }
 
    if (flip) {
@@ -40,6 +42,44 @@
    } else {
       for (i in 1:8) {
          for (j in 1:8) {
+            .drawpiece(i, j, pos[i,j])
+         }
+      }
+   }
+
+}
+
+.boardeditor.drawboard <- function(pos, flip=FALSE, lwd) {
+
+   col.bg <- .get("col.bg")
+   col.fg <- .get("col.fg")
+   col.square.l <- .get("col.square.l")
+   col.square.d <- .get("col.square.d")
+   col.square.be <- .get("col.square.be")
+
+   par(xpd=NA, pty="s", mar=rep(2.2,4), fg=col.fg, bg=col.bg)
+
+   mat <- matrix(1, nrow=10, ncol=10)
+   mat[2:9,2:9] <- outer(1:8, 1:8, function(x,y) ifelse(.is.even(x+y), 2, 3))
+
+   image(1:10+0.5, 1:10+0.5, mat, col=c(col.bg, col.square.d, col.square.l), xaxs="i", yaxs="i", xlab="", ylab="", xaxt="n", yaxt="n", bty="n", useRaster=TRUE)
+
+   for (j in 3:8) {
+      .drawsquare(1, j, col=col.square.be)
+      .addrect(1, j, offset=0.028, col.bg, lwd+2)
+      .drawsquare(10, j, col=col.square.be)
+      .addrect(10, j, offset=0.028, col.bg, lwd+2)
+   }
+
+   if (flip) {
+      for (i in 1:10) {
+         for (j in 2:9) {
+            .drawpiece(i, j, pos[11-i,11-j])
+         }
+      }
+   } else {
+      for (i in 1:10) {
+         for (j in 2:9) {
             .drawpiece(i, j, pos[i,j])
          }
       }
@@ -245,17 +285,71 @@
 
 }
 
+.boardeditor.updateboard <- function(pos, move, flip, button) {
+
+   x1 <- unname(move[[1]])
+   y1 <- unname(move[[2]])
+   x2 <- unname(move[[3]])
+   y2 <- unname(move[[4]])
+
+   if (button == 2L && x1 == x2 && y1 == y2 && x1 > 1 && x1 < 10 && y1 > 1 && y1 < 10) {
+
+      .drawsquare(x1, y1)
+
+      if (flip) {
+         pos[11-x1,11-y1] <- ""
+      } else {
+         pos[x1,y1] <- ""
+      }
+
+   } else {
+
+      if (button == 0L && x1 > 1 && x1 < 10 && y1 > 1 && y1 < 10)
+         .drawsquare(x1, y1)
+      if (button == 0L && x2 > 1 && x2 < 10 && y2 > 1 && y2 < 10)
+         .drawsquare(x2, y2)
+
+      if (flip) {
+         if (x2 > 1 && x2 < 10 && y2 > 1 && y2 < 10) {
+            .drawpiece(x2, y2, pos[11-x1,11-y1])
+            pos[11-x2,11-y2] <- pos[11-x1,11-y1]
+         }
+         if (button == 0L && x1 > 1 && x1 < 10)
+            pos[11-x1,11-y1] <- ""
+      } else {
+         if (x2 > 1 && x2 < 10 && y2 > 1 && y2 < 10) {
+            .drawpiece(x2, y2, pos[x1,y1])
+            pos[x2,y2] <- pos[x1,y1]
+         }
+         if (button == 0L && x1 > 1 && x1 < 10)
+            pos[x1,y1] <- ""
+      }
+
+   }
+
+   return(pos)
+
+}
+
 .addrect <- function(x, y, offset=0.028, col, lwd)
    rect(y+offset, x+offset, y+1-offset, x+1-offset, lwd=lwd, border=col, ljoin=1)
 
 .rmrect <- function(x, y, offset=0.028, lwd)
    rect(y+offset, x+offset, y+1-offset, x+1-offset, lwd=lwd+2, border=ifelse(.is.even(x+y), .get("col.square.d"), .get("col.square.l")), ljoin=1)
 
+.boardeditor.rmrect <- function(x, y, offset=0.028, lwd) {
+   if (x <= 1 || x >= 10 || y <= 1 || y >= 10) {
+      rect(y+offset, x+offset, y+1-offset, x+1-offset, lwd=lwd+2, border=.get("col.bg"), ljoin=1)
+   } else {
+      rect(y+offset, x+offset, y+1-offset, x+1-offset, lwd=lwd+2, border=ifelse(.is.even(x+y), .get("col.square.d"), .get("col.square.l")), ljoin=1)
+   }
+}
+
 .addcircle <- function(x, y, lwd)
    symbols(y+0.5, x+0.5, circles=0.45, inches=FALSE, lwd=lwd+2, fg=.get("col.annot"), add=TRUE)
 
-.drawsquare <- function(x, y)
-   rect(y, x, y+1, x+1, col=ifelse(.is.even(x+y), .get("col.square.d"), .get("col.square.l")), border=NA)
+.drawsquare <- function(x, y, col=ifelse(.is.even(x+y), .get("col.square.d"), .get("col.square.l")))
+   rect(y, x, y+1, x+1, col=col, border=NA)
 
 .texttop <- function(text) {
    rect(-2, 9.2, 12, 10, col=.get("col.bg"), border=NA)
@@ -265,38 +359,44 @@
    return(text)
 }
 
-.drawsideindicator <- function(i, flip, clear=TRUE) {
+.drawsideindicator <- function(sidetoplay, flip, clear=TRUE) {
+
+   col.side.w <- .get("col.side.w")
+   col.side.b <- .get("col.side.b")
 
    indsize <- 0.18
 
    if (clear) {
-      rect(9.25, 1.0, 9.25+indsize, 1.0+indsize, border=NA, col=.get("col.bg"))
-      rect(9.25, 9.0, 9.25+indsize, 9.0-indsize, border=NA, col=.get("col.bg"))
+      col.bg <- .get("col.bg")
+      rect(9.25, 1.0, 9.25+indsize, 1.0+indsize, border=NA, col=col.bg)
+      rect(9.25, 9.0, 9.25+indsize, 9.0-indsize, border=NA, col=col.bg)
    }
 
    if (flip) {
-      if (!.is.even(i)) {
-         rect(9.25, 9.0, 9.25+indsize, 9.0-indsize, border=NA, col=.get("col.side.w"))
+      if (sidetoplay == "w") {
+         rect(9.25, 9.0, 9.25+indsize, 9.0-indsize, border=NA, col=col.side.w)
       } else {
-         rect(9.25, 1.0, 9.25+indsize, 1.0+indsize, border=NA, col=.get("col.side.b"))
+         rect(9.25, 1.0, 9.25+indsize, 1.0+indsize, border=NA, col=col.side.b)
       }
    } else {
-      if (.is.even(i)) {
-         rect(9.25, 9.0, 9.25+indsize, 9.0-indsize, border=NA, col=.get("col.side.b"))
+      if (sidetoplay == "w") {
+         rect(9.25, 1.0, 9.25+indsize, 1.0+indsize, border=NA, col=col.side.w)
       } else {
-         rect(9.25, 1.0, 9.25+indsize, 1.0+indsize, border=NA, col=.get("col.side.w"))
+         rect(9.25, 9.0, 9.25+indsize, 9.0-indsize, border=NA, col=col.side.b)
       }
    }
 
 }
 
-.redrawall <- function(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop) {
+.redrawall <- function(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, sidetoplay) {
 
    .drawboard(pos, flip)
    .printinfo(mode, show, player, seqname, score, played, i, totalmoves)
    .texttop(texttop)
+
    if (mode == "add")
-      .drawsideindicator(i, flip)
+      .drawsideindicator(sidetoplay, flip)
+
    invisible()
 
 }

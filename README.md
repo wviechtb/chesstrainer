@@ -22,7 +22,7 @@ remotes::install_github("wviechtb/chesstrainer")
 ## To Do
 
 - [x] Add en passent.
-- [ ] Add a board editor.
+- [x] Add a board editor.
 - [x] Save settings across sessions.
 - [x] Allow adjusting colors.
 - [x] Allow adjusting text sizes.

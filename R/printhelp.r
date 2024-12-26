@@ -22,7 +22,7 @@
       "i       - toggle the language (English/German)",
       "r       - toggle between random/sequential mode",
       "(/)     - decrease/increase the line width",
-      "F1      - print help (<Escape> to close it)",
+      "F1      - show this help",
       "F2      - show the leaderboard and player statistics",
       "F3      - show current settings",
       "F4      - adjust colors",
@@ -41,9 +41,9 @@
       "z       - show moves on/off",
       "c       - add a comment to the current move",
       "0       - make the current position the starting position",
-      "b       - take back move",
+      "t       - take back move",
       "s       - save the sequence",
-      "?       - find all sequences that start in the same way"
+      "?       - find all sequences with the same moves"
       )
 
    }
@@ -68,7 +68,7 @@
       "i       - wechsel die Sprache (Englisch/Deutsch)",
       "r       - wechsel zwischen Zufalls/sequenziellen Modus",
       "(/)     - Linienbreite verringern/erh\U000000F6hen",
-      "F1      - Hilfe drucken (<Escape> um sie zu schlie\U000000DFen)",
+      "F1      - diese Hilfe anzeigen",
       "F2      - Rangliste und Spielerstatistiken anzeigen",
       "F3      - Einstellungen anzeigen",
       "F4      - Farben ausw\U000000E4hlen",
@@ -87,9 +87,9 @@
       "z       - Z\U000000FCge zeigen an/aus",
       "c       - Kommentar zum aktuellen Zug hinzuf\U000000FCgen",
       "0       - aktuelle Position zur Ausgangsposition machen",
-      "b       - Zug zur\U000000FCcknehmen",
+      "t       - Zug zur\U000000FCcknehmen",
       "s       - Sequenz abspeichern",
-      "?       - alle Sequenzen mit dem gleichen Anfang finden"
+      "?       - alle Sequenzen mit den gleichen Z\U000000FCgen finden"
       )
 
    }

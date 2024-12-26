@@ -14,11 +14,11 @@
 
    You will then receive a prompt to enter a player name. Choose a name and hit enter.
 
-   The trainer then starts in \sQuote{add} mode (see the \sQuote{Note} section below if you receive an error that the graphics device does not support event handling). For now, you should hit \code{<space>} (i.e., the spacebar), which will switch to \sQuote{play} mode. One of the existing sequences will then be chosen at random. The trainer may immediately prompt you to play a certain opening, it may make some moves for you, or it may start at a later position during a game. Either way, you will then have to make the correct move based on the position. You do this by dragging the piece to be played from its current position to the desired target square. The trainer will then make the next move, after which you will then again have to make the correct move. This will continue until the end of the sequence. If you do not know what the correct move is, the \code{<h>} key will provide a hint by showing which piece to move. Hitting \code{<h>} for a second time will show the target square.
+   The trainer then starts in \sQuote{add} mode (see the \sQuote{Note} section below if you receive an error that the graphics device does not support event handling). For now, you should hit \code{<space>} (i.e., the spacebar), which will switch to \sQuote{play} mode. One of the existing sequences will then be chosen at random. The trainer may immediately prompt you to play a certain opening, it may make some moves for you, or it may start at a later position during a game. Either way, you will then have to make the correct move based on the position. You do this by left-clicking and dragging the piece to be played from its current position to the desired target square. The trainer will then make the next move, after which you will then again have to make the correct move. This will continue until the end of the sequence. If you do not know what the correct move is, the \code{<h>} key will provide a hint by showing which piece to move. Hitting \code{<h>} for a second time will show the target square.
 
    In play mode, information is shown at the bottom about the current mode, the player name, the name of the current sequence, the current move number and the total number of moves of the sequence, the score (see below), and the number of times that the sequence has been played.
 
-   With \code{<F1>}, you can receive an overview of all keyboard shortcuts. You can quit the trainer with the \code{<q>} key.
+   With \code{<F1>}, you can receive an overview of all keyboard shortcuts (use any key or mouse click to close it). You can quit the trainer with the \code{<q>} key.
 
 }
 \section{The Score}{
@@ -53,7 +53,7 @@
 }
 \section{Adding New Sequences}{
 
-   With \code{<space>}, you can switch into the \sQuote{add} mode. This is where you can enter new sequences. The first thing to decide is whether the player should play with white or black. With the \code{<f>} key, the board can be flipped accordingly (the player always plays with the pieces at the bottom). Next, you need to decide whether some moves will be automatically played at the beginning of a sequence. If some moves should be played automatically, then simply make these moves on the board. Note that there is no check if the moves are legal and/or are played in the correct sequence, so care must be taken to do so appropriately. Once you arrive at the position where a player should start making moves, hit the \code{<z>} key (note that \sQuote{Show} at the bottom left then turns from \sQuote{Yes} to \sQuote{No}). Now continue playing the line as it should be played. The sequence should end with a move of the player. If you make a mistake when playing a move, use the \code{<b>} key to take the move back. Once the sequence is complete, use the \code{<s>} key to save the sequence. You will be prompted for a filename. Once the sequence has been saved, it will automatically become part of the sequences that may be selected in \sQuote{play} mode.
+   With \code{<space>}, you can switch into the \sQuote{add} mode. This is where you can enter new sequences. The first thing to decide is whether the player should play with white or black. With the \code{<f>} key, the board can be flipped accordingly (the player always plays with the pieces at the bottom). Next, you need to decide whether some moves will be automatically played at the beginning of a sequence. If some moves should be played automatically, then simply make these moves on the board. Note that there is no check if the moves are legal and/or are played in the correct sequence, so care must be taken to do so appropriately. Once you arrive at the position where a player should start making moves, hit the \code{<z>} key (note that \sQuote{Show} at the bottom left then turns from \sQuote{Yes} to \sQuote{No}). Now continue playing the line as it should be played. The sequence should end with a move of the player. If you make a mistake when playing a move, use the \code{<t>} key to take the move back. Once the sequence is complete, use the \code{<s>} key to save the sequence. You will be prompted for a filename. Once the sequence has been saved, it will automatically become part of the sequences that may be selected in \sQuote{play} mode.
 
    A sequence may also start immediately in the starting position. Here, you will hit the \code{<z>} key right at the beginning. Since it is then essentially impossible for a player to know what they should play (since there are many sensible moves one could make), you will have to instruct the player what they should do. Using the \code{<c>} key, you can add a comment to the current move which will be shown to the player. For example, you could tell the player to play the Spanish (Ruy Lopez) opening. You should then make the appropriate moves on the board.
 
@@ -65,11 +65,16 @@
 
    The \code{<e>} key opens up the \code{\link[=edit]{data editor}} on the data frame that contains the moves for the current sequence. This is most useful for adding or removing comments in the \code{comment} column. Making adjustments to the other columns should only be done if their meaning is clear.
 
-   With the \code{<?>} key, one can find all sequences that start in the same way as the moves that have been entered so far. If any matching sequences are found, a prompt will ask if they should be selected.
+   With the \code{<?>} key, one can find all sequences that start with the same moves that have been entered so far. If any matching sequences are found, a prompt will ask if they should be selected.
 
    In \sQuote{play} mode, the \code{<a>} key will create a copy of the current sequence, which can then be extended with additional moves and saved as a new sequence. This is useful for creating multiple branching lines from a given sequence.
 
    Note that sequences are quite personalized, since they involve going into a particular line that one deems most appropriate. Others may disagree and prefer a different line. Therefore, you should create sequences that you want to train yourself on, so you will be able to play them quickly from memory.
+
+}
+\section{Board Editor}{
+
+   When in \sQuote{add} mode, the \code{<b>} key opens up a board editor. Here, one can quickly set up a more advanced position (e.g., for a puzzle). With left-click and drag, one can move pieces around. With right-click and drag, one can copy a piece. A right-click without a drag deletes a piece. The \code{<f>} key flips the board. The \code{<n>} key resets the board into the starting position. The \code{<c>} key clears the board. With \code{<F1>}, you can receive a help overlay. You can quit the board editor with the \code{<q>} (or \code{<Escape>}) key.
 
 }
 \section{Managing/Selecting Players}{
