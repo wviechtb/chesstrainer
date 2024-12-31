@@ -166,6 +166,7 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
 <li><p>By default, there is a 0.5 second sleep time between moves played by the trainer. This can be decreased/increased with the <code>&lt;-&gt;</code> and <code>&lt;+&gt;</code> keys.</p></li>
 <li><p>By default, the trainer waits after completing a sequence before starting a new sequence. One can toggle this pause on/off with the <code>&lt;w&gt;</code> key.</p></li>
 <li><p>With the <code>&lt;i&gt;</code> key, the language of the trainer can be toggled between English and German (author note: I wrote this trainer in part for my chess playing kids, which is the reason why a German translation is available).</p></li>
+<li><p>With the <code>&lt;v&gt;</code> key, the evluation bar can be togged on/off.</p></li>
 </ul><p>The settings are automatically stored in a file called <code>settings.rds</code> at <code>tools::R_user_dir(package="chesstrainer", which="config")</code> and are read in when starting the trainer. The current settings can be shown with <code>&lt;F3&gt;</code>.</p>
 <p>With <code>&lt;F4&gt;</code>, one can adjust the colors. The colors are automatically stored in a file called <code>colors.rds</code> at <code>tools::R_user_dir(package="chesstrainer", which="config")</code> and are read in when starting the trainer.</p>
 <p>With <code>&lt;F5&gt;</code>, one can adjust the size of the text at the top and the bottom. The text sizes are automatically stored in <code>settings.rds</code> and are read in when starting the trainer.</p>

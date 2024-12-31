@@ -388,6 +388,47 @@
 
 }
 
+.draweval <- function(x=NA_real_, flip=FALSE, clear=FALSE, eval=TRUE) {
+
+   if (eval) {
+      eval <- x
+   } else {
+      return()
+   }
+
+   col.bg <- .get("col.bg")
+   indsize <- 0.18
+
+   if (clear) {
+      rect(9.75, 1, 9.75+indsize, 9, border=NA, col=col.bg)
+      return()
+   }
+
+   col.side.w <- .get("col.side.w")
+   col.side.b <- .get("col.side.b")
+
+   maxeval <- 5
+   eval.sav <- eval
+   eval <- min(max(eval, -maxeval), maxeval)
+   eval <- (eval + maxeval) / (2*maxeval) * 8 + 1
+
+   if (is.na(eval)) {
+      cols <- col2rgb(col.bg)
+      rect(9.75, 1, 9.75+indsize, 9, border=NA, col=rgb(cols[1], cols[2], cols[3], 120, maxColorValue=255))
+   } else {
+      if (flip) {
+         rect(9.75, 10-eval, 9.75+indsize, 9, border=NA, col=col.side.w)
+         rect(9.75, 1, 9.75+indsize, 10-eval, border=NA, col=col.side.b)
+         text(9.75 + indsize/2, 1.1, formatC(eval.sav, format="f", digits=1), cex=.get("cex.eval"))
+      } else {
+         rect(9.75, eval, 9.75+indsize, 9, border=NA, col=col.side.b)
+         rect(9.75, 1, 9.75+indsize, eval, border=NA, col=col.side.w)
+         text(9.75 + indsize/2, 1.1, formatC(eval.sav, format="f", digits=1), cex=.get("cex.eval"))
+      }
+   }
+
+}
+
 .redrawall <- function(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, sidetoplay, random) {
 
    .drawboard(pos, flip)
@@ -401,64 +442,9 @@
 
 }
 
-.leaderboard <- function(seqdir, files, lwd) {
-
-   tmp <- lapply(file.path(seqdir, files), readRDS)
-   tmp.scores <- lapply(tmp, function(x) x$score)
-   players <- unique(unlist(lapply(tmp.scores, function(x) names(x))))
-   nplayers <- length(players)
-
-   if (nplayers >= 1) {
-
-      tmp.scores <- lapply(players, function(player) {
-         x <- lapply(tmp, function(x) x$score[player])
-         x[sapply(x, is.null)] <- 100
-         unlist(x)
-      })
-      tmp.scores <- do.call(cbind, tmp.scores)
-      tmp.scores[is.na(tmp.scores)] <- 100
-      rownames(tmp.scores) <- files
-      tmp.scores[tmp.scores == 0] <- NA_real_
-
-      mean.scores <- round(apply(tmp.scores, 2, mean, na.rm=TRUE))
-      sd.scores   <- round(apply(tmp.scores, 2, sd, na.rm=TRUE))
-      min.scores  <- apply(tmp.scores, 2, min, na.rm=TRUE)
-      max.scores  <- apply(tmp.scores, 2, max, na.rm=TRUE)
-
-      tmp.played <- lapply(players, function(player) {
-         x <- lapply(tmp, function(x) x$played[player])
-         x[sapply(x, is.null)] <- 0
-         unlist(x)
-      })
-      tmp.played <- do.call(cbind, tmp.played)
-      tmp.played[is.na(tmp.played)] <- 0
-      total.played <- round(apply(tmp.played, 2, sum))
-
-      tmp <- data.frame(players, mean.scores, sd.scores, min.scores, max.scores, total.played)
-      names(tmp) <- c(.text("player"), .text("score"), "SD", "Min", "Max", .text("played"))
-      tmp <- tmp[order(tmp[[2]]),]
-
-      txt <- capture.output(print(tmp, print.gap=3))
-      txt <- c(txt[1], paste0(rep("-", max(nchar(txt))), collapse=""), txt[2:length(txt)])
-
-      rect(1+0.2, 1+0.2, 9-0.2, 9-0.2, col=.get("col.bg"), border=.get("col.help.border"), lwd=lwd+3)
-
-      maxsw <- max(sapply(txt, strwidth, family=.get("font.mono")))
-      maxsh <- max(sapply(txt, strheight, family=.get("font.mono"))) * length(txt)
-      cex <- min(1.5, (8.5 - 1.5) / max(maxsw, maxsh) * 0.95)
-
-      text(1+0.5, seq(min(8.5, 5+nplayers*0.25), max(1.5, 5-nplayers*0.25), length.out=length(txt)),
-           txt, pos=4, cex=cex, family=.get("font.mono"), col=.get("col.help"))
-
-      getGraphicsEvent(prompt="", onMouseDown=function(button, x, y) return(""), onKeybd=function(key) return(""))
-
-   }
-
-   invisible()
-
-}
-
 .quit <- function() {
+
+   #return()
 
    cols <- col2rgb(.get("col.bg"))
 

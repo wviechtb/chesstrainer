@@ -34,8 +34,8 @@
 
    if (x == "copyseqs") {
       return(switch(lang,
-                    de = "Beispielsequenzen in das Sequenzverzeichnis kopieren? (j/N): ",
-                         "Copy example sequences to the sequence directory? (y/N): "
+                    de = "Beispielsequenzen in das Sequenzverzeichnis kopieren? (J/n): ",
+                         "Copy example sequences to the sequence directory? (Y/n): "
    ))}
 
    if (x == "dirnotexists") {
@@ -380,8 +380,6 @@
                          paste0("Enter color (current value is '", arg, "'): ")
    ))}
 
-
-
    if (x == "cexcurrent") {
       return(switch(lang,
                     de = "Aktuelle Einstellungen:\n",
@@ -404,6 +402,12 @@
       return(switch(lang,
                     de = paste0("Verbose: ", ifelse(arg, "An", "Aus")),
                          paste0("Verbose: ", ifelse(arg, "On", "Off"))
+   ))}
+
+   if (x == "eval") {
+      return(switch(lang,
+                    de = paste0("Bewertungsbalken: ", ifelse(arg, "An", "Aus")),
+                         paste0("Evaluation bar: ", ifelse(arg, "On", "Off"))
    ))}
 
 }

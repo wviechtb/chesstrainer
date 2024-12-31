@@ -6,8 +6,8 @@
 }
 \usage{
 play(player="", mode="add", sleep=0.5, volume=0.5,
-     lwd=2, cex.top=1.4, cex.bot=0.7,
-     expval=2, pause=TRUE, random=TRUE, lang="en", \dots)
+     lwd=2, cex.top=1.4, cex.bot=0.7, cex.eval=0.5,
+     expval=2, pause=TRUE, random=TRUE, eval=TRUE, lang="en", \dots)
 }
 \arguments{
    \item{player}{character string to specify a player. If blank, the trainer will prompt for a (new) player name.}
@@ -17,9 +17,11 @@ play(player="", mode="add", sleep=0.5, volume=0.5,
    \item{lwd}{numeric value to specify the line width for drawing rectangles.}
    \item{cex.top}{numeric value to specify the size for text at the top.}
    \item{cex.bot}{numeric value to specify the size for text at the bottom.}
+   \item{cex.eval}{numeric value to specify the size for the text in the evaluation bar.}
    \item{expval}{numeric value to specify the exponent value for sequence scores to adjust the selection probabilities.}
    \item{pause}{logical to specify whether the trainer should pause after a completed sequence.}
    \item{random}{logical to specify whether sequences should be selected at random or sequentially.}
+   \item{eval}{logical to specify whether the evaluation bar should be shown.}
    \item{lang}{character string to specify the language (either \code{"en"} for English or \code{"de"} for German).}
    \item{\dots}{other arguments}
 }

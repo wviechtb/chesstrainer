@@ -104,6 +104,7 @@
    \item By default, there is a 0.5 second sleep time between moves played by the trainer. This can be decreased/increased with the \code{<->} and \code{<+>} keys.
    \item By default, the trainer waits after completing a sequence before starting a new sequence. One can toggle this pause on/off with the \code{<w>} key.
    \item With the \code{<i>} key, the language of the trainer can be toggled between English and German (author note: I wrote this trainer in part for my chess playing kids, which is the reason why a German translation is available).
+   \item With the \code{<v>} key, the evluation bar can be togged on/off.
    }
 
    The settings are automatically stored in a file called \code{settings.rds} at \code{tools::R_user_dir(package="chesstrainer", which="config")} and are read in when starting the trainer. The current settings can be shown with \code{<F3>}.

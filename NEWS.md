@@ -1,4 +1,4 @@
-# chesstrainer 0.4-0 (2024-12-26)
+# chesstrainer 0.4-0 (2024-12-31)
 
 - changed `<r>` key to `<Ctrl-r>` and `<d>` key to `<Ctrl-d>`
 - added `<r>` key (and `random` argument) to toggle between random/sequential mode
@@ -12,6 +12,7 @@
 - added `<?>` key to find all sequences that start with the same moves entered so far
 - the `<t>` key is now used for taking back moves (in add mode) or a score adjustment (in play mode)
 - added a board editor (which can be opened in add mode with the `<b>` key)
+- sequences can now contain a position evaluation, which (if available) is shown as an evaluation bar (can be toggled on/off with `<v>`)
 
 # chesstrainer 0.1-0 (2024-12-17)
 
