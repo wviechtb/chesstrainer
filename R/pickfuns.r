@@ -80,6 +80,7 @@
          if (identical(cex, ""))
             next
          cex <- as.numeric(cex)
+         cex[cex < 0.1] <- 0.1
          assign(tab[cexno,1], cex, envir=.chesstrainer)
          tab[cexno,2] <- cex
          .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop="Lorem ipsum", sidetoplay, random)

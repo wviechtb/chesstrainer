@@ -26,6 +26,10 @@ remotes::install_github("wviechtb/chesstrainer")
 - [x] Save settings across sessions.
 - [x] Allow adjusting colors.
 - [x] Allow adjusting text sizes.
+- [x] Add evaluation bar.
+- [ ] Add pawn promotion.
+- [x] Generate FEN for a position.
+- [ ] Get position evaluation automatically via Stockfish.
 - [ ] Allow branching in sequences (maybe, as this requires a more substantial update).
 
 ## Meta

@@ -58,8 +58,8 @@
 
    if (x == "zeroseqsfound") {
       return(switch(lang,
-                    de = "Keine Sequenzen gefunden ...\n",
-                         "No sequences found ...\n"
+                    de = "Keine Sequenzen gefunden.\n",
+                         "No sequences found.\n"
    ))}
 
    if (x == "newplayername") {
@@ -88,20 +88,20 @@
 
    if (x == "pause") {
       return(switch(lang,
-                    de = paste0("Pause ", ifelse(arg, "an", "aus"), " ..."),
-                         paste0("Pause ", ifelse(arg, "on", "off"), " ...")
+                    de = paste0("Pause: ", ifelse(arg, "an", "aus")),
+                         paste0("Pause: ", ifelse(arg, "on", "off"))
    ))}
 
    if (x == "showmoves") {
       return(switch(lang,
-                    de = paste0("Zug zeigen ", ifelse(arg, "an", "aus"), " ..."),
-                         paste0("Show moves ", ifelse(arg, "on", "off"), " ...")
+                    de = paste0("Zug zeigen: ", ifelse(arg, "an", "aus")),
+                         paste0("Show moves: ", ifelse(arg, "on", "off"))
    ))}
 
    if (x == "sound") {
       return(switch(lang,
-                    de = paste0("Sound ", ifelse(arg, "an", "aus"), " ..."),
-                         paste0("Sound ", ifelse(arg, "on", "off"), " ...")
+                    de = paste0("Sound: ", ifelse(arg, "an", "aus")),
+                         paste0("Sound: ", ifelse(arg, "on", "off"))
    ))}
 
    if (x == "comment") {
@@ -352,8 +352,8 @@
 
    if (x == "random") {
       return(switch(lang,
-                    de = paste0("Schalte in den ", ifelse(arg, "Zufallsmodus", "sequenziellen Modus"), " ..."),
-                         paste0("Switching to ", ifelse(arg, "random", "sequential"), " mode ...")
+                    de = paste0("Schalte in den ", ifelse(arg, "Zufallsmodus", "sequenziellen Modus")),
+                         paste0("Switching to ", ifelse(arg, "random", "sequential"), " mode")
    ))}
 
    if (x == "lwdadj") {

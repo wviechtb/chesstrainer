@@ -97,6 +97,12 @@
    isrochade <- ""
    isenpassent <- ""
    ispp <- ""
+   pawnmove <- FALSE
+
+   rochade <- attributes(pos)$rochade
+
+   if (is.null(rochade))
+      rochade <- rep(TRUE, 4)
 
    if (flip) {
       if (x1 == 2 && x2 == 4 && pos[9-x1,9-y1] == "BP")
@@ -108,6 +114,14 @@
          ispp <- "w"
       if (x1 == 7 && x2 == 5 && pos[x1,y1] == "BP")
          ispp <- "b"
+   }
+
+   if (flip) {
+      if (pos[9-x1,9-y1] %in% c("WP","BP"))
+         pawnmove <- TRUE
+   } else {
+      if (pos[x1,y1] %in% c("WP","BP"))
+         pawnmove <- TRUE
    }
 
    if (flip) {
@@ -278,9 +292,30 @@
       }
    }
 
+   if (pos[1,5] != "WK")
+      rochade[1:2] <- FALSE
+   if (pos[8,5] != "BK")
+      rochade[3:4] <- FALSE
+   if (pos[1,8] != "WR")
+      rochade[1] <- FALSE
+   if (pos[1,1] != "WR")
+      rochade[2] <- FALSE
+   if (pos[8,8] != "BR")
+      rochade[3] <- FALSE
+   if (pos[8,1] != "BR")
+      rochade[4] <- FALSE
+
    attr(pos, "move") <- move
    attr(pos, "ispp") <- ispp
    attr(pos, "y1") <- y1
+   attr(pos, "rochade") <- rochade
+
+   if (pawnmove || iscapture) {
+      attr(pos, "moves50") <- 0
+   } else {
+      attr(pos, "moves50") <- attr(pos, "moves50") + 1
+   }
+
    return(pos)
 
 }
@@ -354,6 +389,7 @@
 .texttop <- function(text) {
    rect(-2, 9.2, 12, 10, col=.get("col.bg"), border=NA)
    if (!identical(text, "")) {
+      text <- gsub("\\\\n", "\n", text)
       text(5, 9.5, text, cex=.get("cex.top"), col=.get("col.top"))
    }
    return(text)

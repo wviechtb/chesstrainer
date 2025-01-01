@@ -42,7 +42,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
       saveRDS(cols, file=file.path(configdir, "colors.rds"))
    } else {
       if (file.exists(file.path(configdir, "settings.rds"))) {
-         # apply settings, but only for those that are equal to their defaults
+         # apply settings, but only for those that are not set via play()
          settings <- readRDS(file.path(configdir, "settings.rds"))
          mc <- as.list(match.call())
          if (is.null(mc$player))
@@ -208,6 +208,16 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
       dat <- dat.all[files.all %in% selected]
 
       k <- length(files)
+
+      # if a single sequence is selected and it is deleted, then k will be 0;
+      # in this case select all sequences and start over
+
+      if (k == 0L) {
+         cat(.text("zeroseqsfound"))
+         cat(.text("allseqselected"))
+         selected <- list.files(seqdir, pattern=".rds$")
+         next
+      }
 
       scores.selected <- sapply(dat, function(x) x$score[player])
       scores.selected[is.na(scores.selected) | .is.null(scores.selected)] <- 100
@@ -424,6 +434,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
                run.all <- FALSE
                run.rnd <- FALSE
                wait <- FALSE
+               #sfproc$kill()
                .quit()
                dev.off()
                next
@@ -572,12 +583,12 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
             if (identical(click, "l")) {
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
                if (k > 0L) {
-                  tmp <- data.frame(files, played.selected, scores.selected, formatC(probvals.selected, format="f", digits=1))
-                  names(tmp) <- c("Name", .text("played"), .text("score"), .text("prob"))
-                  tmp$Name <- format(tmp$Name, justify="left")
-                  names(tmp)[1] <- ""
-                  rownames(tmp) <- which(files.all %in% selected)
-                  print(tmp, print.gap=2)
+                  tab <- data.frame(files, played.selected, scores.selected, formatC(probvals.selected, format="f", digits=1))
+                  names(tab) <- c("Name", .text("played"), .text("score"), .text("prob"))
+                  tab$Name <- format(tab$Name, justify="left")
+                  names(tab)[1] <- ""
+                  rownames(tab) <- which(files.all %in% selected)
+                  print(tab, print.gap=2)
                } else {
                   cat(.text("zeroseqsfound"))
                }
@@ -782,11 +793,11 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
                if (any(seqident)) {
                   cat(.text("seqsmatch"))
-                  tmp <- data.frame(Name=files.all[seqident])
-                  tmp$Name <- format(tmp$Name, justify="left")
-                  names(tmp)[1] <- ""
-                  rownames(tmp) <- which(seqident)
-                  print(tmp, print.gap=2)
+                  tab <- data.frame(Name=files.all[seqident])
+                  tab$Name <- format(tab$Name, justify="left")
+                  names(tab)[1] <- ""
+                  rownames(tab) <- which(seqident)
+                  print(tab, print.gap=2)
                   cat("\n")
                   selmatches <- readline(prompt=.text("selmatches"))
                   if (identical(selmatches, "") || .confirm(selmatches)) {
@@ -889,7 +900,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
                }
 
                i <- i + 1
-               sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
+               sidetoplay <- ifelse(flip, "w", "b")
                show <- FALSE
                .printinfo(mode, show, player, seqname, score, played, i, totalmoves, random)
                .drawsideindicator(sidetoplay, flip)
@@ -1226,7 +1237,6 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
             # if in add mode or if the move is correct, make the move
 
             pos <- .updateboard(pos, move=c(click1.x, click1.y, click2.x, click2.y), flip=flip, volume=volume, verbose=verbose)
-
             .printinfo(mode, show, player, seqname, score, played, i, totalmoves, random)
             .draweval(sub$moves$eval[i], flip=flip, eval=eval)
 
@@ -1298,6 +1308,10 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
 
          i <- i + 1
          sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
+
+         fen <- .genfen(pos, flip, sidetoplay, i)
+         #print(pos)
+         #cat(fen, "\n")
 
          if (mode == "add") {
 

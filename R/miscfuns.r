@@ -11,3 +11,68 @@
    return(sapply(x, is.null))
 
 }
+
+.genfen <- function(pos, flip, sidetoplay, i) {
+
+   pos[pos == "WR"] <- "R"
+   pos[pos == "WN"] <- "N"
+   pos[pos == "WB"] <- "B"
+   pos[pos == "WQ"] <- "Q"
+   pos[pos == "WK"] <- "K"
+   pos[pos == "WP"] <- "P"
+   pos[pos == "BR"] <- "r"
+   pos[pos == "BN"] <- "n"
+   pos[pos == "BB"] <- "b"
+   pos[pos == "BQ"] <- "q"
+   pos[pos == "BK"] <- "k"
+   pos[pos == "BP"] <- "p"
+   pos[pos == ""] <- "."
+
+   fen <- c()
+
+   for (j in 8:1) {
+      fen[9-j] <- paste0(pos[j,], collapse="")
+      matches <- gregexpr("\\.+", fen[9-j])
+      regmatches(fen[9-j], matches) <- lapply(regmatches(fen[9-j], matches), function(dot_seq) sapply(dot_seq, nchar))
+   }
+
+   fen <- paste0(fen, collapse="/")
+   fen <- paste(fen, sidetoplay)
+
+   rochade <- attributes(pos)$rochade
+
+   if (identical(rochade, rep(FALSE,4))) {
+      rochade <- "-"
+   } else {
+      rochade <- paste0(c("K", "Q", "k", "q")[rochade], collapse="")
+   }
+
+   fen <- paste(fen, rochade)
+
+   ispp <- attributes(pos)$ispp
+
+   if (!identical(ispp, "")) {
+      if (ispp == "w") {
+         if (flip) {
+            enpassent <- paste0(letters[8:1][attributes(pos)$y1], 3, collapse="")
+         } else {
+            enpassent <- paste0(letters[1:8][attributes(pos)$y1], 3, collapse="")
+         }
+      } else {
+         if (flip) {
+            enpassent <- paste0(letters[8:1][attributes(pos)$y1], 6, collapse="")
+         } else {
+            enpassent <- paste0(letters[1:8][attributes(pos)$y1], 6, collapse="")
+         }
+      }
+   } else {
+      enpassent <- "-"
+   }
+
+   fen <- paste(fen, enpassent)
+   fen <- paste(fen, attributes(pos)$moves50)
+   fen <- paste(fen, (i+1) %/% 2)
+
+   return(fen)
+
+}
