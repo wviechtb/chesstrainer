@@ -14,6 +14,8 @@
 
 .genfen <- function(pos, flip, sidetoplay, i) {
 
+   # change piece abbreviations to those used by FEN
+
    pos[pos == "WR"] <- "R"
    pos[pos == "WN"] <- "N"
    pos[pos == "WB"] <- "B"
@@ -28,6 +30,8 @@
    pos[pos == "BP"] <- "p"
    pos[pos == ""] <- "."
 
+   # generate the piece placement data
+
    fen <- c()
 
    for (j in 8:1) {
@@ -37,7 +41,12 @@
    }
 
    fen <- paste0(fen, collapse="/")
+
+   # add the active color
+
    fen <- paste(fen, sidetoplay)
+
+   # add castling availability
 
    rochade <- attributes(pos)$rochade
 
@@ -48,6 +57,8 @@
    }
 
    fen <- paste(fen, rochade)
+
+   # add en passent target square
 
    ispp <- attributes(pos)$ispp
 
@@ -70,7 +81,13 @@
    }
 
    fen <- paste(fen, enpassent)
+
+   # add halfmove clock
+
    fen <- paste(fen, attributes(pos)$moves50)
+
+   # add fullmove number
+
    fen <- paste(fen, (i+1) %/% 2)
 
    return(fen)
