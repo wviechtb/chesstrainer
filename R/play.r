@@ -23,6 +23,10 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
 
    verbose <- isTRUE(ddd$verbose)
 
+   cols.all <- c("col.bg", "col.fg", "col.square.l", "col.square.d", "col.square.be",
+                 "col.top", "col.bot", "col.help", "col.help.border",
+                 "col.hint", "col.wrong", "col.rect", "col.annot", "col.side.w", "col.side.b")
+
    # create config directory and read/save settings and colors
 
    configdir <- tools::R_user_dir(package="chesstrainer", which="config")
@@ -34,11 +38,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
          stop(.text("dircreateerror"), call.=FALSE)
       settings <- data.frame(player, mode, sleep, volume, lwd, cex.top, cex.bot, cex.eval, expval, pause, random, eval, lang)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
-      cols <- c("col.bg"=.get("col.bg"), "col.fg"=.get("col.fg"),
-                "col.square.l"=.get("col.square.l"), "col.square.d"=.get("col.square.d"), "col.square.be"=.get("col.square.be"),
-                "col.top"=.get("col.top"), "col.bot"=.get("col.bot"), "col.help"=.get("col.help"), "col.help.border"=.get("col.help.border"),
-                "col.hint"=.get("col.hint"), "col.wrong"=.get("col.wrong"), "col.rect"=.get("col.rect"), "col.annot"=.get("col.annot"),
-                "col.side.w"=.get("col.side.w"), "col.side.b"=.get("col.side.b"))
+      cols <- sapply(cols.all, function(x) .get(x))
       saveRDS(cols, file=file.path(configdir, "colors.rds"))
    } else {
       if (file.exists(file.path(configdir, "settings.rds"))) {
@@ -79,27 +79,11 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
       }
       if (file.exists(file.path(configdir, "colors.rds"))) {
          cols <- readRDS(file.path(configdir, "colors.rds"))
-         assign("col.bg",          cols["col.bg"],          envir=.chesstrainer)
-         assign("col.fg",          cols["col.fg"],          envir=.chesstrainer)
-         assign("col.square.l",    cols["col.square.l"],    envir=.chesstrainer)
-         assign("col.square.d",    cols["col.square.d"],    envir=.chesstrainer)
-         assign("col.square.be",   cols["col.square.be"],   envir=.chesstrainer)
-         assign("col.top",         cols["col.top"],         envir=.chesstrainer)
-         assign("col.bot",         cols["col.bot"],         envir=.chesstrainer)
-         assign("col.help",        cols["col.help"],        envir=.chesstrainer)
-         assign("col.help.border", cols["col.help.border"], envir=.chesstrainer)
-         assign("col.hint",        cols["col.hint"],        envir=.chesstrainer)
-         assign("col.wrong",       cols["col.wrong"],       envir=.chesstrainer)
-         assign("col.rect",        cols["col.rect"],        envir=.chesstrainer)
-         assign("col.annot",       cols["col.annot"],       envir=.chesstrainer)
-         assign("col.side.w",      cols["col.side.w"],      envir=.chesstrainer)
-         assign("col.side.b",      cols["col.side.b"],      envir=.chesstrainer)
+         for (j in 1:length(cols.all)) {
+            assign(cols.all[j], cols[cols.all[j]], envir=.chesstrainer)
+         }
       } else {
-         cols <- c("col.bg"=.get("col.bg"), "col.fg"=.get("col.fg"),
-                   "col.square.l"=.get("col.square.l"), "col.square.d"=.get("col.square.d"), "col.square.be"=.get("col.square.be"),
-                   "col.top"=.get("col.top"), "col.bot"=.get("col.bot"), "col.help"=.get("col.help"), "col.help.border"=.get("col.help.border"),
-                   "col.hint"=.get("col.hint"), "col.wrong"=.get("col.wrong"), "col.rect"=.get("col.rect"), "col.annot"=.get("col.annot"),
-                   "col.side.w"=.get("col.side.w"), "col.side.b"=.get("col.side.b"))
+         cols <- sapply(cols.all, function(x) .get(x))
          saveRDS(cols, file=file.path(configdir, "colors.rds"))
       }
    }
@@ -1078,17 +1062,13 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2, cex.top=1.
 
             if (identical(click, "F4")) {
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
-               .colorpick(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, lwd, sidetoplay, random)
+               .colorpick(cols.all, pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, lwd, sidetoplay, random)
                if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
                .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, sidetoplay, random)
                .draweval(sub$moves$eval[i], flip=flip, eval=eval)
                hasarrows <- FALSE
                circles <- matrix(c(0,0), nrow=1, ncol=2)
-               cols <- c("col.bg"=.get("col.bg"), "col.fg"=.get("col.fg"),
-                         "col.square.l"=.get("col.square.l"), "col.square.d"=.get("col.square.d"), "col.square.be"=.get("col.square.be"),
-                         "col.top"=.get("col.top"), "col.bot"=.get("col.bot"), "col.help"=.get("col.help"), "col.help.border"=.get("col.help.border"),
-                         "col.hint"=.get("col.hint"), "col.wrong"=.get("col.wrong"), "col.rect"=.get("col.rect"), "col.annot"=.get("col.annot"),
-                         "col.side.w"=.get("col.side.w"), "col.side.b"=.get("col.side.b"))
+               cols <- sapply(cols.all, function(x) .get(x))
                saveRDS(cols, file=file.path(configdir, "colors.rds"))
                next
             }

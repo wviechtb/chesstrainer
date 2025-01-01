@@ -1,9 +1,8 @@
-.colorpick <- function(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, lwd, sidetoplay, random) {
+.colorpick <- function(cols.all, pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, lwd, sidetoplay, random) {
 
    cat(.text("colcurrent"))
 
-   tab <- data.frame(col = c("col.bg", "col.fg", "col.square.l", "col.square.d", "col.square.be", "col.top", "col.bot", "col.help", "col.help.border", "col.hint", "col.wrong", "col.rect", "col.annot", "col.side.w", "col.side.b"),
-                     val = c(.get("col.bg"), .get("col.fg"), .get("col.square.l"), .get("col.square.d"), .get("col.square.be"), .get("col.top"), .get("col.bot"), .get("col.help"), .get("col.help.border"), .get("col.hint"), .get("col.wrong"), .get("col.rect"), .get("col.annot"), .get("col.side.w"), .get("col.side.b")))
+   tab <- data.frame(col=cols.all, val=unname(sapply(cols.all, function(x) .get(x))))
    names(tab) <- c("", "")
    print(tab, right=FALSE, print.gap=3)
 
