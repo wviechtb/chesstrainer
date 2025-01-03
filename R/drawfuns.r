@@ -102,7 +102,7 @@
    if (is.null(rochade))
       rochade <- rep(TRUE, 4)
 
-   # check for a two-square move of a pawn from its original position (since this may enable en passent)
+   # check for a two-square move of a pawn from its original position (since this may enable en passant)
 
    if (flip) {
       if (x1 == 2 && x2 == 4 && pos[9-x1,9-y1] == "BP")
@@ -126,10 +126,10 @@
          pawnmove <- TRUE
    }
 
-   # check for rochade and en passent
+   # check for rochade and en passant
 
    isrochade <- ""
-   isenpassent <- ""
+   isenpassant <- ""
 
    if (flip) {
 
@@ -168,15 +168,15 @@
          .drawpiece(9-8, 9-4, "BR")
       }
 
-      # check for en passent
+      # check for en passant
 
       if (identical(attr(pos, "ispp"), "b") && pos[9-x1,9-y1] == "WP" && x1 == 4 && attr(pos, "y1") == y2) {
-         isenpassent <- "w"
+         isenpassant <- "w"
          pos[4,y2] <- ""
          .drawsquare(4, y2)
       }
       if (identical(attr(pos, "ispp"), "w") && pos[9-x1,9-y1] == "BP" && x1 == 5 && attr(pos, "y1") == y2) {
-         isenpassent <- "b"
+         isenpassant <- "b"
          pos[5,y2] <- ""
          .drawsquare(5, y2)
       }
@@ -218,15 +218,15 @@
          .drawpiece(8, 4, "BR")
       }
 
-      # check for en passent
+      # check for en passant
 
       if (identical(attr(pos, "ispp"), "b") && pos[x1,y1] == "WP" && x1 == 5 && attr(pos, "y1") == y2) {
-         isenpassent <- "w"
+         isenpassant <- "w"
          pos[5,y2] <- ""
          .drawsquare(5, y2)
       }
       if (identical(attr(pos, "ispp"), "w") && pos[x1,y1] == "BP" && x1 == 4 && attr(pos, "y1") == y2) {
-         isenpassent <- "b"
+         isenpassant <- "b"
          pos[4,y2] <- ""
          .drawsquare(4, y2)
       }
@@ -325,13 +325,13 @@
 
       .drawpiece(x2, y2, pos[9-x1,9-y1])
 
-      if (pos[9-x2,9-y2] != "" || isenpassent != "") {
+      if (pos[9-x2,9-y2] != "" || isenpassant != "") {
          playsound(system.file("sounds", "capture.ogg", package="chesstrainer"), volume=volume)
       } else {
          playsound(system.file("sounds", "move.ogg", package="chesstrainer"), volume=volume)
       }
 
-      iscapture <- pos[9-x2,9-y2] != "" || isenpassent != ""
+      iscapture <- pos[9-x2,9-y2] != "" || isenpassant != ""
       piece <- ifelse(substr(pos[9-x1,9-y1], 2, 2) == "P", "", substr(pos[9-x1,9-y1], 2, 2))
       pos[9-x2,9-y2] <- pos[9-x1,9-y1]
       pos[9-x1,9-y1] <- ""
@@ -346,13 +346,13 @@
 
       .drawpiece(x2, y2, pos[x1,y1])
 
-      if (pos[x2,y2] != "" || isenpassent != "") {
+      if (pos[x2,y2] != "" || isenpassant != "") {
          playsound(system.file("sounds", "capture.ogg", package="chesstrainer"), volume=volume)
       } else {
          playsound(system.file("sounds", "move.ogg", package="chesstrainer"), volume=volume)
       }
 
-      iscapture <- pos[x2,y2] != "" || isenpassent != ""
+      iscapture <- pos[x2,y2] != "" || isenpassant != ""
       piece <- ifelse(substr(pos[x1,y1], 2, 2) == "P", "", substr(pos[x1,y1], 2, 2))
       pos[x2,y2] <- pos[x1,y1]
       pos[x1,y1] <- ""

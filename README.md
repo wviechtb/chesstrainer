@@ -21,7 +21,7 @@ remotes::install_github("wviechtb/chesstrainer")
 
 ## To Do
 
-- [x] Add en passent.
+- [x] Add en passant.
 - [x] Add pawn promotion.
 - [x] Add a board editor.
 - [x] Save settings across sessions.

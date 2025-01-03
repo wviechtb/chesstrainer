@@ -1,6 +1,6 @@
 # chesstrainer 0.4-0 (2025-01-03)
 
-- can now play en passent
+- can now play en passant
 - can now promote pawns
 - help opens up in the plot, not in the console
 - changed `<r>` key to `<Ctrl-r>` and `<d>` key to `<Ctrl-d>`

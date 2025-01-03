@@ -76,7 +76,7 @@
 
    fen <- paste(fen, rochade)
 
-   # add en passent target square
+   # add en passant target square
 
    ispp <- attr(pos,"ispp")
 
@@ -86,22 +86,22 @@
    if (!identical(ispp, "")) {
       if (ispp == "w") {
          if (flip) {
-            enpassent <- paste0(letters[8:1][attr(pos,"y1")], 3, collapse="")
+            enpassant <- paste0(letters[8:1][attr(pos,"y1")], 3, collapse="")
          } else {
-            enpassent <- paste0(letters[1:8][attr(pos,"y1")], 3, collapse="")
+            enpassant <- paste0(letters[1:8][attr(pos,"y1")], 3, collapse="")
          }
       } else {
          if (flip) {
-            enpassent <- paste0(letters[8:1][attr(pos,"y1")], 6, collapse="")
+            enpassant <- paste0(letters[8:1][attr(pos,"y1")], 6, collapse="")
          } else {
-            enpassent <- paste0(letters[1:8][attr(pos,"y1")], 6, collapse="")
+            enpassant <- paste0(letters[1:8][attr(pos,"y1")], 6, collapse="")
          }
       }
    } else {
-      enpassent <- "-"
+      enpassant <- "-"
    }
 
-   fen <- paste(fen, enpassent)
+   fen <- paste(fen, enpassant)
 
    # add halfmove clock
 
