@@ -71,66 +71,82 @@
 
 .sf.eval <- function(sfproc, sfrun, sfgo, fen, sidetoplay, verbose) {
 
+   sfout    <- NULL
+   eval     <- NA_real_
+   bestmove <- ""
+   mate     <- NA_real_
+   cp       <- NA_real_
+   alive    <- TRUE
+
    if (sfrun) {
 
       .sf.newgame(sfproc, sfrun)
       sfproc$write_input(paste("position fen", fen, "\n"))
       sfproc$write_input(paste0("go ", sfgo, "\n"))
 
-      sfout <- c()
+      if (alive) {
 
-      repeat {
-         sfout <- c(sfout, sfproc$read_output_lines())
-         if (any(grepl("bestmove", sfout))) {
-            movepos <- grep("bestmove", sfout)
-            bestmove <- strsplit(sfout[movepos], " ")[[1]][2]
-            cppos <- grep("score cp", sfout)
-            if (length(cppos) >= 1L) {
-               sflast <- sfout[max(cppos)]
-               cp <- strcapture("score cp ([-]*[[:digit:]]+)", sflast, data.frame(x=numeric()))$x
-            } else {
-               cp <- NA_real_
+         repeat {
+            alive <- sfproc$is_alive()
+            if (!alive) {
+               cat(.text("sfsegfault", sfrun))
+               break
             }
-            matepos <- grep("score mate", sfout)
-            if (length(matepos) >= 1L) {
-               sflast <- sfout[max(matepos)]
-               mate <- strcapture("score mate ([-]*[[:digit:]]+)", sflast, data.frame(x=numeric()))$x
-            } else {
-               mate <- NA_real_
+            sfout <- c(sfout, sfproc$read_output_lines())
+            if (any(grepl("bestmove", sfout))) {
+               movepos <- grep("bestmove", sfout)
+               bestmove <- strsplit(sfout[movepos], " ")[[1]][2]
+               cppos <- grep("score cp", sfout)
+               if (length(cppos) >= 1L) {
+                  sflast <- sfout[max(cppos)]
+                  cp <- strcapture("score cp ([-]*[[:digit:]]+)", sflast, data.frame(x=numeric()))$x
+               } else {
+                  cp <- NA_real_
+               }
+               matepos <- grep("score mate", sfout)
+               if (length(matepos) >= 1L) {
+                  sflast <- sfout[max(matepos)]
+                  mate <- strcapture("score mate ([-]*[[:digit:]]+)", sflast, data.frame(x=numeric()))$x
+               } else {
+                  mate <- NA_real_
+               }
+               break
             }
-            break
          }
-      }
 
-      if (!is.na(mate)) {
-         if (identical(mate, 0)) {
-            eval <- -99.9
+         if (!is.na(mate)) {
+            if (identical(mate, 0)) {
+               eval <- -99.9
+            } else {
+               matesign <- sign(mate)
+               eval <- 99.9 * matesign
+            }
          } else {
-            matesign <- sign(mate)
-            eval <- 99.9 * matesign
+            eval <- cp / 100
          }
-      } else {
-         eval <- cp / 100
+
+         eval <- ifelse(sidetoplay == "w", eval, -eval)
+
       }
 
-      eval <- ifelse(sidetoplay == "w", eval, -eval)
+   }
 
-   } else {
-
-      eval <- NA_real_
-      bestmove <- ""
-
+   if (!alive) {
+      sfproc <- NULL
+      sfrun <- FALSE
    }
 
    if (verbose) {
-      #cat("\nSF:   ", sfout, "\n", sep="")
-      print(sfout)
+      if (!is.null(sfout))
+         print(sfout)
       cat("FEN:  ", fen, "\n", sep="")
-      cat("Eval: ", eval, "\n", sep="")
-      cat("Best: ", bestmove, "\n", sep="")
+      if (!is.na(eval))
+         cat("Eval: ", eval, "\n", sep="")
+      if (bestmove != "")
+         cat("Best: ", bestmove, "\n", sep="")
    }
 
-   return(list(eval=eval, bestmove=bestmove))
+   return(list(eval=eval, bestmove=bestmove, sfproc=sfproc, sfrun=sfrun))
 
 }
 

@@ -524,6 +524,12 @@
                          "New calculation parameter could not be set.\n"
    ))}
 
+   if (x == "sfsegfault") {
+      return(switch(lang,
+                    de = "Stockfish ist abgest\U000000FCrzt ('segmentation fault').\n",
+                         "Stockfish crashed ('segmentation fault').\n"
+   ))}
+
    if (x == "quit") {
       return(switch(lang,
                     de = "Schachtrainer wird beendet ...\n",

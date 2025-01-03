@@ -22,12 +22,12 @@ remotes::install_github("wviechtb/chesstrainer")
 ## To Do
 
 - [x] Add en passent.
+- [x] Add pawn promotion.
 - [x] Add a board editor.
 - [x] Save settings across sessions.
 - [x] Allow adjusting colors.
 - [x] Allow adjusting text sizes.
 - [x] Add evaluation bar.
-- [ ] Add pawn promotion.
 - [x] Generate FEN for a position.
 - [x] Get position evaluations automatically via Stockfish (if installed).
 - [ ] Allow branching in sequences (maybe, as this requires a more substantial update).

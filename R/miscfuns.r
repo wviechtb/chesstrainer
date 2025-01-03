@@ -12,6 +12,24 @@
 
 }
 
+.calcsquare <- function(x, y, plt) {
+   square.x <- floor((y - plt[3]) / (plt[4] - plt[3]) * 8 + 1)
+   square.y <- floor((x - plt[1]) / (plt[2] - plt[1]) * 8 + 1)
+   square.x[square.x < 1] <- 1
+   square.x[square.x > 8] <- 8
+   square.y[square.y < 1] <- 1
+   square.y[square.y > 8] <- 8
+   return(c(square.x, square.y))
+}
+
+.pickpromotionpiece <- function(buttons, x, y) {
+   plt <- par("plt")
+   squares <- .calcsquare(x,y,plt)
+   pos.x <- squares[1]
+   pos.y <- squares[2]
+   return(c(pos.x,pos.y))
+}
+
 .genfen <- function(pos, flip, sidetoplay, i) {
 
    # change piece abbreviations to those used by FEN
@@ -48,7 +66,7 @@
 
    # add castling availability
 
-   rochade <- attributes(pos)$rochade
+   rochade <- attr(pos,"rochade")
 
    if (identical(rochade, rep(FALSE,4))) {
       rochade <- "-"
@@ -60,7 +78,7 @@
 
    # add en passent target square
 
-   ispp <- attributes(pos)$ispp
+   ispp <- attr(pos,"ispp")
 
    if (is.null(ispp))
       ispp <- ""
@@ -68,15 +86,15 @@
    if (!identical(ispp, "")) {
       if (ispp == "w") {
          if (flip) {
-            enpassent <- paste0(letters[8:1][attributes(pos)$y1], 3, collapse="")
+            enpassent <- paste0(letters[8:1][attr(pos,"y1")], 3, collapse="")
          } else {
-            enpassent <- paste0(letters[1:8][attributes(pos)$y1], 3, collapse="")
+            enpassent <- paste0(letters[1:8][attr(pos,"y1")], 3, collapse="")
          }
       } else {
          if (flip) {
-            enpassent <- paste0(letters[8:1][attributes(pos)$y1], 6, collapse="")
+            enpassent <- paste0(letters[8:1][attr(pos,"y1")], 6, collapse="")
          } else {
-            enpassent <- paste0(letters[1:8][attributes(pos)$y1], 6, collapse="")
+            enpassent <- paste0(letters[1:8][attr(pos,"y1")], 6, collapse="")
          }
       }
    } else {
@@ -87,7 +105,7 @@
 
    # add halfmove clock
 
-   fen <- paste(fen, attributes(pos)$moves50)
+   fen <- paste(fen, attr(pos,"moves50"))
 
    # add fullmove number
 

@@ -88,18 +88,20 @@
 
    The trainer plays various sounds (when playing moves, when capturing pieces, when making a wrong move, or when completing a sequence). This may or may not work depending on your operating system and configuration. See the \code{\link{playsound}} function for further details.
 
-   If the sound is working, it can be toggled on/off with the \code{<m>} key. This can be useful if playing sounds adds too much lag. The sound volume can be decreased/increased with the \code{<[>} and \code{<]>} keys.
+   % If the sound is working, it can be toggled on/off with the \code{<m>} key. This can be useful if playing sounds adds too much lag. The sound volume can be decreased/increased with the \code{<[>} and \code{<]>} keys.
 
 }
 \section{Position Evaluations using Stockfish}{
 
-   If Stockfish (\verb{https://stockfishchess.org}) is installed, it can be used in the background to automatically obtain position evaluations when adding sequences. For this, one should specify the path (including the executable) to Stockfish via the \code{sfpath} argument of the \code{\link{play}} function. If this is set correctly, then position evaluations will be automatically computed and added to a sequence in \sQuote{add} mode (which will then be shown when playing the sequence).
+   If Stockfish (\verb{https://stockfishchess.org}) is installed, it can be used in the background to automatically obtain position evaluations when adding sequences. For this, one should specify the path (including the executable) to Stockfish via the \code{sfpath} argument of the \code{\link{play}} function. If this is set correctly, then position evaluations will be automatically computed and added to a sequence in \sQuote{add} mode. Evaluations are given in centipawns divided by 100, except for forced mates, which are given as \eqn{\pm99.9}. When playing a sequence, these evaluations are then shown as an evaluation bar on the left of the board.
 
-   By default, evaluations are based on a search depth of 20 half-moves. Obtaining such an evaluation should be relatively quick and not add much lag when creating a sequence. One can adjust the calculation parameter for Stockfish using the \code{sfgo} argument. This must be either something like \code{"depth 20"} (to fix the search depth in terms of the number of half-moves) or \code{"movetime 1000"} (to fix the search time in milliseconds). Using something like \code{"depth 10"} or \code{"movetime 200"} reduces the lag, but of course also the accuracy of the evaluations. Note that when fixing the search time (and not the search depth), evaluations can change slightly on repeated runs, since the exact number of nodes searched by Stockfish can change slightly.
+   By default, evaluations are based on a search depth of 20 half-moves. Obtaining such an evaluation for a given position should be relatively quick and not add much lag when creating a sequence. One can adjust the calculation parameter for Stockfish using the \code{sfgo} argument. This must be either something like \code{"depth 20"} (to fix the search depth in terms of the number of half-moves) or \code{"movetime 1000"} (to fix the search time in milliseconds). Using something like \code{"depth 10"} or \code{"movetime 200"} reduces the lag, but also the accuracy of the evaluations. Note that when fixing the search time (and not the search depth), evaluations can change slightly on repeated runs, since the exact number of nodes searched by Stockfish can change slightly.
 
    In \sQuote{add} mode, the \code{<h>} key shows the best move according to Stockfish in a given position.
 
    In \sQuote{play} mode, the \code{<u>} key updates the evaluations for all moves in a sequence by recalculating the evaluations with the current setting for the calculation parameter. This way, one can obtain very accurate evaluations by using a high search depth or search time. After updating the evaluations, they are automatically saved to the sequence file.
+
+   Note that asking Stockfish to evaluate impossible positions (e.g., black is in check but it is white's turn to move) crashes Stockfish. This should be handled gracefully. With \code{<F6>}, one can adjust the Stockfish settings and also restart it.
 
 }
 \section{Other Options / Keyboard Shortcuts}{

@@ -37,7 +37,7 @@
       "o        - manually edit the score for the current sequence",
       "Ctrl-d   - delete the current sequence",
       "a        - copy the current sequence and extend it with more moves",
-      "u        - recalcualte the evaluations",
+      "u        - recalculate the evaluations",
       "",
       "Shortcuts in add mode:",
       "f        - flip the board",

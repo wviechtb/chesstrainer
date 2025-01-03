@@ -153,6 +153,74 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
    oldvolume <- volume
    seqno <- 1
 
+   # create the getGraphicsEvent() functions
+
+   mousedown <- function(buttons, x, y) {
+      squares <- .calcsquare(x,y,plt)
+      pos.x <- squares[1]
+      pos.y <- squares[2]
+      click1.x <<- pos.x
+      click1.y <<- pos.y
+      click2.x <<- pos.x
+      click2.y <<- pos.y
+      button <<- buttons
+      if (identical(buttons, 0L)) {
+         if (flip && pos[9-pos.x, 9-pos.y] == "") {
+            empty.square <<- TRUE
+            return(NULL)
+         }
+         if (!flip && pos[pos.x, pos.y] == "") {
+            empty.square <<- TRUE
+            return(NULL)
+         }
+      }
+      empty.square <<- FALSE
+      if (identical(buttons, 0L))
+         .addrect(pos.x, pos.y, col=.get("col.rect"), lwd=lwd)
+      return(NULL)
+   }
+
+   dragmousemove <- function(buttons, x, y) {
+
+      if (identical(buttons, 0L) && !empty.square) {
+
+         squares <- .calcsquare(x,y,plt)
+         pos.x <- squares[1]
+         pos.y <- squares[2]
+
+         .addrect(pos.x, pos.y, col=.get("col.rect"), lwd=lwd)
+
+         if (isTRUE(pos.x != click2.x) || isTRUE(pos.y != click2.y))
+            .rmrect(click2.x, click2.y, lwd=lwd)
+
+         click2.x <<- pos.x
+         click2.y <<- pos.y
+
+      }
+
+      if (identical(buttons, 2L)) {
+
+         squares <- .calcsquare(x,y,plt)
+         pos.x <- squares[1]
+         pos.y <- squares[2]
+
+         click2.x <<- pos.x
+         click2.y <<- pos.y
+
+      }
+
+      return(NULL)
+
+   }
+
+   mouseup <- function(buttons, x, y) {
+      if (identical(buttons, 0L)) {
+         .rmrect(click1.x, click1.y, lwd=lwd)
+         .rmrect(click2.x, click2.y, lwd=lwd)
+      }
+      return(1)
+   }
+
    run.all <- TRUE
 
    while (run.all) {
@@ -286,7 +354,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
 
       .drawboard(pos, flip=flip)
       .printinfo(mode, show, player, seqname, score, played, i, totalmoves, random)
-      .draweval(clear=TRUE)
+      #.draweval(clear=TRUE)
 
       # check for getGraphicsEvent() capabilities of the current plotting device
 
@@ -312,6 +380,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
 
             while (isTRUE(sub$moves$show[i])) {
                pos <- .updateboard(pos, move=sub$moves[i,1:4], flip=flip, volume=volume, verbose=verbose)
+               sub$moves$move[i] <- attr(pos,"move")
                .draweval(sub$moves$eval[i], sub$moves$eval[i-1], flip=flip, eval=eval)
                i <- i + 1
                sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
@@ -345,82 +414,6 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
             button <- 0L
 
             plt <- par("plt")
-
-            .calcsquare <- function(x, y) {
-               square.x <- floor((y - plt[3]) / (plt[4] - plt[3]) * 8 + 1)
-               square.y <- floor((x - plt[1]) / (plt[2] - plt[1]) * 8 + 1)
-               square.x[square.x < 1] <- 1
-               square.x[square.x > 8] <- 8
-               square.y[square.y < 1] <- 1
-               square.y[square.y > 8] <- 8
-               return(c(square.x, square.y))
-            }
-
-            mousedown <- function(buttons, x, y) {
-               squares <- .calcsquare(x,y)
-               pos.x <- squares[1]
-               pos.y <- squares[2]
-               click1.x <<- pos.x
-               click1.y <<- pos.y
-               click2.x <<- pos.x
-               click2.y <<- pos.y
-               button <<- buttons
-               if (identical(buttons, 0L)) {
-                  if (flip && pos[9-pos.x, 9-pos.y] == "") {
-                     empty.square <<- TRUE
-                     return(NULL)
-                  }
-                  if (!flip && pos[pos.x, pos.y] == "") {
-                     empty.square <<- TRUE
-                     return(NULL)
-                  }
-               }
-               empty.square <<- FALSE
-               if (identical(buttons, 0L))
-                  .addrect(pos.x, pos.y, col=.get("col.rect"), lwd=lwd)
-               return(NULL)
-            }
-
-            dragmousemove <- function(buttons, x, y) {
-
-               if (identical(buttons, 0L) && !empty.square) {
-
-                  squares <- .calcsquare(x,y)
-                  pos.x <- squares[1]
-                  pos.y <- squares[2]
-
-                  .addrect(pos.x, pos.y, col=.get("col.rect"), lwd=lwd)
-
-                  if (isTRUE(pos.x != click2.x) || isTRUE(pos.y != click2.y))
-                     .rmrect(click2.x, click2.y, lwd=lwd)
-
-                  click2.x <<- pos.x
-                  click2.y <<- pos.y
-
-               }
-
-               if (identical(buttons, 2L)) {
-
-                  squares <- .calcsquare(x,y)
-                  pos.x <- squares[1]
-                  pos.y <- squares[2]
-
-                  click2.x <<- pos.x
-                  click2.y <<- pos.y
-
-               }
-
-               return(NULL)
-
-            }
-
-            mouseup <- function(buttons, x, y) {
-               if (identical(buttons, 0L)) {
-                  .rmrect(click1.x, click1.y, lwd=lwd)
-                  .rmrect(click2.x, click2.y, lwd=lwd)
-               }
-               return(1)
-            }
 
             click <- getGraphicsEvent(prompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
 
@@ -882,6 +875,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
                      sidetoplay <- "w"
                      for (j in seq_len(i-1)) {
                         pos <- .updateboard(pos, move=sub$moves[j,1:4], flip=flip, volume=0, verbose=verbose)
+                        sub$moves$move[j] <- attr(pos,"move")
                         sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                      }
                      comment <- ""
@@ -919,6 +913,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
 
                for (i in 1:nrow(sub$moves)) {
                   pos <- .updateboard(pos, move=sub$moves[i,1:4], flip=flip, volume=volume, verbose=verbose)
+                  sub$moves$move[i] <- attr(pos,"move")
                   texttop <- .texttop(sub$moves$comment[i])
                   .printinfo(mode, show, player, seqname, score, played, i, totalmoves, random)
                   .draweval(sub$moves$eval[i], sub$moves$eval[i-1], flip=flip, eval=eval)
@@ -959,6 +954,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
                   next
                }
                pos <- .updateboard(pos, move=sub$moves[i,1:4], flip=flip, volume=volume, verbose=verbose)
+               sub$moves$move[i] <- attr(pos,"move")
                i <- i + 1
                .printinfo(mode, show, player, seqname, score, played, i, totalmoves, random)
                texttop <- .texttop(sub$moves$comment[i])
@@ -1095,6 +1091,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
 
                   for (i in 1:nrow(sub$moves)) {
                      pos <- .updateboard(pos, move=sub$moves[i,1:4], flip=flip, volume=volume, verbose=verbose)
+                     sub$moves$move[i] <- attr(pos,"move")
                      texttop <- .texttop(sub$moves$comment[i])
                      .printinfo(mode, show, player, seqname, score, played, i, totalmoves, random)
                      sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
@@ -1103,6 +1100,8 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
                      tmp <- .sf.eval(sfproc, sfrun, sfgo, fen, sidetoplay, verbose)
                      evalval  <- tmp$eval
                      bestmove <- tmp$bestmove
+                     sfproc   <- tmp$sfproc
+                     sfrun    <- tmp$sfrun
                      .draweval(evalval, flip=flip, eval=eval)
                      sub$moves$eval[i] <- evalval
                   }
@@ -1336,6 +1335,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
 
             if (mode == "play") {
                .draweval(sub$moves$eval[i], sub$moves$eval[i-1], flip=flip, eval=eval)
+               sub$moves$move[i] <- attr(pos,"move")
             } else {
                .texttop(" ")
             }
@@ -1416,6 +1416,8 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
             tmp <- .sf.eval(sfproc, sfrun, sfgo, fen, sidetoplay, verbose)
             evalval  <- tmp$eval
             bestmove <- tmp$bestmove
+            sfproc   <- tmp$sfproc
+            sfrun    <- tmp$sfrun
             .draweval(evalval, evalvallast, flip=flip, eval=eval)
 
             # in add move, add the current move to sub
@@ -1431,6 +1433,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
             .printinfo(mode, show, player, seqname, score, played, i, totalmoves, random)
             Sys.sleep(sleep)
             pos <- .updateboard(pos, move=sub$moves[i,1:4], flip=flip, volume=volume, verbose=verbose)
+            sub$moves$move[i] <- attr(pos,"move")
             .draweval(sub$moves$eval[i], sub$moves$eval[i-1], flip=flip, eval=eval)
             texttop <- .texttop(sub$moves$comment[i])
             i <- i + 1

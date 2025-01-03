@@ -94,15 +94,15 @@
    x2 <- unname(move[[3]])
    y2 <- unname(move[[4]])
 
-   isrochade <- ""
-   isenpassent <- ""
    ispp <- ""
    pawnmove <- FALSE
 
-   rochade <- attributes(pos)$rochade
+   rochade <- attr(pos,"rochade")
 
    if (is.null(rochade))
       rochade <- rep(TRUE, 4)
+
+   # check for a two-square move of a pawn from its original position (since this may enable en passent)
 
    if (flip) {
       if (x1 == 2 && x2 == 4 && pos[9-x1,9-y1] == "BP")
@@ -116,6 +116,8 @@
          ispp <- "b"
    }
 
+   # check if a pawn move was made (since this resets the 50 move counter)
+
    if (flip) {
       if (pos[9-x1,9-y1] %in% c("WP","BP"))
          pawnmove <- TRUE
@@ -123,6 +125,11 @@
       if (pos[x1,y1] %in% c("WP","BP"))
          pawnmove <- TRUE
    }
+
+   # check for rochade and en passent
+
+   isrochade <- ""
+   isenpassent <- ""
 
    if (flip) {
 
@@ -226,44 +233,147 @@
 
    }
 
+   # check for pawn promotion
+
+   promotionpiece <- ""
+   col.square.be <- .get("col.square.be")
+
+   if (flip) {
+      if (x1 == 7 && x2 == 8 && pos[9-x1,9-y1] == "BP") {
+         sapply(8:5, function(x2) .drawsquare(x2, y2, col=col.square.be))
+         mapply(.drawpiece, x=8:5, y=rep(y2,4), piece=c("BQ","BN","BR","BB"))
+         while (TRUE) {
+            click <- getGraphicsEvent(prompt="", onMouseDown=.pickpromotionpiece)
+            if (identical(click, c(8,y2)))
+               promotionpiece <- "BQ"
+            if (identical(click, c(7,y2)))
+               promotionpiece <- "BN"
+            if (identical(click, c(6,y2)))
+               promotionpiece <- "BR"
+            if (identical(click, c(5,y2)))
+               promotionpiece <- "BB"
+            if (promotionpiece != "")
+               break
+         }
+         sapply(8:5, function(x2) .drawsquare(x2, y2))
+         mapply(.drawpiece, x=8:5, y=rep(y2,4), piece=pos[9-8:5,9-y2])
+      }
+      if (x1 == 2 && x2 == 1 && pos[9-x1,9-y1] == "WP") {
+         sapply(1:4, function(x2) .drawsquare(x2, y2, col=col.square.be))
+         mapply(.drawpiece, x=1:4, y=rep(y2,4), piece=c("WQ","WN","WR","WB"))
+         while (TRUE) {
+            click <- getGraphicsEvent(prompt="", onMouseDown=.pickpromotionpiece)
+            if (identical(click, c(1,y2)))
+               promotionpiece <- "WQ"
+            if (identical(click, c(2,y2)))
+               promotionpiece <- "WN"
+            if (identical(click, c(3,y2)))
+               promotionpiece <- "WR"
+            if (identical(click, c(4,y2)))
+               promotionpiece <- "WB"
+            if (promotionpiece != "")
+               break
+         }
+         sapply(1:4, function(x2) .drawsquare(x2, y2))
+         mapply(.drawpiece, x=1:4, y=rep(y2,4), piece=pos[9-1:4,9-y2])
+      }
+   } else {
+      if (x1 == 7 && x2 == 8 && pos[x1,y1] == "WP") {
+         sapply(8:5, function(x2) .drawsquare(x2, y2, col=col.square.be))
+         mapply(.drawpiece, x=8:5, y=rep(y2,4), piece=c("WQ","WN","WR","WB"))
+         while (TRUE) {
+            click <- getGraphicsEvent(prompt="", onMouseDown=.pickpromotionpiece)
+            if (identical(click, c(8,y2)))
+               promotionpiece <- "WQ"
+            if (identical(click, c(7,y2)))
+               promotionpiece <- "WN"
+            if (identical(click, c(6,y2)))
+               promotionpiece <- "WR"
+            if (identical(click, c(5,y2)))
+               promotionpiece <- "WB"
+            if (promotionpiece != "")
+               break
+         }
+         sapply(8:5, function(x2) .drawsquare(x2, y2))
+         mapply(.drawpiece, x=8:5, y=rep(y2,4), piece=pos[8:5,y2])
+      }
+      if (x1 == 2 && x2 == 1 && pos[x1,y1] == "BP") {
+         sapply(1:4, function(x2) .drawsquare(x2, y2, col=col.square.be))
+         mapply(.drawpiece, x=1:4, y=rep(y2,4), piece=c("BQ","BN","BR","BB"))
+         while (TRUE) {
+            click <- getGraphicsEvent(prompt="", onMouseDown=.pickpromotionpiece)
+            if (identical(click, c(1,y2)))
+               promotionpiece <- "BQ"
+            if (identical(click, c(2,y2)))
+               promotionpiece <- "BN"
+            if (identical(click, c(3,y2)))
+               promotionpiece <- "BR"
+            if (identical(click, c(4,y2)))
+               promotionpiece <- "BB"
+            if (promotionpiece != "")
+               break
+         }
+         sapply(1:4, function(x2) .drawsquare(x2, y2))
+         mapply(.drawpiece, x=1:4, y=rep(y2,4), piece=pos[1:4,y2])
+      }
+   }
+
    .drawsquare(x1, y1)
    .drawsquare(x2, y2)
 
    if (flip) {
+
       .drawpiece(x2, y2, pos[9-x1,9-y1])
+
       if (pos[9-x2,9-y2] != "" || isenpassent != "") {
          playsound(system.file("sounds", "capture.ogg", package="chesstrainer"), volume=volume)
       } else {
          playsound(system.file("sounds", "move.ogg", package="chesstrainer"), volume=volume)
       }
+
       iscapture <- pos[9-x2,9-y2] != "" || isenpassent != ""
-      piece1 <- ifelse(substr(pos[9-x1,9-y1], 2, 2) == "P", "", substr(pos[9-x1,9-y1], 2, 2))
-      piece2 <- ifelse(substr(pos[9-x2,9-y2], 2, 2) == "P", "", substr(pos[9-x2,9-y2], 2, 2))
+      piece <- ifelse(substr(pos[9-x1,9-y1], 2, 2) == "P", "", substr(pos[9-x1,9-y1], 2, 2))
       pos[9-x2,9-y2] <- pos[9-x1,9-y1]
       pos[9-x1,9-y1] <- ""
+
+      if (promotionpiece != "") {
+         pos[9-x2,9-y2] <- promotionpiece
+         .drawsquare(x2, y2)
+         .drawpiece(x2, y2, pos[9-x2,9-y2])
+      }
+
    } else {
+
       .drawpiece(x2, y2, pos[x1,y1])
+
       if (pos[x2,y2] != "" || isenpassent != "") {
          playsound(system.file("sounds", "capture.ogg", package="chesstrainer"), volume=volume)
       } else {
          playsound(system.file("sounds", "move.ogg", package="chesstrainer"), volume=volume)
       }
+
       iscapture <- pos[x2,y2] != "" || isenpassent != ""
-      piece1 <- ifelse(substr(pos[x1,y1], 2, 2) == "P", "", substr(pos[x1,y1], 2, 2))
-      piece2 <- ifelse(substr(pos[x2,y2], 2, 2) == "P", "", substr(pos[x2,y2], 2, 2))
+      piece <- ifelse(substr(pos[x1,y1], 2, 2) == "P", "", substr(pos[x1,y1], 2, 2))
       pos[x2,y2] <- pos[x1,y1]
       pos[x1,y1] <- ""
+
+      if (promotionpiece != "") {
+         pos[x2,y2] <- promotionpiece
+         .drawsquare(x2, y2)
+         .drawpiece(x2, y2, pos[x2,y2])
+      }
+
    }
 
    if (flip) {
       if (identical(isrochade, "")) {
-         move <- paste0(piece1, letters[9-y1], 9-x1, ifelse(iscapture, "x", "-"), piece2, letters[9-y2], 9-x2)
+         move <- paste0(piece, letters[9-y1], 9-x1, ifelse(iscapture, "x", "-"), letters[9-y2], 9-x2, ifelse(promotionpiece != "", paste0("=", substr(promotionpiece,2,2)), ""))
       } else {
          move <- isrochade
       }
    } else {
       if (identical(isrochade, "")) {
-         move <- paste0(piece1, letters[y1], x1, ifelse(iscapture, "x", "-"), piece2, letters[y2], x2)
+         move <- paste0(piece, letters[y1], x1, ifelse(iscapture, "x", "-"), letters[y2], x2, ifelse(promotionpiece != "", paste0("=", substr(promotionpiece,2,2)), ""))
       } else {
          move <- isrochade
       }
@@ -435,7 +545,7 @@
    xpos <- 0.12
    indsize <- 0.25
 
-   if (clear) {
+   if (clear || is.na(val)) {
       rect(xpos, 1, xpos+indsize, 9, border=NA, col=col.bg)
       return()
    }
@@ -443,11 +553,11 @@
    if (length(val) == 0L)
       return()
 
-   if (is.na(val)) {
-      cols <- col2rgb(col.bg)
-      rect(xpos, 1, xpos+indsize, 9, border=NA, col=rgb(cols[1], cols[2], cols[3], 120, maxColorValue=255))
-      return()
-   }
+   #if (is.na(val)) {
+   #   cols <- col2rgb(col.bg)
+   #   rect(xpos, 1, xpos+indsize, 9, border=NA, col=rgb(cols[1], cols[2], cols[3], 120, maxColorValue=255))
+   #   return()
+   #}
 
    col.fg <- .get("col.fg")
    col.side.w <- .get("col.side.w")

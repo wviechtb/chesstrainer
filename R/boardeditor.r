@@ -20,7 +20,7 @@
 
       plt <- par("plt")
 
-      .calcsquare <- function(x, y) {
+      .calcsquarebe <- function(x, y) {
          square.x <- floor((y - plt[3]) / (plt[4] - plt[3]) * 10 + 1)
          square.y <- floor((x - plt[1]) / (plt[2] - plt[1]) * 10 + 1)
          square.x[square.x < 1] <- 1
@@ -29,7 +29,7 @@
       }
 
       mousedown <- function(buttons, x, y) {
-         squares <- .calcsquare(x,y)
+         squares <- .calcsquarebe(x,y)
          pos.x <- squares[1]
          pos.y <- squares[2]
          click1.x <<- pos.x
@@ -55,7 +55,7 @@
 
          if (!empty.square) {
 
-            squares <- .calcsquare(x,y)
+            squares <- .calcsquarebe(x,y)
             pos.x <- squares[1]
             pos.y <- squares[2]
 
