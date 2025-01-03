@@ -29,7 +29,7 @@ remotes::install_github("wviechtb/chesstrainer")
 - [x] Add evaluation bar.
 - [ ] Add pawn promotion.
 - [x] Generate FEN for a position.
-- [ ] Get position evaluation automatically via Stockfish.
+- [x] Get position evaluations automatically via Stockfish (if installed).
 - [ ] Allow branching in sequences (maybe, as this requires a more substantial update).
 
 ## Meta

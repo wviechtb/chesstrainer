@@ -269,29 +269,6 @@
       }
    }
 
-   if (verbose) {
-      cat("Move: ", move, "\n\n", sep="")
-      printpos <- pos
-      printpos[printpos == ""] <- "."
-      printpos[printpos == "WP"] <- "\U000265F"
-      printpos[printpos == "WR"] <- "\U000265C"
-      printpos[printpos == "WN"] <- "\U000265E"
-      printpos[printpos == "WB"] <- "\U000265D"
-      printpos[printpos == "WK"] <- "\U000265A"
-      printpos[printpos == "WQ"] <- "\U000265B"
-      printpos[printpos == "BP"] <- "\U0002659"
-      printpos[printpos == "BR"] <- "\U0002656"
-      printpos[printpos == "BN"] <- "\U0002658"
-      printpos[printpos == "BB"] <- "\U0002657"
-      printpos[printpos == "BK"] <- "\U0002654"
-      printpos[printpos == "BQ"] <- "\U0002655"
-      if (flip) {
-         print(printpos[,8:1], quote=FALSE)
-      } else {
-         print(printpos[8:1,], quote=FALSE)
-      }
-   }
-
    if (pos[1,5] != "WK")
       rochade[1:2] <- FALSE
    if (pos[8,5] != "BK")
@@ -314,6 +291,30 @@
       attr(pos, "moves50") <- 0
    } else {
       attr(pos, "moves50") <- attr(pos, "moves50") + 1
+   }
+
+   if (verbose) {
+      cat("Move: ", move, "\n\n", sep="")
+      printpos <- pos
+      printpos[printpos == ""] <- "."
+      printpos[printpos == "WP"] <- "\U000265F"
+      printpos[printpos == "WR"] <- "\U000265C"
+      printpos[printpos == "WN"] <- "\U000265E"
+      printpos[printpos == "WB"] <- "\U000265D"
+      printpos[printpos == "WK"] <- "\U000265A"
+      printpos[printpos == "WQ"] <- "\U000265B"
+      printpos[printpos == "BP"] <- "\U0002659"
+      printpos[printpos == "BR"] <- "\U0002656"
+      printpos[printpos == "BN"] <- "\U0002658"
+      printpos[printpos == "BB"] <- "\U0002657"
+      printpos[printpos == "BK"] <- "\U0002654"
+      printpos[printpos == "BQ"] <- "\U0002655"
+      if (flip) {
+         print(printpos[,8:1], quote=FALSE)
+      } else {
+         print(printpos[8:1,], quote=FALSE)
+      }
+      print(attributes(pos))
    }
 
    return(pos)
@@ -400,7 +401,7 @@
    col.side.w <- .get("col.side.w")
    col.side.b <- .get("col.side.b")
 
-   indsize <- 0.18
+   indsize <- 0.25
 
    if (clear) {
       col.bg <- .get("col.bg")
@@ -424,44 +425,94 @@
 
 }
 
-.draweval <- function(x=NA_real_, flip=FALSE, clear=FALSE, eval=TRUE) {
+.draweval <- function(val=NA_real_, last=NA_real_, flip=FALSE, clear=FALSE, eval=TRUE) {
 
-   if (eval) {
-      eval <- x
-   } else {
+   if (!eval)
       return()
-   }
 
    col.bg <- .get("col.bg")
-   indsize <- 0.18
+
+   xpos <- 0.12
+   indsize <- 0.25
 
    if (clear) {
-      rect(9.75, 1, 9.75+indsize, 9, border=NA, col=col.bg)
+      rect(xpos, 1, xpos+indsize, 9, border=NA, col=col.bg)
       return()
    }
 
+   if (length(val) == 0L)
+      return()
+
+   if (is.na(val)) {
+      cols <- col2rgb(col.bg)
+      rect(xpos, 1, xpos+indsize, 9, border=NA, col=rgb(cols[1], cols[2], cols[3], 120, maxColorValue=255))
+      return()
+   }
+
+   col.fg <- .get("col.fg")
    col.side.w <- .get("col.side.w")
    col.side.b <- .get("col.side.b")
 
-   maxeval <- 5
-   eval.sav <- eval
-   eval <- min(max(eval, -maxeval), maxeval)
-   eval <- (eval + maxeval) / (2*maxeval) * 8 + 1
-
-   if (is.na(eval)) {
-      cols <- col2rgb(col.bg)
-      rect(9.75, 1, 9.75+indsize, 9, border=NA, col=rgb(cols[1], cols[2], cols[3], 120, maxColorValue=255))
+   maxval <- 9.9
+   ismate <- abs(val) >= 99.9
+   valtxt <- formatC(val, format="f", digits=1)
+   val <- min(max(val, -maxval), maxval)
+   if (ismate) {
+      val <- (val + maxval) / (2*maxval) * 8 + 1 # either 1 or 9
    } else {
-      if (flip) {
-         rect(9.75, 10-eval, 9.75+indsize, 9, border=NA, col=col.side.w)
-         rect(9.75, 1, 9.75+indsize, 10-eval, border=NA, col=col.side.b)
-         text(9.75 + indsize/2, 1.1, formatC(eval.sav, format="f", digits=1), cex=.get("cex.eval"))
+      val <- (val + maxval) / (2*maxval) * 7.8 + 1.1 # ranges from 1.1 to 8.9
+   }
+
+   if (length(last) == 0L)
+      last <- NA_real_
+
+   last <- min(max(last, -maxval), maxval)
+   last <- (last + maxval) / (2*maxval) * 8 + 1
+
+   steps <- 20
+   props <- seq(0, 1, length.out=steps)^(1/5)
+
+   if (flip) {
+      if (is.na(last)) {
+         rect(xpos, 10-val, xpos+indsize, 9, border=NA, col=col.side.w)
+         rect(xpos, 1, xpos+indsize, 10-val, border=NA, col=col.side.b)
       } else {
-         rect(9.75, eval, 9.75+indsize, 9, border=NA, col=col.side.b)
-         rect(9.75, 1, 9.75+indsize, eval, border=NA, col=col.side.w)
-         text(9.75 + indsize/2, 1.1, formatC(eval.sav, format="f", digits=1), cex=.get("cex.eval"))
+         rect(xpos, 10-last, xpos+indsize, 9, border=NA, col=col.side.w)
+         rect(xpos, 1, xpos+indsize, 10-last, border=NA, col=col.side.b)
+         vals <- last + (val - last) * props
+         col.side.bar <- ifelse(val > last, col.side.w, col.side.b)
+         for (i in 2:steps) {
+            rect(xpos, 10-vals[i-1], xpos+indsize, 10-vals[i], border=NA, col=col.side.bar)
+         }
+      }
+      if (val > 5) {
+         text(xpos + indsize/2, 8.9, valtxt, cex=.get("cex.eval"), col=col.side.b)
+      } else {
+         text(xpos + indsize/2, 1.1, valtxt, cex=.get("cex.eval"), col=col.side.w)
+      }
+   } else {
+      if (is.na(last)) {
+         rect(xpos, val, xpos+indsize, 9, border=NA, col=col.side.b)
+         rect(xpos, 1, xpos+indsize, val, border=NA, col=col.side.w)
+      } else {
+         rect(xpos, last, xpos+indsize, 9, border=NA, col=col.side.b)
+         rect(xpos, 1, xpos+indsize, last, border=NA, col=col.side.w)
+         vals <- last + (val - last) * props
+         col.side.bar <- ifelse(val > last, col.side.w, col.side.b)
+         for (i in 2:steps) {
+            rect(xpos, vals[i-1], xpos+indsize, vals[i], border=NA, col=col.side.bar)
+         }
+      }
+      if (val > 5) {
+         text(xpos + indsize/2, 1.1, valtxt, cex=.get("cex.eval"), col=col.side.b)
+      } else {
+         text(xpos + indsize/2, 8.9, valtxt, cex=.get("cex.eval"), col=col.side.w)
       }
    }
+
+   segments(xpos, 5, xpos+indsize, col=col.fg)
+
+   return()
 
 }
 

@@ -62,6 +62,9 @@
 
    ispp <- attributes(pos)$ispp
 
+   if (is.null(ispp))
+      ispp <- ""
+
    if (!identical(ispp, "")) {
       if (ispp == "w") {
          if (flip) {

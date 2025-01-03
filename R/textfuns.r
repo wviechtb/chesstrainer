@@ -16,14 +16,20 @@
 
    if (x == "createconfigdir") {
       return(switch(lang,
-                    de = paste0("\nErstelle Standardverzeichnis f\U000000FCr Einstellungen: ", arg, "\n"),
-                         paste0("\nCreating default directory for settings: ", arg, "\n")
+                    de = paste0("Erstelle Standardverzeichnis f\U000000FCr Einstellungen: ", arg, "\n"),
+                         paste0("Creating default directory for settings: ", arg, "\n")
+   ))}
+
+   if (x == "loadsettings") {
+      return(switch(lang,
+                    de = paste0("Lade Einstellungen ...\n"),
+                         paste0("Loading settings ...\n")
    ))}
 
    if (x == "createseqdir") {
       return(switch(lang,
-                    de = paste0("\nErstelle Standardverzeichnis f\U000000FCr Sequenzen: ", arg, "\n"),
-                         paste0("\nCreating default directory for sequences: ", arg, "\n")
+                    de = paste0("Erstelle Standardverzeichnis f\U000000FCr Sequenzen: ", arg, "\n"),
+                         paste0("Creating default directory for sequences: ", arg, "\n")
    ))}
 
    if (x == "dircreateerror") {
@@ -60,6 +66,12 @@
       return(switch(lang,
                     de = "Keine Sequenzen gefunden.\n",
                          "No sequences found.\n"
+   ))}
+
+   if (x == "seqdir") {
+      return(switch(lang,
+                    de = paste0("Benutze Sequenzverzeichnis: ", arg, "\n"),
+                         paste0("Using sequence directory: ", arg, "\n")
    ))}
 
    if (x == "newplayername") {
@@ -408,6 +420,144 @@
       return(switch(lang,
                     de = paste0("Bewertungsbalken: ", ifelse(arg, "An", "Aus")),
                          paste0("Evaluation bar: ", ifelse(arg, "On", "Off"))
+   ))}
+
+   if (x == "sfstart") {
+      return(switch(lang,
+                    de = "Starte Stockfish ...\n",
+                         "Starting Stockfish ...\n"
+   ))}
+
+   if (x == "sfstop") {
+      return(switch(lang,
+                    de = "Stockfish beenden ...\n",
+                         "Stopping Stockfish ...\n"
+   ))}
+
+   if (x == "sfstarterror") {
+      return(switch(lang,
+                    de = "Stockfish konnte nicht gestartet werden.\n",
+                         "Could not start Stockfish.\n"
+   ))}
+
+   if (x == "sfstartsuccess") {
+      return(switch(lang,
+                    de = "Stockfish wurde erfolgreich gestartet.\n",
+                         "Successfully started Stockfish.\n"
+   ))}
+
+   if (x == "sfstoperror") {
+      return(switch(lang,
+                    de = "Stockfish konnte nicht beendet werden.\n",
+                         "Could not stop Stockfish.\n"
+   ))}
+
+   if (x == "sfstopsuccess") {
+      return(switch(lang,
+                    de = "Stockfish wurde erfolgreich beendet.\n",
+                         "Successfully stopped Stockfish.\n"
+   ))}
+
+   if (x == "sfrunning") {
+      return(switch(lang,
+                    de = paste0("Stockfish Status:     ", ifelse(arg, "an", "aus"), "\n"),
+                         paste0("Stockfish status:      ", ifelse(arg, "on", "off"), "\n")
+   ))}
+
+   if (x == "sfpath") {
+      return(switch(lang,
+                    de = paste0("Stockfish Pfad:       ", arg, "\n"),
+                         paste0("Stockfish Path:        ", arg, "\n")
+   ))}
+
+   if (x == "sfgo") {
+      return(switch(lang,
+                    de = paste0("Berechnungsparameter: ", arg, "\n"),
+                         paste0("Calculation parameter: ", arg, "\n")
+   ))}
+
+   if (x == "sfoptions") {
+      return(switch(lang,
+                    de = "1 - Stockfisch (neu) starten\n2 - Stockfisch beenden\n3 - Pfad \U000000E4ndern\n4 - Berechnungsparameter \U000000E4ndern\n5 - Einstellungen anzeigen\n",
+                         "1 - (Re)start Stockfisch\n2 - Quit Stockfisch\n3 - Change path\n4 - Change calculation parameter\n5 - Show settings"
+   ))}
+
+   if (x == "sfoptionwhich") {
+      return(switch(lang,
+                    de = "\nOption (<Zahl> w\U000000E4hlen oder <Enter> zum Verlassen): ",
+                         "\nOption (choose a <number> or <enter> to quit): "
+   ))}
+
+   if (x == "sfenterpath") {
+      return(switch(lang,
+                    de = "Pfad (einschlie\U000000DFlich der ausf\U000000FChrbaren Datei): ",
+                         "Path (including the executable): "
+   ))}
+
+   if (x == "sfpathsuccess") {
+      return(switch(lang,
+                    de = "Neuer Pfad wurde erfolgreich gesetzt.\n",
+                         "New path was set successfully.\n"
+   ))}
+
+   if (x == "sfpathfail") {
+      return(switch(lang,
+                    de = "Pfad konnte nicht gefunden/eingestellt werden.\n",
+                         "Could not find/set path.\n"
+   ))}
+
+   if (x == "sfentergo") {
+      return(switch(lang,
+                    de = "Berechnungsparameter ('depth <Zahl>' oder 'movetime <Millisekunden>'): ",
+                         "Calculation parameter ('depth <number>' or 'movetime <milliseconds>'): "
+   ))}
+
+   if (x == "sfgosuccess") {
+      return(switch(lang,
+                    de = "Neuer Berechnungsparameter wurde erfolgreich gesetzt.\n",
+                         "New calculation parameter was set successfully.\n"
+   ))}
+
+   if (x == "sfgofail") {
+      return(switch(lang,
+                    de = "Neuer Berechnungsparameter konnte nicht gesetzt werden.\n",
+                         "New calculation parameter could not be set.\n"
+   ))}
+
+   if (x == "quit") {
+      return(switch(lang,
+                    de = "Schachtrainer wird beendet ...\n",
+                         "Quitting the chess trainer ...\n"
+   ))}
+
+   if (x == "evalupdateold") {
+      return(switch(lang,
+                    de = "Aktuelle Bewertungen:\n\n",
+                         "Current evaluations:\n\n"
+   ))}
+
+   if (x == "evalupdatestart") {
+      return(switch(lang,
+                    de = "Starte Neuberechnung der Bewertungen ...\n",
+                         "Starting recalculation of the evaluations ...\n"
+   ))}
+
+   if (x == "evalupdatenew") {
+      return(switch(lang,
+                    de = "Neue Bewertungen:\n\n",
+                         "New evaluations:\n\n"
+   ))}
+
+   if (x == "evalupdatenosf") {
+      return(switch(lang,
+                    de = "Neuberechnung der Bewertungen ohne Stockfish nicht m\U000000F6glich.\n",
+                         "Cannot recalculate evaluations without Stockfish.\n"
+   ))}
+
+   if (x == "bestmove") {
+      return(switch(lang,
+                    de = paste0("Bester Zug: ", arg),
+                         paste0("Best move: ", arg)
    ))}
 
 }

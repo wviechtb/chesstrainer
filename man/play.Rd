@@ -7,7 +7,8 @@
 \usage{
 play(player="", mode="add", sleep=0.5, volume=0.5,
      lwd=2, cex.top=1.4, cex.bot=0.7, cex.eval=0.5,
-     expval=2, pause=TRUE, random=TRUE, eval=TRUE, lang="en", \dots)
+     expval=2, pause=TRUE, random=TRUE, eval=TRUE,
+     lang="en", sfpath="", sfgo="depth 20", \dots)
 }
 \arguments{
    \item{player}{character string to specify a player. If blank, the trainer will prompt for a (new) player name.}
@@ -23,6 +24,8 @@ play(player="", mode="add", sleep=0.5, volume=0.5,
    \item{random}{logical to specify whether sequences should be selected at random or sequentially.}
    \item{eval}{logical to specify whether the evaluation bar should be shown.}
    \item{lang}{character string to specify the language (either \code{"en"} for English or \code{"de"} for German).}
+   \item{sfpath}{character string giving the path (including the executable) to Stockfish. If blank, Stockfish is not used for position evaluations.}
+   \item{sfgo}{character string to specify the calculation parameter for Stockfish. Either something like \code{"depth 20"} (to fix the search depth in terms of the number of half-moves) or \code{"movetime 1000"} (to fix the search time in milliseconds).}
    \item{\dots}{other arguments}
 }
 \details{
