@@ -1,4 +1,4 @@
-.colorpick <- function(cols.all, pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, lwd, sidetoplay, random) {
+.colorpick <- function(cols.all, pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, lwd, sidetoplay, random) {
 
    cat(.text("colcurrent"))
 
@@ -8,7 +8,7 @@
 
    cat("\n")
 
-   .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop="Lorem ipsum", sidetoplay, random)
+   .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop="Lorem ipsum", sidetoplay, random)
    .addrect(4, 5, col=.get("col.hint"), lwd=lwd)
    .addrect(4, 3, col=.get("col.wrong"), lwd=lwd)
    .addrect(4, 4, col=.get("col.rect"), lwd=lwd)
@@ -34,7 +34,7 @@
             next
          assign(tab[colno,1], col, envir=.chesstrainer)
          tab[colno,2] <- col
-         .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop="Lorem ipsum", sidetoplay, random)
+         .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop="Lorem ipsum", sidetoplay, random)
          .addrect(4, 5, col=.get("col.hint"), lwd=lwd)
          .addrect(4, 3, col=.get("col.wrong"), lwd=lwd)
          .addrect(4, 4, col=.get("col.rect"), lwd=lwd)
@@ -53,7 +53,7 @@
 
 }
 
-.cexpick <- function(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop, lwd, sidetoplay, random) {
+.cexpick <- function(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, lwd, sidetoplay, random) {
 
    cat(.text("cexcurrent"))
 
@@ -64,7 +64,7 @@
 
    cat("\n")
 
-   .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop="Lorem ipsum", sidetoplay, random)
+   .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop="Lorem ipsum", sidetoplay, random)
    .draweval(-0.2, flip)
 
    while (TRUE) {
@@ -82,7 +82,7 @@
          cex[cex < 0.1] <- 0.1
          assign(tab[cexno,1], cex, envir=.chesstrainer)
          tab[cexno,2] <- cex
-         .redrawall(pos, flip, mode, show, player, seqname, score, played, i, totalmoves, texttop="Lorem ipsum", sidetoplay, random)
+         .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop="Lorem ipsum", sidetoplay, random)
          .draweval(-0.2, flip)
       }
    }
