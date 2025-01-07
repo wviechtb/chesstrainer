@@ -498,10 +498,11 @@
    rect(y, x, y+1, x+1, col=col, border=NA)
 
 .texttop <- function(text) {
-   rect(-2, 9.2, 12, 10, col=.get("col.bg"), border=NA)
+   ytop <- grconvertY(dev.size()[2], from="inches", to="user")
+   rect(-2, 9.1, ytop, 10, col=.get("col.bg"), border=NA)
    if (!identical(text, "")) {
       text <- gsub("\\\\n", "\n", text)
-      text(5, 9.5, text, cex=.get("cex.top"), col=.get("col.top"))
+      text(5, 9+(ytop-9)/2, text, cex=.get("cex.top"), col=.get("col.top"))
    }
    return(text)
 }
@@ -545,7 +546,7 @@
    xpos <- 0.12
    indsize <- 0.25
 
-   if (clear || is.na(val)) {
+   if (clear || length(val) == 0L || is.na(val)) {
       rect(xpos, 1, xpos+indsize, 9, border=NA, col=col.bg)
       return()
    }

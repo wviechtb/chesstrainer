@@ -160,6 +160,7 @@
    cat(.text("sfoptions"))
 
    while (TRUE) {
+      cat("\n")
       resp <- readline(prompt=.text("sfoptionwhich"))
       if (identical(resp, ""))
          break

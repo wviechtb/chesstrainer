@@ -1,4 +1,4 @@
-# chesstrainer 0.4-0 (2025-01-03)
+# chesstrainer 0.4-0 (2025-01-07)
 
 - can now play en passant
 - can now promote pawns
@@ -16,6 +16,7 @@
 - sequences now contain a position evaluation variable, which (if not missing) is shown as an evaluation bar (can be toggled on/off with `<v>`)
 - can now use Stockfish in the background to automatically obtain position evaluations when adding sequences
 - the `<u>` key is now used to recalculate (update) the position evaluations during play mode (`<escape>` is used to redraw the board)
+- keep track of when a sequence was last played and allow selection based on how long ago sequences were played
 
 # chesstrainer 0.1-0 (2024-12-17)
 

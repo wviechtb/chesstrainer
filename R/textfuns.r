@@ -164,6 +164,12 @@
                          "Played"
    ))}
 
+   if (x == "days") {
+      return(switch(lang,
+                    de = "Tage",
+                         "Days"
+   ))}
+
    if (x == "score") {
       return(switch(lang,
                     de = "Punkte",
@@ -196,8 +202,8 @@
 
    if (x == "seqsearch") {
       return(switch(lang,
-                    de = "Sequenzsuche ('Begriff', 'Zahl1-Zahl2', 'Zahl', 'Punkte >|<(=)? Wert', oder 'Gespielt >|<(=)? Wert'): ",
-                         "Sequence search ('String', 'Number1-Number2', 'Number', 'Score >|<(=)? Value', oder 'Played >|<(=)? Value'): "
+                    de = "Sequenzsuche ('Begriff', 'Nummer1-Nummer2', 'Nummer', 'Punkte > Wert', 'Gespielt < Wert', 'Tage > Wert'): ",
+                         "Sequence search ('string', 'number1-number2', 'number', 'score > value', 'played < value', 'days > value'): "
    ))}
 
    if (x == "allseqselected") {
@@ -259,6 +265,20 @@
                     de = paste0("Suche nach Sequenzen die ", arg[[1]], " ", arg[[2]], " Mal gespielt wurden.\n"),
                          paste0("Searching for sequences that were played ", arg[[1]], " ", arg[[2]], " times.\n")
    ))}
+
+   if (x == "strcapdays") {
+      return(switch(lang,
+                    de = "^[T|t](age)?\\s*(>|<|>=|<=)\\s*(\\d+\\.?\\d*)$",
+                         "^[D|d](ays)?\\s*(>|<|>=|<=)\\s*(\\d+\\.?\\d*)$"
+   ))}
+
+   if (x == "selseqdays") {
+      return(switch(lang,
+                    de = paste0("Suche nach Sequenzen die vor ", arg[[1]], " als ", arg[[2]], " Tagen gespielt wurden.\n"),
+                         paste0("Searching for sequences that were played ", arg[[1]], " than ", arg[[2]], " days ago.\n")
+   ))}
+
+
 
    if (x == "seqsearchterm") {
       return(switch(lang,
@@ -382,8 +402,8 @@
 
    if (x == "colwhich") {
       return(switch(lang,
-                    de = "Farbe \U000000E4ndern (<Zahl> w\U000000E4hlen oder <Enter> zum Verlassen): ",
-                         "Change color (choose a <number> or <enter> to quit): "
+                    de = "Farbe \U000000E4ndern (<Nummer> oder <Enter> zum Verlassen): ",
+                         "Change color (<number> or <enter> to quit): "
    ))}
 
    if (x == "colval") {
@@ -400,8 +420,8 @@
 
    if (x == "cexwhich") {
       return(switch(lang,
-                    de = "Gr\U000000F6\U000000DFe \U000000E4ndern (<Zahl> w\U000000E4hlen oder <Enter> zum Verlassen): ",
-                         "Change size (choose a <number> or <enter> to quit): "
+                    de = "Gr\U000000F6\U000000DFe \U000000E4ndern (<Nummer> oder <Enter> zum Verlassen): ",
+                         "Change size (<number> or <enter> to quit): "
    ))}
 
    if (x == "cexval") {
@@ -484,8 +504,8 @@
 
    if (x == "sfoptionwhich") {
       return(switch(lang,
-                    de = "\nOption (<Zahl> w\U000000E4hlen oder <Enter> zum Verlassen): ",
-                         "\nOption (choose a <number> or <enter> to quit): "
+                    de = "Option (<Nummer> oder <Enter> zum Verlassen): ",
+                         "Option (<number> or <enter> to quit): "
    ))}
 
    if (x == "sfenterpath") {
@@ -508,7 +528,7 @@
 
    if (x == "sfentergo") {
       return(switch(lang,
-                    de = "Berechnungsparameter ('depth <Zahl>' oder 'movetime <Millisekunden>'): ",
+                    de = "Berechnungsparameter ('depth <Nummer>' oder 'movetime <Millisekunden>'): ",
                          "Calculation parameter ('depth <number>' or 'movetime <milliseconds>'): "
    ))}
 

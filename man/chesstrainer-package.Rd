@@ -34,7 +34,7 @@
 }
 \section{Managing/Selecting Sequences}{
 
-   Using the \code{<l>} key, you can list all sequences, together with their current score, the number of times they have been played, and the current probability of selection. During \sQuote{play} mode, you can use the \code{Ctrl-<d>} key to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.
+   Using the \code{<l>} key, you can list all sequences, together with their current score, the number of times they have been played, the last time they have been played (in days; \code{NA} if a sequence has not played before), and the current probability of selection. During \sQuote{play} mode, you can use the \code{Ctrl-<d>} key to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.
 
    Using the \code{</>} (or \code{<.>}) key, you can select a subset of the sequences in various ways:
 
@@ -42,11 +42,14 @@
    \item by entering a search term (which is applied as a regular expression to the filenames of the sequences),
    \item by entering a sequence number (e.g., \code{2} to select the 2nd sequence),
    \item by entering a sequence number range (e.g., \code{2-5} to select sequences 2 to 5),
-   \item by entering something like \code{score >= 80} to select sequences with a score above (or below) a certain threshold,
-   \item by entering something like \code{played <= 1} to select sequences that have been played a minimum/maximum number of times.
+   \item by entering something like \code{score > 80} to select sequences with a score above a certain threshold,
+   \item by entering something like \code{played < 1} to select sequences that have been played less than a certain number of times,
+   \item by entering something like \code{days > 2} to select sequences that have been played more than a certain number of days ago.
    }
 
-   Hitting \code{<enter>} at the prompt selects all sequences.
+   The keywords \code{score}, \code{played}, and \code{days} can be abbreviated to \code{s}, \code{p} , and \code{d} (so \code{s > 80}, \code{p < 1}, and \code{d > 2} would also work). One can also use other comparators, such as \code{>=}, \code{<}, and \code{>=} (e.g., \code{s <= 10}).
+
+   Hitting \code{<enter>} at the prompt (i.e., not entering any search string) selects all sequences.
 
    By default, sequences are selected at random during \sQuote{play} mode (as described above). However, one can toggle into a sequential mode with the \code{<r>} key, in which case the sequences are played in order.
 

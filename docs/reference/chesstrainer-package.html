@@ -111,14 +111,16 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
     <h2>Managing/Selecting Sequences</h2>
 
 
-<p>Using the <code>&lt;l&gt;</code> key, you can list all sequences, together with their current score, the number of times they have been played, and the current probability of selection. During ‘play’ mode, you can use the <code>Ctrl-&lt;d&gt;</code> key to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.</p>
+<p>Using the <code>&lt;l&gt;</code> key, you can list all sequences, together with their current score, the number of times they have been played, the last time they have been played (in days; <code>NA</code> if a sequence has not played before), and the current probability of selection. During ‘play’ mode, you can use the <code>Ctrl-&lt;d&gt;</code> key to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.</p>
 <p>Using the <code>&lt;/&gt;</code> (or <code>&lt;.&gt;</code>) key, you can select a subset of the sequences in various ways:</p>
 <p></p><ul><li><p>by entering a search term (which is applied as a regular expression to the filenames of the sequences),</p></li>
 <li><p>by entering a sequence number (e.g., <code>2</code> to select the 2nd sequence),</p></li>
 <li><p>by entering a sequence number range (e.g., <code>2-5</code> to select sequences 2 to 5),</p></li>
-<li><p>by entering something like <code>score &gt;= 80</code> to select sequences with a score above (or below) a certain threshold,</p></li>
-<li><p>by entering something like <code>played &lt;= 1</code> to select sequences that have been played a minimum/maximum number of times.</p></li>
-</ul><p>Hitting <code>&lt;enter&gt;</code> at the prompt selects all sequences.</p>
+<li><p>by entering something like <code>score &gt; 80</code> to select sequences with a score above a certain threshold,</p></li>
+<li><p>by entering something like <code>played &lt; 1</code> to select sequences that have been played less than a certain number of times,</p></li>
+<li><p>by entering something like <code>days &gt; 2</code> to select sequences that have been played more than a certain number of days ago.</p></li>
+</ul><p>The keywords <code>score</code>, <code>played</code>, and <code>days</code> can be abbreviated to <code>s</code>, <code>p</code> , and <code>d</code> (so <code>s &gt; 80</code>, <code>p &lt; 1</code>, and <code>d &gt; 2</code> would also work). One can also use other comparators, such as <code>&gt;=</code>, <code>&lt;</code>, and <code>&gt;=</code> (e.g., <code>s &lt;= 10</code>).</p>
+<p>Hitting <code>&lt;enter&gt;</code> at the prompt (i.e., not entering any search string) selects all sequences.</p>
 <p>By default, sequences are selected at random during ‘play’ mode (as described above). However, one can toggle into a sequential mode with the <code>&lt;r&gt;</code> key, in which case the sequences are played in order.</p>
     </div>
     <div id="adding-new-sequences">

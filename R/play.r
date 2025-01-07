@@ -149,7 +149,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
 
    # some defaults
 
-   selected <- list.files(seqdir, pattern=".rds$")
+   selected <- NULL
    oldvolume <- volume
    seqno <- 1
 
@@ -276,11 +276,21 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
       played.all <- sapply(dat.all, function(x) x$played[player])
       played.all[is.na(played.all) | .is.null(played.all)] <- 0
       played.all <- unname(unlist(played.all))
+      date.all <- sapply(dat.all, function(x) x$date[player])
+      date.all[is.na(date.all) | .is.null(date.all)] <- NA
+      date.all <- unname(unlist(date.all))
+      dayslp.all <- as.double(Sys.time() - as.POSIXct(date.all), units="days")
+      dayslp.all <- round(dayslp.all, digits=1)
 
       # apply selection to sequences
 
-      files <- files.all[files.all %in% selected]
-      dat <- dat.all[files.all %in% selected]
+      if (is.null(selected)) {
+        files <- files.all
+        dat <- dat.all
+      } else {
+        files <- files.all[files.all %in% selected]
+        dat <- dat.all[files.all %in% selected]
+      }
 
       k <- length(files)
 
@@ -290,7 +300,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
       if (k == 0L) {
          cat(.text("zeroseqsfound"))
          cat(.text("allseqselected"))
-         selected <- list.files(seqdir, pattern=".rds$")
+         selected <- NULL
          next
       }
 
@@ -300,6 +310,11 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
       played.selected <- sapply(dat, function(x) x$played[player])
       played.selected[is.na(played.selected) | .is.null(played.selected)] <- 0
       played.selected <- unname(unlist(played.selected))
+      date.selected <- sapply(dat, function(x) x$date[player])
+      date.selected[is.na(date.selected) | .is.null(date.selected)] <- NA_real_
+      date.selected <- unname(unlist(date.selected))
+      dayslp.selected <- as.double(Sys.time() - as.POSIXct(date.selected), units="days")
+      dayslp.selected <- round(dayslp.selected, digits=1)
 
       if (all(scores.selected == 0)) # in case all sequences have a score of 0
          scores.selected <- rep(1, length(scores.selected))
@@ -312,7 +327,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
 
          # set up the data frame for a new sequence
 
-         sub <- list(flip=flip, score=setNames(100, player), played=setNames(0, player),
+         sub <- list(flip=flip, score=setNames(100, player), played=setNames(0, player), date=setNames(Sys.time(), player),
                      moves=data.frame(x1=numeric(), y1=numeric(), x2=numeric(), y2=numeric(), show=logical(), move=character(), eval=numeric(), comment=character()))
 
       } else {
@@ -586,11 +601,12 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
             if (identical(click, "l")) {
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
                if (k > 0L) {
-                  tab <- data.frame(files, played.selected, scores.selected, formatC(probvals.selected, format="f", digits=1))
-                  names(tab) <- c("Name", .text("played"), .text("score"), .text("prob"))
+                  tab <- data.frame(files, played.selected, dayslp.selected, scores.selected, formatC(probvals.selected, format="f", digits=1))
+                  names(tab) <- c("Name", .text("played"), .text("days"), .text("score"), .text("prob"))
                   tab$Name <- format(tab$Name, justify="left")
                   names(tab)[1] <- ""
-                  rownames(tab) <- which(files.all %in% selected)
+                  if (!is.null(selected))
+                     rownames(tab) <- which(files.all %in% selected)
                   print(tab, print.gap=2)
                } else {
                   cat(.text("zeroseqsfound"))
@@ -639,6 +655,16 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
                      } else {
                         .addrect(by1, bx1, col=.get("col.hint"), lwd=lwd)
                         .addrect(by2, bx2, col=.get("col.hint"), lwd=lwd)
+                     }
+                     click <- getGraphicsEvent(prompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=function(key) return(key))
+                     if (flip) {
+                        .addrect(9-by1, 9-bx1, col=.get("col.hint"), lwd=lwd)
+                        .addrect(9-by2, 9-bx2, col=.get("col.hint"), lwd=lwd)
+                        .rmrect(9-by1, 9-bx1, lwd=lwd)
+                        .rmrect(9-by2, 9-bx2, lwd=lwd)
+                     } else {
+                        .rmrect(by1, bx1, lwd=lwd)
+                        .rmrect(by2, bx2, lwd=lwd)
                      }
                   }
                }
@@ -705,7 +731,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
 
                if (identical(searchterm , "")) {
                   cat(.text("allseqselected"))
-                  selected <- list.files(seqdir, pattern=".rds$")
+                  selected <- NULL
                   run.rnd <- FALSE
                   wait <- FALSE
                   mode <- "add"
@@ -755,6 +781,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
                   selected <- list.files(seqdir, pattern=".rds$")[selected]
                   if (length(selected) == 0L) {
                      cat(.text("noseqsfound"))
+                     selected <- NULL
                   } else {
                      cat(.text("numseqfound", length(selected)))
                      run.rnd <- FALSE
@@ -776,6 +803,28 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
                   selected <- list.files(seqdir, pattern=".rds$")[selected]
                   if (length(selected) == 0L) {
                      cat(.text("noseqsfound"))
+                     selected <- NULL
+                  } else {
+                     cat(.text("numseqfound", length(selected)))
+                     run.rnd <- FALSE
+                     wait <- FALSE
+                     mode <- "add"
+                     seqno <- 1
+                  }
+                  if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+                  next
+               }
+
+               tmp <- strcapture(.text("strcapdays"), searchterm, data.frame(text=character(), sign=character(), cutoff=numeric()))
+
+               if (!is.na(tmp$cutoff)) {
+                  cat(.text("selseqdays", list(tmp$sign, tmp$cutoff)))
+                  selected <- eval(parse(text = paste("dayslp.all", tmp$sign, tmp$cutoff)))
+                  selected[is.na(selected)] <- FALSE
+                  selected <- list.files(seqdir, pattern=".rds$")[selected]
+                  if (length(selected) == 0L) {
+                     cat(.text("noseqsfound"))
+                     selected <- NULL
                   } else {
                      cat(.text("numseqfound", length(selected)))
                      run.rnd <- FALSE
@@ -897,6 +946,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
 
                sub$score <- setNames(100, player)
                sub$played <- setNames(0, player)
+               sub$date <- setNames(Sys.time(), player)
 
                if (!identical(sub$moves$comment[i], "")) {
                   texttop <- .texttop(sub$moves$comment[i])
@@ -1400,6 +1450,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
 
             sub$score[player] <- score
             sub$played[player] <- played
+            sub$date[player] <- Sys.time()
             saveRDS(sub, file=file.path(seqdir, seqname))
             Sys.sleep(2*sleep)
             run.rnd <- FALSE
