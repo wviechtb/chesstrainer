@@ -3,6 +3,9 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
                  pause=TRUE, random=TRUE, eval=TRUE, lang="en",
                  sfpath="", sfgo="depth 20", ...) {
 
+   if (!interactive())
+      return(.text("interactive"))
+
    if (!is.element(lang, c("en","de")))
       stop("Argument 'lang' must be either 'en' or 'de'.", call.=FALSE)
 
@@ -218,6 +221,14 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
          .rmrect(click1.x, click1.y, lwd=lwd)
          .rmrect(click2.x, click2.y, lwd=lwd)
       }
+      if (givehint1) {
+         .rmrect(hintx1, hinty1, lwd=lwd)
+         givehint1 <<- FALSE
+      }
+      if (givehint2) {
+         .rmrect(hintx2, hinty2, lwd=lwd)
+         givehint2 <<- FALSE
+      }
       return(1)
    }
 
@@ -240,13 +251,14 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
       comment <- ""
       evalval <- NA_real_
       i <- 1
-      hintval <- 0
       texttop <- ""
       flip <- FALSE
       hasarrows <- FALSE
       circles <- matrix(c(0,0), nrow=1, ncol=2)
       scoreadd <- 0
       sidetoplay <- "w"
+      givehint1 <- FALSE
+      givehint2 <- FALSE
 
       .sf.newgame(sfproc, sfrun)
 
@@ -634,38 +646,39 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
 
             if (identical(click, "h")) {
                if (mode == "play") {
-                  hintval <- hintval + 1
-                  if (hintval >= 1)
-                     .addrect(sub$moves$x1[i], sub$moves$y1[i], col=.get("col.hint"), lwd=lwd)
-                  if (hintval >= 2)
-                     .addrect(sub$moves$x2[i], sub$moves$y2[i], col=.get("col.hint"), lwd=lwd)
-                  if (hintval <= 2)
+                  if (!givehint1) {
+                     hintx1 <- sub$moves$x1[i]
+                     hinty1 <- sub$moves$y1[i]
+                     .addrect(hintx1, hinty1, col=.get("col.hint"), lwd=lwd)
                      score <- min(100, score + 25)
+                     givehint1 <- TRUE
+                  } else {
+                     if (!givehint2) {
+                        hintx2 <- sub$moves$x2[i]
+                        hinty2 <- sub$moves$y2[i]
+                        .addrect(hintx2, hinty2, col=.get("col.hint"), lwd=lwd)
+                        score <- min(100, score + 25)
+                        givehint2 <- TRUE
+                     }
+                  }
                   .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, random)
                } else {
                   if (!identical(bestmove, "")) {
                      .texttop(.text("bestmove", bestmove))
-                     bx1 <- which(letters[1:8] == substr(bestmove, 1, 1))
-                     by1 <- as.numeric(substr(bestmove, 2, 2))
-                     bx2 <- which(letters[1:8] == substr(bestmove, 3, 3))
-                     by2 <- as.numeric(substr(bestmove, 4, 4))
+                     hintx1 <- as.numeric(substr(bestmove, 2, 2))
+                     hinty1 <- which(letters[1:8] == substr(bestmove, 1, 1))
+                     hintx2 <- as.numeric(substr(bestmove, 4, 4))
+                     hinty2 <- which(letters[1:8] == substr(bestmove, 3, 3))
                      if (flip) {
-                        .addrect(9-by1, 9-bx1, col=.get("col.hint"), lwd=lwd)
-                        .addrect(9-by2, 9-bx2, col=.get("col.hint"), lwd=lwd)
-                     } else {
-                        .addrect(by1, bx1, col=.get("col.hint"), lwd=lwd)
-                        .addrect(by2, bx2, col=.get("col.hint"), lwd=lwd)
+                        hintx1 <- 9 - hintx1
+                        hinty1 <- 9 - hinty1
+                        hintx2 <- 9 - hintx2
+                        hinty2 <- 9 - hinty2
                      }
-                     click <- getGraphicsEvent(prompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=function(key) return(key))
-                     if (flip) {
-                        .addrect(9-by1, 9-bx1, col=.get("col.hint"), lwd=lwd)
-                        .addrect(9-by2, 9-bx2, col=.get("col.hint"), lwd=lwd)
-                        .rmrect(9-by1, 9-bx1, lwd=lwd)
-                        .rmrect(9-by2, 9-bx2, lwd=lwd)
-                     } else {
-                        .rmrect(by1, bx1, lwd=lwd)
-                        .rmrect(by2, bx2, lwd=lwd)
-                     }
+                     .addrect(hintx1, hinty1, col=.get("col.hint"), lwd=lwd)
+                     .addrect(hintx2, hinty2, col=.get("col.hint"), lwd=lwd)
+                     givehint1 <- TRUE
+                     givehint2 <- TRUE
                   }
                }
                next
@@ -1011,7 +1024,8 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
                i <- i + 1
                .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, random)
                texttop <- .texttop(sub$moves$comment[i])
-               hintval <- 0
+               givehint1 <- FALSE
+               givehint2 <- FALSE
                next
             }
 
@@ -1496,7 +1510,8 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
          }
 
          .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, random)
-         hintval <- 0
+         givehint1 <- FALSE
+         givehint2 <- FALSE
 
          # go to [b]
 

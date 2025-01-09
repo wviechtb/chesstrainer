@@ -2,6 +2,12 @@
 
    lang <- .get("lang")
 
+   if (x == "interactive") {
+      return(switch(lang,
+                    de = "R l\U000000E4uft nicht im interaktiven Modus.",
+                         "R is not running in interactive mode."
+   ))}
+
    if (x == "testdevice") {
       return(switch(lang,
                     de = "Das graphische Ausgabeger\U000000E4t unterst\U000000FCtzt keine Ereignisbehandlung.\nVielleicht klappt es mit x11() und dann play().",
