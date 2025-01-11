@@ -446,9 +446,9 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
 
             click <- getGraphicsEvent(prompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
 
-            keys      <- c("q", " ", "n", "p", "e", "l", "-", "=", "+", "F1", "F2", "F3", "F4", "F5", "F6", "m", "/", ".", "w", "t", "h", "ctrl-R", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "F12", "v")
+            keys      <- c("q", " ", "n", "p", "e", "l", "-", "=", "+", "F1", "F2", "F3", "F4", "F5", "F6", "m", "/", ".", "w", "t", "h", "ctrl-R", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "F12", "v", "a")
             keys.add  <- c("f", "z", "c", "s", "0", "?", "b")
-            keys.play <- c("z", "c", "s", "\b", "ctrl-D", "a", "Right", "o", "u")
+            keys.play <- c("z", "c", "s", "\b", "ctrl-D", "Right", "o", "u")
 
             if (mode == "add" && is.character(click) && !is.element(click, c(keys, keys.add)))
                next
@@ -951,9 +951,26 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
                next
             }
 
-            # a to copy the current sequence to add new moves as a new sequence (only in play mode)
+            # a to copy the current sequence to add new moves as a new sequence (only in play mode or if only a single sequence is selected)
 
-            if (mode == "play" && identical(click, "a")) {
+            if (identical(click, "a")) {
+
+               if (mode == "add") {
+                  if (k == 1) {
+                     sel <- 1
+                     sub <- dat[[sel]]
+                     seqname <- files[sel]
+                     seqnum  <- which(seqname == files.all)
+                     score <- 100
+                     played <- 0
+                     totalmoves <- nrow(sub$moves)
+                     flip <- sub$flip
+                     if (!is.null(sub$pos))
+                        pos <- sub$pos
+                  } else {
+                     next
+                  }
+               }
 
                mode <- "add"
 

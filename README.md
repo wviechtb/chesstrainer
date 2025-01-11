@@ -7,10 +7,6 @@ The purpose of the `chesstrainer` package is to create sequences of moves (lines
 
 ![](man/figures/screenshot.png "Find the mate in three!")
 
-## Documentation
-
-You can read the documentation online at [https://wviechtb.github.io/chesstrainer/](https://wviechtb.github.io/chesstrainer/).
-
 ## Installation
 
 The development version of the `chesstrainer` package can be installed with:
@@ -18,6 +14,10 @@ The development version of the `chesstrainer` package can be installed with:
 install.packages("remotes")
 remotes::install_github("wviechtb/chesstrainer")
 ```
+
+## Play
+
+To start playing, type: `play()`. For an introduction, type: `help(chesstrainer)` or read the documentation online at [https://wviechtb.github.io/chesstrainer/](https://wviechtb.github.io/chesstrainer/).
 
 ## To Do
 
