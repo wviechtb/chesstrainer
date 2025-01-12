@@ -428,7 +428,7 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
             }
 
             show <- FALSE
-            #.printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, random)
+            .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, random)
 
          } else {
 
@@ -457,7 +457,7 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
 
             keys      <- c("q", " ", "n", "p", "e", "l", "-", "=", "+", "F1", "F2", "F3", "F4", "F5", "F6", "m", "/", ".", "w", "t", "h", "ctrl-R", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "F12", "v", "a")
             keys.add  <- c("f", "z", "c", "s", "0", "?", "b")
-            keys.play <- c("z", "c", "s", "\b", "ctrl-D", "Right", "Left", "o", "u")
+            keys.play <- c("z", "c", "s", "\b", "ctrl-D", "Right", "Left", "o", "u", "A")
 
             if (mode == "add" && is.character(click) && !is.element(click, c(keys, keys.add)))
                next
@@ -955,14 +955,21 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
                      .draweval(sub$moves$eval[i-1], flip=flip, eval=eval)
                      .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, random)
                      .drawsideindicator(sidetoplay, flip)
+                     fen <- .genfen(pos, flip, sidetoplay, i)
+                     tmp <- .sf.eval(sfproc, sfrun, sfgo, fen, sidetoplay, verbose)
+                     evalval  <- tmp$eval
+                     bestmove <- tmp$bestmove
+                     sfproc   <- tmp$sfproc
+                     sfrun    <- tmp$sfrun
                   }
                }
                next
             }
 
             # a to copy the current sequence to add new moves as a new sequence (only in play mode or if only a single sequence is selected)
+            # A does the same but only goes to the position when A is pressed
 
-            if (identical(click, "a")) {
+            if (identical(click, "a") || identical(click, "A")) {
 
                if (mode == "add") {
                   if (k == 1) {
@@ -989,7 +996,8 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
 
                if (!identical(sub$moves$comment[i], "")) {
                   texttop <- .texttop(sub$moves$comment[i])
-                  Sys.sleep(sleep)
+                  if (identical(click, "a"))
+                     Sys.sleep(sleep)
                }
 
                if (is.null(sub$pos)) {
@@ -1002,20 +1010,34 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
                hasarrows <- FALSE
                circles <- matrix(c(0,0), nrow=1, ncol=2)
 
+               if (identical(click, "A"))
+                  sub$moves <- sub$moves[1:(i-1),,drop=FALSE]
+
                for (i in 1:nrow(sub$moves)) {
                   pos <- .updateboard(pos, move=sub$moves[i,1:4], flip=flip, volume=volume, verbose=verbose)
                   sub$moves$move[i] <- attr(pos,"move")
                   texttop <- .texttop(sub$moves$comment[i])
                   .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, random)
                   .draweval(sub$moves$eval[i], sub$moves$eval[i-1], flip=flip, eval=eval)
-                  Sys.sleep(sleep)
+                  if (identical(click, "a"))
+                     Sys.sleep(sleep)
                }
 
                i <- i + 1
-               sidetoplay <- ifelse(flip, "w", "b")
+               if (identical(click, "A")) {
+                  sidetoplay <- ifelse(flip, "b", "w")
+               } else {
+                  sidetoplay <- ifelse(flip, "w", "b")
+               }
                show <- FALSE
                .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, random)
                .drawsideindicator(sidetoplay, flip)
+               fen <- .genfen(pos, flip, sidetoplay, i)
+               tmp <- .sf.eval(sfproc, sfrun, sfgo, fen, sidetoplay, verbose)
+               evalval  <- tmp$eval
+               bestmove <- tmp$bestmove
+               sfproc   <- tmp$sfproc
+               sfrun    <- tmp$sfrun
                next
 
             }
