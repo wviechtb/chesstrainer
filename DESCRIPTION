@@ -1,11 +1,11 @@
 Package: chesstrainer
-Version: 0.9-1
-Date: 2025-01-11
+Version: 0.9-2
+Date: 2025-01-12
 Title: Chess Training Program
 Authors@R: person(given = "Wolfgang", family = "Viechtbauer", role = c("aut","cre"), email = "wvb@wvbauer.com", comment = c(ORCID = "0000-0003-3463-4063"))
 Depends: R (>= 4.2.0), processx
 Imports: stats, graphics, grDevices, utils, png, shape
-Description: Create and quiz yourself on chess lines.
+Description: Create and test yourself on chess lines.
 License: GPL-3
 URL: https://github.com/wviechtb/chesstrainer https://www.wvbauer.com
 BugReports: https://github.com/wviechtb/chesstrainer/issues

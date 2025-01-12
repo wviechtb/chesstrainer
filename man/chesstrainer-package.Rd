@@ -2,15 +2,15 @@
 \alias{chesstrainer-package}
 \alias{chesstrainer}
 \docType{package}
-\title{chesstrainer: Create and Quiz Yourself on Chess Lines}
+\title{chesstrainer: Create and Test Yourself on Chess Lines}
 \description{
 
-   The purpose of the \pkg{chesstrainer} package is to create sequences of moves (lines), save them, and then quiz yourself on these sequences. This is especially useful for training openings, but can also be used for creating chess puzzles.
+   The purpose of the \pkg{chesstrainer} package is to create sequences of moves (lines), save them, and then test yourself on these sequences. This is especially useful for training openings, but can also be used for creating chess puzzles or training tactics.
 
 }
 \section{Starting the Trainer for the First Time}{
 
-   To start the trainer, run \code{play()} from the console (see the \code{\link{play}} function for some startup arguments that can be adjusted). When starting the trainer for the first time, a directory is created for storing settings and a directory where sequences will be stored. A few example sequences also come with the package and you will receive a prompt whether to copy these sequences to the sequence directory. To familiarize yourself with the trainer, it would be good to do so.
+   To start the trainer, run \code{\link{play}()} from the console. When starting the trainer for the first time, a directory is created for storing settings and a directory where sequences will be stored. A few example sequences also come with the package and you will receive a prompt whether to copy these sequences to the sequence directory. To familiarize yourself with the trainer, it would be good to do so.
 
    You will then receive a prompt to enter a player name. Choose a name and hit enter.
 
@@ -18,23 +18,23 @@
 
    In play mode, information is shown at the bottom about the current mode, the player name, the name of the current sequence, the current move number and the total number of moves of the sequence, the sequence score (see below), and the number of times that the sequence has been played.
 
-   With \code{<F1>}, you can receive an overview of all keyboard shortcuts (use any key or mouse click to close it). You can quit the trainer with the \code{<q>} key.
+   With \code{<F1>}, you can receive an overview of all keyboard shortcuts (use any key or mouse click to close it). These will be explained in further detail below. You can quit the trainer with the \code{<q>} key.
 
 }
 \section{The Sequence Score}{
 
-   The trainer keeps track of a score for each sequence. For a new sequence, the score starts out at 100. The score is multiplied by 0.80 after completing a sequence (rounded up to the nearest integer). When making the wrong move when playing a sequence, the score is increased by 50 points (up to a maximum of 100). Receiving a hint increases the score by 25 points (50 points when asking for both the starting and the target square).
+   The trainer keeps track of a score for each sequence. For a new sequence, the score starts out at 100. The score is multiplied by 0.8 after completing a sequence (rounded up to the nearest integer). When making a wrong move when playing a sequence, the score is increased by 50 points (up to a maximum of 100). Receiving a hint increases the score by 25 points (50 points when asking for both the starting and the target square).
 
    The trainer uses the score to select the next sequence to play. Sequences with higher scores have a higher chance to be presented. The probability of selecting a particular sequence is computed with \eqn{p_i = s_i^e / \sum(s_i^e)}, where \eqn{s_i} is the score of the \eqn{i}th sequence and \eqn{e} is the \sQuote{exponent value}. This is set by default to 2 and enhances the probability that sequences with a large score are more likely to be selected. The exponent value can be adjusted with the \code{<^>} key. Setting the exponent value to 0 makes all sequences equally likely to be selected. Setting it to a large value (e.g., 100) almost guarantees that the sequence with the highest score is selected next. The score for the current sequence can also be set manually with the \code{<o>} key. Setting the score to 0 means that the sequence has a zero probability of being selected (even when \eqn{e} is equal to 0).
 
    If you make a misclick during a move and want to take the score adjustment back, you can do so with the \code{<t>} key.
 
-   After completing a sequence, the current score for the sequence is saved (together with the number of times that the sequence has been played) to the sequence file. This way, your progress in learning the sequences is saved permanently across sessions. Note that the scores are player specific.
+   After completing a sequence, the current score for the sequence is saved (together with the number of times that the sequence has been played and when it was last played) to the sequence file. This way, your progress in learning the sequences is saved permanently across sessions. Note that this information is player specific.
 
 }
 \section{Managing/Selecting Sequences}{
 
-   Using the \code{<l>} key, you can list all sequences, together with their current score, the number of times they have been played, the last time they have been played (in days; \code{NA} if a sequence has not played before), and the current probability of selection. During \sQuote{play} mode, you can use the \code{Ctrl-<d>} key to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.
+   Using the \code{<l>} key, you can list all sequences, together with their current score, the number of times they have been played, the last time they have been played (in days; \code{NA} if a sequence has not been played before), and the current probability of selection. During \sQuote{play} mode, you can use the \code{Ctrl-<d>} key to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.
 
    Using the \code{</>} (or \code{<.>}) key, you can select a subset of the sequences in various ways:
 
@@ -104,7 +104,7 @@
 
    In \sQuote{play} mode, the \code{<u>} key updates the evaluations for all moves in a sequence by recalculating the evaluations with the current setting for the calculation parameter. This way, one can obtain very accurate evaluations by using a high search depth or search time. After updating the evaluations, they are automatically saved to the sequence file.
 
-   Note that asking Stockfish to evaluate impossible positions (e.g., black is in check but it is white's turn to move) crashes Stockfish. This should be handled gracefully. With \code{<F6>}, one can adjust the Stockfish settings and also restart it.
+   Note that asking Stockfish to evaluate impossible positions (e.g., black is in check but it is white's turn to move) crashes Stockfish. This should be handled gracefully by the trainer. With \code{<F6>}, one can adjust the Stockfish settings and also restart it.
 
 }
 \section{Other Options / Keyboard Shortcuts}{

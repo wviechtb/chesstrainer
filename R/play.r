@@ -1,7 +1,4 @@
-play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
-                 cex.top=1.4, cex.bot=0.7, cex.eval=0.5, expval=2,
-                 pause=TRUE, random=TRUE, eval=TRUE, lang="en",
-                 sfpath="", sfgo="depth 20", ...) {
+play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
 
    if (!interactive())
       return(.text("interactive"))
@@ -10,6 +7,20 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
       stop("Argument 'lang' must be either 'en' or 'de'.", call.=FALSE)
 
    assign("lang", lang, envir=.chesstrainer)
+
+   ddd <- list(...)
+
+   mode     <- ifelse(is.null(ddd$mode),     "add",      ddd$mode)
+   sleep    <- ifelse(is.null(ddd$sleep),    0.5,        ddd$sleep)
+   volume   <- ifelse(is.null(ddd$volume),   0.5,        ddd$volume)
+   lwd      <- ifelse(is.null(ddd$lwd),      2,          ddd$lwd)
+   cex.top  <- ifelse(is.null(ddd$cex.top),  1.4,        ddd$cex.top)
+   cex.bot  <- ifelse(is.null(ddd$cex.bot),  0.7,        ddd$cex.bot)
+   cex.eval <- ifelse(is.null(ddd$cex.eval), 0.5,        ddd$cex.eval)
+   expval   <- ifelse(is.null(ddd$expval),   2,          ddd$expval)
+   pause    <- ifelse(is.null(ddd$pause),    TRUE,       isTRUE(ddd$pause))
+   random   <- ifelse(is.null(ddd$random),   TRUE,       isTRUE(ddd$random))
+   eval     <- ifelse(is.null(ddd$eval),     TRUE,       isTRUE(ddd$eval))
 
    # ensure that some arguments are sensible
 
@@ -24,8 +35,6 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
    cex.bot[cex.bot < 0.1] <- 0.1
    cex.eval[cex.eval < 0.1] <- 0.1
    expval[expval < 0] <- 0
-
-   ddd <- list(...)
 
    verbose <- isTRUE(ddd$verbose)
 
@@ -291,7 +300,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
       date.all <- sapply(dat.all, function(x) x$date[player])
       date.all[is.na(date.all) | .is.null(date.all)] <- NA
       date.all <- unname(unlist(date.all))
-      dayslp.all <- as.double(Sys.time() - as.POSIXct(date.all), units="days")
+      dayslp.all <- as.numeric(Sys.time() - as.POSIXct(date.all), units="days")
       dayslp.all <- round(dayslp.all, digits=1)
 
       # apply selection to sequences
@@ -325,7 +334,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
       date.selected <- sapply(dat, function(x) x$date[player])
       date.selected[is.na(date.selected) | .is.null(date.selected)] <- NA_real_
       date.selected <- unname(unlist(date.selected))
-      dayslp.selected <- as.double(Sys.time() - as.POSIXct(date.selected), units="days")
+      dayslp.selected <- as.numeric(Sys.time() - as.POSIXct(date.selected), units="days")
       dayslp.selected <- round(dayslp.selected, digits=1)
 
       if (all(scores.selected == 0)) # in case all sequences have a score of 0
@@ -339,7 +348,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
 
          # set up the data frame for a new sequence
 
-         sub <- list(flip=flip, score=setNames(100, player), played=setNames(0, player), date=setNames(Sys.time(), player),
+         sub <- list(flip=flip, score=setNames(100, player), played=setNames(0, player), date=setNames(as.numeric(Sys.time()), player),
                      moves=data.frame(x1=numeric(), y1=numeric(), x2=numeric(), y2=numeric(), show=logical(), move=character(), eval=numeric(), comment=character()))
 
       } else {
@@ -419,7 +428,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
             }
 
             show <- FALSE
-            .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, random)
+            #.printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, random)
 
          } else {
 
@@ -448,7 +457,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
 
             keys      <- c("q", " ", "n", "p", "e", "l", "-", "=", "+", "F1", "F2", "F3", "F4", "F5", "F6", "m", "/", ".", "w", "t", "h", "ctrl-R", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "F12", "v", "a")
             keys.add  <- c("f", "z", "c", "s", "0", "?", "b")
-            keys.play <- c("z", "c", "s", "\b", "ctrl-D", "Right", "o", "u")
+            keys.play <- c("z", "c", "s", "\b", "ctrl-D", "Right", "Left", "o", "u")
 
             if (mode == "add" && is.character(click) && !is.element(click, c(keys, keys.add)))
                next
@@ -684,7 +693,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
                next
             }
 
-            # -/+ to decrease/increase the time between moves
+            # -/+ (also =) to decrease/increase the time between moves
 
             if (identical(click, "-") || identical(click, "=") || identical(click, "+")) {
                if (identical(click, "-")) {
@@ -976,7 +985,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
 
                sub$score <- setNames(100, player)
                sub$played <- setNames(0, player)
-               sub$date <- setNames(Sys.time(), player)
+               sub$date <- setNames(as.numeric(Sys.time()), player)
 
                if (!identical(sub$moves$comment[i], "")) {
                   texttop <- .texttop(sub$moves$comment[i])
@@ -1044,6 +1053,35 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
                givehint1 <- FALSE
                givehint2 <- FALSE
                next
+            }
+
+            # left arrow to go back one move (only in play mode)
+
+            if (mode == "play" && identical(click, "Left")) {
+
+               if (i > 1) {
+                  if (is.null(sub$pos)) {
+                     pos <- start.pos
+                  } else {
+                     pos <- sub$pos
+                  }
+                  .drawboard(pos, flip=flip)
+                  hasarrows <- FALSE
+                  circles <- matrix(c(0,0), nrow=1, ncol=2)
+                  i <- i - 1
+                  sidetoplay <- "w"
+                  for (j in seq_len(i-1)) {
+                     pos <- .updateboard(pos, move=sub$moves[j,1:4], flip=flip, volume=0, verbose=verbose)
+                     sub$moves$move[j] <- attr(pos,"move")
+                     sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
+                  }
+                  comment <- ""
+                  .draweval(sub$moves$eval[i-1], flip=flip, eval=eval)
+                  .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, random)
+                  .drawsideindicator(sidetoplay, flip)
+               }
+               next
+
             }
 
             # Escape to update board
@@ -1233,8 +1271,10 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
                settings <- data.frame(player, mode, sleep, volume, lwd, cex.top, cex.bot, cex.eval, expval, pause, random, eval, lang, sfpath, sfgo)
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
                tab <- t(settings)
-               colnames(tab) <- ""
+               tab <- cbind(tab, .text("explsettings"))
+               colnames(tab) <- c("", "")
                print(tab, quote=FALSE, print.gap=3)
+               #print(.text("explsettings"))
                if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
                next
             }
@@ -1481,7 +1521,7 @@ play <- function(player="", mode="add", sleep=0.5, volume=0.5, lwd=2,
 
             sub$score[player] <- score
             sub$played[player] <- played
-            sub$date[player] <- Sys.time()
+            sub$date[player] <- as.numeric(Sys.time())
             saveRDS(sub, file=file.path(seqdir, seqname))
             Sys.sleep(2*sleep)
             run.rnd <- FALSE

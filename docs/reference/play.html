@@ -29,7 +29,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chesstrainer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-1</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-2</span>
       </span>
     </div>
 
@@ -84,10 +84,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">play</span><span class="op">(</span>player<span class="op">=</span><span class="st">""</span>, mode<span class="op">=</span><span class="st">"add"</span>, sleep<span class="op">=</span><span class="fl">0.5</span>, volume<span class="op">=</span><span class="fl">0.5</span>,</span>
-<span>     lwd<span class="op">=</span><span class="fl">2</span>, cex.top<span class="op">=</span><span class="fl">1.4</span>, cex.bot<span class="op">=</span><span class="fl">0.7</span>, cex.eval<span class="op">=</span><span class="fl">0.5</span>,</span>
-<span>     expval<span class="op">=</span><span class="fl">2</span>, pause<span class="op">=</span><span class="cn">TRUE</span>, random<span class="op">=</span><span class="cn">TRUE</span>, eval<span class="op">=</span><span class="cn">TRUE</span>,</span>
-<span>     lang<span class="op">=</span><span class="st">"en"</span>, sfpath<span class="op">=</span><span class="st">""</span>, sfgo<span class="op">=</span><span class="st">"depth 20"</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">play</span><span class="op">(</span>player<span class="op">=</span><span class="st">""</span>, lang<span class="op">=</span><span class="st">"en"</span>, sfpath<span class="op">=</span><span class="st">""</span>, sfgo<span class="op">=</span><span class="st">"depth 20"</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -95,39 +92,6 @@
     <p></p>
 <dl><dt id="arg-player">player<a class="anchor" aria-label="anchor" href="#arg-player"></a></dt>
 <dd><p>character string to specify a player. If blank, the trainer will prompt for a (new) player name.</p></dd>
-
-   <dt id="arg-mode">mode<a class="anchor" aria-label="anchor" href="#arg-mode"></a></dt>
-<dd><p>character string to specify the start mode (either <code>"add"</code> or <code>"play"</code>).</p></dd>
-
-   <dt id="arg-sleep">sleep<a class="anchor" aria-label="anchor" href="#arg-sleep"></a></dt>
-<dd><p>numeric value to specify the time (in seconds) between moves.</p></dd>
-
-   <dt id="arg-volume">volume<a class="anchor" aria-label="anchor" href="#arg-volume"></a></dt>
-<dd><p>numeric value to specify the sound volume (as a proportion between 0 and 1).</p></dd>
-
-   <dt id="arg-lwd">lwd<a class="anchor" aria-label="anchor" href="#arg-lwd"></a></dt>
-<dd><p>numeric value to specify the line width for drawing rectangles.</p></dd>
-
-   <dt id="arg-cex-top">cex.top<a class="anchor" aria-label="anchor" href="#arg-cex-top"></a></dt>
-<dd><p>numeric value to specify the size for text at the top.</p></dd>
-
-   <dt id="arg-cex-bot">cex.bot<a class="anchor" aria-label="anchor" href="#arg-cex-bot"></a></dt>
-<dd><p>numeric value to specify the size for text at the bottom.</p></dd>
-
-   <dt id="arg-cex-eval">cex.eval<a class="anchor" aria-label="anchor" href="#arg-cex-eval"></a></dt>
-<dd><p>numeric value to specify the size for the text in the evaluation bar.</p></dd>
-
-   <dt id="arg-expval">expval<a class="anchor" aria-label="anchor" href="#arg-expval"></a></dt>
-<dd><p>numeric value to specify the exponent value for sequence scores to adjust the selection probabilities.</p></dd>
-
-   <dt id="arg-pause">pause<a class="anchor" aria-label="anchor" href="#arg-pause"></a></dt>
-<dd><p>logical to specify whether the trainer should pause after a completed sequence.</p></dd>
-
-   <dt id="arg-random">random<a class="anchor" aria-label="anchor" href="#arg-random"></a></dt>
-<dd><p>logical to specify whether sequences should be selected at random or sequentially.</p></dd>
-
-   <dt id="arg-eval">eval<a class="anchor" aria-label="anchor" href="#arg-eval"></a></dt>
-<dd><p>logical to specify whether the evaluation bar should be shown.</p></dd>
 
    <dt id="arg-lang">lang<a class="anchor" aria-label="anchor" href="#arg-lang"></a></dt>
 <dd><p>character string to specify the language (either <code>"en"</code> for English or <code>"de"</code> for German).</p></dd>
@@ -144,8 +108,7 @@
 </dl></div>
     <div id="details">
     <h2>Details</h2>
-    <p>This is the main function to start the chess trainer. See the <span class="pkg"><a href="chesstrainer-package.html">chesstrainer-package</a></span> documentation for an introduction to the package and the purpose of these arguments.</p>
-<p>All of the arguments above can also be adjusted while the player is running. Note that these settings are also automatically saved by the chess trainer across sessions.</p>
+    <p>This is the main function to start the chess trainer. See the <span class="pkg"><a href="chesstrainer-package.html">chesstrainer-package</a></span> documentation for an introduction to the package.</p>
     </div>
     <div id="author">
     <h2>Author</h2>

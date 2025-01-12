@@ -580,7 +580,7 @@
    last <- min(max(last, -maxval), maxval)
    last <- (last + maxval) / (2*maxval) * 8 + 1
 
-   steps <- 20
+   steps <- 10
    props <- seq(0, 1, length.out=steps)^(1/5)
 
    if (flip) {

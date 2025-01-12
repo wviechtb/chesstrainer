@@ -354,7 +354,7 @@
 
    if (x == "newexpval") {
       return(switch(lang,
-                    de = paste0("Exponenten Wert: (jetztiger Wert ist ", arg, "): "),
+                    de = paste0("Exponentenwert: (jetztiger Wert ist ", arg, "): "),
                          paste0("Exponent value: (current value is ", arg, "): ")
    ))}
 
@@ -366,7 +366,7 @@
 
    if (x == "setnewexpval") {
       return(switch(lang,
-                    de = paste0("Setze den Exponenten Wert auf ", arg, ".\n"),
+                    de = paste0("Setze den Exponentenwert auf ", arg, ".\n"),
                          paste0("Setting the exponent value to ", arg, ".\n")
    ))}
 
@@ -444,7 +444,7 @@
 
    if (x == "eval") {
       return(switch(lang,
-                    de = paste0("Bewertungsbalken: ", ifelse(arg, "An", "Aus")),
+                    de = paste0("Bewertungsleiste: ", ifelse(arg, "An", "Aus")),
                          paste0("Evaluation bar: ", ifelse(arg, "On", "Off"))
    ))}
 
@@ -590,6 +590,12 @@
       return(switch(lang,
                     de = paste0("Bester Zug: ", arg),
                          paste0("Best move: ", arg)
+   ))}
+
+   if (x == "explsettings") {
+      return(switch(lang,
+                    de = c("Spielername", "Modus", "Zeit zwischen den Z\U000000FCgen", "Lautst\U000000E4rke", "Linienbreite", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Exponentenwert", "Pause zwischen Sequenzen", "Zufallsmodus", "Bewertungsleiste", "Sprache", "Stockfish Pfad", "Berechnungsparameter"),
+                         c("Player name", "Mode", "Time between moves", "Sound volume", "Line width", "Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Exponent value", "Pause between sequences", "Random mode", "Evaluation bar", "Language", "Stockfish path", "Calculation parameter")
    ))}
 
 }
