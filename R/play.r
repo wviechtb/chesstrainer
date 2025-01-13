@@ -455,7 +455,7 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
 
             click <- getGraphicsEvent(prompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
 
-            keys      <- c("q", " ", "n", "p", "e", "l", "-", "=", "+", "F1", "F2", "F3", "F4", "F5", "F6", "m", "/", ".", "w", "t", "h", "ctrl-R", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "F12", "v", "a")
+            keys      <- c("q", " ", "n", "p", "e", "l", "-", "=", "+", "F1", "F2", "F3", "F4", "F5", "F6", "m", "/", ".", "w", "t", "h", "ctrl-R", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "F11", "F12", "v", "a")
             keys.add  <- c("f", "z", "c", "s", "0", "?", "b")
             keys.play <- c("z", "c", "s", "\b", "ctrl-D", "Right", "Left", "o", "u", "A")
 
@@ -1349,6 +1349,17 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
                settings$sfpath <- sfpath
                settings$sfgo   <- sfgo
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
+               next
+            }
+
+            # F11 to print FEN and copy it to the clipboard
+
+            if (identical(click, "F11")) {
+               fen <- .genfen(pos, flip, sidetoplay, i)
+               if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
+               cat(fen, "\n")
+               if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+               clipr::write_clip(fen)
                next
             }
 

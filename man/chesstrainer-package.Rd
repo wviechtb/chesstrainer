@@ -131,6 +131,8 @@
 
    With \code{<F6>}, one can adjust the Stockfish settings. The path and calculation parameter (see above) are automatically stored in \code{settings.rds} and are read in when starting the trainer.
 
+   With \code{<F11>}, the FEN of the current position is printed and copied to the clipboard. This is useful for examining the position in other software or websites.
+
 }
 \section{Backing Up Sequences}{
 
