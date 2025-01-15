@@ -1,4 +1,4 @@
-play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
+play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ...) {
 
    if (!interactive())
       return(.text("interactive"))
@@ -113,7 +113,7 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
 
    # create / check sequence directory
 
-   if (is.null(ddd$seqdir)) {
+   if (seqdir == "") {
       seqdir <- tools::R_user_dir(package="chesstrainer", which="data")
       if (!dir.exists(seqdir)) {
          cat(.text("createseqdir", seqdir))
@@ -124,8 +124,6 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
          if (identical(copyseqs, "") || .confirm(copyseqs))
             tmp <- file.copy(list.files(system.file("sequences", package="chesstrainer"), full.names=TRUE, pattern=".rds$"), seqdir)
       }
-   } else {
-      seqdir <- ddd$seqdir
    }
 
    if (!dir.exists(seqdir))
