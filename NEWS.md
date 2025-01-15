@@ -1,10 +1,10 @@
-# chesstrainer 0.9-4 (2025-01-14)
+# chesstrainer 0.9-5 (2025-01-15)
 
 - can play en passant
 - can promote pawns
 - help opens up in the plot, not in the console
 - changed `<r>` key to `<Ctrl-r>` and `<d>` key to `<Ctrl-d>`
-- added `<r>` key (and `random` argument) to toggle between random/sequential mode
+- added `<r>` key to toggle between different sequence selection modes
 - allow adjusting the line width during play with the `<(>` and `<)>` keys
 - settings are saved across sessions
 - colors can be adjusted and are stored across sessions
@@ -19,7 +19,7 @@
 - keep track of when a sequence was last played and allow selection based on how long ago sequences were played
 - the `<A>` key can be used like the `<a>` key but only plays the moves to the currently shown position
 - simplified the arguments of the `play()` function
-- `<F11>` prints the FEN of the current position and copies it to the clipboard (`clipr` package added to `Imports`)
+- `<F9>` prints the FEN of the current position, copies it to the clipboard (`clipr` package added to `Imports`), and opens up the position on lichess.org
 
 # chesstrainer 0.1-0 (2024-12-17)
 

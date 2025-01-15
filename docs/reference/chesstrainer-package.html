@@ -31,7 +31,7 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chesstrainer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-4</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-5</span>
       </span>
     </div>
 
@@ -102,8 +102,8 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
     <h2>The Sequence Score</h2>
 
 
-<p>The trainer keeps track of a score for each sequence. For a new sequence, the score starts out at 100. The score is multiplied by 0.8 after completing a sequence (rounded up to the nearest integer). When making a wrong move when playing a sequence, the score is increased by 50 points (up to a maximum of 100). Receiving a hint increases the score by 25 points (50 points when asking for both the starting and the target square).</p>
-<p>The trainer uses the score to select the next sequence to play. Sequences with higher scores have a higher chance to be presented. The probability of selecting a particular sequence is computed with \(p_i = s_i^e / \sum(s_i^e)\), where \(s_i\) is the score of the \(i\)th sequence and \(e\) is the ‘exponent value’. This is set by default to 2 and enhances the probability that sequences with a large score are more likely to be selected. The exponent value can be adjusted with the <code>&lt;^&gt;</code> key. Setting the exponent value to 0 makes all sequences equally likely to be selected. Setting it to a large value (e.g., 100) almost guarantees that the sequence with the highest score is selected next. The score for the current sequence can also be set manually with the <code>&lt;o&gt;</code> key. Setting the score to 0 means that the sequence has a zero probability of being selected (even when \(e\) is equal to 0).</p>
+<p>The trainer keeps track of a score for each sequence. For a new sequence, the score starts out at 100. The score is multiplied by 0.8 after completing a sequence (rounded up to the nearest integer). When making a wrong move when playing a sequence, the score is increased by 40 points (up to a maximum of 100). Receiving a hint increases the score by 20 points (40 points when asking for both the starting and the target square).</p>
+<p>The trainer uses the score to select the next sequence to play. Sequences with higher scores have a higher chance to be presented. The probability of selecting a particular sequence is computed with \(p_i = s_i^e / \sum(s_i^e)\), where \(s_i\) is the score of the \(i\)th sequence and \(e\) is the ‘exponent value’. This is set by default to 2 and enhances the probability that sequences with higher scores are more likely to be selected. The exponent value can be adjusted with the <code>&lt;^&gt;</code> key. Setting the exponent value to 0 makes all sequences equally likely to be selected. Setting it to a large value (e.g., 100) almost guarantees that the sequence with the highest score is selected next. The score for the current sequence can also be set manually with the <code>&lt;o&gt;</code> key. Setting the score to 0 means that the sequence has a zero probability of being selected (even when \(e\) is equal to 0).</p>
 <p>If you make a misclick during a move and want to take the score adjustment back, you can do so with the <code>&lt;t&gt;</code> key.</p>
 <p>After completing a sequence, the current score for the sequence is saved (together with the number of times that the sequence has been played and when it was last played) to the sequence file. This way, your progress in learning the sequences is saved permanently across sessions. Note that this information is player specific.</p>
     </div>
@@ -111,7 +111,7 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
     <h2>Managing/Selecting Sequences</h2>
 
 
-<p>Using the <code>&lt;l&gt;</code> key, you can list all sequences, together with their current score, the number of times they have been played, the last time they have been played (in days; <code>NA</code> if a sequence has not been played before), and the current probability of selection. During ‘play’ mode, you can use the <code>Ctrl-&lt;d&gt;</code> key to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.</p>
+<p>Using the <code>&lt;l&gt;</code> key, you can list all sequences, together with their current score, the number of times they have been played (the play frequency), the last time they have been played (in days; <code>NA</code> if a sequence has not been played before), and the current probability of selection. During ‘play’ mode, you can use the <code>Ctrl-&lt;d&gt;</code> key to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.</p>
 <p>Using the <code>&lt;/&gt;</code> (or <code>&lt;.&gt;</code>) key, you can select a subset of the sequences in various ways:</p>
 <p></p><ul><li><p>by entering a search term (which is applied as a regular expression to the filenames of the sequences),</p></li>
 <li><p>by entering a sequence number (e.g., <code>2</code> to select the 2nd sequence),</p></li>
@@ -121,7 +121,14 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
 <li><p>by entering something like <code>days &gt; 2</code> to select sequences that have been played more than a certain number of days ago.</p></li>
 </ul><p>The keywords <code>score</code>, <code>played</code>, and <code>days</code> can be abbreviated to <code>s</code>, <code>p</code> , and <code>d</code> (so <code>s &gt; 80</code>, <code>p &lt; 1</code>, and <code>d &gt; 2</code> would also work). One can also use other comparators, such as <code>&gt;=</code>, <code>&lt;</code>, and <code>&gt;=</code> (e.g., <code>s &lt;= 10</code>).</p>
 <p>Hitting <code>&lt;enter&gt;</code> at the prompt (i.e., not entering any search string) selects all sequences.</p>
-<p>By default, sequences are selected at random during ‘play’ mode (as described above). However, one can toggle into a sequential mode with the <code>&lt;r&gt;</code> key, in which case the sequences are played in order.</p>
+<p>By default, sequences are selected at random based on the score during ‘play’ mode as described above. However, one can toggle into a different selection mode with the <code>&lt;r&gt;</code> key. The options are:</p><ol><li><p>selection based on the score at random where sequences with higher scores have a higher probability of selection (the default),</p></li>
+<li><p>selection based on the score where the sequence with the highest score is played next,</p></li>
+<li><p>selection based on the play frequency at random where sequences with lower play frequencies have a higher probability of selection,</p></li>
+<li><p>selection based on the play frequency where the sequence with the lowest frequency is played next,</p></li>
+<li><p>selection based on the date at random where sequences that have last been played longer ago have a higher probability of selection,</p></li>
+<li><p>selection based on the date where the oldest sequence is played next,</p></li>
+<li><p>sequential, where the sequences are played in order.</p></li>
+</ol><p>The exponent value affects selection modes 1, 3, and 5. Setting the exponent value to a very large value makes mode 1 essentially the same as mode 2 (and similarly, mode 3 like mode 4 and mode 5 like mode 6). For modes 2, 4, and 6, if the highest score, lowest play frequency, or oldest date is the same for multiple sequences, the first one is selected. In all cases, sequences whose score was set to 0 are never selected.</p>
     </div>
     <div id="adding-new-sequences">
     <h2>Adding New Sequences</h2>
@@ -183,7 +190,7 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
 <p>With <code>&lt;F4&gt;</code>, one can adjust the colors. The colors are automatically stored in a file called <code>colors.rds</code> at <code>tools::R_user_dir(package="chesstrainer", which="config")</code> and are read in when starting the trainer.</p>
 <p>With <code>&lt;F5&gt;</code>, one can adjust the size of the text at the top, the text at the bottom, and the size of the evaluation value in the evaluation bar (if it is shown). The text sizes are automatically stored in <code>settings.rds</code> and are read in when starting the trainer.</p>
 <p>With <code>&lt;F6&gt;</code>, one can adjust the Stockfish settings. The path and calculation parameter (see above) are automatically stored in <code>settings.rds</code> and are read in when starting the trainer.</p>
-<p>With <code>&lt;F11&gt;</code>, the FEN of the current position is printed and copied to the clipboard. This is useful for examining the position in other software or websites.</p>
+<p>With <code>&lt;F9&gt;</code>, the FEN of the current position is printed, copied to the clipboard, and the position is opened on the <code>https://lichess.org</code> website.</p>
     </div>
     <div id="backing-up-sequences">
     <h2>Backing Up Sequences</h2>

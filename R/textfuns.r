@@ -385,13 +385,7 @@
    if (x == "lang") {
       return(switch(lang,
                     de = "Sprache: Deutsch",
-                         "Language: Englisch"
-   ))}
-
-   if (x == "random") {
-      return(switch(lang,
-                    de = paste0("Schalte in den ", ifelse(arg, "Zufallsmodus", "sequenziellen Modus")),
-                         paste0("Switching to ", ifelse(arg, "random", "sequential"), " mode")
+                         "Language: English"
    ))}
 
    if (x == "lwdadj") {
@@ -594,8 +588,8 @@
 
    if (x == "explsettings") {
       return(switch(lang,
-                    de = c("Spielername", "Modus", "Zeit zwischen den Z\U000000FCgen", "Lautst\U000000E4rke", "Linienbreite", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Exponentenwert", "Pause zwischen Sequenzen", "Zufallsmodus", "Bewertungsleiste", "Sprache", "Stockfish Pfad", "Berechnungsparameter"),
-                         c("Player name", "Mode", "Time between moves", "Sound volume", "Line width", "Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Exponent value", "Pause between sequences", "Random mode", "Evaluation bar", "Language", "Stockfish path", "Calculation parameter")
+                    de = c("Spielername", "Modus", "Zeit zwischen den Z\U000000FCgen", "Lautst\U000000E4rke", "Linienbreite", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Exponentenwert", "Selektionsmodus", "Pause zwischen Sequenzen", "Bewertungsleiste", "Sprache", "Stockfish Pfad", "Berechnungsparameter f\U000000FCr Stockfish"),
+                         c("Player name", "Mode", "Time between moves", "Sound volume", "Line width", "Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Exponent value", "Selection mode", "Pause between sequences", "Evaluation bar", "Language", "Stockfish path", "Calculation parameter for Stockfish")
    ))}
 
 }

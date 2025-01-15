@@ -23,9 +23,9 @@
 }
 \section{The Sequence Score}{
 
-   The trainer keeps track of a score for each sequence. For a new sequence, the score starts out at 100. The score is multiplied by 0.8 after completing a sequence (rounded up to the nearest integer). When making a wrong move when playing a sequence, the score is increased by 50 points (up to a maximum of 100). Receiving a hint increases the score by 25 points (50 points when asking for both the starting and the target square).
+   The trainer keeps track of a score for each sequence. For a new sequence, the score starts out at 100. The score is multiplied by 0.8 after completing a sequence (rounded up to the nearest integer). When making a wrong move when playing a sequence, the score is increased by 40 points (up to a maximum of 100). Receiving a hint increases the score by 20 points (40 points when asking for both the starting and the target square).
 
-   The trainer uses the score to select the next sequence to play. Sequences with higher scores have a higher chance to be presented. The probability of selecting a particular sequence is computed with \eqn{p_i = s_i^e / \sum(s_i^e)}, where \eqn{s_i} is the score of the \eqn{i}th sequence and \eqn{e} is the \sQuote{exponent value}. This is set by default to 2 and enhances the probability that sequences with a large score are more likely to be selected. The exponent value can be adjusted with the \code{<^>} key. Setting the exponent value to 0 makes all sequences equally likely to be selected. Setting it to a large value (e.g., 100) almost guarantees that the sequence with the highest score is selected next. The score for the current sequence can also be set manually with the \code{<o>} key. Setting the score to 0 means that the sequence has a zero probability of being selected (even when \eqn{e} is equal to 0).
+   The trainer uses the score to select the next sequence to play. Sequences with higher scores have a higher chance to be presented. The probability of selecting a particular sequence is computed with \eqn{p_i = s_i^e / \sum(s_i^e)}, where \eqn{s_i} is the score of the \eqn{i}th sequence and \eqn{e} is the \sQuote{exponent value}. This is set by default to 2 and enhances the probability that sequences with higher scores are more likely to be selected. The exponent value can be adjusted with the \code{<^>} key. Setting the exponent value to 0 makes all sequences equally likely to be selected. Setting it to a large value (e.g., 100) almost guarantees that the sequence with the highest score is selected next. The score for the current sequence can also be set manually with the \code{<o>} key. Setting the score to 0 means that the sequence has a zero probability of being selected (even when \eqn{e} is equal to 0).
 
    If you make a misclick during a move and want to take the score adjustment back, you can do so with the \code{<t>} key.
 
@@ -34,7 +34,7 @@
 }
 \section{Managing/Selecting Sequences}{
 
-   Using the \code{<l>} key, you can list all sequences, together with their current score, the number of times they have been played, the last time they have been played (in days; \code{NA} if a sequence has not been played before), and the current probability of selection. During \sQuote{play} mode, you can use the \code{Ctrl-<d>} key to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.
+   Using the \code{<l>} key, you can list all sequences, together with their current score, the number of times they have been played (the play frequency), the last time they have been played (in days; \code{NA} if a sequence has not been played before), and the current probability of selection. During \sQuote{play} mode, you can use the \code{Ctrl-<d>} key to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.
 
    Using the \code{</>} (or \code{<.>}) key, you can select a subset of the sequences in various ways:
 
@@ -51,7 +51,18 @@
 
    Hitting \code{<enter>} at the prompt (i.e., not entering any search string) selects all sequences.
 
-   By default, sequences are selected at random during \sQuote{play} mode (as described above). However, one can toggle into a sequential mode with the \code{<r>} key, in which case the sequences are played in order.
+   By default, sequences are selected at random based on the score during \sQuote{play} mode as described above. However, one can toggle into a different selection mode with the \code{<r>} key. The options are:
+   \enumerate{
+   \item selection based on the score at random where sequences with higher scores have a higher probability of selection (the default),
+   \item selection based on the score where the sequence with the highest score is played next,
+   \item selection based on the play frequency at random where sequences with lower play frequencies have a higher probability of selection,
+   \item selection based on the play frequency where the sequence with the lowest frequency is played next,
+   \item selection based on the date at random where sequences that have last been played longer ago have a higher probability of selection,
+   \item selection based on the date where the oldest sequence is played next,
+   \item sequential, where the sequences are played in order.
+   }
+
+   The exponent value affects selection modes 1, 3, and 5. Setting the exponent value to a very large value makes mode 1 essentially the same as mode 2 (and similarly, mode 3 like mode 4 and mode 5 like mode 6). For modes 2, 4, and 6, if the highest score, lowest play frequency, or oldest date is the same for multiple sequences, the first one is selected. In all cases, sequences whose score was set to 0 are never selected.
 
 }
 \section{Adding New Sequences}{
@@ -131,7 +142,7 @@
 
    With \code{<F6>}, one can adjust the Stockfish settings. The path and calculation parameter (see above) are automatically stored in \code{settings.rds} and are read in when starting the trainer.
 
-   With \code{<F11>}, the FEN of the current position is printed and copied to the clipboard. This is useful for examining the position in other software or websites.
+   With \code{<F9>}, the FEN of the current position is printed, copied to the clipboard, and the position is opened on the \verb{https://lichess.org} website.
 
 }
 \section{Backing Up Sequences}{

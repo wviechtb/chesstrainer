@@ -627,10 +627,10 @@
 
 }
 
-.redrawall <- function(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, random) {
+.redrawall <- function(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode) {
 
    .drawboard(pos, flip)
-   .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, random)
+   .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
    .texttop(texttop)
 
    if (mode == "add")

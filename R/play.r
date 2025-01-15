@@ -10,17 +10,17 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
 
    ddd <- list(...)
 
-   mode     <- ifelse(is.null(ddd$mode),     "add",      ddd$mode)
-   sleep    <- ifelse(is.null(ddd$sleep),    0.5,        ddd$sleep)
-   volume   <- ifelse(is.null(ddd$volume),   0.5,        ddd$volume)
-   lwd      <- ifelse(is.null(ddd$lwd),      2,          ddd$lwd)
-   cex.top  <- ifelse(is.null(ddd$cex.top),  1.4,        ddd$cex.top)
-   cex.bot  <- ifelse(is.null(ddd$cex.bot),  0.7,        ddd$cex.bot)
-   cex.eval <- ifelse(is.null(ddd$cex.eval), 0.5,        ddd$cex.eval)
-   expval   <- ifelse(is.null(ddd$expval),   2,          ddd$expval)
-   pause    <- ifelse(is.null(ddd$pause),    TRUE,       isTRUE(ddd$pause))
-   random   <- ifelse(is.null(ddd$random),   TRUE,       isTRUE(ddd$random))
-   eval     <- ifelse(is.null(ddd$eval),     TRUE,       isTRUE(ddd$eval))
+   mode     <- ifelse(is.null(ddd$mode),     "add",          ddd$mode)
+   sleep    <- ifelse(is.null(ddd$sleep),    0.5,            ddd$sleep)
+   volume   <- ifelse(is.null(ddd$volume),   0.5,            ddd$volume)
+   lwd      <- ifelse(is.null(ddd$lwd),      2,              ddd$lwd)
+   cex.top  <- ifelse(is.null(ddd$cex.top),  1.4,            ddd$cex.top)
+   cex.bot  <- ifelse(is.null(ddd$cex.bot),  0.7,            ddd$cex.bot)
+   cex.eval <- ifelse(is.null(ddd$cex.eval), 0.5,            ddd$cex.eval)
+   expval   <- ifelse(is.null(ddd$expval),   2,              ddd$expval)
+   selmode  <- ifelse(is.null(ddd$selmode),  "score_random", ddd$selmode)
+   pause    <- ifelse(is.null(ddd$pause),    TRUE,           isTRUE(ddd$pause))
+   eval     <- ifelse(is.null(ddd$eval),     TRUE,           isTRUE(ddd$eval))
 
    # ensure that some arguments are sensible
 
@@ -51,7 +51,7 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
       success <- dir.create(configdir, recursive=TRUE)
       if (!success)
          stop(.text("dircreateerror"), call.=FALSE)
-      settings <- data.frame(player, mode, sleep, volume, lwd, cex.top, cex.bot, cex.eval, expval, pause, random, eval, lang, sfpath, sfgo)
+      settings <- data.frame(player, mode, sleep, volume, lwd, cex.top, cex.bot, cex.eval, expval, selmode, pause, eval, lang, sfpath, sfgo)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       cols <- sapply(cols.all, function(x) .get(x))
       saveRDS(cols, file=file.path(configdir, "colors.rds"))
@@ -79,10 +79,10 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
             cex.eval <- settings$cex.eval
          if (is.null(mc$expval))
             expval <- settings$expval
+         if (is.null(mc$selmode))
+            selmode <- settings$selmode
          if (is.null(mc$pause))
             pause <- settings$pause
-         if (is.null(mc$random))
-            random <- settings$random
          if (is.null(mc$eval))
             eval <- settings$eval
          if (is.null(mc$lang))
@@ -93,7 +93,7 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
             sfgo <- settings$sfgo
       }
       sfpath <- suppressWarnings(normalizePath(sfpath))
-      settings <- data.frame(player, mode, sleep, volume, lwd, cex.top, cex.bot, cex.eval, expval, pause, random, eval, lang, sfpath, sfgo)
+      settings <- data.frame(player, mode, sleep, volume, lwd, cex.top, cex.bot, cex.eval, expval, selmode, pause, eval, lang, sfpath, sfgo)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       if (file.exists(file.path(configdir, "colors.rds"))) {
          cols <- readRDS(file.path(configdir, "colors.rds"))
@@ -137,12 +137,10 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
 
    cat(.text("seqdir", seqdir))
 
-   # .random/.sequential files in sequence directory override random setting
+   # .sequential file in sequence directory override selmode setting
 
    if (file.exists(file.path(seqdir, ".sequential")))
-      random <- FALSE
-   if (file.exists(file.path(seqdir, ".random")))
-      random <- TRUE
+      selmode <- "sequential"
 
    # start stockfish
 
@@ -301,7 +299,6 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
       date.all[is.na(date.all) | .is.null(date.all)] <- NA
       date.all <- unname(unlist(date.all))
       dayslp.all <- as.numeric(Sys.time() - as.POSIXct(date.all), units="days")
-      dayslp.all <- round(dayslp.all, digits=1)
 
       # apply selection to sequences
 
@@ -335,14 +332,53 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
       date.selected[is.na(date.selected) | .is.null(date.selected)] <- NA_real_
       date.selected <- unname(unlist(date.selected))
       dayslp.selected <- as.numeric(Sys.time() - as.POSIXct(date.selected), units="days")
-      dayslp.selected <- round(dayslp.selected, digits=1)
 
       if (all(scores.selected == 0)) # in case all sequences have a score of 0
          scores.selected <- rep(1, length(scores.selected))
 
-      probvals.selected <- scores.selected^expval
-      probvals.selected[scores.selected == 0] <- 0 # in case of 0^0
-      probvals.selected <- 100 * probvals.selected / sum(probvals.selected)
+      if (selmode == "score_random") {
+         probvals.selected <- scores.selected^expval
+         probvals.selected[scores.selected == 0] <- 0 # in case of 0^0
+         probvals.selected <- 100 * probvals.selected / sum(probvals.selected)
+      }
+
+      if (selmode == "score_highest") {
+         probvals.selected <- rep(0, k)
+         probvals.selected[which(scores.selected == max(scores.selected[scores.selected != 0]))[1]] <- 100
+      }
+
+      if (selmode == "played_random") {
+         probvals.selected <- (max(played.selected) + 1 - played.selected) / (max(played.selected) + 1)
+         probvals.selected <- probvals.selected^expval
+         probvals.selected[scores.selected == 0] <- 0 # in case of 0^0
+         probvals.selected <- 100 * probvals.selected / sum(probvals.selected)
+      }
+
+      if (selmode == "played_lowest") {
+         probvals.selected <- rep(0, k)
+         probvals.selected[which(played.selected == min(played.selected[scores.selected != 0]))[1]] <- 100
+      }
+
+      if (selmode == "days_random") {
+         probvals.selected <- dayslp.selected / max(dayslp.selected)
+         probvals.selected[is.na(probvals.selected)] <- 1 # if NA, set prob to 1
+         probvals.selected <- probvals.selected^expval
+         probvals.selected[scores.selected == 0] <- 0 # in case of 0^0
+         probvals.selected <- 100 * probvals.selected / sum(probvals.selected)
+      }
+
+      if (selmode == "days_oldest") {
+         probvals.selected <- rep(0, k)
+         probvals.selected[which(dayslp.selected == min(dayslp.selected[scores.selected != 0]))[1]] <- 100
+      }
+
+      if (selmode == "sequential") {
+         while (scores.selected[seqno] == 0) {
+            seqno <- seqno + 1
+         }
+         probvals.selected <- rep(0, k)
+         probvals.selected[seqno] <- 100
+      }
 
       if (mode == "add") {
 
@@ -355,10 +391,9 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
 
          # select a sequence
 
-         if (random) {
-            sel <- sample(seq_len(k), 1L, prob=probvals.selected)
-         } else {
-            sel <- seqno
+         sel <- sample(seq_len(k), 1L, prob=probvals.selected)
+
+         if (selmode == "sequential") {
             seqno <- seqno + 1
             if (seqno > k)
                seqno <- 1
@@ -391,7 +426,7 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
       # draw board and add info at the bottom
 
       .drawboard(pos, flip=flip)
-      .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, random)
+      .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
       #.draweval(clear=TRUE)
 
       # check for getGraphicsEvent() capabilities of the current plotting device
@@ -423,12 +458,12 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
                i <- i + 1
                sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                texttop <- .texttop(sub$moves$comment[i])
-               .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, random)
+               .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                Sys.sleep(sleep)
             }
 
             show <- FALSE
-            .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, random)
+            .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
 
          } else {
 
@@ -455,7 +490,7 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
 
             click <- getGraphicsEvent(prompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
 
-            keys      <- c("q", " ", "n", "p", "e", "l", "-", "=", "+", "F1", "F2", "F3", "F4", "F5", "F6", "m", "/", ".", "w", "t", "h", "ctrl-R", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "F11", "F12", "v", "a")
+            keys      <- c("q", " ", "n", "p", "e", "l", "-", "=", "+", "F1", "F2", "F3", "F4", "F5", "F6", "m", "/", ".", "w", "t", "h", "ctrl-R", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "F9", "F12", "v", "a")
             keys.add  <- c("f", "z", "c", "s", "0", "?", "b")
             keys.play <- c("z", "c", "s", "\b", "ctrl-D", "Right", "Left", "o", "u", "A")
 
@@ -531,7 +566,7 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
             if (mode == "add" && identical(click, "f")) {
                flip <- !flip
                sub$flip <- flip
-               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, random)
+               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode)
                .draweval(sub$moves$eval[i], flip=flip, eval=eval)
                hasarrows <- FALSE
                circles <- matrix(c(0,0), nrow=1, ncol=2)
@@ -557,7 +592,7 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
                .texttop(.text("showmoves", show))
                Sys.sleep(1)
                .texttop(texttop)
-               .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, random)
+               .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                next
             }
 
@@ -622,7 +657,7 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
             if (identical(click, "l")) {
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
                if (k > 0L) {
-                  tab <- data.frame(files, played.selected, dayslp.selected, scores.selected, formatC(probvals.selected, format="f", digits=1))
+                  tab <- data.frame(files, played.selected, formatC(dayslp.selected, format="f", digits=1), scores.selected, formatC(probvals.selected, format="f", digits=1))
                   names(tab) <- c("Name", .text("played"), .text("days"), .text("score"), .text("prob"))
                   tab$Name <- format(tab$Name, justify="left")
                   names(tab)[1] <- ""
@@ -659,18 +694,18 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
                      hintx1 <- sub$moves$x1[i]
                      hinty1 <- sub$moves$y1[i]
                      .addrect(hintx1, hinty1, col=.get("col.hint"), lwd=lwd)
-                     score <- min(100, score + 25)
+                     score <- min(100, score + 20)
                      givehint1 <- TRUE
                   } else {
                      if (!givehint2) {
                         hintx2 <- sub$moves$x2[i]
                         hinty2 <- sub$moves$y2[i]
                         .addrect(hintx2, hinty2, col=.get("col.hint"), lwd=lwd)
-                        score <- min(100, score + 25)
+                        score <- min(100, score + 20)
                         givehint2 <- TRUE
                      }
                   }
-                  .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, random)
+                  .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                } else {
                   if (!identical(bestmove, "")) {
                      .texttop(.text("bestmove", bestmove))
@@ -930,7 +965,7 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
                      .texttop(.text("setscoreback", score))
                      Sys.sleep(1)
                      .texttop(texttop)
-                     .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, random)
+                     .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                      scoreadd <- 0
                   }
                } else {
@@ -953,7 +988,7 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
                      }
                      comment <- ""
                      .draweval(sub$moves$eval[i-1], flip=flip, eval=eval)
-                     .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, random)
+                     .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                      .drawsideindicator(sidetoplay, flip)
                      fen <- .genfen(pos, flip, sidetoplay, i)
                      tmp <- .sf.eval(sfproc, sfrun, sfgo, fen, sidetoplay, verbose)
@@ -1017,7 +1052,7 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
                   pos <- .updateboard(pos, move=sub$moves[i,1:4], flip=flip, volume=volume, verbose=verbose)
                   sub$moves$move[i] <- attr(pos,"move")
                   texttop <- .texttop(sub$moves$comment[i])
-                  .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, random)
+                  .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                   .draweval(sub$moves$eval[i], sub$moves$eval[i-1], flip=flip, eval=eval)
                   if (identical(click, "a"))
                      Sys.sleep(sleep)
@@ -1030,7 +1065,7 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
                   sidetoplay <- ifelse(flip, "w", "b")
                }
                show <- FALSE
-               .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, random)
+               .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                .drawsideindicator(sidetoplay, flip)
                fen <- .genfen(pos, flip, sidetoplay, i)
                tmp <- .sf.eval(sfproc, sfrun, sfgo, fen, sidetoplay, verbose)
@@ -1052,7 +1087,7 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
                comment <- ""
                sub$moves <- sub$moves[numeric(0),]
                sub$pos <- pos
-               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, random)
+               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode)
                sidetoplay <- ifelse(flip, "b", "w")
                .drawsideindicator(sidetoplay, flip)
                .draweval(evalval, flip=flip, eval=eval)
@@ -1070,7 +1105,7 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
                sub$moves$move[i] <- attr(pos,"move")
                .draweval(sub$moves$eval[i], flip=flip, eval=eval)
                i <- i + 1
-               .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, random)
+               .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                texttop <- .texttop(sub$moves$comment[i])
                givehint1 <- FALSE
                givehint2 <- FALSE
@@ -1099,7 +1134,7 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
                   }
                   comment <- ""
                   .draweval(sub$moves$eval[i-1], flip=flip, eval=eval)
-                  .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, random)
+                  .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                   .drawsideindicator(sidetoplay, flip)
                }
                next
@@ -1109,7 +1144,7 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
             # Escape to update board
 
             if (identical(click, "\033") || identical(click, "ctrl-[")) {
-               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, random)
+               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode)
                .draweval(sub$moves$eval[i], flip=flip, eval=eval)
                hasarrows <- FALSE
                circles <- matrix(c(0,0), nrow=1, ncol=2)
@@ -1150,7 +1185,7 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
                }
                assign("lang", lang, envir=.chesstrainer)
                .texttop(.text("lang"))
-               .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, random)
+               .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                Sys.sleep(1)
                .texttop(texttop)
                settings$lang <- lang
@@ -1158,16 +1193,23 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
                next
             }
 
-            # r to toggle between random/sequential mode
+            # r to choose a selection mode
 
             if (identical(click, "r")) {
-               random <- !random
-               .texttop(.text("random", random))
-               .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, random)
-               Sys.sleep(1)
-               .texttop(texttop)
-               settings$random <- random
+               selmodeold <- selmode
+               selmode <- .selmodepick(selmode, lwd)
+               .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
+               settings$selmode <- selmode
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
+               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode)
+               .draweval(sub$moves$eval[i], flip=flip, eval=eval)
+               hasarrows <- FALSE
+               circles <- matrix(c(0,0), nrow=1, ncol=2)
+               if (selmodeold != selmode) {
+                  seqno <- 1
+                  run.rnd <- FALSE
+                  wait <- FALSE
+               }
                next
             }
 
@@ -1237,7 +1279,7 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
                      pos <- .updateboard(pos, move=sub$moves[i,1:4], flip=flip, volume=volume, verbose=verbose)
                      sub$moves$move[i] <- attr(pos,"move")
                      texttop <- .texttop(sub$moves$comment[i])
-                     .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, random)
+                     .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                      sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                      .drawsideindicator(sidetoplay, flip)
                      fen <- .genfen(pos, flip, sidetoplay, i)
@@ -1249,7 +1291,7 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
                      .draweval(evalval, flip=flip, eval=eval)
                      sub$moves$eval[i] <- evalval
                   }
-                  .printinfo(mode, show, player, seqname, seqnum, score, played, i+1, totalmoves, random)
+                  .printinfo(mode, show, player, seqname, seqnum, score, played, i+1, totalmoves, selmode)
                   .drawsideindicator(sidetoplay, flip)
                   cat(.text("evalupdatenew"))
                   print(sub$moves)
@@ -1269,7 +1311,7 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
 
             if (identical(click, "F1")) {
                .printhelp(lwd=lwd)
-               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, random)
+               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode)
                .draweval(sub$moves$eval[i], flip=flip, eval=eval)
                hasarrows <- FALSE
                circles <- matrix(c(0,0), nrow=1, ncol=2)
@@ -1280,7 +1322,7 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
 
             if (identical(click, "F2")) {
                .leaderboard(seqdir, files, lwd)
-               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, random)
+               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode)
                .draweval(sub$moves$eval[i], flip=flip, eval=eval)
                hasarrows <- FALSE
                circles <- matrix(c(0,0), nrow=1, ncol=2)
@@ -1290,7 +1332,7 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
             # F3 to print settings
 
             if (identical(click, "F3")) {
-               settings <- data.frame(player, mode, sleep, volume, lwd, cex.top, cex.bot, cex.eval, expval, pause, random, eval, lang, sfpath, sfgo)
+               settings <- data.frame(player, mode, sleep, volume, lwd, cex.top, cex.bot, cex.eval, expval, selmode, pause, eval, lang, sfpath, sfgo)
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
                tab <- t(settings)
                tab <- cbind(tab, .text("explsettings"))
@@ -1305,9 +1347,9 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
 
             if (identical(click, "F4")) {
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
-               .colorpick(cols.all, pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, lwd, sidetoplay, random)
+               .colorpick(cols.all, pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, lwd, sidetoplay, selmode)
                if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
-               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, random)
+               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode)
                .draweval(sub$moves$eval[i], flip=flip, eval=eval)
                hasarrows <- FALSE
                circles <- matrix(c(0,0), nrow=1, ncol=2)
@@ -1320,9 +1362,9 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
 
             if (identical(click, "F5")) {
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
-               .cexpick(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, lwd, sidetoplay, random)
+               .cexpick(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, lwd, sidetoplay, selmode)
                if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
-               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, random)
+               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode)
                .draweval(sub$moves$eval[i], flip=flip, eval=eval)
                hasarrows <- FALSE
                circles <- matrix(c(0,0), nrow=1, ncol=2)
@@ -1352,14 +1394,16 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
                next
             }
 
-            # F11 to print FEN and copy it to the clipboard
+            # F9 to print FEN, copy it to the clipboard, and open the FEN on lichess
 
-            if (identical(click, "F11")) {
+            if (identical(click, "F9")) {
                fen <- .genfen(pos, flip, sidetoplay, i)
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
                cat(fen, "\n")
                if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
                clipr::write_clip(fen)
+               fen <- paste0("https://lichess.org/analysis/standard/", gsub(" ", "_", fen, fixed=TRUE))
+               browseURL(fen)
                next
             }
 
@@ -1394,7 +1438,7 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
                attr(sub$pos, "ispp") <- NULL
                attr(sub$pos, "y1") <- NULL
                sidetoplay <- ifelse(flip, "b", "w")
-               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, random)
+               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode)
                .draweval(sub$moves$eval[i], flip=flip, eval=eval)
                next
             }
@@ -1488,7 +1532,7 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
             # if in add mode or if the move is correct, make the move
 
             pos <- .updateboard(pos, move=c(click1.x, click1.y, click2.x, click2.y), flip=flip, volume=volume, verbose=verbose)
-            .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, random)
+            .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
 
             if (mode == "play") {
                .draweval(sub$moves$eval[i], sub$moves$eval[i-1], flip=flip, eval=eval)
@@ -1502,7 +1546,7 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
             # if in play mode and the move was incorrect, adjust the score, and show that it was the wrong move
 
             if (score >= 1) {
-               scoreadd <- min(50, 100-score)
+               scoreadd <- min(40, 100-score)
                score <- score + scoreadd
             }
 
@@ -1529,7 +1573,7 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
 
             played <- played + 1
 
-            .printinfo(mode, show, player, seqname, seqnum, score, played, i+1, totalmoves, random)
+            .printinfo(mode, show, player, seqname, seqnum, score, played, i+1, totalmoves, selmode)
 
             if (pause) {
 
@@ -1544,7 +1588,7 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
                   sub$played <- setNames(0, player)
                   show <- FALSE
                   .texttop(" ")
-                  .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, random)
+                  .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                   sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                   .drawsideindicator(sidetoplay, flip)
                   next
@@ -1588,7 +1632,7 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
             # in play mode, let the trainer play the next move and increase i
 
             texttop <- .texttop(sub$moves$comment[i])
-            .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, random)
+            .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
             Sys.sleep(sleep)
             pos <- .updateboard(pos, move=sub$moves[i,1:4], flip=flip, volume=volume, verbose=verbose)
             sub$moves$move[i] <- attr(pos,"move")
@@ -1599,7 +1643,7 @@ play <- function(player="", lang="en", sfpath="", sfgo="depth 20", ...) {
 
          }
 
-         .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, random)
+         .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
          givehint1 <- FALSE
          givehint2 <- FALSE
 
