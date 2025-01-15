@@ -367,7 +367,11 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
       if (selmode == "days_oldest") {
          probvals.selected <- rep(0, k)
-         probvals.selected[which(dayslp.selected == max(dayslp.selected[scores.selected != 0]))[1]] <- 100
+         if (any(is.na(dayslp.selected))) {
+            probvals.selected[which(is.na(dayslp.selected))[1]] <- 100
+         } else {
+            probvals.selected[which(dayslp.selected == max(dayslp.selected[scores.selected != 0]))[1]] <- 100
+         }
       }
 
       if (selmode == "sequential") {
