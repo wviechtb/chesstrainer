@@ -294,7 +294,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
       played.all[is.na(played.all) | .is.null(played.all)] <- 0
       played.all <- unname(unlist(played.all))
       date.all <- sapply(dat.all, function(x) x$date[player])
-      date.all[is.na(date.all) | .is.null(date.all)] <- NA
+      date.all[is.na(date.all) | .is.null(date.all)] <- NA_real_
       date.all <- unname(unlist(date.all))
       dayslp.all <- as.numeric(Sys.time() - as.POSIXct(date.all), units="days")
 
@@ -1023,9 +1023,9 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
                mode <- "add"
 
-               sub$score <- setNames(100, player)
+               sub$score  <- setNames(100, player)
                sub$played <- setNames(0, player)
-               sub$date <- setNames(as.numeric(Sys.time()), player)
+               sub$date   <- setNames(NA_real_, player)
 
                if (!identical(sub$moves$comment[i], "")) {
                   texttop <- .texttop(sub$moves$comment[i])
