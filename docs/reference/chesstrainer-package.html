@@ -31,7 +31,7 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chesstrainer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-6</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-7</span>
       </span>
     </div>
 
@@ -128,7 +128,7 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
 <li><p>selection based on the date at random where sequences that have last been played longer ago have a higher probability of selection,</p></li>
 <li><p>selection based on the date where the oldest sequence is played next,</p></li>
 <li><p>sequential, where the sequences are played in order.</p></li>
-</ol><p>The exponent value affects selection modes 1, 3, and 5. Setting the exponent value to a very large value makes mode 1 essentially the same as mode 2 (and similarly, mode 3 like mode 4 and mode 5 like mode 6). For modes 2, 4, and 6, if the highest score, lowest play frequency, or oldest date is the same for multiple sequences, the first one is selected. In all cases, sequences whose score was set to 0 are never selected.</p>
+</ol><p>The exponent value affects selection modes 1, 3, and 5. Setting the exponent value to a very large value makes mode 1 essentially the same as mode 2 (and similarly, mode 3 like mode 4 and mode 5 like mode 6). For modes 2, 4, and 6, if the highest score, lowest play frequency, or oldest date is the same for multiple sequences, the first one is selected. For modes 5 and 6, sequences that have never been played before are given highest priority. For all modes, sequences whose score was set to 0 are never selected.</p>
     </div>
     <div id="adding-new-sequences">
     <h2>Adding New Sequences</h2>

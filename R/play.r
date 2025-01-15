@@ -382,7 +382,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
          # set up the data frame for a new sequence
 
-         sub <- list(flip=flip, score=setNames(100, player), played=setNames(0, player), date=setNames(as.numeric(Sys.time()), player),
+         sub <- list(flip=flip, score=setNames(100, player), played=setNames(0, player), date=setNames(NA_real_, player),
                      moves=data.frame(x1=numeric(), y1=numeric(), x2=numeric(), y2=numeric(), show=logical(), move=character(), eval=numeric(), comment=character()))
 
       } else {
