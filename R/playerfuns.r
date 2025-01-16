@@ -56,7 +56,10 @@
          pos.played <- which(names(tmp$played) == player)
          if (length(pos.played) != 0)
             tmp$played <- tmp$played[-pos.played]
-         if (length(pos.score) != 0 || length(pos.played) != 0)
+         pos.date <- which(names(tmp$date) == player)
+         if (length(pos.date) != 0)
+            tmp$date <- tmp$date[-pos.date]
+         if (length(pos.score) != 0 || length(pos.played) != 0 || length(pos.date) != 0)
             saveRDS(tmp, file=files[i])
       }
    }
