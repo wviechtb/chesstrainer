@@ -659,8 +659,11 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             if (identical(click, "l")) {
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
                if (k > 0L) {
-                  tab <- data.frame(files, played.selected, formatC(dayslp.selected, format="f", digits=1), scores.selected, formatC(probvals.selected, format="f", digits=1))
-                  names(tab) <- c("Name", .text("played"), .text("days"), .text("score"), .text("prob"))
+                  bars <- round(5 * (probvals.selected - min(probvals.selected)) / (max(probvals.selected) - min(probvals.selected)))
+                  bars <- sapply(bars, function(x) paste0(rep("*", x), collapse=""))
+                  tab <- data.frame(files, played.selected, formatC(dayslp.selected, format="f", digits=1), scores.selected, formatC(probvals.selected, format="f", digits=1), bars)
+                  tab$bars <- format(tab$bars, justify="left")
+                  names(tab) <- c("Name", .text("played"), .text("days"), .text("score"), .text("prob"), "")
                   tab$Name <- format(tab$Name, justify="left")
                   names(tab)[1] <- ""
                   if (!is.null(selected))

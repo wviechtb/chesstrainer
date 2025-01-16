@@ -184,8 +184,8 @@
 
    if (x == "prob") {
       return(switch(lang,
-                    de = "Wahrsch (%)",
-                         "Prob (%)"
+                    de = "Wahrsch",
+                         "Prob"
    ))}
 
    if (x == "player") {
