@@ -1,6 +1,6 @@
-.colorpick <- function(cols.all, pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, lwd, sidetoplay, selmode) {
+.colorsettings <- function(cols.all, pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, lwd, sidetoplay, selmode) {
 
-   cat(.text("colcurrent"))
+   cat(.text("currentsettings"))
 
    tab <- data.frame(col=cols.all, val=unname(sapply(cols.all, function(x) .get(x))))
    names(tab) <- c("", "")
@@ -53,9 +53,9 @@
 
 }
 
-.cexpick <- function(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, lwd, sidetoplay, selmode) {
+.cexsettings <- function(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, lwd, sidetoplay, selmode) {
 
-   cat(.text("cexcurrent"))
+   cat(.text("currentsettings"))
 
    tab <- data.frame(cex = c("cex.top", "cex.bot", "cex.eval"),
                      val = c(.get("cex.top"), .get("cex.bot"), .get("cex.eval")))
@@ -91,7 +91,49 @@
 
 }
 
-.selmodepick <- function(selmode, lwd) {
+.miscsettings <- function(multiplier, adjustwrong, adjusthint, evalsteps) {
+
+   cat(.text("currentsettings"))
+
+   tab <- data.frame(setting = c("multiplier", "adjustwrong", "adjusthint", "evalsteps"),
+                     val     = c(multiplier, adjustwrong, adjusthint, evalsteps))
+   names(tab) <- c("", "")
+   print(tab, right=FALSE, print.gap=3)
+
+   cat("\n")
+
+   while (TRUE) {
+      resp <- readline(prompt=.text("settingwhich"))
+      if (identical(resp, ""))
+         break
+      if (grepl("^[0-9]+$", resp)) {
+         setno <- round(as.numeric(resp))
+         if (setno < 1 || setno > nrow(tab))
+            next
+         val <- readline(prompt=.text("settingval", tab[setno,2]))
+         if (identical(val, ""))
+            next
+         val <- as.numeric(val)
+         if (setno == 1) {
+            val[val < 0] <- 0
+            val[val > 1] <- 1
+         }
+         if (setno == 2 || setno == 3)
+            val[val < 0] <- 0
+         if (setno == 4)
+            val[val < 2] <- 2
+         tab[setno,2] <- val
+      }
+   }
+
+   out <- as.list(tab[[2]])
+   names(out) <- tab[[1]]
+
+   return(out)
+
+}
+
+.selmodesetting <- function(selmode, lwd) {
 
    lang <- .get("lang")
 

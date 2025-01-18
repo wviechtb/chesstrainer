@@ -31,7 +31,7 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chesstrainer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-9</span>
       </span>
     </div>
 
@@ -172,7 +172,7 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
 <p>By default, evaluations are based on a search depth of 20 half-moves. Obtaining such an evaluation for a given position should be relatively quick and not add much lag when creating a sequence. One can adjust the calculation parameter for Stockfish using the <code>sfgo</code> argument. This must be either something like <code>"depth 20"</code> (to fix the search depth in terms of the number of half-moves) or <code>"movetime 1000"</code> (to fix the search time in milliseconds). Using something like <code>"depth 10"</code> or <code>"movetime 200"</code> reduces the lag, but also the accuracy of the evaluations. Note that when fixing the search time (and not the search depth), evaluations can change slightly on repeated runs, since the exact number of nodes searched by Stockfish can change slightly.</p>
 <p>In ‘add’ mode, the <code>&lt;h&gt;</code> key shows the best move according to Stockfish in a given position.</p>
 <p>In ‘play’ mode, the <code>&lt;u&gt;</code> key updates the evaluations for all moves in a sequence by recalculating the evaluations with the current setting for the calculation parameter. This way, one can obtain very accurate evaluations by using a high search depth or search time. After updating the evaluations, they are automatically saved to the sequence file.</p>
-<p>Note that asking Stockfish to evaluate impossible positions (e.g., black is in check but it is white's turn to move) crashes Stockfish. This should be handled gracefully by the trainer. With <code>&lt;F6&gt;</code>, one can adjust the Stockfish settings and also restart it.</p>
+<p>Note that asking Stockfish to evaluate impossible positions (e.g., black is in check but it is white's turn to move) crashes Stockfish. This should be handled gracefully by the trainer. With <code>&lt;F7&gt;</code>, one can adjust the Stockfish settings and also restart it.</p>
     </div>
     <div id="other-options-keyboard-shortcuts">
     <h2>Other Options / Keyboard Shortcuts</h2>
@@ -186,10 +186,11 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
 <li><p>By default, the trainer waits after completing a sequence before starting a new sequence. One can toggle this pause on/off with the <code>&lt;w&gt;</code> key.</p></li>
 <li><p>With the <code>&lt;i&gt;</code> key, the language of the trainer can be toggled between English and German (author note: I wrote this trainer in part for my chess playing kids, which is the reason why a German translation is available).</p></li>
 <li><p>With the <code>&lt;v&gt;</code> key, the evaluation bar can be toggled on/off (if no evaluations are available for a sequence, the bar is never shown).</p></li>
-</ul><p>The settings are automatically stored in a file called <code>settings.rds</code> at <code>tools::R_user_dir(package="chesstrainer", which="config")</code> and are read in when starting the trainer. The current settings can be shown with <code>&lt;F3&gt;</code>.</p>
-<p>With <code>&lt;F4&gt;</code>, one can adjust the colors. The colors are automatically stored in a file called <code>colors.rds</code> at <code>tools::R_user_dir(package="chesstrainer", which="config")</code> and are read in when starting the trainer.</p>
-<p>With <code>&lt;F5&gt;</code>, one can adjust the size of the text at the top, the text at the bottom, and the size of the evaluation value in the evaluation bar (if it is shown). The text sizes are automatically stored in <code>settings.rds</code> and are read in when starting the trainer.</p>
-<p>With <code>&lt;F6&gt;</code>, one can adjust the Stockfish settings. The path and calculation parameter (see above) are automatically stored in <code>settings.rds</code> and are read in when starting the trainer.</p>
+</ul><p>The settings are stored in a file called <code>settings.rds</code> at <code>tools::R_user_dir(package="chesstrainer", which="config")</code> and are read in when starting the trainer. The current settings can be shown with <code>&lt;F3&gt;</code>.</p>
+<p>With <code>&lt;F4&gt;</code>, one can adjust the colors. The colors are stored in a file called <code>colors.rds</code> at <code>tools::R_user_dir(package="chesstrainer", which="config")</code> and are read in when starting the trainer.</p>
+<p>With <code>&lt;F5&gt;</code>, one can adjust the size of the text at the top, the text at the bottom, and the size of the evaluation value in the evaluation bar (if it is shown).</p>
+<p>With <code>&lt;F6&gt;</code>, one can adjust some miscellaneous settings, namely the multiplier for the score when competing a sequence (0.8 by default), the score penalty when making a wrong move (40 by default), the score penalty per hint (20 by default), and the number of animation steps for the evaluation bar (10 by default).</p>
+<p>With <code>&lt;F7&gt;</code>, one can adjust the Stockfish settings, namely the path and the calculation parameter (see above).</p>
 <p>With <code>&lt;F9&gt;</code>, the FEN of the current position is printed, copied to the clipboard, and the position is opened on the <code>https://lichess.org</code> website.</p>
     </div>
     <div id="backing-up-sequences">

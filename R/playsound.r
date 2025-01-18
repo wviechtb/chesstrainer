@@ -1,7 +1,8 @@
 playsound <- function(sound, volume) {
 
    volume[volume < 0] <- 0
-   volume[volume > 1] <- 1
+   volume[volume > 100] <- 100
+   volume <- volume / 100
 
    if (Sys.info()[["sysname"]] == "Linux") {
       if (volume > 0) {

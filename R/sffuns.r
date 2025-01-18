@@ -169,14 +169,14 @@
          if (resp < 1 || resp > 5)
             next
          if (identical(resp, 1)) {
-            # (re)start stockfish
+            # (re)start Stockfish
             cat("\n")
             tmp <- .sf.start(sfproc, sfrun, sfpath)
             sfproc <- tmp$sfproc
             sfrun  <- tmp$sfrun
          }
          if (identical(resp, 2)) {
-            # stop stockfish
+            # stop Stockfish
             cat("\n")
             tmp <- .sf.stop(sfproc, sfrun)
             sfproc <- tmp$sfproc

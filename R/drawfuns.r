@@ -536,7 +536,7 @@
 
 }
 
-.draweval <- function(val=NA_real_, last=NA_real_, flip=FALSE, clear=FALSE, eval=TRUE) {
+.draweval <- function(val=NA_real_, last=NA_real_, flip=FALSE, clear=FALSE, eval=TRUE, evalsteps=10) {
 
    if (!eval)
       return()
@@ -580,7 +580,7 @@
    last <- min(max(last, -maxval), maxval)
    last <- (last + maxval) / (2*maxval) * 8 + 1
 
-   steps <- 10
+   steps <- evalsteps
    props <- seq(0, 1, length.out=steps)^(1/5)
 
    if (flip) {

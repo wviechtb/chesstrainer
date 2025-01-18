@@ -115,7 +115,7 @@
 
    In \sQuote{play} mode, the \code{<u>} key updates the evaluations for all moves in a sequence by recalculating the evaluations with the current setting for the calculation parameter. This way, one can obtain very accurate evaluations by using a high search depth or search time. After updating the evaluations, they are automatically saved to the sequence file.
 
-   Note that asking Stockfish to evaluate impossible positions (e.g., black is in check but it is white's turn to move) crashes Stockfish. This should be handled gracefully by the trainer. With \code{<F6>}, one can adjust the Stockfish settings and also restart it.
+   Note that asking Stockfish to evaluate impossible positions (e.g., black is in check but it is white's turn to move) crashes Stockfish. This should be handled gracefully by the trainer. With \code{<F7>}, one can adjust the Stockfish settings and also restart it.
 
 }
 \section{Other Options / Keyboard Shortcuts}{
@@ -134,13 +134,15 @@
    \item With the \code{<v>} key, the evaluation bar can be toggled on/off (if no evaluations are available for a sequence, the bar is never shown).
    }
 
-   The settings are automatically stored in a file called \code{settings.rds} at \code{tools::R_user_dir(package="chesstrainer", which="config")} and are read in when starting the trainer. The current settings can be shown with \code{<F3>}.
+   The settings are stored in a file called \code{settings.rds} at \code{tools::R_user_dir(package="chesstrainer", which="config")} and are read in when starting the trainer. The current settings can be shown with \code{<F3>}.
 
-   With \code{<F4>}, one can adjust the colors. The colors are automatically stored in a file called \code{colors.rds} at \code{tools::R_user_dir(package="chesstrainer", which="config")} and are read in when starting the trainer.
+   With \code{<F4>}, one can adjust the colors. The colors are stored in a file called \code{colors.rds} at \code{tools::R_user_dir(package="chesstrainer", which="config")} and are read in when starting the trainer.
 
-   With \code{<F5>}, one can adjust the size of the text at the top, the text at the bottom, and the size of the evaluation value in the evaluation bar (if it is shown). The text sizes are automatically stored in \code{settings.rds} and are read in when starting the trainer.
+   With \code{<F5>}, one can adjust the size of the text at the top, the text at the bottom, and the size of the evaluation value in the evaluation bar (if it is shown).
 
-   With \code{<F6>}, one can adjust the Stockfish settings. The path and calculation parameter (see above) are automatically stored in \code{settings.rds} and are read in when starting the trainer.
+   With \code{<F6>}, one can adjust some miscellaneous settings, namely the multiplier for the score when competing a sequence (0.8 by default), the score penalty when making a wrong move (40 by default), the score penalty per hint (20 by default), and the number of animation steps for the evaluation bar (10 by default).
+
+   With \code{<F7>}, one can adjust the Stockfish settings, namely the path and the calculation parameter (see above).
 
    With \code{<F9>}, the FEN of the current position is printed, copied to the clipboard, and the position is opened on the \verb{https://lichess.org} website.
 

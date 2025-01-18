@@ -9,7 +9,7 @@ playsound(sound, volume)
 }
 \arguments{
    \item{sound}{the sound file (given as a full path).}
-   \item{volume}{the volume (as a proportion between 0 and 1).}
+   \item{volume}{the volume (as a percentage between 0 and 100).}
 }
 \details{
 

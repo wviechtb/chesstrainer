@@ -394,12 +394,6 @@
                          paste0("Line Width: ", arg)
    ))}
 
-   if (x == "colcurrent") {
-      return(switch(lang,
-                    de = "Aktuelle Farbeinstellungen:\n",
-                         "Current color settings:\n"
-   ))}
-
    if (x == "colwhich") {
       return(switch(lang,
                     de = "Farbe \U000000E4ndern (<Nummer> oder <Enter> zum Verlassen): ",
@@ -412,7 +406,7 @@
                          paste0("Enter color (current value is '", arg, "'): ")
    ))}
 
-   if (x == "cexcurrent") {
+   if (x == "currentsettings") {
       return(switch(lang,
                     de = "Aktuelle Einstellungen:\n",
                          "Current settings:\n"
@@ -428,6 +422,18 @@
       return(switch(lang,
                     de = paste0("Gr\U000000F6\U000000DFe eingeben (jetztiger Wert ist ", arg, "): "),
                          paste0("Enter size (current value is ", arg, "): ")
+   ))}
+
+   if (x == "settingwhich") {
+      return(switch(lang,
+                    de = "Einstellung \U000000E4ndern (<Nummer> oder <Enter> zum Verlassen): ",
+                         "Change setting (<number> or <enter> to quit): "
+   ))}
+
+   if (x == "settingval") {
+      return(switch(lang,
+                    de = paste0("Wert eingeben (jetztiger Wert ist ", arg, "): "),
+                         paste0("Enter value (current value is ", arg, "): ")
    ))}
 
    if (x == "verbose") {
@@ -588,8 +594,8 @@
 
    if (x == "explsettings") {
       return(switch(lang,
-                    de = c("Spielername", "Modus", "Zeit zwischen den Z\U000000FCgen", "Lautst\U000000E4rke", "Linienbreite", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Exponentenwert", "Selektionsmodus", "Pause zwischen Sequenzen", "Bewertungsleiste", "Sprache", "Stockfish Pfad", "Berechnungsparameter f\U000000FCr Stockfish"),
-                         c("Player name", "Mode", "Time between moves", "Sound volume", "Line width", "Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Exponent value", "Selection mode", "Pause between sequences", "Evaluation bar", "Language", "Stockfish path", "Calculation parameter for Stockfish")
+                    de = c("Sprache", "Spielername", "Modus", "Selektionsmodus f\U000000FCr Sequenzen", "Exponentenwert", "Multiplikator f\U000000FCr abgeschlossene Sequenzen", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Bewertungsleiste anzeigen", "Animationsschritte f\U000000FCr die Bewertungsleiste", "Pause zwischen Sequenzen", "Zeit zwischen den Z\U000000FCgen (Sekunden)", "Linienbreite", "Lautst\U000000E4rke (%)", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Stockfish Pfad", "Berechnungsparameter f\U000000FCr Stockfish"),
+                         c("Language", "Player name", "Mode", "Selection mode for sequences", "Exponent value", "Multiplier for completed sequences", "Score penalty for wrong moves", "Score penalty per hint", "Show evaluation bar", "Animation steps for the evaluation bar", "Pause between sequences", "Time between moves (seconds)", "Line width", "Sound volume (%)", "Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Stockfish path", "Calculation parameter for Stockfish")
    ))}
 
 }

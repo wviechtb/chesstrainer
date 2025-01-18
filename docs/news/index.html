@@ -29,7 +29,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chesstrainer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-8</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-9</span>
       </span>
     </div>
 
@@ -79,7 +79,7 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="0.9-8" id="chesstrainer-09-8-2025-01-16">chesstrainer 0.9-8 (2025-01-16)<a class="anchor" aria-label="anchor" href="#chesstrainer-09-8-2025-01-16"></a></h2>
+<h2 class="page-header" data-toc-text="0.9-9" id="chesstrainer-09-9-2025-01-18">chesstrainer 0.9-9 (2025-01-18)<a class="anchor" aria-label="anchor" href="#chesstrainer-09-9-2025-01-18"></a></h2>
 <ul><li>can play en passant</li>
 <li>can promote pawns</li>
 <li>help opens up in the plot, not in the console</li>
@@ -87,21 +87,19 @@
 </li>
 <li>added <code>&lt;r&gt;</code> key to toggle between different sequence selection modes</li>
 <li>allow adjusting the line width during play with the <code>&lt;(&gt;</code> and <code>&lt;)&gt;</code> keys</li>
-<li>settings are saved across sessions</li>
-<li>colors can be adjusted and are stored across sessions</li>
-<li>text sizes for text at the top and bottom can be adjusted and are stored across sessions</li>
+<li>various settings (including the colors and text sizes) are saved across sessions and can be adjusted when the trainer is running</li>
 <li>moves in long algebraic notation are added to the sequence files</li>
 <li>added <code>&lt;?&gt;</code> key to find all sequences that start with the same moves entered so far</li>
 <li>the <code>&lt;t&gt;</code> key is used for taking back moves (in add mode) or a score adjustment (in play mode)</li>
 <li>added a board editor (which can be opened in add mode with the <code>&lt;b&gt;</code> key)</li>
 <li>sequences contain a position evaluation variable, which (if not missing) is shown as an evaluation bar (can be toggled on/off with <code>&lt;v&gt;</code>)</li>
 <li>can use Stockfish in the background to automatically obtain position evaluations when adding sequences</li>
-<li>the <code>&lt;u&gt;</code> key is used to recalculate (update) the position evaluations during play mode (<code>&lt;escape&gt;</code> is used to redraw the board)</li>
-<li>keep track of when a sequence was last played and allow selection based on how long ago sequences were played</li>
-<li>the <code>&lt;A&gt;</code> key can be used like the <code>&lt;a&gt;</code> key but only plays the moves to the currently shown position</li>
-<li>simplified the arguments of the <code><a href="../reference/play.html">play()</a></code> function</li>
+<li>the <code>&lt;u&gt;</code> key is used to recalculate (update) the position evaluations during play mode</li>
+<li>trainer keeps track of when a sequence was last played and allow selection based on how long ago sequences were played</li>
+<li>the <code>&lt;A&gt;</code> key can be used like the <code>&lt;a&gt;</code> key but only plays the moves up to the currently shown position</li>
 <li>
 <code>&lt;F9&gt;</code> prints the FEN of the current position, copies it to the clipboard (<code>clipr</code> package added to <code>Imports</code>), and opens up the position on lichess.org</li>
+<li>simplified the arguments of the <code><a href="../reference/play.html">play()</a></code> function</li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.1-0" id="chesstrainer-01-0-2024-12-17">chesstrainer 0.1-0 (2024-12-17)<a class="anchor" aria-label="anchor" href="#chesstrainer-01-0-2024-12-17"></a></h2>
