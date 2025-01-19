@@ -79,7 +79,7 @@
          return(1)
       }
 
-      click <- getGraphicsEvent(prompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
+      click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
 
       keys <- c("q", "\033", "ctrl-[", "n", "f", "c", "F1")
 
@@ -208,6 +208,6 @@
    text(2+0.5, seq(8, 4, length.out=length(txt)), txt, pos=4, cex=cex,
         family=.get("font.mono"), font=ifelse(grepl(":", txt), 2, 1), col=.get("col.help"))
 
-   getGraphicsEvent(prompt="", onMouseDown=function(button, x, y) return(""), onKeybd=function(key) return(""))
+   getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button, x, y) return(""), onKeybd=function(key) return(""))
 
 }

@@ -13,7 +13,7 @@
    col.square.d <- .get("col.square.d")
 
    if (dev.cur() == 1L)
-      dev.new(bg=col.bg)
+      dev.new(bg=col.bg, title="chesstrainer")
 
    par(xpd=NA, pty="s", mar=rep(5.2,4), fg=col.fg, bg=col.bg)
 
@@ -243,7 +243,7 @@
          sapply(8:5, function(x2) .drawsquare(x2, y2, col=col.square.be))
          mapply(.drawpiece, x=8:5, y=rep(y2,4), piece=c("BQ","BN","BR","BB"))
          while (TRUE) {
-            click <- getGraphicsEvent(prompt="", onMouseDown=.pickpromotionpiece)
+            click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.pickpromotionpiece)
             if (identical(click, c(8,y2)))
                promotionpiece <- "BQ"
             if (identical(click, c(7,y2)))
@@ -262,7 +262,7 @@
          sapply(1:4, function(x2) .drawsquare(x2, y2, col=col.square.be))
          mapply(.drawpiece, x=1:4, y=rep(y2,4), piece=c("WQ","WN","WR","WB"))
          while (TRUE) {
-            click <- getGraphicsEvent(prompt="", onMouseDown=.pickpromotionpiece)
+            click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.pickpromotionpiece)
             if (identical(click, c(1,y2)))
                promotionpiece <- "WQ"
             if (identical(click, c(2,y2)))
@@ -282,7 +282,7 @@
          sapply(8:5, function(x2) .drawsquare(x2, y2, col=col.square.be))
          mapply(.drawpiece, x=8:5, y=rep(y2,4), piece=c("WQ","WN","WR","WB"))
          while (TRUE) {
-            click <- getGraphicsEvent(prompt="", onMouseDown=.pickpromotionpiece)
+            click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.pickpromotionpiece)
             if (identical(click, c(8,y2)))
                promotionpiece <- "WQ"
             if (identical(click, c(7,y2)))
@@ -301,7 +301,7 @@
          sapply(1:4, function(x2) .drawsquare(x2, y2, col=col.square.be))
          mapply(.drawpiece, x=1:4, y=rep(y2,4), piece=c("BQ","BN","BR","BB"))
          while (TRUE) {
-            click <- getGraphicsEvent(prompt="", onMouseDown=.pickpromotionpiece)
+            click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.pickpromotionpiece)
             if (identical(click, c(1,y2)))
                promotionpiece <- "BQ"
             if (identical(click, c(2,y2)))

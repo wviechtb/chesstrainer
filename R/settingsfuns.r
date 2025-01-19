@@ -182,7 +182,7 @@
 
    while (wait) {
 
-      resp <- getGraphicsEvent(prompt="", onKeybd=function(key) return(key))
+      resp <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=function(key) return(key))
 
       if (identical(resp, "\r") || identical(resp, "q") || identical(resp, "\033"))
          wait <- FALSE

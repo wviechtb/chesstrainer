@@ -117,6 +117,6 @@
    text(1+0.5, seq(8.5, 1.5, length.out=length(txt)), txt, pos=4, cex=cex,
         family=.get("font.mono"), font=ifelse(grepl(":", txt), 2, 1), col=.get("col.help"))
 
-   getGraphicsEvent(prompt="", onMouseDown=function(button, x, y) return(""), onKeybd=function(key) return(""))
+   getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button, x, y) return(""), onKeybd=function(key) return(""))
 
 }
