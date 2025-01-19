@@ -1638,6 +1638,17 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   next
                }
 
+               if (identical(click, "F9")) {
+                  fen <- .genfen(pos, flip, ifelse(sidetoplay == "w", "b", "w"), i+1)
+                  if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
+                  cat(fen, "\n")
+                  if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+                  clipr::write_clip(fen)
+                  fen <- paste0("https://lichess.org/analysis/standard/", gsub(" ", "_", fen, fixed=TRUE))
+                  browseURL(fen)
+                  getGraphicsEvent(prompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=function(key) return(key))
+               }
+
             }
 
             sub$score[player] <- score
