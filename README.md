@@ -17,20 +17,11 @@ remotes::install_github("wviechtb/chesstrainer")
 
 ## Play
 
-To start playing, type: `play()`. For an introduction, type: `help(chesstrainer)` or read the documentation online at [https://wviechtb.github.io/chesstrainer/](https://wviechtb.github.io/chesstrainer/).
+To start playing, first load the package with `library(chesstrainer)` and then type: `play()`. For an introduction, type: `help(chesstrainer)` or read the documentation online at [https://wviechtb.github.io/chesstrainer/](https://wviechtb.github.io/chesstrainer/).
 
-## To Do
+## For Non-R Users
 
-- [x] Add en passant.
-- [x] Add pawn promotion.
-- [x] Add a board editor.
-- [x] Save settings across sessions.
-- [x] Allow adjusting colors.
-- [x] Allow adjusting text sizes.
-- [x] Add evaluation bar.
-- [x] Generate FEN for a position.
-- [x] Get position evaluations automatically via Stockfish (if installed).
-- [ ] Allow branching in sequences (maybe, as this requires a more substantial update).
+If you are not an R user, but still would like to use the trainer, you will first have to install R (which is freely available) from [https://cran.r-project.org|here]. Once R is installed, start up R and then enter the commands above for installing the package after the prompt (`>`) on the 'R Console'. If you receive a prompt whether to use/create a personal library, answer 'Yes'. If you are asked for a download location, you can select the first choice. Once the package is installed, type `library(chesstrainer)` to load the package and `play()` to start the trainer.
 
 ## Meta
 

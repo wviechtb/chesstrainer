@@ -147,6 +147,34 @@
    With \code{<F9>}, the FEN of the current position is printed, copied to the clipboard, and the position is opened on the \verb{https://lichess.org} website.
 
 }
+\section{Resetting / Cleaning Up}{
+
+   If you would like to remove the config files (for the settings and colors), you can use the following two commands:
+
+\preformatted{
+file.remove(file.path(tools::R_user_dir(package="chesstrainer", which="config"), "settings.rds"))
+file.remove(file.path(tools::R_user_dir(package="chesstrainer", which="config"), "colors.rds"))
+}
+
+   This may be useful in case these files were corrupted with nonsensical settings. The files will be recreated (with default values) when restarting the trainer. If you would like to remove the directory where these files are stored, you can use:
+
+\preformatted{
+file.remove(tools::R_user_dir(package="chesstrainer", which="config"))
+}
+
+   If you would like to remove all files stored in the default directory where sequences are stored, you can use:
+
+\preformatted{
+file.remove(list.files(tools::R_user_dir(package="chesstrainer", which="data"), full.names=TRUE))
+}
+
+   To remove the corresponding folder, you can use:
+
+\preformatted{
+file.remove(tools::R_user_dir(package="chesstrainer", which="data"))
+}
+
+}
 \section{Backing Up Sequences}{
 
    It is advisable to regularly make a backup of the sequences you have created. The directory where sequences are stored can be found with the command: \code{tools::R_user_dir(package="chesstrainer", which="data").}
