@@ -153,7 +153,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
    cat(.text("seqdir", seqdir))
 
-   # .sequential file in sequence directory override selmode setting
+   # .sequential file in sequence directory overrides selmode setting
 
    if (file.exists(file.path(seqdir, ".sequential")))
       selmode <- "sequential"
@@ -305,15 +305,15 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
          mode <- "add"
       }
 
-      scores.all <- sapply(dat.all, function(x) x$score[player])
+      scores.all <- lapply(dat.all, function(x) tail(x$player[[player]]$score, 1))
       scores.all[is.na(scores.all) | .is.null(scores.all)] <- 100
-      scores.all <- unname(unlist(scores.all))
-      played.all <- sapply(dat.all, function(x) x$played[player])
+      scores.all <- unlist(scores.all)
+      played.all <- lapply(dat.all, function(x) tail(x$player[[player]]$played, 1))
       played.all[is.na(played.all) | .is.null(played.all)] <- 0
-      played.all <- unname(unlist(played.all))
-      date.all <- sapply(dat.all, function(x) x$date[player])
+      played.all <- unlist(played.all)
+      date.all <- lapply(dat.all, function(x) tail(x$player[[player]]$date, 1))
       date.all[is.na(date.all) | .is.null(date.all)] <- NA_real_
-      date.all <- unname(unlist(date.all))
+      date.all <- unlist(date.all)
       dayslp.all <- as.numeric(Sys.time() - as.POSIXct(date.all), units="days")
 
       # apply selection to sequences
@@ -338,15 +338,15 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
          next
       }
 
-      scores.selected <- sapply(dat, function(x) x$score[player])
+      scores.selected <- lapply(dat, function(x) tail(x$player[[player]]$score, 1))
       scores.selected[is.na(scores.selected) | .is.null(scores.selected)] <- 100
-      scores.selected <- unname(unlist(scores.selected))
-      played.selected <- sapply(dat, function(x) x$played[player])
+      scores.selected <- unlist(scores.selected)
+      played.selected <- lapply(dat, function(x) tail(x$player[[player]]$played, 1))
       played.selected[is.na(played.selected) | .is.null(played.selected)] <- 0
-      played.selected <- unname(unlist(played.selected))
-      date.selected <- sapply(dat, function(x) x$date[player])
+      played.selected <- unlist(played.selected)
+      date.selected <- lapply(dat, function(x) tail(x$player[[player]]$date, 1))
       date.selected[is.na(date.selected) | .is.null(date.selected)] <- NA_real_
-      date.selected <- unname(unlist(date.selected))
+      date.selected <- unlist(date.selected)
       dayslp.selected <- as.numeric(Sys.time() - as.POSIXct(date.selected), units="days")
 
       if (all(scores.selected == 0)) # in case all sequences have a score of 0
@@ -404,8 +404,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
          # set up the data frame for a new sequence
 
-         sub <- list(flip=flip, score=setNames(100, player), played=setNames(0, player), date=setNames(NA_real_, player),
-                     moves=data.frame(x1=numeric(), y1=numeric(), x2=numeric(), y2=numeric(), show=logical(), move=character(), eval=numeric(), comment=character()))
+         sub <- list(flip = flip, moves = data.frame(x1=numeric(), y1=numeric(), x2=numeric(), y2=numeric(), show=logical(), move=character(), eval=numeric(), comment=character()))
 
       } else {
 
@@ -425,16 +424,15 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
          seqname <- files[sel]
          seqnum  <- which(seqname == files.all)
-         if (is.null(sub$score))
-            sub$score <- setNames(score, player)
-         if (is.na(sub$score[player]))
-            sub$score[player] <- score
-         score <- sub$score[player]
-         if (is.null(sub$played))
-            sub$played <- setNames(played, player)
-         if (is.na(sub$played[player]))
-            sub$played[player] <- played
-         played <- sub$played[player]
+
+         score <- tail(sub$player[[player]]$score, 1)
+         if (is.null(score) || is.na(score))
+            score <- 100
+
+         played <- tail(sub$player[[player]]$played, 1)
+         if (is.null(played) || is.na(played))
+            played <- 0
+
          totalmoves <- nrow(sub$moves)
          flip <- sub$flip
 
@@ -510,9 +508,9 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
             click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
 
-            keys      <- c("q", " ", "n", "p", "e", "l", "-", "=", "+", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "m", "/", ".", "w", "t", "h", "ctrl-R", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "F9", "F12", "v", "a")
+            keys      <- c("q", " ", "n", "p", "e", "l", "-", "=", "+", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F9", "F12", "m", "/", ".", "w", "t", "h", "ctrl-R", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "v", "a")
             keys.add  <- c("f", "z", "c", "s", "0", "?", "b")
-            keys.play <- c("z", "c", "s", "\b", "ctrl-D", "Right", "Left", "o", "u", "A")
+            keys.play <- c("z", "c", "s", "\b", "ctrl-D", "Right", "Left", "o", "u", "A", "g")
 
             if (mode == "add" && is.character(click) && !is.element(click, c(keys, keys.add)))
                next
@@ -662,6 +660,19 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                next
             }
 
+            # show score graph (only in play mode)
+
+            if (mode == "play" && identical(click, "g")) {
+               if (!is.null(sub$player[[player]]$score)) {
+                  .scoregraph(sub$player[[player]], lwd=lwd)
+                  .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode)
+                  .draweval(sub$moves$eval[i], flip=flip, eval=eval, evalsteps=evalsteps)
+                  hasarrows <- FALSE
+                  circles <- matrix(c(0,0), nrow=1, ncol=2)
+               }
+               next
+            }
+
             # l to list all (selected) sequences
 
             if (identical(click, "l")) {
@@ -763,9 +774,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                tmp <- strcapture(.text("strcapplayed"), searchterm, data.frame(text=character(), sign=character(), cutoff=integer()))
 
                if (!is.na(tmp$cutoff)) {
-                  sign <- strsplit(searchterm, " ")[[1]][2]
-                  cutoff <- as.numeric(strsplit(searchterm, sign)[[1]][2])
-                  cat(.text("selseqplayed", list(tmp$sign, cutoff)))
+                  cat(.text("selseqplayed", list(tmp$sign, tmp$cutoff)))
                   selected <- eval(parse(text = paste("played.all", tmp$sign, tmp$cutoff)))
                   selected <- list.files(seqdir, pattern=".rds$")[selected]
                   if (length(selected) == 0L) {
@@ -907,7 +916,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                next
             }
 
-            # o to edit the score for the current sequence (only in play mode)
+            # o to edit the (last) score for the current sequence (only in play mode)
 
             if (mode == "play" && identical(click, "o")) {
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
@@ -916,8 +925,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   newscore <- round(as.numeric(newscore))
                   newscore[newscore < 0] <- 0
                   cat(.text("setnewscore", newscore))
-                  sub$score[player] <- newscore
-                  saveRDS(sub, file=file.path(seqdir, seqname))
+                  score <- newscore
+                  .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                }
                if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
                next
@@ -978,7 +987,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                      sel <- 1
                      sub <- dat[[sel]]
                      seqname <- files[sel]
-                     seqnum  <- which(seqname == files.all)
+                     seqnum <- which(seqname == files.all)
                      score <- 100
                      played <- 0
                      totalmoves <- nrow(sub$moves)
@@ -992,9 +1001,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
                mode <- "add"
 
-               sub$score  <- setNames(100, player)
-               sub$played <- setNames(0, player)
-               sub$date   <- setNames(NA_real_, player)
+               sub$player <- NULL
 
                if (!identical(sub$moves$comment[i], "")) {
                   texttop <- .texttop(sub$moves$comment[i])
@@ -1241,7 +1248,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                next
             }
 
-            # (/) to decrease/increase the line width value
+            # (/) to decrease/increase the line width
 
             if (identical(click, "(") || identical(click, ")")) {
                if (identical(click, "(")) {
@@ -1257,7 +1264,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                next
             }
 
-            # v to toggle evaluation bar on/off
+            # v to toggle the evaluation bar on/off
 
             if (identical(click, "v")) {
                eval <- !eval
@@ -1333,6 +1340,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
                if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
                next
+
             }
 
             # F1 to show the help
@@ -1357,7 +1365,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                next
             }
 
-            # F3 to print settings
+            # F3 to print the settings
 
             if (identical(click, "F3")) {
                settings <- data.frame(lang, player, mode, selmode, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, pause, sleep, lwd, volume, cex.top, cex.bot, cex.eval, sfpath, sfgo)
@@ -1370,7 +1378,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                next
             }
 
-            # F4 to adjust colors
+            # F4 to adjust the colors
 
             if (identical(click, "F4")) {
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
@@ -1385,7 +1393,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                next
             }
 
-            # F5 to adjust cex values
+            # F5 to adjust the cex values
 
             if (identical(click, "F5")) {
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
@@ -1405,7 +1413,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                next
             }
 
-            # F6 to adjust miscellaneous settings
+            # F6 to adjust the miscellaneous settings
 
             if (identical(click, "F6")) {
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
@@ -1423,7 +1431,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                next
             }
 
-            # F7 to adjust Stockfish settings
+            # F7 to adjust the Stockfish settings
 
             if (identical(click, "F7")) {
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
@@ -1439,7 +1447,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                next
             }
 
-            # F9 to print FEN, copy it to the clipboard, and open the FEN on lichess
+            # F9 to print the FEN, copy it to the clipboard, and open the position on lichess
 
             if (identical(click, "F9")) {
                fen <- .genfen(pos, flip, sidetoplay, i)
@@ -1619,41 +1627,83 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
             .printinfo(mode, show, player, seqname, seqnum, score, played, i+1, totalmoves, selmode)
 
+            tmp <- data.frame(date=as.numeric(Sys.time()), played=played, score=score)
+
+            if (is.null(sub$player[[player]])) {
+               sub$player[[player]] <- tmp
+            } else {
+               sub$player[[player]] <- rbind(sub$player[[player]], tmp)
+            }
+
             if (pause) {
 
-               click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=function(key) return(key))
+               dobreak <- FALSE
+               donext  <- FALSE
 
-               if (identical(click, "n"))
+               while (TRUE) {
+
+                  click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=function(key) return(key))
+
+                  if (is.numeric(click))
+                     break
+
+                  if (identical(click, "n")) {
+                     dobreak <- TRUE
+                     break
+                  }
+
+                  if (identical(click, "a")) {
+                     mode <- "add"
+                     sub$player <- NULL
+                     show <- FALSE
+                     .texttop(" ")
+                     .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
+                     sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
+                     .drawsideindicator(sidetoplay, flip)
+                     donext <- TRUE
+                     break
+                  }
+
+                  if (identical(click, "o")) {
+                     if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
+                     newscore <- readline(prompt=.text("newscore", score))
+                     if (grepl("^[0-9]+$", newscore)) {
+                        newscore <- round(as.numeric(newscore))
+                        newscore[newscore < 0] <- 0
+                        cat(.text("setnewscore", newscore))
+                        score <- newscore
+                        .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
+                        sub$player[[player]]$score[length(sub$player[[player]]$score)] <- score
+                     }
+                     if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+                  }
+
+                  if (identical(click, "F9")) {
+                     fen <- .genfen(pos, flip, ifelse(sidetoplay == "w", "b", "w"), i+1)
+                     if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
+                     cat(fen, "\n")
+                     if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+                     clipr::write_clip(fen)
+                     fen <- paste0("https://lichess.org/analysis/standard/", gsub(" ", "_", fen, fixed=TRUE))
+                     browseURL(fen)
+                  }
+
+                  if (identical(click, "g")) {
+                     .scoregraph(sub$player[[player]], lwd=lwd)
+                     .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode)
+                     .draweval(sub$moves$eval[i], flip=flip, eval=eval, evalsteps=evalsteps)
+                  }
+
+               }
+
+               if (dobreak)
                   break
 
-               if (identical(click, "a")) {
-                  mode <- "add"
-                  sub$score <- setNames(100, player)
-                  sub$played <- setNames(0, player)
-                  show <- FALSE
-                  .texttop(" ")
-                  .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
-                  sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
-                  .drawsideindicator(sidetoplay, flip)
+               if (donext)
                   next
-               }
-
-               if (identical(click, "F9")) {
-                  fen <- .genfen(pos, flip, ifelse(sidetoplay == "w", "b", "w"), i+1)
-                  if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
-                  cat(fen, "\n")
-                  if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
-                  clipr::write_clip(fen)
-                  fen <- paste0("https://lichess.org/analysis/standard/", gsub(" ", "_", fen, fixed=TRUE))
-                  browseURL(fen)
-                  getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=function(key) return(key))
-               }
 
             }
 
-            sub$score[player] <- score
-            sub$played[player] <- played
-            sub$date[player] <- as.numeric(Sys.time())
             saveRDS(sub, file=file.path(seqdir, seqname))
             Sys.sleep(2*sleep)
             run.rnd <- FALSE

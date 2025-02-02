@@ -1,4 +1,4 @@
-# chesstrainer 0.9-10 (2025-01-29)
+# chesstrainer 0.9-11 (2025-02-02)
 
 - can play en passant
 - can promote pawns
@@ -14,7 +14,8 @@
 - sequences contain a position evaluation variable, which (if not missing) is shown as an evaluation bar (can be toggled on/off with `<v>`)
 - can use Stockfish in the background to automatically obtain position evaluations when adding sequences
 - the `<u>` key is used to recalculate (update) the position evaluations during play mode
-- trainer keeps track of when a sequence was last played and allow selection based on how long ago sequences were played
+- trainer keeps track of when a sequence was last played and allows selection based on how long ago sequences were played
+- progress over time in stored for each player in the sequence files and can be displayed with the `<g>` key
 - the `<A>` key can be used like the `<a>` key but only plays the moves up to the currently shown position
 - `<F9>` prints the FEN of the current position, copies it to the clipboard (`clipr` package added to `Imports`), and opens up the position on lichess.org
 - simplified the arguments of the `play()` function

@@ -29,8 +29,8 @@
          text(0.00, 0.30, paste0("Name:   ", "(", seqnum, ") ", seqname), pos=4, cex=cex, family=font, col=col)
          text(0.00, 0.15, paste0("Player: ", player), pos=4, cex=cex, family=font, col=col)
          text(0.00, 0.00, paste0("Move:   ", i-1, " / ", totalmoves), pos=4, cex=cex, family=font, col=col)
-         text(9.00, 0.15, paste0("Score:  ", score), pos=4, cex=cex, family=font, col=col)
-         text(9.00, 0.00, paste0("Played: ", played), pos=4, cex=cex, family=font, col=col)
+         text(9.00, 0.15, paste0("Played: ", played), pos=4, cex=cex, family=font, col=col)
+         text(9.00, 0.00, paste0("Score:  ", score), pos=4, cex=cex, family=font, col=col)
       }
 
    }
@@ -57,8 +57,8 @@
          text(0.00, 0.30, paste0("Name:    ", "(", seqnum, ") ", seqname), pos=4, cex=cex, family=font, col=col)
          text(0.00, 0.15, paste0("Spieler: ", player), pos=4, cex=cex, family=font, col=col)
          text(0.00, 0.00, paste0("Zug:     ", i-1, " / ", totalmoves), pos=4, cex=cex, family=font, col=col)
-         text(9.00, 0.15, paste0("Punkte:   ", score), pos=4, cex=cex, family=font, col=col)
-         text(9.00, 0.00, paste0("Gespielt: ", played), pos=4, cex=cex, family=font, col=col)
+         text(9.00, 0.15, paste0("Gespielt: ", played), pos=4, cex=cex, family=font, col=col)
+         text(9.00, 0.00, paste0("Punkte:   ", score), pos=4, cex=cex, family=font, col=col)
       }
 
    }

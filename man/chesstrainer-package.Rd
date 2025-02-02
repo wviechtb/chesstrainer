@@ -16,7 +16,7 @@
 
    The trainer then starts in \sQuote{add} mode (see the \sQuote{Note} section below if you receive an error that the graphics device does not support event handling). For now, click on the window showing the chess board and hit \code{<space>} (i.e., the space bar), which will switch to \sQuote{play} mode. One of the existing sequences will then be chosen at random. The trainer may immediately prompt you to play a certain opening, it may make some moves for you, or it may start at a later position during a game. Either way, you will then have to make the correct move based on the position. You do this by left-clicking and dragging the piece to be played from its current position to the desired target square. The trainer will then make the next move, after which you will then again have to make the correct move. This will continue until the end of the sequence. If you do not know what the correct move is, the \code{<h>} key will provide a hint showing which piece to move. Hitting \code{<h>} for a second time will show the target square.
 
-   In play mode, information is shown at the bottom about the current mode, the player name, the name of the current sequence, the current move number and the total number of moves of the sequence, the sequence score (see below), and the number of times that the sequence has been played.
+   In play mode, information is shown at the bottom about the current mode, the player name, the name of the current sequence, the current move number and the total number of moves of the sequence, the number of times that the sequence has been played so far, and the sequence score (see below).
 
    With \code{<F1>}, you can receive an overview of all keyboard shortcuts (use any key or mouse click to close it). These will be explained in further detail below. You can quit the trainer with the \code{<q>} key.
 
@@ -129,7 +129,7 @@
    \itemize{
    \item With the \code{<(>} and \code{<)>} keys, the line width for drawing rectangles can be decreased/increased. With some trial and error, one can adjust this value such that the rectangles that are drawn around squares are clearly visible, but do not overlap into adjacent squares.
    \item By default, there is a 0.5 second sleep time between moves played by the trainer. This can be decreased/increased with the \code{<->} and \code{<+>} keys.
-   \item By default, the trainer waits after completing a sequence before starting a new sequence. One can toggle this pause on/off with the \code{<w>} key.
+   \item By default, the trainer waits for a mouse click at the end of a sequence before starting a new sequence. One can toggle this pause on/off with the \code{<w>} key.
    \item With the \code{<i>} key, the language of the trainer can be toggled between English and German (author note: I wrote this trainer in part for my chess playing kids, which is the reason why a German translation is available).
    \item With the \code{<v>} key, the evaluation bar can be toggled on/off (if no evaluations are available for a sequence, the bar is never shown).
    }

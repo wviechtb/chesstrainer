@@ -3,7 +3,7 @@
    files <- list.files(seqdir, full.names=TRUE, pattern=".rds$")
    dat <- lapply(files, readRDS)
 
-   players <- unique(unlist(lapply(dat, function(x) names(x$score))))
+   players <- unique(unlist(lapply(dat, function(x) names(x$player))))
    nplayers <- length(players)
 
    if (nplayers == 0L) {
@@ -50,17 +50,10 @@
    if (length(files) >= 1L) {
       for (i in 1:length(files)) {
          tmp <- readRDS(files[i])
-         pos.score <- which(names(tmp$score) == player)
-         if (length(pos.score) != 0)
-            tmp$score <- tmp$score[-pos.score]
-         pos.played <- which(names(tmp$played) == player)
-         if (length(pos.played) != 0)
-            tmp$played <- tmp$played[-pos.played]
-         pos.date <- which(names(tmp$date) == player)
-         if (length(pos.date) != 0)
-            tmp$date <- tmp$date[-pos.date]
-         if (length(pos.score) != 0 || length(pos.played) != 0 || length(pos.date) != 0)
+         if (!is.null(tmp$player[[player]])) {
+            tmp$player[[player]] <- NULL
             saveRDS(tmp, file=files[i])
+         }
       }
    }
 

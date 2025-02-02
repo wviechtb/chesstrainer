@@ -1,14 +1,14 @@
 .leaderboard <- function(seqdir, files, lwd) {
 
    tmp <- lapply(file.path(seqdir, files), readRDS)
-   tmp.scores <- lapply(tmp, function(x) x$score)
+   tmp.scores <- lapply(tmp, function(x) sapply(x$player, function(x) tail(x$score,1)))
    players <- unique(unlist(lapply(tmp.scores, function(x) names(x))))
    nplayers <- length(players)
 
    if (nplayers >= 1) {
 
       tmp.scores <- lapply(players, function(player) {
-         x <- lapply(tmp, function(x) x$score[player])
+         x <- lapply(tmp, function(x) tail(x$player[[player]]$score,1))
          x[sapply(x, is.null)] <- 100
          unlist(x)
       })
@@ -23,7 +23,7 @@
       max.scores  <- apply(tmp.scores, 2, max, na.rm=TRUE)
 
       tmp.played <- lapply(players, function(player) {
-         x <- lapply(tmp, function(x) x$played[player])
+         x <- lapply(tmp, function(x) tail(x$player[[player]]$played,1))
          x[sapply(x, is.null)] <- 0
          unlist(x)
       })
@@ -34,6 +34,7 @@
       tmp <- data.frame(players, mean.scores, sd.scores, min.scores, max.scores, total.played)
       names(tmp) <- c(.text("player"), .text("score"), "SD", "Min", "Max", .text("played"))
       tmp <- tmp[order(tmp[[2]]),]
+      rownames(tmp) <- NULL
 
       txt <- capture.output(print(tmp, print.gap=3))
       txt <- c(txt[1], paste0(rep("-", max(nchar(txt))), collapse=""), txt[2:length(txt)])

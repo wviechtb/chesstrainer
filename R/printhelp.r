@@ -36,7 +36,7 @@
       "Shortcuts in play mode:",
       "h        - get a hint (can select twice)",
       "t        - take back a score increase due to a wrong move",
-      "o        - manually edit the score for the current sequence",
+      "o        - manually enter the score for the current sequence",
       "Ctrl-d   - delete the current sequence",
       "a and A  - copy the current sequence/position and extend it with more moves",
       "u        - recalculate the evaluations",

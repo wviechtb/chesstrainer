@@ -31,7 +31,7 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chesstrainer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-11</span>
       </span>
     </div>
 
@@ -95,7 +95,7 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
 <p>To start the trainer, run <code><a href="play.html">play</a>()</code> from the console. When starting the trainer for the first time, a directory is created for storing settings and a directory where sequences will be stored. A few example sequences also come with the package and you will receive a prompt whether to copy these sequences to the sequence directory. To familiarize yourself with the trainer, it would be good to do so.</p>
 <p>You will then receive a prompt to enter a player name. Choose a name and hit enter.</p>
 <p>The trainer then starts in ‘add’ mode (see the ‘Note’ section below if you receive an error that the graphics device does not support event handling). For now, click on the window showing the chess board and hit <code>&lt;space&gt;</code> (i.e., the space bar), which will switch to ‘play’ mode. One of the existing sequences will then be chosen at random. The trainer may immediately prompt you to play a certain opening, it may make some moves for you, or it may start at a later position during a game. Either way, you will then have to make the correct move based on the position. You do this by left-clicking and dragging the piece to be played from its current position to the desired target square. The trainer will then make the next move, after which you will then again have to make the correct move. This will continue until the end of the sequence. If you do not know what the correct move is, the <code>&lt;h&gt;</code> key will provide a hint showing which piece to move. Hitting <code>&lt;h&gt;</code> for a second time will show the target square.</p>
-<p>In play mode, information is shown at the bottom about the current mode, the player name, the name of the current sequence, the current move number and the total number of moves of the sequence, the sequence score (see below), and the number of times that the sequence has been played.</p>
+<p>In play mode, information is shown at the bottom about the current mode, the player name, the name of the current sequence, the current move number and the total number of moves of the sequence, the number of times that the sequence has been played so far, and the sequence score (see below).</p>
 <p>With <code>&lt;F1&gt;</code>, you can receive an overview of all keyboard shortcuts (use any key or mouse click to close it). These will be explained in further detail below. You can quit the trainer with the <code>&lt;q&gt;</code> key.</p>
     </div>
     <div id="the-sequence-score">
@@ -183,7 +183,7 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
 <p>Various other settings can be adjusted while the trainer is running:</p>
 <p></p><ul><li><p>With the <code>&lt;(&gt;</code> and <code>&lt;)&gt;</code> keys, the line width for drawing rectangles can be decreased/increased. With some trial and error, one can adjust this value such that the rectangles that are drawn around squares are clearly visible, but do not overlap into adjacent squares.</p></li>
 <li><p>By default, there is a 0.5 second sleep time between moves played by the trainer. This can be decreased/increased with the <code>&lt;-&gt;</code> and <code>&lt;+&gt;</code> keys.</p></li>
-<li><p>By default, the trainer waits after completing a sequence before starting a new sequence. One can toggle this pause on/off with the <code>&lt;w&gt;</code> key.</p></li>
+<li><p>By default, the trainer waits for a mouse click at the end of a sequence before starting a new sequence. One can toggle this pause on/off with the <code>&lt;w&gt;</code> key.</p></li>
 <li><p>With the <code>&lt;i&gt;</code> key, the language of the trainer can be toggled between English and German (author note: I wrote this trainer in part for my chess playing kids, which is the reason why a German translation is available).</p></li>
 <li><p>With the <code>&lt;v&gt;</code> key, the evaluation bar can be toggled on/off (if no evaluations are available for a sequence, the bar is never shown).</p></li>
 </ul><p>The settings are stored in a file called <code>settings.rds</code> at <code>tools::R_user_dir(package="chesstrainer", which="config")</code> and are read in when starting the trainer. The current settings can be shown with <code>&lt;F3&gt;</code>.</p>
