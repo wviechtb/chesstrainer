@@ -476,7 +476,11 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                .draweval(sub$moves$eval[i], sub$moves$eval[i-1], flip=flip, eval=eval, evalsteps=evalsteps)
                i <- i + 1
                sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
-               texttop <- .texttop(sub$moves$comment[i])
+               if (identical(sub$moves$comment[i], "") && !identical(sub$moves$comment[i-1], "")) {
+                  texttop <- .texttop(sub$moves$comment[i-1])
+               } else {
+                  texttop <- .texttop(sub$moves$comment[i])
+               }
                .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                Sys.sleep(sleep)
             }
@@ -1027,7 +1031,11 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                for (i in 1:nrow(sub$moves)) {
                   pos <- .updateboard(pos, move=sub$moves[i,1:4], flip=flip, volume=volume, verbose=verbose)
                   sub$moves$move[i] <- attr(pos,"move")
-                  texttop <- .texttop(sub$moves$comment[i])
+                  if (identical(sub$moves$comment[i], "") && !identical(sub$moves$comment[i-1], "")) {
+                     texttop <- .texttop(sub$moves$comment[i-1])
+                  } else {
+                     texttop <- .texttop(sub$moves$comment[i])
+                  }
                   .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                   .draweval(sub$moves$eval[i], sub$moves$eval[i-1], flip=flip, eval=eval, evalsteps=evalsteps)
                   if (identical(click, "a"))
@@ -1082,7 +1090,11 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                .draweval(sub$moves$eval[i], flip=flip, eval=eval, evalsteps=evalsteps)
                i <- i + 1
                .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
-               texttop <- .texttop(sub$moves$comment[i])
+               if (identical(sub$moves$comment[i], "") && !identical(sub$moves$comment[i-1], "")) {
+                  texttop <- .texttop(sub$moves$comment[i-1])
+               } else {
+                  texttop <- .texttop(sub$moves$comment[i])
+               }
                givehint1 <- FALSE
                givehint2 <- FALSE
                next
@@ -1317,7 +1329,11 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   for (i in 1:nrow(sub$moves)) {
                      pos <- .updateboard(pos, move=sub$moves[i,1:4], flip=flip, volume=volume, verbose=verbose)
                      sub$moves$move[i] <- attr(pos,"move")
-                     texttop <- .texttop(sub$moves$comment[i])
+                     if (identical(sub$moves$comment[i], "") && !identical(sub$moves$comment[i-1], "")) {
+                        texttop <- .texttop(sub$moves$comment[i-1])
+                     } else {
+                        texttop <- .texttop(sub$moves$comment[i])
+                     }
                      .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                      sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                      .drawsideindicator(sidetoplay, flip)
