@@ -23,7 +23,7 @@
 }
 \section{The Sequence Score}{
 
-   The trainer keeps track of a score for each sequence. For a new sequence, the score starts out at 100. The score is multiplied by 0.8 after completing a sequence (rounded up to the nearest integer). When making a wrong move when playing a sequence, the score is increased by 40 points (up to a maximum of 100). Receiving a hint increases the score by 20 points (40 points when asking for both the starting and the target square).
+   The trainer keeps track of a score for each sequence. For a new sequence, the score starts out at 100. The score is multiplied by 0.8 after completing a sequence without any mistakes (rounded up to the nearest integer). When making a wrong move when playing a sequence, the score is increased by 40 points (up to a maximum of 100). Receiving a hint increases the score by 20 points (40 points when asking for both the starting and the target square).
 
    The trainer uses the score to select the next sequence to play. Sequences with higher scores have a higher chance to be presented. The probability of selecting a particular sequence is computed with \eqn{p_i = s_i^e / \sum(s_i^e)}, where \eqn{s_i} is the score of the \eqn{i}th sequence and \eqn{e} is the \sQuote{exponent value}. This is set by default to 2 and enhances the probability that sequences with higher scores are more likely to be selected. The exponent value can be adjusted with the \code{<^>} key. Setting the exponent value to 0 makes all sequences equally likely to be selected. Setting it to a large value (e.g., 100) almost guarantees that the sequence with the highest score is selected next. The score for the current sequence can also be set manually with the \code{<o>} key. Setting the score to 0 means that the sequence has a zero probability of being selected (even when \eqn{e} is equal to 0).
 
@@ -140,7 +140,7 @@
 
    With \code{<F5>}, one can adjust the size of the text at the top, the text at the bottom, and the size of the evaluation value in the evaluation bar (if it is shown).
 
-   With \code{<F6>}, one can adjust some miscellaneous settings, namely the multiplier for the score when competing a sequence (0.8 by default), the score penalty when making a wrong move (40 by default), the score penalty per hint (20 by default), and the number of animation steps for the evaluation bar (10 by default).
+   With \code{<F6>}, one can adjust some miscellaneous settings, namely the multiplier for the score when completing a sequence without any mistakes (0.8 by default), the score penalty when making a wrong move (40 by default), the score penalty per hint (20 by default), and the number of animation steps for the evaluation bar (10 by default).
 
    With \code{<F7>}, one can adjust the Stockfish settings, namely the path and the calculation parameter (see above).
 

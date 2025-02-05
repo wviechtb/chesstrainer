@@ -282,6 +282,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
       sidetoplay <- "w"
       givehint1 <- FALSE
       givehint2 <- FALSE
+      mistake <- FALSE
 
       .sf.newgame(sfproc, sfrun)
 
@@ -660,7 +661,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                next
             }
 
-            # show score graph (only in play mode)
+            # show the score graph (only in play mode)
 
             if (mode == "play" && identical(click, "g")) {
                if (!is.null(sub$player[[player]]$score)) {
@@ -884,6 +885,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                      .addrect(hintx1, hinty1, col=.get("col.hint"), lwd=lwd)
                      score <- min(100, score + adjusthint)
                      givehint1 <- TRUE
+                     mistake <- TRUE
                   } else {
                      if (!givehint2) {
                         hintx2 <- sub$moves$x2[i]
@@ -1051,7 +1053,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
             }
 
-            # 0 to make current position the starting position (only in add mode)
+            # 0 to make the current position the starting position (only in add mode)
 
             if (mode == "add" && identical(click, "0")) {
                .texttop(.text("setposstart"))
@@ -1111,11 +1113,13 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                   .drawsideindicator(sidetoplay, flip)
                }
+               givehint1 <- FALSE
+               givehint2 <- FALSE
                next
 
             }
 
-            # Escape to update board
+            # Escape to update the board
 
             if (identical(click, "\033") || identical(click, "ctrl-[")) {
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode)
@@ -1597,6 +1601,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
             # if in play mode and the move was incorrect, adjust the score, and show that it was the wrong move
 
+            mistake <- TRUE
+
             if (score >= 1) {
                scoreadd <- min(adjustwrong, 100-score)
                score <- score + scoreadd
@@ -1618,9 +1624,9 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             .texttop(.text("welldone"))
             playsound(system.file("sounds", "complete.ogg", package="chesstrainer"), volume=volume)
 
-            # adjust the score
+            # adjust the score (but only if no mistake was made)
 
-            if (score >= 1)
+            if (!mistake && score >= 1)
                score <- ceiling(score * multiplier)
 
             played <- played + 1

@@ -12,7 +12,7 @@
       if (mode == "add") {
          text(0.0, 0.45, paste0("Mode: ", "Add"), pos=4, cex=cex, family=font, col=col)
          text(0.0, 0.15, paste0("Move: ", i), pos=4, cex=cex, family=font, col=col)
-         text(0.0, 0.30, paste0("Show: ", ifelse(show, "Ja", "Nein")), pos=4, cex=cex, family=font, col=col)
+         text(0.0, 0.30, paste0("Show: ", ifelse(show, "Yes", "No")), pos=4, cex=cex, family=font, col=col)
       }
 
       selmode <- switch(selmode,
