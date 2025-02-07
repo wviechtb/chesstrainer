@@ -25,16 +25,16 @@
 
    The trainer keeps track of a score for each sequence. For a new sequence, the score starts out at 100. The score is multiplied by 0.8 after completing a sequence without any mistakes (rounded up to the nearest integer). When making a wrong move when playing a sequence, the score is increased by 40 points (up to a maximum of 100). Receiving a hint increases the score by 20 points (40 points when asking for both the starting and the target square).
 
-   The trainer uses the score to select the next sequence to play. Sequences with higher scores have a higher chance to be presented. The probability of selecting a particular sequence is computed with \eqn{p_i = s_i^e / \sum(s_i^e)}, where \eqn{s_i} is the score of the \eqn{i}th sequence and \eqn{e} is the \sQuote{exponent value}. This is set by default to 2 and enhances the probability that sequences with higher scores are more likely to be selected. The exponent value can be adjusted with the \code{<^>} key. Setting the exponent value to 0 makes all sequences equally likely to be selected. Setting it to a large value (e.g., 100) almost guarantees that the sequence with the highest score is selected next. The score for the current sequence can also be set manually with the \code{<o>} key. Setting the score to 0 means that the sequence has a zero probability of being selected (even when \eqn{e} is equal to 0).
+   The trainer uses the score to select the next sequence to play. Sequences with higher scores have a higher chance to be presented. The probability of selecting a particular sequence is computed with \eqn{p_i = s_i^e / \sum s_i^e}, where \eqn{s_i} is the score of the \eqn{i}th sequence and \eqn{e} is the \sQuote{exponent value}. This is set to 2 by default and enhances the probability that sequences with higher scores are more likely to be selected. The exponent value can be adjusted with the \code{<^>} key. Setting the exponent value to 0 makes all sequences equally likely to be selected. Setting it to a large value (e.g., 100) almost guarantees that the sequence with the highest score is selected next. The score for the current sequence can also be set manually with the \code{<o>} key. Setting the score to 0 means that the sequence has a zero probability of being selected (even when \eqn{e} is equal to 0).
 
    If you make a misclick during a move and want to take the score adjustment back, you can do so with the \code{<t>} key.
 
-   After completing a sequence, the current score for the sequence is saved (together with the number of times that the sequence has been played and when it was last played) to the sequence file. This way, your progress in learning the sequences is saved permanently across sessions. Note that this information is player specific. Using the \code{<g>} key, a progress graph for the current sequence can be shown (if the sequence has been played before).
+   After completing a sequence, the current score for the sequence is saved (together with the number of times that the sequence has been played and when it was last played) to the sequence file. This way, your progress in learning the sequence is saved permanently across sessions. Note that this information is player specific. Using the \code{<g>} key, a progress graph for the current sequence can be shown (if the sequence has been played before).
 
 }
 \section{Managing/Selecting Sequences}{
 
-   Using the \code{<l>} key, you can list all sequences, together with their current scores, the number of times they have been played (the play frequency), the last time they have been played (in days; \code{NA} if a sequence has not been played before), and the current probabilities of selection (with 0 to 5 asterisks next to it based on the probabilities). During \sQuote{play} mode, you can use the \code{Ctrl-<d>} key to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.
+   Using the \code{<l>} key, you can list all sequences, together with their current score, the number of times they have been played (the play frequency), the last time they have been played (in days; \code{NA} if a sequence has not been played before), and the current probability of selection (with 0 to 5 asterisks next to it based on the probability). During \sQuote{play} mode, you can use the \code{Ctrl-<d>} key to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.
 
    Using the \code{</>} (or \code{<.>}) key, you can select a subset of the sequences in various ways:
 
@@ -107,7 +107,7 @@
 }
 \section{Position Evaluations using Stockfish}{
 
-   If Stockfish (\verb{https://stockfishchess.org}) is installed, it can be used in the background to automatically obtain position evaluations when adding sequences. For this, one should specify the path (including the executable) to Stockfish via the \code{sfpath} argument of the \code{\link{play}} function. If this is set correctly, then position evaluations will be automatically computed and added to a sequence in \sQuote{add} mode. Evaluations are given in centipawns divided by 100, except for forced mates, which are given as \eqn{\pm99.9}. When playing a sequence, these evaluations are then shown as an evaluation bar on the left of the board.
+   If Stockfish (\url{https://stockfishchess.org}) is installed, it can be used in the background to automatically obtain position evaluations when adding sequences. For this, one should specify the path (including the executable) to Stockfish via the \code{sfpath} argument of the \code{\link{play}} function. If this is set correctly, then position evaluations will be automatically computed and added to a sequence in \sQuote{add} mode. Evaluations are given in centipawns divided by 100, except for forced mates, which are given as \eqn{\pm99.9}. When playing a sequence, these evaluations are then shown as an evaluation bar on the left of the board.
 
    By default, evaluations are based on a search depth of 20 half-moves. Obtaining such an evaluation for a given position should be relatively quick and not add much lag when creating a sequence. One can adjust the calculation parameter for Stockfish using the \code{sfgo} argument. This must be either something like \code{"depth 20"} (to fix the search depth in terms of the number of half-moves) or \code{"movetime 1000"} (to fix the search time in milliseconds). Using something like \code{"depth 10"} or \code{"movetime 200"} reduces the lag, but also the accuracy of the evaluations. Note that when fixing the search time (and not the search depth), evaluations can change slightly on repeated runs, since the exact number of nodes searched by Stockfish can change slightly.
 
@@ -122,7 +122,7 @@
 
    When playing a sequence, the graphical elements shown on the playing board are created by repeatedly drawing on top of the board. Therefore, when resizing the board, all elements are redrawn, which takes a few moments. With the \code{<escape>} key, the board can be redrawn in its current state, after which it can be resized without having to wait for all previous graphical elements to be redrawn.
 
-   Clicking the right mouse button on a square adds a circle to the square. Dragging the mouse from one square to another while pressing the right mouse button draws an arrow. Those familiar with the \verb{https://lichess.org} website will recognize these visualizations. Clicking with the left mouse button on a square, the \code{<escape>} key, or making a move removes these visualizations.
+   Clicking the right mouse button on a square adds a circle to the square. Dragging the mouse from one square to another while pressing the right mouse button draws an arrow. Those familiar with the \url{https://lichess.org} website will recognize these visualizations. Clicking with the left mouse button on a square, the \code{<escape>} key, or making a move removes these visualizations.
 
    Various other settings can be adjusted while the trainer is running:
 
@@ -144,35 +144,27 @@
 
    With \code{<F7>}, one can adjust the Stockfish settings, namely the path and the calculation parameter (see above).
 
-   With \code{<F9>}, the FEN of the current position is printed, copied to the clipboard, and the position is opened on the \verb{https://lichess.org} website.
+   With \code{<F9>}, the FEN of the current position is printed, copied to the clipboard, and the position is opened on the \url{https://lichess.org} website for analysis.
 
 }
 \section{Resetting / Cleaning Up}{
 
    If you would like to remove the config files (for the settings and colors), you can use the following two commands:
 
-\preformatted{
-file.remove(file.path(tools::R_user_dir(package="chesstrainer", which="config"), "settings.rds"))
-file.remove(file.path(tools::R_user_dir(package="chesstrainer", which="config"), "colors.rds"))
-}
+\preformatted{file.remove(file.path(tools::R_user_dir(package="chesstrainer", which="config"), "settings.rds"))
+file.remove(file.path(tools::R_user_dir(package="chesstrainer", which="config"), "colors.rds"))}
 
-   This may be useful in case these files were corrupted with nonsensical settings. The files will be recreated (with default values) when restarting the trainer. If you would like to remove the directory where these files are stored, you can use:
+   This may be useful in case these files were corrupted with nonsensical settings. The files will be recreated (with default values) when restarting the trainer. If you would like to remove both of these files (if they exist) and the directory where these files are stored, you can use:
 
-\preformatted{
-file.remove(tools::R_user_dir(package="chesstrainer", which="config"))
-}
+\preformatted{unlink(tools::R_user_dir(package="chesstrainer", which="config"), recursive=TRUE)}
 
    If you would like to remove all files stored in the default directory where sequences are stored, you can use:
 
-\preformatted{
-file.remove(list.files(tools::R_user_dir(package="chesstrainer", which="data"), full.names=TRUE))
-}
+\preformatted{file.remove(list.files(tools::R_user_dir(package="chesstrainer", which="data"), full.names=TRUE))}
 
-   To remove the corresponding folder, you can use:
+   To remove the corresponding folder (including all files therein), you can use:
 
-\preformatted{
-file.remove(tools::R_user_dir(package="chesstrainer", which="data"))
-}
+\preformatted{unlink(tools::R_user_dir(package="chesstrainer", which="data"), recursive=TRUE)}
 
 }
 \section{Backing Up Sequences}{
