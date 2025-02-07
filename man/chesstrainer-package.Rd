@@ -77,7 +77,7 @@
 
    When saving a sequence, the color of the pieces to be played is automatically prepended to the filename (i.e., as \code{w_} or \code{b_}). This can be useful when selecting sequences (e.g., using the search term \code{^w_} will select all sequences that start with \code{w_} and are hence sequences where the player plays with white).
 
-   The \code{<e>} key opens up the \code{\link[=edit]{data editor}} on the data frame that contains the moves for the current sequence. This is most useful for adding or removing comments in the \code{comment} column. Making adjustments to the other columns should only be done if their meaning is clear.
+   The \code{<e>} key opens up the \code{\link[=edit]{data editor}} on the data frame that contains the moves for the current sequence. This is most useful for adding or removing comments in the \code{comment} column. Making adjustments to the other columns should only be done if their meaning is clear. One can also use the \code{<E>} key to edit a particular comment via a prompt.
 
    With the \code{<?>} key, one can find all sequences that start with the same moves that have been entered so far. If any matching sequences are found, a prompt will ask if they should be selected.
 

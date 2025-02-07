@@ -513,7 +513,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
             click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
 
-            keys      <- c("q", " ", "n", "p", "e", "l", "-", "=", "+", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F9", "F12", "m", "/", ".", "w", "t", "h", "ctrl-R", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "v", "a")
+            keys      <- c("q", " ", "n", "p", "e", "E", "l", "-", "=", "+", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F9", "F12", "m", "/", ".", "w", "t", "h", "ctrl-R", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "v", "a")
             keys.add  <- c("f", "z", "c", "s", "0", "?", "b")
             keys.play <- c("z", "c", "s", "\b", "ctrl-D", "Right", "Left", "o", "u", "A", "g")
 
@@ -655,13 +655,37 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                next
             }
 
-            # e to edit a sequence
+            # e to edit a sequence using edit()
 
             if (identical(click, "e")) {
                sub$moves <- edit(sub$moves)
                sub$moves$comment[is.na(sub$moves$comment)] <- ""
                if (mode == "play")
                   saveRDS(sub, file=file.path(seqdir, seqname))
+               next
+            }
+
+            # E to edit a comment
+
+            if (identical(click, "E")) {
+               if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
+               print(sub$moves)
+               cat("\n")
+               comnum <- readline(prompt=.text("commenttoedit"))
+               if (grepl("^[0-9]+$", comnum)) {
+                  comnum <- round(as.numeric(comnum))
+                  if (comnum < 1 || comnum > nrow(sub$moves)) {
+                     if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+                     next
+                  }
+                  newcom <- readline(prompt=.text("newcomment"))
+                  newcom <- gsub("\\n", "\n", newcom, fixed=TRUE)
+                  sub$moves$comment[comnum] <- newcom
+                  print(sub$moves)
+                  if (mode == "play")
+                     saveRDS(sub, file=file.path(seqdir, seqname))
+               }
+               if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
                next
             }
 

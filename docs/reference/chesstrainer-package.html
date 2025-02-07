@@ -31,7 +31,7 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chesstrainer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-14</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-15</span>
       </span>
     </div>
 
@@ -139,7 +139,7 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
 <p>Comments can be added to any move using the <code>&lt;c&gt;</code> key. At times this may be useful if one could venture into multiple sensible lines in a given position. You would then have to instruct the player to make a particular move (either by telling the player directly which move to make or giving some appropriate hint, such as the name of a particular line).</p>
 <p>If a sequence should start not at the starting position of a chess game, but later on, you can move the pieces into the desired position and then use the <code>&lt;0&gt;</code> key to make the current position the starting position for a particular sequence. Alternatively, one can use the <code>&lt;b&gt;</code> key to start a board editor (see below for details).</p>
 <p>When saving a sequence, the color of the pieces to be played is automatically prepended to the filename (i.e., as <code>w_</code> or <code>b_</code>). This can be useful when selecting sequences (e.g., using the search term <code>^w_</code> will select all sequences that start with <code>w_</code> and are hence sequences where the player plays with white).</p>
-<p>The <code>&lt;e&gt;</code> key opens up the <code><a href="https://rdrr.io/r/utils/edit.html" class="external-link">data editor</a></code> on the data frame that contains the moves for the current sequence. This is most useful for adding or removing comments in the <code>comment</code> column. Making adjustments to the other columns should only be done if their meaning is clear.</p>
+<p>The <code>&lt;e&gt;</code> key opens up the <code><a href="https://rdrr.io/r/utils/edit.html" class="external-link">data editor</a></code> on the data frame that contains the moves for the current sequence. This is most useful for adding or removing comments in the <code>comment</code> column. Making adjustments to the other columns should only be done if their meaning is clear. One can also use the <code>&lt;E&gt;</code> key to edit a particular comment via a prompt.</p>
 <p>With the <code>&lt;?&gt;</code> key, one can find all sequences that start with the same moves that have been entered so far. If any matching sequences are found, a prompt will ask if they should be selected.</p>
 <p>In ‘play’ mode, the <code>&lt;a&gt;</code> key will create a copy of the current sequence, which can then be extended with additional moves and saved as a new sequence (the <code>&lt;A&gt;</code> key does the same thing, but only plays the moves to the currently shown position). This is useful for creating multiple branching lines from a given sequence.</p>
 <p>Note that sequences are quite personalized, since they involve going into a particular line that one deems most appropriate. Others may disagree and prefer a different line. Therefore, you should create sequences that you want to train yourself on, so you will be able to play them quickly from memory in actual games.</p>

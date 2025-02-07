@@ -598,6 +598,18 @@
                          c("Language", "Player name", "Mode", "Selection mode for sequences", "Exponent value", "Multiplier for completed sequences", "Score penalty for wrong moves", "Score penalty per hint", "Show evaluation bar", "Animation steps for the evaluation bar", "Pause between sequences", "Time between moves (seconds)", "Line width", "Sound volume (%)", "Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Stockfish path", "Calculation parameter for Stockfish")
    ))}
 
+   if (x == "commenttoedit") {
+      return(switch(lang,
+                    de = paste0("Zu bearbeitender Kommentar ('Zahl'): "),
+                         paste0("Comment to edit ('number'): ")
+   ))}
+
+   if (x == "newcomment") {
+      return(switch(lang,
+                    de = paste0("Neuer Kommentar: "),
+                         paste0("New comment: ")
+   ))}
+
 }
 
 .confirm <- function(x) {

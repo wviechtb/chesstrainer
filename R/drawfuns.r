@@ -503,7 +503,7 @@
    ytop <- grconvertY(dev.size()[2], from="inches", to="user")
    rect(-2, 9.1, ytop, 11, col=.get("col.bg"), border=NA)
    if (!identical(text, "")) {
-      text <- gsub("\\\\n", "\n", text)
+      text <- gsub("\\n", "\n", text, fixed=TRUE)
       text(5, 9+(ytop-9)/2, text, cex=.get("cex.top"), col=.get("col.top"))
    }
    return(text)
