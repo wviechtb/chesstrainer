@@ -1123,7 +1123,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   comment <- ""
                   .draweval(sub$moves$eval[i-1], flip=flip, eval=eval, evalsteps=evalsteps)
                   .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
-                  .drawsideindicator(sidetoplay, flip)
+                  #.drawsideindicator(sidetoplay, flip)
                }
                givehint1 <- FALSE
                givehint2 <- FALSE

@@ -498,6 +498,8 @@
    rect(y, x, y+1, x+1, col=col, border=NA)
 
 .texttop <- function(text) {
+   if (length(text) == 0L)
+      return()
    ytop <- grconvertY(dev.size()[2], from="inches", to="user")
    rect(-2, 9.1, ytop, 11, col=.get("col.bg"), border=NA)
    if (!identical(text, "")) {
