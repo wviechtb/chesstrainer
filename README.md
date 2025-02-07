@@ -17,7 +17,7 @@ remotes::install_github("wviechtb/chesstrainer")
 
 ## Play
 
-To start playing, first load the package with `library(chesstrainer)` and then type: `play()`. For an introduction, type: `help(chesstrainer)` or read the documentation online at [https://wviechtb.github.io/chesstrainer/](https://wviechtb.github.io/chesstrainer/).
+To start playing, first load the package with `library(chesstrainer)` and then type: `play()`. For an introduction, type: `help(chesstrainer)` or you can read the documentation online [here](https://wviechtb.github.io/chesstrainer/reference/chesstrainer-package.html).
 
 ## For Non-R Users
 
