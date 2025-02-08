@@ -600,8 +600,8 @@
 
    if (x == "commenttoedit") {
       return(switch(lang,
-                    de = paste0("Zu bearbeitender Kommentar ('Zahl'): "),
-                         paste0("Comment to edit ('number'): ")
+                    de = paste0("Zu bearbeitender Kommentar (<Nummer> oder <Enter> zum Verlassen): "),
+                         paste0("Comment to edit (<number> or <enter> to quit): ")
    ))}
 
    if (x == "newcomment") {

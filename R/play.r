@@ -665,26 +665,32 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                next
             }
 
-            # E to edit a comment
+            # E to edit the comments using prompts
 
             if (identical(click, "E")) {
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
+               dosave <- FALSE
                print(sub$moves)
                cat("\n")
-               comnum <- readline(prompt=.text("commenttoedit"))
-               if (grepl("^[0-9]+$", comnum)) {
-                  comnum <- round(as.numeric(comnum))
-                  if (comnum < 1 || comnum > nrow(sub$moves)) {
-                     if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
-                     next
+               while (TRUE) {
+                  comnum <- readline(prompt=.text("commenttoedit"))
+                  if (identical(comnum, ""))
+                     break
+                  if (grepl("^[0-9]+$", comnum)) {
+                     comnum <- round(as.numeric(comnum))
+                     if (comnum < 1 || comnum > nrow(sub$moves))
+                        next
+                     newcom <- readline(prompt=.text("newcomment"))
+                     newcom <- gsub("\\n", "\n", newcom, fixed=TRUE)
+                     sub$moves$comment[comnum] <- newcom
+                     dosave <- TRUE
+                     cat("\n")
+                     print(sub$moves)
+                     cat("\n")
                   }
-                  newcom <- readline(prompt=.text("newcomment"))
-                  newcom <- gsub("\\n", "\n", newcom, fixed=TRUE)
-                  sub$moves$comment[comnum] <- newcom
-                  print(sub$moves)
-                  if (mode == "play")
-                     saveRDS(sub, file=file.path(seqdir, seqname))
                }
+               if (dosave && mode == "play")
+                  saveRDS(sub, file=file.path(seqdir, seqname))
                if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
                next
             }
