@@ -22,6 +22,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
    sleep       <- ifelse(is.null(ddd$sleep),       0.5,            ddd$sleep)
    lwd         <- ifelse(is.null(ddd$lwd),         2,              ddd$lwd)
    volume      <- ifelse(is.null(ddd$volume),      50,             ddd$volume)
+   showgraph   <- ifelse(is.null(ddd$showgraph),   TRUE,           ddd$showgraph)
    cex.top     <- ifelse(is.null(ddd$cex.top),     1.4,            ddd$cex.top)
    cex.bot     <- ifelse(is.null(ddd$cex.bot),     0.7,            ddd$cex.bot)
    cex.eval    <- ifelse(is.null(ddd$cex.eval),    0.5,            ddd$cex.eval)
@@ -61,7 +62,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
       success <- dir.create(configdir, recursive=TRUE)
       if (!success)
          stop(.text("dircreateerror"), call.=FALSE)
-      settings <- data.frame(lang, player, mode, selmode, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, pause, sleep, lwd, volume, cex.top, cex.bot, cex.eval, sfpath, sfgo)
+      settings <- data.frame(lang, player, mode, selmode, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, pause, sleep, lwd, volume, showgraph, cex.top, cex.bot, cex.eval, sfpath, sfgo)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       cols <- sapply(cols.all, function(x) .get(x))
       saveRDS(cols, file=file.path(configdir, "colors.rds"))
@@ -99,6 +100,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             lwd <- settings$lwd
          if (is.null(mc$volume))
             volume <- settings$volume
+         if (is.null(mc$showgraph))
+            showgraph <- settings$showgraph
          if (is.null(mc$cex.top))
             cex.top <- settings$cex.top
          if (is.null(mc$cex.bot))
@@ -111,7 +114,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             sfgo <- settings$sfgo
       }
       sfpath <- suppressWarnings(normalizePath(sfpath))
-      settings <- data.frame(lang, player, mode, selmode, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, pause, sleep, lwd, volume, cex.top, cex.bot, cex.eval, sfpath, sfgo)
+      settings <- data.frame(lang, player, mode, selmode, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, pause, sleep, lwd, volume, showgraph, cex.top, cex.bot, cex.eval, sfpath, sfgo)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       if (file.exists(file.path(configdir, "colors.rds"))) {
          cols <- readRDS(file.path(configdir, "colors.rds"))
@@ -330,9 +333,10 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
       k <- length(files)
 
       # if a single sequence is selected and it is deleted, then k will be 0;
-      # in this case select all sequences and start over
+      # in this case select all sequences and start over (but only if there is
+      # at least one sequence, as otherwise this goes into an infinite loop)
 
-      if (k == 0L) {
+      if (k.all > 0L && k == 0L) {
          cat(.text("zeroseqsfound"))
          cat(.text("allseqselected"))
          selected <- NULL
@@ -513,7 +517,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
             click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
 
-            keys      <- c("q", " ", "n", "p", "e", "E", "l", "-", "=", "+", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F9", "F12", "m", "/", ".", "w", "t", "h", "ctrl-R", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "v", "a")
+            keys      <- c("q", " ", "n", "p", "e", "E", "l", "-", "=", "+", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F9", "F12", "m", "/", ".", "w", "t", "h", "ctrl-R", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "v", "a", "G")
             keys.add  <- c("f", "z", "c", "s", "0", "?", "b")
             keys.play <- c("z", "c", "s", "\b", "ctrl-D", "Right", "Left", "o", "u", "A", "g")
 
@@ -695,7 +699,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                next
             }
 
-            # show the score graph (only in play mode)
+            # g to show the progress graph (only in play mode)
 
             if (mode == "play" && identical(click, "g")) {
                if (!is.null(sub$player[[player]]$score)) {
@@ -705,6 +709,18 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   hasarrows <- FALSE
                   circles <- matrix(c(0,0), nrow=1, ncol=2)
                }
+               next
+            }
+
+            # G to toggle showing the progress graph after completed sequences
+
+            if (identical(click, "G")) {
+               showgraph <- !showgraph
+               .texttop(.text("showgraph", showgraph))
+               Sys.sleep(1)
+               .texttop(texttop)
+               settings$showgraph <- showgraph
+               saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
 
@@ -1418,7 +1434,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             # F3 to print the settings
 
             if (identical(click, "F3")) {
-               settings <- data.frame(lang, player, mode, selmode, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, pause, sleep, lwd, volume, cex.top, cex.bot, cex.eval, sfpath, sfgo)
+               settings <- data.frame(lang, player, mode, selmode, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, pause, sleep, lwd, volume, showgraph, cex.top, cex.bot, cex.eval, sfpath, sfgo)
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
                tab <- t(settings)
                tab <- cbind(tab, .text("explsettings"))
@@ -1685,6 +1701,12 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                sub$player[[player]] <- tmp
             } else {
                sub$player[[player]] <- rbind(sub$player[[player]], tmp)
+            }
+
+            if (showgraph) {
+               .scoregraph(sub$player[[player]], lwd=lwd)
+               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode)
+               .draweval(sub$moves$eval[i], flip=flip, eval=eval, evalsteps=evalsteps)
             }
 
             if (pause) {

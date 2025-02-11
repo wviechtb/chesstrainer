@@ -29,7 +29,7 @@
 
    If you make a misclick during a move and want to take the score adjustment back, you can do so with the \code{<t>} key.
 
-   After completing a sequence, the current score for the sequence is saved (together with the number of times that the sequence has been played and when it was last played) to the sequence file. This way, your progress in learning the sequence is saved permanently across sessions. Note that this information is player specific. Using the \code{<g>} key, a progress graph for the current sequence can be shown (if the sequence has been played before).
+   After completing a sequence, the current score for the sequence is saved (together with the number of times that the sequence has been played and when it was last played) to the sequence file. This way, your progress in learning the sequence is saved permanently across sessions. Note that this information is player specific. Using the \code{<g>} key, a progress graph for the current sequence can be shown (if the sequence has been played before). Using the \code{<G>} key, one can toggle whether the progress graph will be automatically shown at the end of each completed sequence.
 
 }
 \section{Managing/Selecting Sequences}{
