@@ -22,7 +22,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
    sleep       <- ifelse(is.null(ddd$sleep),       0.5,            ddd$sleep)
    lwd         <- ifelse(is.null(ddd$lwd),         2,              ddd$lwd)
    volume      <- ifelse(is.null(ddd$volume),      50,             ddd$volume)
-   showgraph   <- ifelse(is.null(ddd$showgraph),   FALSE           ddd$showgraph)
+   showgraph   <- ifelse(is.null(ddd$showgraph),   FALSE,          ddd$showgraph)
    cex.top     <- ifelse(is.null(ddd$cex.top),     1.4,            ddd$cex.top)
    cex.bot     <- ifelse(is.null(ddd$cex.bot),     0.7,            ddd$cex.bot)
    cex.eval    <- ifelse(is.null(ddd$cex.eval),    0.5,            ddd$cex.eval)
