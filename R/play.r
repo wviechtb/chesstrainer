@@ -1529,7 +1529,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
             # ctrl-c to copy the FEN to the clipboard
 
-            if (identical(click, "Ctrl-C")) {
+            if (identical(click, "ctrl-C")) {
                fen <- .genfen(pos, flip, sidetoplay, i)
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
                cat(fen, "\n")
