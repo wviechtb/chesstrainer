@@ -1768,7 +1768,6 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                      if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
                      cat(fen, "\n")
                      if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
-                     clipr::write_clip(fen)
                      fen <- paste0("https://lichess.org/analysis/standard/", gsub(" ", "_", fen, fixed=TRUE))
                      browseURL(fen)
                   }
