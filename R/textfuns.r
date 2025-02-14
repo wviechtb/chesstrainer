@@ -616,6 +616,12 @@
                          paste0("New comment: ")
    ))}
 
+   if (x == "copyfen") {
+      return(switch(lang,
+                    de = paste0("FEN in die Zwischenablage kopiert."),
+                         paste0("Copied FEN to the clipboard.")
+   ))}
+
 }
 
 .confirm <- function(x) {

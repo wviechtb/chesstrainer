@@ -27,6 +27,18 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
    cex.bot     <- ifelse(is.null(ddd$cex.bot),     0.7,            ddd$cex.bot)
    cex.eval    <- ifelse(is.null(ddd$cex.eval),    0.5,            ddd$cex.eval)
 
+   if (is.null(ddd[["switch1"]])) {
+      switch1 <- parse(text="invisible(NULL)")
+   } else {
+      switch1 <- parse(text = ddd[["switch1"]])
+   }
+
+   if (is.null(ddd[["switch2"]])) {
+      switch2 <- parse(text="invisible(NULL)")
+   } else {
+      switch2 <- parse(text = ddd[["switch2"]])
+   }
+
    # ensure that some arguments are sensible
 
    if (!is.element(mode, c("add","play")))
@@ -565,9 +577,9 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             # p to select player (starts a new round)
 
             if (identical(click, "p")) {
-               if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
+               eval(expr=switch1)
                player <- .selectplayer(player, seqdir)
-               if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+               eval(expr=switch2)
                settings$player <- player
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                run.rnd <- FALSE
@@ -578,7 +590,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             # ctrl-r to remove a player (starts a new round)
 
             if (identical(click, "ctrl-R")) {
-               if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
+               eval(expr=switch1)
                rmplayer <- readline(prompt=.text("rlydelplayer", player))
                if (.confirm(rmplayer)) {
                   .removeplayer(player, seqdir)
@@ -586,7 +598,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   run.rnd <- FALSE
                   wait <- FALSE
                }
-               if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+               eval(expr=switch2)
                next
             }
 
@@ -616,9 +628,9 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             # c to add a comment to the current move (only in add mode)
 
             if (mode == "add" && identical(click, "c")) {
-               if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
+               eval(expr=switch1)
                comment <- readline(prompt=.text("comment"))
-               if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+               eval(expr=switch2)
                next
             }
 
@@ -627,7 +639,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             if (mode == "add" && identical(click, "s")) {
                .texttop(.text("saveseq"))
                seqident <- sapply(dat.all, function(x) identical(sub$moves[1:5], x$moves[1:5]))
-               if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
+               eval(expr=switch1)
                if (any(seqident)) {
                   cat(.text("seqexists", files.all[which(seqident)[1]]))
                   cat(.text("addmoves"))
@@ -635,7 +647,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                }
                filename <- readline(prompt=.text("filename"))
                if (identical(filename, "")) {
-                  if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+                  eval(expr=switch2)
                   next
                }
                filename <- file.path(seqdir, paste0(.fileprefix(flip), filename, ".rds"))
@@ -655,7 +667,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   wait <- FALSE
                   seqno <- 1
                }
-               if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+               eval(expr=switch2)
                next
             }
 
@@ -672,7 +684,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             # E to edit the comments using prompts
 
             if (identical(click, "E")) {
-               if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
+               eval(expr=switch1)
                dosave <- FALSE
                print(sub$moves)
                cat("\n")
@@ -695,7 +707,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                }
                if (dosave && mode == "play")
                   saveRDS(sub, file=file.path(seqdir, seqname))
-               if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+               eval(expr=switch2)
                next
             }
 
@@ -727,7 +739,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             # l to list all (selected) sequences
 
             if (identical(click, "l")) {
-               if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
+               eval(expr=switch1)
                if (k > 0L) {
                   if (max(probvals.selected) == min(probvals.selected)) {
                      bars <- rep(5, length(probvals.selected))
@@ -746,7 +758,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                } else {
                   cat(.text("zeroseqsfound"))
                }
-               if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+               eval(expr=switch2)
                next
             }
 
@@ -754,7 +766,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
             if (identical(click, "/") || identical(click, ".")) {
 
-               if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
+               eval(expr=switch1)
 
                searchterm <- readline(prompt=.text("seqsearch"))
 
@@ -765,7 +777,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   wait <- FALSE
                   mode <- "add"
                   seqno <- 1
-                  if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+                  eval(expr=switch2)
                   next
                }
 
@@ -782,7 +794,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                      mode <- "add"
                      seqno <- 1
                   }
-                  if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+                  eval(expr=switch2)
                   next
                }
 
@@ -798,7 +810,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                      mode <- "add"
                      seqno <- 1
                   }
-                  if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+                  eval(expr=switch2)
                   next
                }
 
@@ -818,7 +830,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                      mode <- "add"
                      seqno <- 1
                   }
-                  if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+                  eval(expr=switch2)
                   next
                }
 
@@ -838,7 +850,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                      mode <- "add"
                      seqno <- 1
                   }
-                  if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+                  eval(expr=switch2)
                   next
                }
 
@@ -859,7 +871,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                      mode <- "add"
                      seqno <- 1
                   }
-                  if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+                  eval(expr=switch2)
                   next
                }
 
@@ -877,7 +889,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   seqno <- 1
                }
 
-               if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+               eval(expr=switch2)
                next
 
             }
@@ -886,7 +898,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
             if (mode == "add" && identical(click, "?")) {
                seqident <- sapply(dat.all, function(x) identical(sub$moves[1:(i-1),1:4], x$moves[1:(i-1),1:4]))
-               if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
+               eval(expr=switch1)
                if (any(seqident)) {
                   cat(.text("seqsmatch"))
                   tab <- data.frame(Name=files.all[seqident])
@@ -906,14 +918,14 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                } else {
                   cat(.text("noseqsfound"))
                }
-               if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+               eval(expr=switch2)
                next
             }
 
             # ctrl-d to delete the current sequence (only in play mode)
 
             if (mode == "play" && identical(click, "ctrl-D")) {
-               if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
+               eval(expr=switch1)
                answer <- readline(prompt=.text("rlydelseq"))
                if (.confirm(answer)) {
                   cat(.text("delseq"))
@@ -921,7 +933,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   run.rnd <- FALSE
                   wait <- FALSE
                }
-               if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+               eval(expr=switch2)
                next
             }
 
@@ -971,7 +983,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             # o to edit the (last) score for the current sequence (only in play mode)
 
             if (mode == "play" && identical(click, "o")) {
-               if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
+               eval(expr=switch1)
                newscore <- readline(prompt=.text("newscore", score))
                if (grepl("^[0-9]+$", newscore)) {
                   newscore <- round(as.numeric(newscore))
@@ -980,7 +992,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   score <- newscore
                   .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                }
-               if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+               eval(expr=switch2)
                next
             }
 
@@ -1253,7 +1265,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             # ^ to edit the exponent value
 
             if (identical(click, "^")) {
-               if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
+               eval(expr=switch1)
                newexpval <- readline(prompt=.text("newexpval", expval))
                if (grepl("^[0-9]+(.)?([0-9]+)?$", newexpval)) {
                   newexpval <- as.numeric(newexpval)
@@ -1269,7 +1281,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                      wait <- FALSE
                   }
                }
-               if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+               eval(expr=switch2)
                next
             }
 
@@ -1352,7 +1364,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
             if (mode == "play" && identical(click, "u")) {
 
-               if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
+               eval(expr=switch1)
 
                if (!is.null(sfproc) && sfrun) {
 
@@ -1405,7 +1417,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
                }
 
-               if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+               eval(expr=switch2)
                next
 
             }
@@ -1436,21 +1448,21 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
             if (identical(click, "F3")) {
                settings <- data.frame(lang, player, mode, selmode, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, pause, sleep, lwd, volume, showgraph, cex.top, cex.bot, cex.eval, sfpath, sfgo)
-               if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
+               eval(expr=switch1)
                tab <- t(settings)
                tab <- cbind(tab, .text("explsettings"))
                colnames(tab) <- c("", "")
                print(tab, quote=FALSE, print.gap=3)
-               if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+               eval(expr=switch2)
                next
             }
 
             # F4 to adjust the colors
 
             if (identical(click, "F4")) {
-               if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
+               eval(expr=switch1)
                .colorsettings(cols.all, pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, lwd, sidetoplay, selmode)
-               if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+               eval(expr=switch2)
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode)
                .draweval(sub$moves$eval[i], flip=flip, eval=eval, evalsteps=evalsteps)
                hasarrows <- FALSE
@@ -1463,9 +1475,9 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             # F5 to adjust the cex values
 
             if (identical(click, "F5")) {
-               if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
+               eval(expr=switch1)
                .cexsettings(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, lwd, sidetoplay, selmode)
-               if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+               eval(expr=switch2)
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode)
                .draweval(sub$moves$eval[i], flip=flip, eval=eval, evalsteps=evalsteps)
                hasarrows <- FALSE
@@ -1483,9 +1495,9 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             # F6 to adjust the miscellaneous settings
 
             if (identical(click, "F6")) {
-               if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
+               eval(expr=switch1)
                tmp <- .miscsettings(multiplier, adjustwrong, adjusthint, evalsteps)
-               if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+               eval(expr=switch2)
                multiplier  <- tmp$multiplier
                adjustwrong <- tmp$adjustwrong
                adjusthint  <- tmp$adjusthint
@@ -1501,9 +1513,9 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             # F7 to adjust the Stockfish settings
 
             if (identical(click, "F7")) {
-               if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
+               eval(expr=switch1)
                tmp <- .sfsettings(sfproc, sfrun, sfpath, sfgo)
-               if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+               eval(expr=switch2)
                sfproc <- tmp$sfproc
                sfrun  <- tmp$sfrun
                sfpath <- tmp$sfpath
@@ -1518,9 +1530,9 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
             if (identical(click, "F9")) {
                fen <- .genfen(pos, flip, sidetoplay, i)
-               if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
+               eval(expr=switch1)
                cat(fen, "\n")
-               if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+               eval(expr=switch2)
                #clipr::write_clip(fen)
                fen <- paste0("https://lichess.org/analysis/standard/", gsub(" ", "_", fen, fixed=TRUE))
                browseURL(fen)
@@ -1531,10 +1543,13 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
             if (identical(click, "ctrl-C")) {
                fen <- .genfen(pos, flip, sidetoplay, i)
-               if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
+               eval(expr=switch1)
                cat(fen, "\n")
-               if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+               eval(expr=switch2)
                clipr::write_clip(fen, object_type="character")
+               .texttop(.text("copyfen"))
+               Sys.sleep(1)
+               .texttop(texttop)
                next
             }
 
@@ -1751,7 +1766,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   }
 
                   if (identical(click, "o")) {
-                     if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
+                     eval(expr=switch1)
                      newscore <- readline(prompt=.text("newscore", score))
                      if (grepl("^[0-9]+$", newscore)) {
                         newscore <- round(as.numeric(newscore))
@@ -1761,16 +1776,18 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                         .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                         sub$player[[player]]$score[length(sub$player[[player]]$score)] <- score
                      }
-                     if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+                     eval(expr=switch2)
                   }
 
                   if (identical(click, "F9")) {
                      fen <- .genfen(pos, flip, ifelse(sidetoplay == "w", "b", "w"), i+1)
-                     if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
-                     cat(fen, "\n")
-                     if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
                      fen <- paste0("https://lichess.org/analysis/standard/", gsub(" ", "_", fen, fixed=TRUE))
                      browseURL(fen)
+                  }
+
+                  if (identical(click, "ctrl-C")) {
+                     fen <- .genfen(pos, flip, sidetoplay, i)
+                     clipr::write_clip(fen, object_type="character")
                   }
 
                   if (identical(click, "g")) {
