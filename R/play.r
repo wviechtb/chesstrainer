@@ -517,7 +517,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
             click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
 
-            keys      <- c("q", " ", "n", "p", "e", "E", "l", "-", "=", "+", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F9", "F12", "m", "/", ".", "w", "t", "h", "ctrl-R", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "v", "a", "G")
+            keys      <- c("q", " ", "n", "p", "e", "E", "l", "-", "=", "+", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F9", "F12", "m", "/", ".", "w", "t", "h", "ctrl-R", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "v", "a", "G", "ctrl-C")
             keys.add  <- c("f", "z", "c", "s", "0", "?", "b")
             keys.play <- c("z", "c", "s", "\b", "ctrl-D", "Right", "Left", "o", "u", "A", "g")
 
@@ -659,10 +659,10 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                next
             }
 
-            # e to edit a sequence using edit()
+            # e to edit a sequence using edit.data.frame()
 
             if (identical(click, "e")) {
-               sub$moves <- edit(sub$moves)
+               sub$moves <- edit.data.frame(sub$moves)
                sub$moves$comment[is.na(sub$moves$comment)] <- ""
                if (mode == "play")
                   saveRDS(sub, file=file.path(seqdir, seqname))
@@ -1513,16 +1513,27 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                next
             }
 
-            # F9 to print the FEN, copy it to the clipboard, and open the position on lichess
+            # F9 to print the FEN and open the position on lichess
 
             if (identical(click, "F9")) {
                fen <- .genfen(pos, flip, sidetoplay, i)
                if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
                cat(fen, "\n")
                if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
-               clipr::write_clip(fen)
+               #clipr::write_clip(fen)
                fen <- paste0("https://lichess.org/analysis/standard/", gsub(" ", "_", fen, fixed=TRUE))
                browseURL(fen)
+               next
+            }
+
+            # ctrl-c to copy the FEN to the clipboard
+
+            if (identical(click, "Ctrl-C")) {
+               fen <- .genfen(pos, flip, sidetoplay, i)
+               if (!is.null(ddd[["switch1"]])) eval(expr = parse(text = ddd[["switch1"]]))
+               cat(fen, "\n")
+               if (!is.null(ddd[["switch2"]])) eval(expr = parse(text = ddd[["switch2"]]))
+               clipr::write_clip(fen, object_type="character")
                next
             }
 

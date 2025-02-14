@@ -144,7 +144,7 @@
 
    With \code{<F7>}, one can adjust the Stockfish settings, namely the path and the calculation parameter (see above).
 
-   With \code{<F9>}, the FEN of the current position is printed, copied to the clipboard, and the position is opened on the \url{https://lichess.org} website for analysis.
+   With \code{<F9>}, the FEN of the current position is printed and the position is opened on the \url{https://lichess.org} website for analysis.
 
 }
 \section{Resetting / Cleaning Up}{
