@@ -659,10 +659,10 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                next
             }
 
-            # e to edit a sequence using edit.data.frame()
+            # e to edit a sequence using edit()
 
             if (identical(click, "e")) {
-               sub$moves <- edit.data.frame(sub$moves)
+               sub$moves <- edit(sub$moves)
                sub$moves$comment[is.na(sub$moves$comment)] <- ""
                if (mode == "play")
                   saveRDS(sub, file=file.path(seqdir, seqname))
