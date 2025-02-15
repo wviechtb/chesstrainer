@@ -1,4 +1,4 @@
-# chesstrainer 0.9-18 (2025-02-15)
+# chesstrainer 0.9-19 (2025-02-15)
 
 - can play en passant
 - can promote pawns
@@ -18,6 +18,7 @@
 - progress over time in stored for each player in the sequence files and can be displayed with the `<g>` key
 - the `<A>` key can be used like the `<a>` key but only plays the moves up to the currently shown position
 - `<F9>` prints the FEN of the current position, copies it to the clipboard (`clipr` package added to `Imports`), and opens up the position on lichess.org
+- `<F10>` shows histograms / scatterplot of the sequence statistics
 - simplified the arguments of the `play()` function
 
 # chesstrainer 0.1-0 (2024-12-17)
