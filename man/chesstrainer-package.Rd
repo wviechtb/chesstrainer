@@ -29,14 +29,14 @@
 
    If you make a misclick during a move and want to take the score adjustment back, you can do so with the \code{<t>} key.
 
-   After completing a sequence, the current score for the sequence is saved (together with the number of times that the sequence has been played and when it was last played) to the sequence file. This way, your progress in learning the sequence is saved permanently across sessions. Note that this information is player specific. Using the \code{<g>} key, a progress graph for the current sequence can be shown (if the sequence has been played before). Using the \code{<G>} key, one can toggle whether the progress graph will be automatically shown at the end of each completed sequence.
+   After completing a sequence, the current score for the sequence is saved (together with the number of times that the sequence has been played and when it was last played) to the sequence file. This way, your progress in learning the sequence is saved permanently across sessions. Note that this information is player specific. Using the \code{<g>} key, a progress graph for the current sequence can be shown (if the sequence has been played before). Using the \code{<G>} key, you can toggle whether the progress graph will be automatically shown at the end of each completed sequence.
 
 }
 \section{Managing/Selecting Sequences}{
 
    Using the \code{<l>} key, you can list all sequences, together with their current score, the number of times they have been played (the play frequency), the last time they have been played (in days; \code{NA} if a sequence has not been played before), and the current probability of selection (with 0 to 5 asterisks next to it based on the probability). During \sQuote{play} mode, you can use the \code{Ctrl-<d>} key to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.
 
-   Using the \code{</>} (or \code{<.>}) key, you can select a subset of the sequences in various ways:
+   Using the \code{</>} key (or \code{<->} which is useful for a German keyboard layout), you can select a subset of the sequences in various ways:
 
    \itemize{
    \item by entering a search term (which is applied as a regular expression to the filenames of the sequences),
@@ -47,11 +47,11 @@
    \item by entering something like \code{days > 2} to select sequences that have been played more than a certain number of days ago.
    }
 
-   The keywords \code{score}, \code{played}, and \code{days} can be abbreviated to \code{s}, \code{p} , and \code{d} (so \code{s > 80}, \code{p < 1}, and \code{d > 2} would also work). One can also use other comparators, such as \code{>=}, \code{<}, and \code{>=} (e.g., \code{s <= 10}).
+   The keywords \code{score}, \code{played}, and \code{days} can be abbreviated to \code{s}, \code{p} , and \code{d} (so \code{s > 80}, \code{p < 1}, and \code{d > 2} would also work). Other comparators such as \code{>=}, \code{<}, and \code{>=} can also be used (e.g., \code{s <= 10}).
 
    Hitting \code{<enter>} at the prompt (i.e., not entering any search string) selects all sequences.
 
-   By default, sequences are selected at random based on the score during \sQuote{play} mode as described above. However, one can toggle into a different selection mode with the \code{<r>} key. The options are:
+   By default, sequences are selected at random based on the score during \sQuote{play} mode as described above. However, you can toggle into a different selection mode with the \code{<r>} key. The options are:
    \enumerate{
    \item selection based on the score at random where sequences with higher scores have a higher probability of selection (the default),
    \item selection based on the score where the sequence with the highest score is played next,
@@ -71,29 +71,29 @@
 
    A sequence may also start immediately in the starting position. Here, you will hit the \code{<z>} key right at the beginning. Since it is then essentially impossible for a player to know what they should play (since there are many sensible moves one could make), you will have to instruct the player what they should do. Using the \code{<c>} key, you can add a comment to the current move which will be shown to the player. For example, you could tell the player to play the Spanish (Ruy Lopez) opening. You should then make the appropriate moves on the board.
 
-   Comments can be added to any move using the \code{<c>} key. At times this may be useful if one could venture into multiple sensible lines in a given position. You would then have to instruct the player to make a particular move (either by telling the player directly which move to make or giving some appropriate hint, such as the name of a particular line).
+   Comments can be added to any move using the \code{<c>} key. This may be useful if one could venture into multiple sensible lines in a given position. You would then have to instruct the player to make a particular move (either by telling the player directly which move to make or giving some appropriate hint, such as the name of a particular line). Comments are also useful for mentioning variation names or other useful information.
 
-   If a sequence should start not at the starting position of a chess game, but later on, you can move the pieces into the desired position and then use the \code{<0>} key to make the current position the starting position for a particular sequence. Alternatively, one can use the \code{<b>} key to start a board editor (see below for details).
+   If a sequence should start not at the starting position of a chess game, but later on, you can move the pieces into the desired position and then use the \code{<0>} key to make the current position the starting position for a particular sequence. Alternatively, you can use the \code{<b>} key to start a board editor (see below for details).
 
    When saving a sequence, the color of the pieces to be played is automatically prepended to the filename (i.e., as \code{w_} or \code{b_}). This can be useful when selecting sequences (e.g., using the search term \code{^w_} will select all sequences that start with \code{w_} and are hence sequences where the player plays with white).
 
-   The \code{<e>} key opens up the \code{\link[=edit]{data editor}} on the data frame that contains the moves for the current sequence. This is most useful for adding or removing comments in the \code{comment} column. Making adjustments to the other columns should only be done if their meaning is clear. One can also use the \code{<E>} key to edit a particular comment via a prompt.
+   The \code{<e>} key opens up the \code{\link[=edit]{data editor}} on the data frame that contains the moves for the current sequence. This is most useful for adding or removing comments in the \code{comment} column. Making adjustments to the other columns should only be done if their meaning is clear. You can also use the \code{<E>} key to edit a particular comment via the console.
 
-   With the \code{<?>} key, one can find all sequences that start with the same moves that have been entered so far. If any matching sequences are found, a prompt will ask if they should be selected.
+   With the \code{<?>} key, you can find all sequences that start with the same moves that have been entered so far. If any matching sequences are found, a prompt will ask if they should be selected. This is useful for checking what sequences are already available based on some initial moves.
 
-   In \sQuote{play} mode, the \code{<a>} key will create a copy of the current sequence, which can then be extended with additional moves and saved as a new sequence (the \code{<A>} key does the same thing, but only plays the moves to the currently shown position). This is useful for creating multiple branching lines from a given sequence.
+   With the \code{<.>} key, you can select the last saved sequence (if one was saved before in the current session). This is useful for checking the sequence and/or creating multiple branching lines from a certain position. Similarly, in \sQuote{play} mode, the \code{<a>} key will create a copy of the current sequence, which can then be extended with additional moves (and saved as a new sequence). The \code{<A>} key does the same thing, but only plays the moves to the currently shown position.
 
    Note that sequences are quite personalized, since they involve going into a particular line that one deems most appropriate. Others may disagree and prefer a different line. Therefore, you should create sequences that you want to train yourself on, so you will be able to play them quickly from memory in actual games.
 
 }
 \section{Board Editor}{
 
-   When in \sQuote{add} mode, the \code{<b>} key opens up a board editor. Here, one can quickly set up a more advanced position (e.g., for a puzzle). With left-click and drag, one can move pieces around. With right-click and drag, one can copy a piece. A right-click without a drag deletes a piece. The \code{<f>} key flips the board. The \code{<n>} key resets the board into the starting position. The \code{<c>} key clears the board. With \code{<F1>}, you can receive a help overlay. You can quit the board editor with the \code{<q>} or \code{<escape>} key.
+   When in \sQuote{add} mode, the \code{<b>} key opens up a board editor. Here, you can quickly set up a more advanced position (e.g., for a puzzle). With left-click and drag, pieces can be moved around. With right-click and drag, you can copy a piece. A right-click without a drag deletes a piece. The \code{<f>} key flips the board. The \code{<n>} key resets the board into the starting position. The \code{<c>} key clears the board. With \code{<F1>}, you can receive a help overlay. You can quit the board editor with the \code{<q>} or \code{<escape>} key.
 
 }
 \section{Managing/Selecting Players}{
 
-   The trainer can be used by multiple players. A player can be selected with the \code{<p>} key. One can either enter a player number, the name of an existing player, or enter a new player name. The current player can be deleted with the \code{Ctrl-<r>} key. Since this deletes all progress information for this player from the sequence files, you will receive a prompt to confirm this.
+   The trainer can be used by multiple players. A player can be selected with the \code{<p>} key. You can either enter a player number, the name of an existing player, or enter a new player name. The current player can be deleted with the \code{Ctrl-<r>} key. Since this deletes all progress information for this player from the sequence files, you will receive a prompt to confirm this.
 
    With \code{<F2>}, a leaderboard (based on the lowest average score) and player statistics are shown (i.e., the average score, the standard deviation of the scores, the minimum and maximum score, and the total number of sequences played). The statistics are based on the currently selected sequences (or all sequences if no selection has been applied). Also, sequences whose score was manually set to 0 are not included in these statistics.
 
@@ -107,15 +107,15 @@
 }
 \section{Position Evaluations using Stockfish}{
 
-   If Stockfish (\url{https://stockfishchess.org}) is installed, it can be used in the background to automatically obtain position evaluations when adding sequences. For this, one should specify the path (including the executable) to Stockfish via the \code{sfpath} argument of the \code{\link{play}} function. If this is set correctly, then position evaluations will be automatically computed and added to a sequence in \sQuote{add} mode. Evaluations are given in centipawns divided by 100, except for forced mates, which are given as \eqn{\pm99.9}. When playing a sequence, these evaluations are then shown as an evaluation bar on the left of the board.
+   If Stockfish (\url{https://stockfishchess.org}) is installed, it can be used in the background to automatically obtain position evaluations when adding sequences. For this, specify the path (including the executable) to Stockfish via the \code{sfpath} argument of the \code{\link{play}} function. If this is set correctly, then position evaluations will be automatically computed and added to a sequence in \sQuote{add} mode. Evaluations are given in centipawns divided by 100, except for forced mates, which are given as \eqn{\pm99.9}. When playing a sequence, these evaluations are then shown as an evaluation bar on the left of the board.
 
-   By default, evaluations are based on a search depth of 20 half-moves. Obtaining such an evaluation for a given position should be relatively quick and not add much lag when creating a sequence. One can adjust the calculation parameter for Stockfish using the \code{sfgo} argument. This must be either something like \code{"depth 20"} (to fix the search depth in terms of the number of half-moves) or \code{"movetime 1000"} (to fix the search time in milliseconds). Using something like \code{"depth 10"} or \code{"movetime 200"} reduces the lag, but also the accuracy of the evaluations. Note that when fixing the search time (and not the search depth), evaluations can change slightly on repeated runs, since the exact number of nodes searched by Stockfish can change slightly.
+   By default, evaluations are based on a search depth of 20 half-moves. Obtaining such an evaluation for a given position should be relatively quick and not add much lag when creating a sequence. You can adjust the calculation parameter for Stockfish using the \code{sfgo} argument. This must be either something like \code{"depth 20"} (to fix the search depth in terms of the number of half-moves) or \code{"movetime 1000"} (to fix the search time in milliseconds). Using something like \code{"depth 10"} or \code{"movetime 200"} reduces the lag, but also the accuracy of the evaluations. Note that when fixing the search time (and not the search depth), evaluations can change slightly on repeated runs, since the exact number of nodes searched by Stockfish can change slightly.
 
    In \sQuote{add} mode, the \code{<h>} key shows the best move according to Stockfish in a given position.
 
-   In \sQuote{play} mode, the \code{<u>} key updates the evaluations for all moves in a sequence by recalculating the evaluations with the current setting for the calculation parameter. This way, one can obtain very accurate evaluations by using a high search depth or search time. After updating the evaluations, they are automatically saved to the sequence file.
+   In \sQuote{play} mode, the \code{<u>} key updates the evaluations for all moves in a sequence by recalculating the evaluations with the current setting for the calculation parameter. This way, you can obtain very accurate evaluations by using a high search depth or search time. After updating the evaluations, they are automatically saved to the sequence file.
 
-   Note that asking Stockfish to evaluate impossible positions (e.g., black is in check but it is white's turn to move) crashes Stockfish. This should be handled gracefully by the trainer. With \code{<F7>}, one can adjust the Stockfish settings and also restart it.
+   Note that asking Stockfish to evaluate impossible positions (e.g., black is in check but it is white's turn to move) crashes Stockfish. This should be handled gracefully by the trainer. With \code{<F7>}, you can adjust the Stockfish settings and also restart it.
 
 }
 \section{Other Options / Keyboard Shortcuts}{
@@ -127,26 +127,26 @@
    Various other settings can be adjusted while the trainer is running:
 
    \itemize{
-   \item With the \code{<(>} and \code{<)>} keys, the line width for drawing rectangles can be decreased/increased. With some trial and error, one can adjust this value such that the rectangles that are drawn around squares are clearly visible, but do not overlap into adjacent squares.
+   \item With the \code{<(>} and \code{<)>} keys, the line width for drawing rectangles can be decreased/increased. With some trial and error, adjust this value such that the rectangles that are drawn around squares are clearly visible, but do not overlap into adjacent squares.
    \item By default, there is a 0.5 second sleep time between moves played by the trainer. This can be decreased/increased with the \code{<->} and \code{<+>} keys.
-   \item By default, the trainer waits for a mouse click at the end of a sequence before starting a new sequence. One can toggle this pause on/off with the \code{<w>} key.
+   \item By default, the trainer waits for a mouse click at the end of a sequence before starting a new sequence. You can toggle this pause on/off with the \code{<w>} key.
    \item With the \code{<i>} key, the language of the trainer can be toggled between English and German (author note: I wrote this trainer in part for my chess playing kids, which is the reason why a German translation is available).
    \item With the \code{<v>} key, the evaluation bar can be toggled on/off (if no evaluations are available for a sequence, the bar is never shown).
    }
 
    The settings are stored in a file called \code{settings.rds} at \code{tools::R_user_dir(package="chesstrainer", which="config")} and are read in when starting the trainer. The current settings can be shown with \code{<F3>}.
 
-   With \code{<F4>}, one can adjust the colors. The colors are stored in a file called \code{colors.rds} at \code{tools::R_user_dir(package="chesstrainer", which="config")} and are read in when starting the trainer.
+   With \code{<F4>}, you can adjust the colors. The colors are stored in a file called \code{colors.rds} at \code{tools::R_user_dir(package="chesstrainer", which="config")} and are read in when starting the trainer.
 
-   With \code{<F5>}, one can adjust the size of the text at the top, the text at the bottom, and the size of the evaluation value in the evaluation bar (if it is shown).
+   With \code{<F5>}, you can adjust the size of the text at the top, the text at the bottom, and the size of the evaluation value in the evaluation bar (if it is shown).
 
-   With \code{<F6>}, one can adjust some miscellaneous settings, namely the multiplier for the score when completing a sequence without any mistakes (0.8 by default), the score penalty when making a wrong move (40 by default), the score penalty per hint (20 by default), and the number of animation steps for the evaluation bar (10 by default).
+   With \code{<F6>}, you can adjust some miscellaneous settings, namely the multiplier for the score when completing a sequence without any mistakes (0.8 by default), the score penalty when making a wrong move (40 by default), the score penalty per hint (20 by default), and the number of animation steps for the evaluation bar (10 by default).
 
-   With \code{<F7>}, one can adjust the Stockfish settings, namely the path and the calculation parameter (see above).
+   With \code{<F7>}, you can adjust the Stockfish settings, namely the path and the calculation parameter (see above).
 
    With \code{<F9>}, the FEN of the current position is printed and the position is opened on the \url{https://lichess.org} website for analysis. With \code{Ctrl-<c>}, the FEN is copied to the clipboard (this makes use of the \code{\link[clipr]{write_clip}} function from the \code{clipr} package).
 
-   With \code{<F10>}, one can obtain histograms of the scores of the (selected) sequences, how many times they have been played, how long ago they were played, and a scatterplot of the number of times they have been played versus their scores.
+   With \code{<F10>}, you can obtain histograms of the scores of the (selected) sequences, how many times they have been played, how long ago they were played, and a scatterplot of the number of times they have been played versus their scores.
 
 }
 \section{Resetting / Cleaning Up}{

@@ -193,6 +193,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
    selected <- NULL
    oldvolume <- volume
    seqno <- 1
+   filename <- ""
 
    # create the getGraphicsEvent() functions
 
@@ -529,7 +530,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
             click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
 
-            keys      <- c("q", " ", "n", "p", "e", "E", "l", "-", "=", "+", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F9", "F10", "F12", "m", "/", ".", "w", "t", "h", "ctrl-R", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "v", "a", "G", "ctrl-C")
+            keys      <- c("q", " ", "n", "p", "e", "E", "l", "-", "=", "+", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F9", "F10", "F12", "m", "/", "-", ".", "w", "t", "h", "ctrl-R", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "v", "a", "G", "ctrl-C")
             keys.add  <- c("f", "z", "c", "s", "0", "?", "b")
             keys.play <- c("z", "c", "s", "\b", "ctrl-D", "Right", "Left", "o", "u", "A", "g")
 
@@ -652,9 +653,9 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                }
                filename <- sub("^[wbs]_", "", filename) # strip [wbs]_ from beginning of filename
                filename <- sub("\\.rds$", "", filename) # strip .rds from end of filename
-               filename <- file.path(seqdir, paste0(.fileprefix(flip), filename, ".rds"))
+               filenamefull <- file.path(seqdir, paste0(.fileprefix(flip), filename, ".rds"))
                dosave <- TRUE
-               if (file.exists(filename)) {
+               if (file.exists(filenamefull)) {
                   dosave <- FALSE
                   overwrite <- readline(prompt=.text("rlyoverwrite"))
                   if (.confirm(overwrite)) {
@@ -663,7 +664,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   }
                }
                if (dosave) {
-                  saveRDS(sub, file=filename)
+                  saveRDS(sub, file=filenamefull)
                   playsound(system.file("sounds", "complete.ogg", package="chesstrainer"), volume=volume)
                   run.rnd <- FALSE
                   wait <- FALSE
@@ -726,7 +727,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                next
             }
 
-            # G to toggle showing the progress graph after completed sequences
+            # G to toggle showing the progress graph after each completed sequence
 
             if (identical(click, "G")) {
                showgraph <- !showgraph
@@ -764,13 +765,17 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                next
             }
 
-            # / (or .) to enter a search term or sequence range
+            # / or - to select one or more sequences (or . to select last saved sequence)
 
-            if (identical(click, "/") || identical(click, ".")) {
+            if (identical(click, "/") || identical(click, "-") || identical(click, ".")) {
 
                eval(expr=switch1)
 
-               searchterm <- readline(prompt=.text("seqsearch"))
+               if (identical(click, ".") && filename != "") {
+                  searchterm <- filename
+               } else {
+                  searchterm <- readline(prompt=.text("seqsearch"))
+               }
 
                if (identical(searchterm , "")) {
                   cat(.text("allseqselected"))
