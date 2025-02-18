@@ -292,8 +292,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
       i <- 1
       texttop <- ""
       flip <- FALSE
-      hasarrows <- FALSE
-      circles <- matrix(nrow=0, ncol=2)
+      circles <- matrix(nrow=0, ncol=2) # to store circles
+      arrows  <- matrix(nrow=0, ncol=4) # to store arrows
       scoreadd <- 0
       sidetoplay <- "w"
       givehint1 <- FALSE
@@ -610,8 +610,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                sub$flip <- flip
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode)
                .draweval(sub$moves$eval[i], flip=flip, eval=eval, evalsteps=evalsteps)
-               hasarrows <- FALSE
                circles <- matrix(nrow=0, ncol=2)
+               arrows  <- matrix(nrow=0, ncol=4)
                next
             }
 
@@ -721,8 +721,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   .scoregraph(sub$player[[player]], lwd=lwd)
                   .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode)
                   .draweval(sub$moves$eval[i], flip=flip, eval=eval, evalsteps=evalsteps)
-                  hasarrows <- FALSE
                   circles <- matrix(nrow=0, ncol=2)
+                  arrows  <- matrix(nrow=0, ncol=4)
                }
                next
             }
@@ -1024,8 +1024,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                         pos <- sub$pos
                      }
                      .drawboard(pos, flip=flip)
-                     hasarrows <- FALSE
                      circles <- matrix(nrow=0, ncol=2)
+                     arrows  <- matrix(nrow=0, ncol=4)
                      i <- i - 1
                      sub$moves <- sub$moves[seq_len(i-1),,drop=FALSE]
                      sidetoplay <- "w"
@@ -1088,8 +1088,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                }
 
                .drawboard(pos, flip=flip)
-               hasarrows <- FALSE
                circles <- matrix(nrow=0, ncol=2)
+               arrows  <- matrix(nrow=0, ncol=4)
 
                if (identical(click, "A"))
                   sub$moves <- sub$moves[1:(i-1),,drop=FALSE]
@@ -1177,8 +1177,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                      pos <- sub$pos
                   }
                   .drawboard(pos, flip=flip)
-                  hasarrows <- FALSE
                   circles <- matrix(nrow=0, ncol=2)
+                  arrows  <- matrix(nrow=0, ncol=4)
                   i <- i - 1
                   sidetoplay <- "w"
                   for (j in seq_len(i-1)) {
@@ -1202,8 +1202,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             if (identical(click, "\033") || identical(click, "ctrl-[")) {
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode)
                .draweval(sub$moves$eval[i-1], flip=flip, eval=eval, evalsteps=evalsteps)
-               hasarrows <- FALSE
                circles <- matrix(nrow=0, ncol=2)
+               arrows  <- matrix(nrow=0, ncol=4)
                next
             }
 
@@ -1320,8 +1320,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode)
                .draweval(sub$moves$eval[i], flip=flip, eval=eval, evalsteps=evalsteps)
-               hasarrows <- FALSE
                circles <- matrix(nrow=0, ncol=2)
+               arrows  <- matrix(nrow=0, ncol=4)
                if (selmodeold != selmode) {
                   seqno <- 1
                   run.rnd <- FALSE
@@ -1382,8 +1382,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   }
 
                   .drawboard(pos, flip=flip)
-                  hasarrows <- FALSE
                   circles <- matrix(nrow=0, ncol=2)
+                  arrows  <- matrix(nrow=0, ncol=4)
                   sidetoplay <- "w"
 
                   cat(.text("evalupdateold"))
@@ -1435,8 +1435,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                .printhelp(lwd=lwd)
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode)
                .draweval(sub$moves$eval[i], flip=flip, eval=eval, evalsteps=evalsteps)
-               hasarrows <- FALSE
                circles <- matrix(nrow=0, ncol=2)
+               arrows  <- matrix(nrow=0, ncol=4)
                next
             }
 
@@ -1446,8 +1446,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                .leaderboard(seqdir, files, lwd)
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode)
                .draweval(sub$moves$eval[i], flip=flip, eval=eval, evalsteps=evalsteps)
-               hasarrows <- FALSE
                circles <- matrix(nrow=0, ncol=2)
+               arrows  <- matrix(nrow=0, ncol=4)
                next
             }
 
@@ -1472,8 +1472,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                eval(expr=switch2)
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode)
                .draweval(sub$moves$eval[i], flip=flip, eval=eval, evalsteps=evalsteps)
-               hasarrows <- FALSE
                circles <- matrix(nrow=0, ncol=2)
+               arrows  <- matrix(nrow=0, ncol=4)
                cols <- sapply(cols.all, function(x) .get(x))
                saveRDS(cols, file=file.path(configdir, "colors.rds"))
                next
@@ -1487,8 +1487,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                eval(expr=switch2)
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode)
                .draweval(sub$moves$eval[i], flip=flip, eval=eval, evalsteps=evalsteps)
-               hasarrows <- FALSE
                circles <- matrix(nrow=0, ncol=2)
+               arrows  <- matrix(nrow=0, ncol=4)
                cex.top <- .get("cex.top")
                cex.bot <- .get("cex.bot")
                cex.eval <- .get("cex.eval")
@@ -1552,8 +1552,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                .distributions(scores.selected, played.selected, dayslp.selected, lwd)
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode)
                .draweval(sub$moves$eval[i], flip=flip, eval=eval, evalsteps=evalsteps)
-               hasarrows <- FALSE
                circles <- matrix(nrow=0, ncol=2)
+               arrows  <- matrix(nrow=0, ncol=4)
                next
             }
 
@@ -1593,8 +1593,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                show <- FALSE
                comment <- ""
                evalval <- NA_real_
-               hasarrows <- FALSE
                circles <- matrix(nrow=0, ncol=2)
+               arrows  <- matrix(nrow=0, ncol=4)
                sub$moves <- sub$moves[numeric(0),]
                sub$pos <- pos
                sub$flip <- flip
@@ -1650,11 +1650,11 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
                   # if other buttons were pressed, clear arrows/circles (if there are any)
 
-                  if (hasarrows || nrow(circles) >= 1L) {
+                  if (nrow(circles) >= 1L || nrow(arrows) >= 1L) {
                      .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode)
                      .draweval(sub$moves$eval[i-1], flip=flip, eval=eval, evalsteps=evalsteps)
-                     hasarrows <- FALSE
                      circles <- matrix(nrow=0, ncol=2)
+                     arrows  <- matrix(nrow=0, ncol=4)
                   }
 
                }
@@ -1676,16 +1676,16 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
          if (identical(button, 2L)) {
             shape::Arrows(click1.y+0.5, click1.x+0.5, click2.y+0.5, click2.x+0.5, lwd=lwd*4, col=.get("col.annot"), arr.type="triangle", arr.length=lwd*0.1, arr.width=lwd*0.1, ljoin=1)
-            hasarrows <- TRUE
+            arrows <- rbind(arrows, c(click1.x, click1.y, click2.x, click2.y))
             next
          }
 
          # if button 0 was used for the move and there are arrows/circles, redraw the board before making the move
 
-         if (identical(button, 0L) && (hasarrows || nrow(circles) >= 1L)) {
+         if (identical(button, 0L) && (nrow(circles) >= 1L || nrow(arrows) >= 1L)) {
             .drawboard(pos, flip)
-            hasarrows <- FALSE
             circles <- matrix(nrow=0, ncol=2)
+            arrows  <- matrix(nrow=0, ncol=4)
             if (mode == "add")
                .drawsideindicator(sidetoplay, flip)
          }
