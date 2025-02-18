@@ -18,7 +18,7 @@
       plot(NA, xlim=c(0,1), ylim=c(0,1), xlab="", ylab="", xaxt="n", yaxt="n", bty="n")
    }
    #box(which="figure", col=.get("col.help.border"), lwd=lwd)
-   plot(played, scores, las=1, col.axis=.get("col.top"), col.lab=.get("col.top"), col=.get("col.square.l"), col.main=.get("col.fg"),
+   plot(jitter(played, amount=0.5), jitter(scores, amount=0.5), las=1, col.axis=.get("col.top"), col.lab=.get("col.top"), col=.get("col.square.l"), col.main=.get("col.fg"),
         pch=21, bg=.get("col.square.d"), bty="l", main=paste0(.text("played"), " vs. ", .text("score")), xlab=.text("played"), ylab=.text("score"),
         ylim=c(0,100))
    #box(which="figure", col=.get("col.help.border"), lwd=lwd)
