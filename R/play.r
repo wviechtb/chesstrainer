@@ -491,13 +491,13 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             }
 
             if (drawcircles) {
-               circles <- .parsecircles(sub$moves$circles[i])
+               circles <- .parseannot(sub$moves$circles[i], cols=2)
                if (nrow(circles) >= 1L)
                   apply(circles, 1, function(x) .drawcircle(x[1], x[2], lwd=lwd))
             }
 
             if (drawarrows) {
-               arrows <- .parsearrows(sub$moves$arrows[i])
+               arrows <- .parseannot(sub$moves$arrows[i], cols=4)
                if (nrow(arrows) >= 1L)
                   apply(arrows, 1, function(x) .drawarrow(x[2]+0.5, x[1]+0.5, x[4]+0.5, x[3]+0.5, lwd=lwd))
             }
@@ -520,10 +520,10 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   texttop <- .texttop(sub$moves$comment[i])
                }
                .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
-               circles <- .parsecircles(sub$moves$circles[i])
+               circles <- .parseannot(sub$moves$circles[i], cols=2)
                if (nrow(circles) >= 1L)
                   apply(circles, 1, function(x) .drawcircle(x[1], x[2], lwd=lwd))
-               arrows <- .parsearrows(sub$moves$arrows[i])
+               arrows <- .parseannot(sub$moves$arrows[i], cols=4)
                if (nrow(arrows) >= 1L)
                   apply(arrows, 1, function(x) .drawarrow(x[2]+0.5, x[1]+0.5, x[4]+0.5, x[3]+0.5, lwd=lwd))
                Sys.sleep(sleep)
@@ -1721,7 +1721,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             if (nrow(circles) >= 1L)
                circlesvar <- paste0(apply(circles, 1, function(x) paste0("(",x[1],",",x[2],")")), collapse=";")
             if (nrow(arrows) >= 1L)
-               arrowsvar <- paste0(apply(arrows, 1, function(x) paste0("(",x[1],",",x[2],")-(",x[3],",",x[4],")")), collapse=";")
+               arrowsvar <- paste0(apply(arrows, 1, function(x) paste0("(",x[1],",",x[2],",",x[3],",",x[4],")")), collapse=";")
             circles <- matrix(nrow=0, ncol=2)
             arrows  <- matrix(nrow=0, ncol=4)
             #if (mode == "add")
@@ -1896,8 +1896,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
             .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
             texttop <- .texttop(sub$moves$comment[i])
-            circles <- .parsecircles(sub$moves$circles[i])
-            arrows  <- .parsearrows(sub$moves$arrows[i])
+            circles <- .parseannot(sub$moves$circles[i], cols=2)
+            arrows  <- .parseannot(sub$moves$arrows[i], cols=4)
             if (nrow(circles) >= 1L || nrow(arrows) >= 1L) {
                if (nrow(circles) >= 1L)
                   apply(circles, 1, function(x) .drawcircle(x[1], x[2], lwd=lwd))
