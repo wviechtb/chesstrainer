@@ -1,4 +1,4 @@
-# chesstrainer 0.9-20 (2025-02-16)
+# chesstrainer 0.9-21 (2025-03-02)
 
 - can play en passant
 - can promote pawns
@@ -20,6 +20,7 @@
 - `<F9>` prints the FEN of the current position, copies it to the clipboard (`clipr` package added to `Imports`), and opens up the position on lichess.org
 - `<F10>` shows histograms / scatterplot of the sequence statistics
 - simplified the arguments of the `play()` function
+- sequences now also save drawn circles and arrows during add mode and replay them during play mode
 
 # chesstrainer 0.1-0 (2024-12-17)
 

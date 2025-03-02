@@ -114,3 +114,36 @@
    return(fen)
 
 }
+
+.parsecircles <- function(x) {
+
+   if (is.null(x) || identical(x, ""))
+      return(matrix(nrow=0, ncol=2))
+
+   x <- strsplit(x, ";", fixed=TRUE)[[1]]
+   x <- gsub("(", "", x, fixed=TRUE)
+   x <- gsub(")", "", x, fixed=TRUE)
+   x <- sapply(x, strsplit, ",", fixed=TRUE)
+   x <- lapply(x, as.numeric)
+   x <- do.call(rbind, x)
+   x <- unname(x)
+   return(x)
+
+}
+
+.parsearrows <- function(x) {
+
+   if (is.null(x) || identical(x, ""))
+      return(matrix(nrow=0, ncol=4))
+
+   x <- strsplit(x, ";", fixed=TRUE)[[1]]
+   x <- gsub("-", ",", x, fixed=TRUE)
+   x <- gsub("(", "", x, fixed=TRUE)
+   x <- gsub(")", "", x, fixed=TRUE)
+   x <- sapply(x, strsplit, ",", fixed=TRUE)
+   x <- lapply(x, as.numeric)
+   x <- do.call(rbind, x)
+   x <- unname(x)
+   return(x)
+
+}

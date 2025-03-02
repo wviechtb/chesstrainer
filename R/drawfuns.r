@@ -49,6 +49,26 @@
 
 }
 
+.redrawpos <- function(pos, flip=FALSE) {
+
+   if (flip) {
+      for (i in 1:8) {
+         for (j in 1:8) {
+            .drawsquare(i, j)
+            .drawpiece(i, j, pos[9-i,9-j])
+         }
+      }
+   } else {
+      for (i in 1:8) {
+         for (j in 1:8) {
+            .drawsquare(i, j)
+            .drawpiece(i, j, pos[i,j])
+         }
+      }
+   }
+
+}
+
 .boardeditor.drawboard <- function(pos, flip=FALSE, lwd) {
 
    col.bg <- .get("col.bg")
@@ -424,7 +444,10 @@
       } else {
          print(printpos[8:1,], quote=FALSE)
       }
-      print(attributes(pos))
+      attribs <- attributes(pos)
+      attribs$dim <- NULL
+      cat("\n")
+      print(attribs)
    }
 
    return(pos)
@@ -491,8 +514,51 @@
    }
 }
 
-.addcircle <- function(x, y, lwd)
+.drawcircle <- function(x, y, lwd)
    symbols(y+0.5, x+0.5, circles=0.45, inches=FALSE, lwd=lwd+2, fg=.get("col.annot"), add=TRUE)
+
+.drawarrow <- function(x1, y1, x2, y2, lwd) {
+
+   length <- lwd*4*0.015
+   width  <- lwd*4*0.008
+
+   slp <- (y2-y1) / (x2-x1)
+
+   if (is.infinite(slp)) {
+      x3 <- x1
+      y3 <- y2 + ifelse(y1 > y2, 1, -1) * length
+   } else {
+      int <- y1 - slp*x1
+      alen <- y2-y1
+      clen <- x2-x1
+      blen <- sqrt(alen^2+clen^2)
+      if (x2 > x1) {
+         x3 <- x1 + (blen-length)/sqrt(1+slp^2)
+         y3 <- int + slp*x3
+      } else {
+         x3 <- x1 - (blen-length)/sqrt(1+slp^2)
+         y3 <- int + slp*x3
+      }
+   }
+
+   if (is.infinite(slp)) {
+      x4 <- x3 + width
+      y4 <- y3
+      x5 <- x3 - width
+      y5 <- y3
+   } else {
+      x4 <- x3 + slp*width/sqrt(1+slp^2)
+      y4 <- y3 - width/sqrt(1+slp^2)
+      x5 <- x3 - slp*width/sqrt(1+slp^2)
+      y5 <- y3 + width/sqrt(1+slp^2)
+   }
+
+   col.annot <- .get("col.annot")
+
+   segments(x1, y1, x3, y3, col=col.annot, lwd=lwd*4, lend=1)
+   polygon(c(x4,x5,x2),c(y4,y5,y2), col=col.annot, border=col.annot)
+
+}
 
 .drawsquare <- function(x, y, col=ifelse(.is.even(x+y), .get("col.square.d"), .get("col.square.l")))
    rect(y, x, y+1, x+1, col=col, border=NA)

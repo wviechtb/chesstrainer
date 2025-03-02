@@ -36,7 +36,7 @@
 
    Using the \code{<l>} key, you can list all sequences, together with their current score, the number of times they have been played (the play frequency), the last time they have been played (in days; \code{NA} if a sequence has not been played before), and the current probability of selection (with 0 to 5 asterisks next to it based on the probability). During \sQuote{play} mode, you can use the \code{Ctrl-<d>} key to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.
 
-   Using the \code{</>} key (or \code{<->} which is useful for a German keyboard layout), you can select a subset of the sequences in various ways:
+   Using the \code{</>} key (or \code{<,>} which is useful for a German keyboard layout), you can select a subset of the sequences in various ways:
 
    \itemize{
    \item by entering a search term (which is applied as a regular expression to the filenames of the sequences),
@@ -122,7 +122,7 @@
 
    When playing a sequence, the graphical elements shown on the playing board are created by repeatedly drawing on top of the board. Therefore, when resizing the board, all elements are redrawn, which takes a few moments. With the \code{<escape>} key, the board can be redrawn in its current state, after which it can be resized without having to wait for all previous graphical elements to be redrawn.
 
-   Clicking the right mouse button on a square adds a circle to the square. Dragging the mouse from one square to another while pressing the right mouse button draws an arrow. Those familiar with the \url{https://lichess.org} website will recognize these visualizations. Clicking with the left mouse button on a square, the \code{<escape>} key, or making a move removes these visualizations.
+   Clicking the right mouse button on a square adds a circle to the square. Dragging the mouse from one square to another while pressing the right mouse button draws an arrow. Those familiar with the \url{https://lichess.org} website will recognize these visualizations. Clicking with the left mouse button on a square, the \code{<escape>} key, or making a move removes these visualizations. When adding a sequence, circles and arrows that are drawn are also saved and will be shown when replaying the sequence in \sQuote{play} mode.
 
    Various other settings can be adjusted while the trainer is running:
 

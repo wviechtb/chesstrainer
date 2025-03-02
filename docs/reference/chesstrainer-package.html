@@ -31,7 +31,7 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chesstrainer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-20</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-21</span>
       </span>
     </div>
 
@@ -112,7 +112,7 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
 
 
 <p>Using the <code>&lt;l&gt;</code> key, you can list all sequences, together with their current score, the number of times they have been played (the play frequency), the last time they have been played (in days; <code>NA</code> if a sequence has not been played before), and the current probability of selection (with 0 to 5 asterisks next to it based on the probability). During ‘play’ mode, you can use the <code>Ctrl-&lt;d&gt;</code> key to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.</p>
-<p>Using the <code>&lt;/&gt;</code> key (or <code>&lt;-&gt;</code> which is useful for a German keyboard layout), you can select a subset of the sequences in various ways:</p>
+<p>Using the <code>&lt;/&gt;</code> key (or <code>&lt;,&gt;</code> which is useful for a German keyboard layout), you can select a subset of the sequences in various ways:</p>
 <p></p><ul><li><p>by entering a search term (which is applied as a regular expression to the filenames of the sequences),</p></li>
 <li><p>by entering a sequence number (e.g., <code>2</code> to select the 2nd sequence),</p></li>
 <li><p>by entering a sequence number range (e.g., <code>2-5</code> to select sequences 2 to 5),</p></li>
@@ -179,7 +179,7 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
 
 
 <p>When playing a sequence, the graphical elements shown on the playing board are created by repeatedly drawing on top of the board. Therefore, when resizing the board, all elements are redrawn, which takes a few moments. With the <code>&lt;escape&gt;</code> key, the board can be redrawn in its current state, after which it can be resized without having to wait for all previous graphical elements to be redrawn.</p>
-<p>Clicking the right mouse button on a square adds a circle to the square. Dragging the mouse from one square to another while pressing the right mouse button draws an arrow. Those familiar with the <a href="https://lichess.org" class="external-link">https://lichess.org</a> website will recognize these visualizations. Clicking with the left mouse button on a square, the <code>&lt;escape&gt;</code> key, or making a move removes these visualizations.</p>
+<p>Clicking the right mouse button on a square adds a circle to the square. Dragging the mouse from one square to another while pressing the right mouse button draws an arrow. Those familiar with the <a href="https://lichess.org" class="external-link">https://lichess.org</a> website will recognize these visualizations. Clicking with the left mouse button on a square, the <code>&lt;escape&gt;</code> key, or making a move removes these visualizations. When adding a sequence, circles and arrows that are drawn are also saved and will be shown when replaying the sequence in ‘play’ mode.</p>
 <p>Various other settings can be adjusted while the trainer is running:</p>
 <p></p><ul><li><p>With the <code>&lt;(&gt;</code> and <code>&lt;)&gt;</code> keys, the line width for drawing rectangles can be decreased/increased. With some trial and error, adjust this value such that the rectangles that are drawn around squares are clearly visible, but do not overlap into adjacent squares.</p></li>
 <li><p>By default, there is a 0.5 second sleep time between moves played by the trainer. This can be decreased/increased with the <code>&lt;-&gt;</code> and <code>&lt;+&gt;</code> keys.</p></li>

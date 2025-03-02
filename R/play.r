@@ -294,6 +294,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
       flip <- FALSE
       circles <- matrix(nrow=0, ncol=2) # to store circles
       arrows  <- matrix(nrow=0, ncol=4) # to store arrows
+      drawcircles <- TRUE
+      drawarrows  <- TRUE
       scoreadd <- 0
       sidetoplay <- "w"
       givehint1 <- FALSE
@@ -422,7 +424,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
          # set up the data frame for a new sequence
 
-         sub <- list(flip = flip, moves = data.frame(x1=numeric(), y1=numeric(), x2=numeric(), y2=numeric(), show=logical(), move=character(), eval=numeric(), comment=character()))
+         sub <- list(flip = flip, moves = data.frame(x1=numeric(), y1=numeric(), x2=numeric(), y2=numeric(), show=logical(), move=character(),
+                                                     eval=numeric(), comment=character(), circles=character(), arrows=character()))
 
       } else {
 
@@ -487,7 +490,25 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                Sys.sleep(sleep)
             }
 
+            if (drawcircles) {
+               circles <- .parsecircles(sub$moves$circles[i])
+               if (nrow(circles) >= 1L)
+                  apply(circles, 1, function(x) .drawcircle(x[1], x[2], lwd=lwd))
+            }
+
+            if (drawarrows) {
+               arrows <- .parsearrows(sub$moves$arrows[i])
+               if (nrow(arrows) >= 1L)
+                  apply(arrows, 1, function(x) .drawarrow(x[2]+0.5, x[1]+0.5, x[4]+0.5, x[3]+0.5, lwd=lwd))
+            }
+
             while (isTRUE(sub$moves$show[i])) {
+               if (nrow(circles) >= 1L || nrow(arrows)) {
+                  Sys.sleep(sleep)
+                  .redrawpos(pos, flip)
+                  circles <- matrix(nrow=0, ncol=2)
+                  arrows <- matrix(nrow=0, ncol=4)
+               }
                pos <- .updateboard(pos, move=sub$moves[i,1:4], flip=flip, volume=volume, verbose=verbose)
                #sub$moves$move[i] <- attr(pos,"move")
                .draweval(sub$moves$eval[i], sub$moves$eval[i-1], flip=flip, eval=eval, evalsteps=evalsteps)
@@ -499,6 +520,12 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   texttop <- .texttop(sub$moves$comment[i])
                }
                .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
+               circles <- .parsecircles(sub$moves$circles[i])
+               if (nrow(circles) >= 1L)
+                  apply(circles, 1, function(x) .drawcircle(x[1], x[2], lwd=lwd))
+               arrows <- .parsearrows(sub$moves$arrows[i])
+               if (nrow(arrows) >= 1L)
+                  apply(arrows, 1, function(x) .drawarrow(x[2]+0.5, x[1]+0.5, x[4]+0.5, x[3]+0.5, lwd=lwd))
                Sys.sleep(sleep)
             }
 
@@ -530,7 +557,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
             click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
 
-            keys      <- c("q", " ", "n", "p", "e", "E", "l", "-", "=", "+", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F9", "F10", "F12", "m", "/", "-", ".", "w", "t", "h", "ctrl-R", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "v", "a", "G", "ctrl-C")
+            keys      <- c("q", " ", "n", "p", "e", "E", "l", "-", "=", "+", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F9", "F10", "F12", "m", "/", ",", ".", "w", "t", "h", "ctrl-R", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "v", "a", "G", "ctrl-C")
             keys.add  <- c("f", "z", "c", "s", "0", "?", "b")
             keys.play <- c("z", "c", "s", "\b", "ctrl-D", "Right", "Left", "o", "u", "A", "g")
 
@@ -679,6 +706,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             if (identical(click, "e")) {
                sub$moves <- edit(sub$moves)
                sub$moves$comment[is.na(sub$moves$comment)] <- ""
+               sub$moves$circles[is.na(sub$moves$circles)] <- ""
+               sub$moves$arrows[is.na(sub$moves$arrows)]   <- ""
                if (mode == "play")
                   saveRDS(sub, file=file.path(seqdir, seqname))
                next
@@ -765,9 +794,9 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                next
             }
 
-            # / or - to select one or more sequences (or . to select last saved sequence)
+            # / or , to select one or more sequences (or . to select last saved sequence)
 
-            if (identical(click, "/") || identical(click, "-") || identical(click, ".")) {
+            if (identical(click, "/") || identical(click, ",") || identical(click, ".")) {
 
                eval(expr=switch1)
 
@@ -1540,7 +1569,6 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                eval(expr=switch1)
                cat(fen, "\n")
                eval(expr=switch2)
-               #clipr::write_clip(fen)
                fen <- paste0("https://lichess.org/analysis/standard/", gsub(" ", "_", fen, fixed=TRUE))
                browseURL(fen)
                next
@@ -1635,14 +1663,14 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   # if the right button was pressed, then draw a circle on the square
                   # (or if the square already has a circle, remove the circle)
 
-                  hascircle <- apply(circles, 1, function(pos) isTRUE(pos[1] == click1.x && pos[2] == click1.y))
+                  hascircle <- apply(circles, 1, function(x) isTRUE(x[1] == click1.x && x[2] == click1.y))
 
                   if (any(hascircle)) {
                      .drawsquare(click1.x, click1.y)
                      .drawpiece(click1.x, click1.y, ifelse(flip, pos[9-click1.x,9-click1.y], pos[click1.x,click1.y]))
                      circles <- circles[!hascircle,,drop=FALSE]
                   } else {
-                     .addcircle(click1.x, click1.y, lwd=lwd)
+                     .drawcircle(click1.x, click1.y, lwd=lwd)
                      circles <- rbind(circles, c(click1.x, click1.y))
                   }
 
@@ -1651,8 +1679,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   # if other buttons were pressed, clear arrows/circles (if there are any)
 
                   if (nrow(circles) >= 1L || nrow(arrows) >= 1L) {
-                     .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode)
-                     .draweval(sub$moves$eval[i-1], flip=flip, eval=eval, evalsteps=evalsteps)
+                     .redrawpos(pos, flip)
                      circles <- matrix(nrow=0, ncol=2)
                      arrows  <- matrix(nrow=0, ncol=4)
                   }
@@ -1675,19 +1702,30 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
          # if button 2 was used for the move, draw an arrow and go back to [b]
 
          if (identical(button, 2L)) {
-            shape::Arrows(click1.y+0.5, click1.x+0.5, click2.y+0.5, click2.x+0.5, lwd=lwd*4, col=.get("col.annot"), arr.type="triangle", arr.length=lwd*0.1, arr.width=lwd*0.1, ljoin=1)
+            .drawarrow(click1.y+0.5, click1.x+0.5, click2.y+0.5, click2.x+0.5, lwd=lwd)
             arrows <- rbind(arrows, c(click1.x, click1.y, click2.x, click2.y))
+            drawcircles <- FALSE # to prevent circles from being redrawn
             next
          }
 
+         drawcircles <- TRUE
+         drawarrows  <- TRUE
+
          # if button 0 was used for the move and there are arrows/circles, redraw the board before making the move
 
+         circlesvar <- ""
+         arrowsvar  <- ""
+
          if (identical(button, 0L) && (nrow(circles) >= 1L || nrow(arrows) >= 1L)) {
-            .drawboard(pos, flip)
+            .redrawpos(pos, flip)
+            if (nrow(circles) >= 1L)
+               circlesvar <- paste0(apply(circles, 1, function(x) paste0("(",x[1],",",x[2],")")), collapse=";")
+            if (nrow(arrows) >= 1L)
+               arrowsvar <- paste0(apply(arrows, 1, function(x) paste0("(",x[1],",",x[2],")-(",x[3],",",x[4],")")), collapse=";")
             circles <- matrix(nrow=0, ncol=2)
             arrows  <- matrix(nrow=0, ncol=4)
-            if (mode == "add")
-               .drawsideindicator(sidetoplay, flip)
+            #if (mode == "add")
+            #   .drawsideindicator(sidetoplay, flip)
          }
 
          if (mode == "add" || all(c(click1.x==sub$moves$x1[i], click1.y==sub$moves$y1[i], click2.x==sub$moves$x2[i], click2.y==sub$moves$y2[i]))) {
@@ -1849,20 +1887,37 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
             # in add move, add the current move to sub
 
-            sub$moves <- rbind(sub$moves, data.frame(x1=click1.x, y1=click1.y, x2=click2.x, y2=click2.y, show=show, move=attr(pos,"move"), eval=evalval, comment=comment))
+            sub$moves <- rbind(sub$moves, data.frame(x1=click1.x, y1=click1.y, x2=click2.x, y2=click2.y, show=show, move=attr(pos,"move"), eval=evalval, comment=comment, circles=circlesvar, arrows=arrowsvar))
             comment <- ""
 
          } else {
 
             # in play mode, let the trainer play the next move and increase i
 
-            texttop <- .texttop(sub$moves$comment[i])
             .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
-            Sys.sleep(sleep)
+            texttop <- .texttop(sub$moves$comment[i])
+            circles <- .parsecircles(sub$moves$circles[i])
+            arrows  <- .parsearrows(sub$moves$arrows[i])
+            if (nrow(circles) >= 1L || nrow(arrows) >= 1L) {
+               if (nrow(circles) >= 1L)
+                  apply(circles, 1, function(x) .drawcircle(x[1], x[2], lwd=lwd))
+               if (nrow(arrows) >= 1L)
+                  apply(arrows, 1, function(x) .drawarrow(x[2]+0.5, x[1]+0.5, x[4]+0.5, x[3]+0.5, lwd=lwd))
+               getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button, x, y) return(""), onKeybd=function(key) return(""))
+            } else {
+               Sys.sleep(sleep)
+            }
             pos <- .updateboard(pos, move=sub$moves[i,1:4], flip=flip, volume=volume, verbose=verbose)
             #sub$moves$move[i] <- attr(pos,"move")
             .draweval(sub$moves$eval[i], sub$moves$eval[i-1], flip=flip, eval=eval, evalsteps=evalsteps)
             texttop <- .texttop(sub$moves$comment[i])
+            if (nrow(circles) >= 1L || nrow(arrows) >= 1L) {
+               .redrawpos(pos, flip)
+               #apply(circles, 1, function(x) .drawsquare(x[1], x[2]))
+               #apply(circles, 1, function(x) .drawpiece(x[1], x[2], ifelse(flip, pos[9-x[1],9-x[2]], pos[x[1],x[2]])))
+               circles <- matrix(nrow=0, ncol=2)
+               arrows  <- matrix(nrow=0, ncol=4)
+            }
             i <- i + 1
             sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
 
