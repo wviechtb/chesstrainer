@@ -122,7 +122,7 @@
 
    When playing a sequence, the graphical elements shown on the playing board are created by repeatedly drawing on top of the board. Therefore, when resizing the board, all elements are redrawn, which takes a few moments. With the \code{<escape>} key, the board can be redrawn in its current state, after which it can be resized without having to wait for all previous graphical elements to be redrawn.
 
-   Clicking the right mouse button on a square adds a circle to the square. Dragging the mouse from one square to another while pressing the right mouse button draws an arrow. Those familiar with the \url{https://lichess.org} website will recognize these visualizations. Clicking with the left mouse button on a square, the \code{<escape>} key, or making a move removes these visualizations. When adding a sequence, circles and arrows that are drawn are also saved and will be shown when replaying the sequence in \sQuote{play} mode.
+   Clicking the right mouse button on a square adds a circle to the square. Dragging the mouse from one square to another while pressing the right mouse button draws an arrow. Those familiar with the \url{https://lichess.org} website will recognize these visualizations. Clicking with the left mouse button on a square, the \code{<escape>} key, or making a move removes these visualizations. When adding a sequence, circles and arrows that are drawn are also saved and will be shown when replaying the sequence in \sQuote{play} mode. When such annotations are shown during a computer move, the sequence will proceed after a click.
 
    Various other settings can be adjusted while the trainer is running:
 
