@@ -706,8 +706,10 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             if (identical(click, "e")) {
                sub$moves <- edit(sub$moves)
                sub$moves$comment[is.na(sub$moves$comment)] <- ""
-               sub$moves$circles[is.na(sub$moves$circles)] <- ""
-               sub$moves$arrows[is.na(sub$moves$arrows)]   <- ""
+               if (!is.null(sub$moves$circles))
+                  sub$moves$circles[is.na(sub$moves$circles)] <- ""
+               if (!is.null(sub$moves$arrows))
+               sub$moves$arrows[is.na(sub$moves$arrows)] <- ""
                if (mode == "play")
                   saveRDS(sub, file=file.path(seqdir, seqname))
                next
@@ -1901,6 +1903,10 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
             # in add move, add the current move to sub
 
+            if (is.null(sub$moves$circles))
+               sub$moves$circles <- ""
+            if (is.null(sub$moves$arrows))
+               sub$moves$arrows <- ""
             sub$moves <- rbind(sub$moves, data.frame(x1=click1.x, y1=click1.y, x2=click2.x, y2=click2.y, show=show, move=attr(pos,"move"), eval=evalval, comment=comment, circles=circlesvar, arrows=arrowsvar))
             comment <- ""
 
