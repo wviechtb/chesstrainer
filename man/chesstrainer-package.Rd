@@ -93,7 +93,9 @@
 }
 \section{Managing/Selecting Players}{
 
-   The trainer can be used by multiple players. A player can be selected with the \code{<p>} key. You can either enter a player number, the name of an existing player, or enter a new player name. The current player can be deleted with the \code{Ctrl-<r>} key. Since this deletes all progress information for this player from the sequence files, you will receive a prompt to confirm this.
+   The trainer can be used by multiple players. A player can be selected with the \code{<p>} key. You can either enter a player number, the name of an existing player, or enter a new player name. Note that player names must be syntactically valid (i.e., should start with a letter and not contain any spaces).
+
+   The current player can be deleted with the \code{Ctrl-<r>} key. Since this deletes all progress information for this player from the sequence files, you will receive a prompt to confirm this.
 
    With \code{<F2>}, a leaderboard (based on the lowest average score) and player statistics are shown (i.e., the average score, the standard deviation of the scores, the minimum and maximum score, and the total number of sequences played). The statistics are based on the currently selected sequences (or all sequences if no selection has been applied). Also, sequences whose score was manually set to 0 are not included in these statistics.
 

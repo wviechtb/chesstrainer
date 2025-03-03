@@ -9,8 +9,10 @@
    if (nplayers == 0L) {
       while (TRUE) {
          player <- readline(prompt=.text("newplayername"))
-         if (!identical(player, ""))
+         if (!identical(player, "")) {
+            player <- make.names(player) # just in case
             break
+         }
       }
    } else {
       cat(.text("foundplayers"))
@@ -34,6 +36,8 @@
                player <- players[player]
                break
             }
+         } else {
+            player <- make.names(player) # just in case
          }
          break
       }

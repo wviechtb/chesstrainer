@@ -509,7 +509,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   circles <- matrix(nrow=0, ncol=2)
                   arrows <- matrix(nrow=0, ncol=4)
                }
-               pos <- .updateboard(pos, move=sub$moves[i,1:4], flip=flip, volume=volume, verbose=verbose)
+               pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE, volume=volume, verbose=verbose)
                #sub$moves$move[i] <- attr(pos,"move")
                .draweval(sub$moves$eval[i], sub$moves$eval[i-1], flip=flip, eval=eval, evalsteps=evalsteps)
                i <- i + 1
@@ -1059,7 +1059,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                      sub$moves <- sub$moves[seq_len(i-1),,drop=FALSE]
                      sidetoplay <- "w"
                      for (j in seq_len(i-1)) {
-                        pos <- .updateboard(pos, move=sub$moves[j,1:4], flip=flip, volume=0, verbose=verbose)
+                        pos <- .updateboard(pos, move=sub$moves[j,1:6], flip=flip, autoprom=TRUE, volume=0, verbose=verbose)
                         #sub$moves$move[j] <- attr(pos,"move")
                         sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                      }
@@ -1124,7 +1124,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   sub$moves <- sub$moves[1:(i-1),,drop=FALSE]
 
                for (i in 1:nrow(sub$moves)) {
-                  pos <- .updateboard(pos, move=sub$moves[i,1:4], flip=flip, volume=volume, verbose=verbose)
+                  pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE, volume=volume, verbose=verbose)
                   #sub$moves$move[i] <- attr(pos,"move")
                   if (identical(sub$moves$comment[i], "") && !identical(sub$moves$comment[i-1], "")) {
                      texttop <- .texttop(sub$moves$comment[i-1])
@@ -1180,7 +1180,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   .texttop(.text("waslastmove"))
                   next
                }
-               pos <- .updateboard(pos, move=sub$moves[i,1:4], flip=flip, volume=volume, verbose=verbose)
+               pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE, volume=volume, verbose=verbose)
                #sub$moves$move[i] <- attr(pos,"move")
                .draweval(sub$moves$eval[i], flip=flip, eval=eval, evalsteps=evalsteps)
                i <- i + 1
@@ -1211,7 +1211,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   i <- i - 1
                   sidetoplay <- "w"
                   for (j in seq_len(i-1)) {
-                     pos <- .updateboard(pos, move=sub$moves[j,1:4], flip=flip, volume=0, verbose=verbose)
+                     pos <- .updateboard(pos, move=sub$moves[j,1:6], flip=flip, autoprom=TRUE, volume=0, verbose=verbose)
                      #sub$moves$move[j] <- attr(pos,"move")
                      sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                   }
@@ -1422,7 +1422,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   cat("\n")
 
                   for (i in 1:nrow(sub$moves)) {
-                     pos <- .updateboard(pos, move=sub$moves[i,1:4], flip=flip, volume=volume, verbose=verbose)
+                     pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE, volume=volume, verbose=verbose)
                      #sub$moves$move[i] <- attr(pos,"move")
                      if (identical(sub$moves$comment[i], "") && !identical(sub$moves$comment[i-1], "")) {
                         texttop <- .texttop(sub$moves$comment[i-1])
@@ -1728,21 +1728,35 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             #   .drawsideindicator(sidetoplay, flip)
          }
 
-         if (mode == "add" || all(c(click1.x==sub$moves$x1[i], click1.y==sub$moves$y1[i], click2.x==sub$moves$x2[i], click2.y==sub$moves$y2[i]))) {
+         domistake <- TRUE
 
-            # if in add mode or if the move is correct, make the move
+         if (mode == "add") {
 
-            pos <- .updateboard(pos, move=c(click1.x, click1.y, click2.x, click2.y), flip=flip, volume=volume, verbose=verbose)
-            .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
+            # if in add mode, make the move
 
-            if (mode == "play") {
-               .draweval(sub$moves$eval[i], sub$moves$eval[i-1], flip=flip, eval=eval, evalsteps=evalsteps)
-               #sub$moves$move[i] <- attr(pos,"move")
-            } else {
-               .texttop(" ")
-            }
+            pos <- .updateboard(pos, move=data.frame(click1.x, click1.y, click2.x, click2.y, NA, NA), flip=flip, autoprom=FALSE, volume=volume, verbose=verbose)
+            #.printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
+            domistake <- FALSE
+            .texttop(" ")
 
          } else {
+
+            # if in play mode, check that the move is correct (and also check that a promotion is made correctly)
+
+            if (all(c(click1.x==sub$moves$x1[i], click1.y==sub$moves$y1[i], click2.x==sub$moves$x2[i], click2.y==sub$moves$y2[i]))) {
+               tmp <- .updateboard(pos, move=data.frame(click1.x, click1.y, click2.x, click2.y, sub$moves[i,5:6]), flip=flip, autoprom=FALSE, volume=volume, verbose=verbose)
+               if (!identical(tmp, "prommistake")) {
+                  domistake <- FALSE
+                  pos <- tmp
+                  #.printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
+                  .draweval(sub$moves$eval[i], sub$moves$eval[i-1], flip=flip, eval=eval, evalsteps=evalsteps)
+                  #sub$moves$move[i] <- attr(pos,"move")
+               }
+            }
+
+         }
+
+         if (mode == "play" && domistake) {
 
             # if in play mode and the move was incorrect, adjust the score, and show that it was the wrong move
 
@@ -1907,7 +1921,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             } else {
                Sys.sleep(sleep)
             }
-            pos <- .updateboard(pos, move=sub$moves[i,1:4], flip=flip, volume=volume, verbose=verbose)
+            pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE, volume=volume, verbose=verbose)
             #sub$moves$move[i] <- attr(pos,"move")
             .draweval(sub$moves$eval[i], sub$moves$eval[i-1], flip=flip, eval=eval, evalsteps=evalsteps)
             texttop <- .texttop(sub$moves$comment[i])

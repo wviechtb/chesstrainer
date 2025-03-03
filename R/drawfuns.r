@@ -107,7 +107,7 @@
 
 }
 
-.updateboard <- function(pos, move, flip, volume, verbose) {
+.updateboard <- function(pos, move, flip, autoprom, volume, verbose) {
 
    x1 <- unname(move[[1]])
    y1 <- unname(move[[2]])
@@ -260,81 +260,105 @@
 
    if (flip) {
       if (x1 == 7 && x2 == 8 && pos[9-x1,9-y1] == "BP") {
-         sapply(8:5, function(x2) .drawsquare(x2, y2, col=col.square.be))
-         mapply(.drawpiece, x=8:5, y=rep(y2,4), piece=c("BQ","BN","BR","BB"))
-         while (TRUE) {
-            click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.pickpromotionpiece)
-            if (identical(click, c(8,y2)))
-               promotionpiece <- "BQ"
-            if (identical(click, c(7,y2)))
-               promotionpiece <- "BN"
-            if (identical(click, c(6,y2)))
-               promotionpiece <- "BR"
-            if (identical(click, c(5,y2)))
-               promotionpiece <- "BB"
-            if (promotionpiece != "")
-               break
+         if (autoprom) {
+            promotionpiece <- paste0("B", strsplit(sub("+" ,"", move[[6]], fixed=TRUE), "=", fixed=TRUE)[[1]][2])
+         } else {
+            sapply(8:5, function(x2) .drawsquare(x2, y2, col=col.square.be))
+            mapply(.drawpiece, x=8:5, y=rep(y2,4), piece=c("BQ","BN","BR","BB"))
+            while (TRUE) {
+               click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.pickpromotionpiece)
+               if (identical(click, c(8,y2)))
+                  promotionpiece <- "BQ"
+               if (identical(click, c(7,y2)))
+                  promotionpiece <- "BN"
+               if (identical(click, c(6,y2)))
+                  promotionpiece <- "BR"
+               if (identical(click, c(5,y2)))
+                  promotionpiece <- "BB"
+               if (promotionpiece != "")
+                  break
+            }
+            sapply(8:5, function(x2) .drawsquare(x2, y2))
+            mapply(.drawpiece, x=8:5, y=rep(y2,4), piece=pos[9-8:5,9-y2])
+            if (!is.na(move[[6]]) && !identical(promotionpiece, paste0("B", strsplit(sub("+" ,"", move[[6]], fixed=TRUE), "=", fixed=TRUE)[[1]][2])))
+               return("prommistake")
          }
-         sapply(8:5, function(x2) .drawsquare(x2, y2))
-         mapply(.drawpiece, x=8:5, y=rep(y2,4), piece=pos[9-8:5,9-y2])
       }
       if (x1 == 2 && x2 == 1 && pos[9-x1,9-y1] == "WP") {
-         sapply(1:4, function(x2) .drawsquare(x2, y2, col=col.square.be))
-         mapply(.drawpiece, x=1:4, y=rep(y2,4), piece=c("WQ","WN","WR","WB"))
-         while (TRUE) {
-            click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.pickpromotionpiece)
-            if (identical(click, c(1,y2)))
-               promotionpiece <- "WQ"
-            if (identical(click, c(2,y2)))
-               promotionpiece <- "WN"
-            if (identical(click, c(3,y2)))
-               promotionpiece <- "WR"
-            if (identical(click, c(4,y2)))
-               promotionpiece <- "WB"
-            if (promotionpiece != "")
-               break
+         if (autoprom) {
+            promotionpiece <- paste0("W", strsplit(sub("+" ,"", move[[6]], fixed=TRUE), "=", fixed=TRUE)[[1]][2])
+         } else {
+            sapply(1:4, function(x2) .drawsquare(x2, y2, col=col.square.be))
+            mapply(.drawpiece, x=1:4, y=rep(y2,4), piece=c("WQ","WN","WR","WB"))
+            while (TRUE) {
+               click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.pickpromotionpiece)
+               if (identical(click, c(1,y2)))
+                  promotionpiece <- "WQ"
+               if (identical(click, c(2,y2)))
+                  promotionpiece <- "WN"
+               if (identical(click, c(3,y2)))
+                  promotionpiece <- "WR"
+               if (identical(click, c(4,y2)))
+                  promotionpiece <- "WB"
+               if (promotionpiece != "")
+                  break
+            }
+            sapply(1:4, function(x2) .drawsquare(x2, y2))
+            mapply(.drawpiece, x=1:4, y=rep(y2,4), piece=pos[9-1:4,9-y2])
+            if (!is.na(move[[6]]) && !identical(promotionpiece, paste0("W", strsplit(sub("+" ,"", move[[6]], fixed=TRUE), "=", fixed=TRUE)[[1]][2])))
+               return("prommistake")
          }
-         sapply(1:4, function(x2) .drawsquare(x2, y2))
-         mapply(.drawpiece, x=1:4, y=rep(y2,4), piece=pos[9-1:4,9-y2])
       }
    } else {
       if (x1 == 7 && x2 == 8 && pos[x1,y1] == "WP") {
-         sapply(8:5, function(x2) .drawsquare(x2, y2, col=col.square.be))
-         mapply(.drawpiece, x=8:5, y=rep(y2,4), piece=c("WQ","WN","WR","WB"))
-         while (TRUE) {
-            click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.pickpromotionpiece)
-            if (identical(click, c(8,y2)))
-               promotionpiece <- "WQ"
-            if (identical(click, c(7,y2)))
-               promotionpiece <- "WN"
-            if (identical(click, c(6,y2)))
-               promotionpiece <- "WR"
-            if (identical(click, c(5,y2)))
-               promotionpiece <- "WB"
-            if (promotionpiece != "")
-               break
+         if (autoprom) {
+            promotionpiece <- paste0("W", strsplit(sub("+" ,"", move[[6]], fixed=TRUE), "=", fixed=TRUE)[[1]][2])
+         } else {
+            sapply(8:5, function(x2) .drawsquare(x2, y2, col=col.square.be))
+            mapply(.drawpiece, x=8:5, y=rep(y2,4), piece=c("WQ","WN","WR","WB"))
+            while (TRUE) {
+               click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.pickpromotionpiece)
+               if (identical(click, c(8,y2)))
+                  promotionpiece <- "WQ"
+               if (identical(click, c(7,y2)))
+                  promotionpiece <- "WN"
+               if (identical(click, c(6,y2)))
+                  promotionpiece <- "WR"
+               if (identical(click, c(5,y2)))
+                  promotionpiece <- "WB"
+               if (promotionpiece != "")
+                  break
+            }
+            sapply(8:5, function(x2) .drawsquare(x2, y2))
+            mapply(.drawpiece, x=8:5, y=rep(y2,4), piece=pos[8:5,y2])
+            if (!is.na(move[[6]]) && !identical(promotionpiece, paste0("W", strsplit(sub("+" ,"", move[[6]], fixed=TRUE), "=", fixed=TRUE)[[1]][2])))
+               return("prommistake")
          }
-         sapply(8:5, function(x2) .drawsquare(x2, y2))
-         mapply(.drawpiece, x=8:5, y=rep(y2,4), piece=pos[8:5,y2])
       }
       if (x1 == 2 && x2 == 1 && pos[x1,y1] == "BP") {
-         sapply(1:4, function(x2) .drawsquare(x2, y2, col=col.square.be))
-         mapply(.drawpiece, x=1:4, y=rep(y2,4), piece=c("BQ","BN","BR","BB"))
-         while (TRUE) {
-            click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.pickpromotionpiece)
-            if (identical(click, c(1,y2)))
-               promotionpiece <- "BQ"
-            if (identical(click, c(2,y2)))
-               promotionpiece <- "BN"
-            if (identical(click, c(3,y2)))
-               promotionpiece <- "BR"
-            if (identical(click, c(4,y2)))
-               promotionpiece <- "BB"
-            if (promotionpiece != "")
-               break
+         if (autoprom) {
+            promotionpiece <- paste0("B", strsplit(sub("+" ,"", move[[6]], fixed=TRUE), "=", fixed=TRUE)[[1]][2])
+         } else {
+            sapply(1:4, function(x2) .drawsquare(x2, y2, col=col.square.be))
+            mapply(.drawpiece, x=1:4, y=rep(y2,4), piece=c("BQ","BN","BR","BB"))
+            while (TRUE) {
+               click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.pickpromotionpiece)
+               if (identical(click, c(1,y2)))
+                  promotionpiece <- "BQ"
+               if (identical(click, c(2,y2)))
+                  promotionpiece <- "BN"
+               if (identical(click, c(3,y2)))
+                  promotionpiece <- "BR"
+               if (identical(click, c(4,y2)))
+                  promotionpiece <- "BB"
+               if (promotionpiece != "")
+                  break
+            }
+            sapply(1:4, function(x2) .drawsquare(x2, y2))
+            mapply(.drawpiece, x=1:4, y=rep(y2,4), piece=pos[1:4,y2])
+            if (!is.na(move[[6]]) && !identical(promotionpiece, paste0("B", strsplit(sub("+" ,"", move[[6]], fixed=TRUE), "=", fixed=TRUE)[[1]][2])))
+               return("prommistake")
          }
-         sapply(1:4, function(x2) .drawsquare(x2, y2))
-         mapply(.drawpiece, x=1:4, y=rep(y2,4), piece=pos[1:4,y2])
       }
    }
 
