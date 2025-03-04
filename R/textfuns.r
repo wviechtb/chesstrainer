@@ -124,8 +124,8 @@
 
    if (x == "showgraph") {
       return(switch(lang,
-                    de = paste0("Fortschrittsdiagramm zeigen: ", ifelse(arg, "an", "aus")),
-                         paste0("Show progress graph: ", ifelse(arg, "on", "off"))
+                    de = paste0("Fortschrittsdiagramm am Ende von Sequenzen anzeigen: ", ifelse(arg, "an", "aus")),
+                         paste0("Show progress graph at the end of the sequences: ", ifelse(arg, "on", "off"))
    ))}
 
    if (x == "comment") {
@@ -562,6 +562,12 @@
                          "Stockfish crashed ('segmentation fault').\n"
    ))}
 
+   if (x == "nobestmove") {
+      return(switch(lang,
+                    de = "Kann den besten Zug nicht anzeigen (l\U000000E4uft Stockfish?).\n",
+                         "Cannot show best move (is Stockfish running?)."
+   ))}
+
    if (x == "quit") {
       return(switch(lang,
                     de = "Schachtrainer wird beendet ...\n",
@@ -620,6 +626,12 @@
       return(switch(lang,
                     de = paste0("FEN in die Zwischenablage kopiert."),
                          paste0("Copied FEN to the clipboard.")
+   ))}
+
+   if (x == "bookmarked") {
+      return(switch(lang,
+                    de = paste0("Sequenz vorgemerkt: ", arg, "\n"),
+                         paste0("Sequence bookmarked: ", arg, "\n")
    ))}
 
 }

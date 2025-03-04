@@ -194,6 +194,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
    oldvolume <- volume
    seqno <- 1
    filename <- ""
+   bookmark <- ""
 
    # create the getGraphicsEvent() functions
 
@@ -557,7 +558,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
             click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
 
-            keys      <- c("q", " ", "n", "p", "e", "E", "l", "-", "=", "+", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F9", "F10", "F12", "m", "/", ",", ".", "w", "t", "h", "ctrl-R", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "v", "a", "G", "ctrl-C")
+            keys      <- c("q", " ", "n", "p", "e", "E", "l", "-", "=", "+", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F9", "F10", "F12", "m", "/", ",", ".", "<", ">", "w", "t", "h", "ctrl-R", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "v", "a", "G", "ctrl-C")
             keys.add  <- c("f", "z", "c", "s", "0", "?", "b")
             keys.play <- c("z", "c", "s", "\b", "ctrl-D", "Right", "Left", "o", "u", "A", "g")
 
@@ -647,7 +648,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             if (mode == "add" && identical(click, "z")) {
                show <- !show
                .texttop(.text("showmoves", show))
-               Sys.sleep(1)
+               Sys.sleep(0.75)
                .texttop(texttop)
                .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                next
@@ -763,7 +764,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             if (identical(click, "G")) {
                showgraph <- !showgraph
                .texttop(.text("showgraph", showgraph))
-               Sys.sleep(1)
+               Sys.sleep(0.75)
                .texttop(texttop)
                settings$showgraph <- showgraph
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
@@ -796,17 +797,52 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                next
             }
 
+            # < to bookmark a sequence (in add mode, last saved sequence; in play mode, current sequence)
+
+            if (identical(click, "<")) {
+               if (mode == "add") {
+                  if (filename != "")
+                     bookmark <- filename
+               } else {
+                  if (seqname != "")
+                     bookmark <- seqname
+               }
+               if (bookmark != "") {
+                  eval(expr=switch1)
+                  cat(.text("bookmarked", bookmark))
+                  eval(expr=switch2)
+               }
+               next
+            }
+
             # / or , to select one or more sequences (or . to select last saved sequence)
 
-            if (identical(click, "/") || identical(click, ",") || identical(click, ".")) {
+            if (identical(click, "/") || identical(click, ",") || identical(click, ".") || identical(click, ">")) {
+
+               doprompt <- TRUE
+
+               if (identical(click, ".")) {
+                  if (filename != "") {
+                     searchterm <- filename
+                     doprompt <- FALSE
+                  } else {
+                     next
+                  }
+               }
+
+               if (identical(click, ">")) {
+                  if (bookmark != "") {
+                     searchterm <- bookmark
+                     doprompt <- FALSE
+                  } else {
+                     next
+                  }
+               }
 
                eval(expr=switch1)
 
-               if (identical(click, ".") && filename != "") {
-                  searchterm <- filename
-               } else {
+               if (doprompt)
                   searchterm <- readline(prompt=.text("seqsearch"))
-               }
 
                if (identical(searchterm , "")) {
                   cat(.text("allseqselected"))
@@ -1013,6 +1049,10 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                      .addrect(hintx2, hinty2, col=.get("col.hint"), lwd=lwd)
                      givehint1 <- TRUE
                      givehint2 <- TRUE
+                  } else {
+                     .texttop(.text("nobestmove"))
+                     Sys.sleep(0.75)
+                     .texttop(" ")
                   }
                }
                next
@@ -1041,7 +1081,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   if (scoreadd > 0) {
                      score <- score - scoreadd
                      .texttop(.text("setscoreback", score))
-                     Sys.sleep(1)
+                     Sys.sleep(0.75)
                      .texttop(texttop)
                      .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                      scoreadd <- 0
@@ -1162,7 +1202,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
             if (mode == "add" && identical(click, "0")) {
                .texttop(.text("setposstart"))
-               Sys.sleep(1)
+               Sys.sleep(0.75)
                .texttop(texttop)
                i <- 1
                comment <- ""
@@ -1243,7 +1283,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             if (identical(click, "w")) {
                pause <- !pause
                .texttop(.text("pause", pause))
-               Sys.sleep(1)
+               Sys.sleep(0.75)
                .texttop(texttop)
                settings$pause <- pause
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
@@ -1259,7 +1299,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   sleep <- min(2, sleep + 0.25)
                }
                .texttop(.text("waittime", formatC(sleep, format="f", digits=2)))
-               Sys.sleep(1)
+               Sys.sleep(0.75)
                .texttop(texttop)
                settings$sleep <- sleep
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
@@ -1276,7 +1316,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   volume <- 0
                }
                .texttop(.text("sound", volume > 0))
-               Sys.sleep(1)
+               Sys.sleep(0.75)
                .texttop(texttop)
                settings$volume <- volume
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
@@ -1288,12 +1328,14 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             if (identical(click, "[") || identical(click, "]")) {
                if (identical(click, "[")) {
                   volume <- max(0, volume - 25)
+                  playsound(system.file("sounds", "move.ogg", package="chesstrainer"), volume=volume)
                } else {
                   volume <- min(100, volume + 25)
+                  playsound(system.file("sounds", "move.ogg", package="chesstrainer"), volume=volume)
                }
                oldvolume <- volume
                .texttop(paste0(.text("volume", round(volume)), "%"))
-               Sys.sleep(1)
+               Sys.sleep(0.5)
                .texttop(texttop)
                settings$volume <- volume
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
@@ -1334,7 +1376,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                assign("lang", lang, envir=.chesstrainer)
                .texttop(.text("lang"))
                .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
-               Sys.sleep(1)
+               Sys.sleep(0.75)
                .texttop(texttop)
                settings$lang <- lang
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
@@ -1391,7 +1433,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                } else {
                   .draweval(clear=TRUE)
                }
-               Sys.sleep(1)
+               Sys.sleep(0.75)
                .texttop(texttop)
                settings$eval <- eval
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
@@ -1596,7 +1638,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                eval(expr=switch2)
                clipr::write_clip(fen, object_type="character")
                .texttop(.text("copyfen"))
-               Sys.sleep(1)
+               Sys.sleep(0.75)
                .texttop(texttop)
                next
             }
@@ -1882,8 +1924,6 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             Sys.sleep(2*sleep)
             run.rnd <- FALSE
             next
-
-            # plot(0:25, 100 * 0.80^(0:25), type="o", pch=19, xlab="Played Correctly", ylab="Score", bty="l", ylim=c(0,100))
 
          }
 

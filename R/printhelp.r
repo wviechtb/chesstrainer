@@ -88,7 +88,7 @@
       "F7       - Einstellungen f\U000000FCr Stockfish \U000000E4ndern",
       "F9       - die FEN der aktuellen Position drucken und auf lichess.org \U000000F6ffnen",
       "F10      - Histogramme / Streudiagramm der Sequenzstatistiken anzeigen",
-      "Ctrl-c   - die FEN der aktuellen Position in die Zwischenablage kopieren",
+      "Strg-c   - die FEN der aktuellen Position in die Zwischenablage kopieren",
       "q        - Trainer beenden",
       "",
       "Tastenk\U000000FCrzel im Spiel Modus:",
