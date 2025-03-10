@@ -815,7 +815,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                next
             }
 
-            # / or , to select one or more sequences (or . to select last saved sequence)
+            # / or , to select one or more sequences, . to select last saved sequence, > to select bookmarked sequence
 
             if (identical(click, "/") || identical(click, ",") || identical(click, ".") || identical(click, ">")) {
 
@@ -1749,6 +1749,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             .drawarrow(click1.y+0.5, click1.x+0.5, click2.y+0.5, click2.x+0.5, lwd=lwd)
             arrows <- rbind(arrows, c(click1.x, click1.y, click2.x, click2.y))
             drawcircles <- FALSE # to prevent circles from being redrawn
+            drawarrows  <- FALSE # to prevent arrows from being redrawn
             next
          }
 
