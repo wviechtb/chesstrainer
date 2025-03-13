@@ -1,4 +1,4 @@
-# chesstrainer 0.9-24 (2025-03-11)
+# chesstrainer 0.9-25 (2025-03-14)
 
 - can play en passant
 - can promote pawns
@@ -21,6 +21,7 @@
 - `<F10>` shows histograms / scatterplot of the sequence statistics
 - simplified the arguments of the `play()` function
 - sequences now also save drawn circles and arrows during add mode and replay them during play mode
+- sequences now also save the FEN for each move; can use this to select sequences
 
 # chesstrainer 0.1-0 (2024-12-17)
 

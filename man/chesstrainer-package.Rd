@@ -44,7 +44,8 @@
    \item by entering a sequence number range (e.g., \code{2-5} to select sequences 2 to 5),
    \item by entering something like \code{score > 80} to select sequences with a score above a certain threshold,
    \item by entering something like \code{played < 1} to select sequences that have been played less than a certain number of times,
-   \item by entering something like \code{days > 2} to select sequences that have been played more than a certain number of days ago.
+   \item by entering something like \code{days > 2} to select sequences that have been played more than a certain number of days ago,
+   \item by entering a \href{https://en.wikipedia.org/wiki/Forsyth-Edwards_Notation}{FEN} to select all sequences that contain a position matching the FEN.
    }
 
    The keywords \code{score}, \code{played}, and \code{days} can be abbreviated to \code{s}, \code{p} , and \code{d} (so \code{s > 80}, \code{p < 1}, and \code{d > 2} would also work). Other comparators such as \code{>=}, \code{<}, and \code{>=} can also be used (e.g., \code{s <= 10}).

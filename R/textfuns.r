@@ -298,10 +298,16 @@
                          paste0("Searching for sequences with string '", arg, "' ...\n")
    ))}
 
-   if (x == "seqsmatch") {
+   if (x == "seqsmatchstart") {
       return(switch(lang,
                     de = "Sequenzen mit dem gleichen Anfang: \n",
                          "Sequences with the same beginning: \n"
+   ))}
+
+   if (x == "seqsmatchfen") {
+      return(switch(lang,
+                    de = "Sequenzen mit der gleichen FEN: \n",
+                         "Sequences with the same FEN: \n"
    ))}
 
    if (x == "selmatches") {

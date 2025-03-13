@@ -31,7 +31,7 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chesstrainer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-24</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-25</span>
       </span>
     </div>
 
@@ -118,7 +118,8 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
 <li><p>by entering a sequence number range (e.g., <code>2-5</code> to select sequences 2 to 5),</p></li>
 <li><p>by entering something like <code>score &gt; 80</code> to select sequences with a score above a certain threshold,</p></li>
 <li><p>by entering something like <code>played &lt; 1</code> to select sequences that have been played less than a certain number of times,</p></li>
-<li><p>by entering something like <code>days &gt; 2</code> to select sequences that have been played more than a certain number of days ago.</p></li>
+<li><p>by entering something like <code>days &gt; 2</code> to select sequences that have been played more than a certain number of days ago,</p></li>
+<li><p>by entering a <a href="https://en.wikipedia.org/wiki/Forsyth-Edwards_Notation" class="external-link">FEN</a> to select all sequences that contain a position matching the FEN.</p></li>
 </ul><p>The keywords <code>score</code>, <code>played</code>, and <code>days</code> can be abbreviated to <code>s</code>, <code>p</code> , and <code>d</code> (so <code>s &gt; 80</code>, <code>p &lt; 1</code>, and <code>d &gt; 2</code> would also work). Other comparators such as <code>&gt;=</code>, <code>&lt;</code>, and <code>&gt;=</code> can also be used (e.g., <code>s &lt;= 10</code>).</p>
 <p>Hitting <code>&lt;enter&gt;</code> at the prompt (i.e., not entering any search string) selects all sequences.</p>
 <p>By default, sequences are selected at random based on the score during ‘play’ mode as described above. However, you can toggle into a different selection mode with the <code>&lt;r&gt;</code> key. The options are:</p><ol><li><p>selection based on the score at random where sequences with higher scores have a higher probability of selection (the default),</p></li>

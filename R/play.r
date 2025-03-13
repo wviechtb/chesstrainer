@@ -426,7 +426,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
          # set up the data frame for a new sequence
 
          sub <- list(flip = flip, moves = data.frame(x1=numeric(), y1=numeric(), x2=numeric(), y2=numeric(), show=logical(), move=character(),
-                                                     eval=numeric(), comment=character(), circles=character(), arrows=character()))
+                                                     eval=numeric(), comment=character(), circles=character(), arrows=character(), fen=character()))
 
       } else {
 
@@ -557,6 +557,16 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             plt <- par("plt")
 
             click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
+
+            #if (mode == "play") {
+            #   if (seqname == "w_partie_morphy_vs_herzog+graf_(opernpartie).rds") {
+            #      click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
+            #   } else {
+            #      click <- "u"
+            #   }
+            #} else {
+            #   click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
+            #}
 
             keys      <- c("q", " ", "n", "p", "e", "E", "l", "-", "=", "+", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F9", "F10", "F12", "m", "/", ",", ".", "<", ">", "w", "t", "h", "ctrl-R", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "v", "a", "G", "ctrl-C")
             keys.add  <- c("f", "z", "c", "s", "0", "?", "b")
@@ -721,7 +731,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             if (identical(click, "E")) {
                eval(expr=switch1)
                dosave <- FALSE
-               print(sub$moves)
+               print(sub$moves[-11])
                cat("\n")
                while (TRUE) {
                   comnum <- readline(prompt=.text("commenttoedit"))
@@ -736,7 +746,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                      sub$moves$comment[comnum] <- newcom
                      dosave <- TRUE
                      cat("\n")
-                     print(sub$moves)
+                     print(sub$moves[-11])
                      cat("\n")
                   }
                }
@@ -815,7 +825,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                next
             }
 
-            # / or , to select one or more sequences, . to select last saved sequence, > to select bookmarked sequence
+            # / or , to select one or more sequences, . to select last saved sequence, > to select the bookmarked sequence
 
             if (identical(click, "/") || identical(click, ",") || identical(click, ".") || identical(click, ">")) {
 
@@ -851,6 +861,33 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   wait <- FALSE
                   mode <- "add"
                   seqno <- 1
+                  eval(expr=switch2)
+                  next
+               }
+
+               if (grepl("^([rnbqkpRNBQKP1-8]+/){7}[rnbqkpRNBQKP1-8]+ [wb] .*$", searchterm)) {
+                  searchterm <- paste(strsplit(searchterm, " ", fixed=TRUE)[[1]][1:3], collapse=" ")
+                  seqident <- sapply(dat.all, function(x) any(grepl(searchterm, x$moves$fen, fixed=TRUE)))
+                  if (any(seqident)) {
+                     cat(.text("seqsmatchfen"))
+                     tab <- data.frame(Name=files.all[seqident])
+                     tab$Name <- format(tab$Name, justify="left")
+                     names(tab)[1] <- ""
+                     rownames(tab) <- which(seqident)
+                     print(tab, print.gap=2)
+                     cat("\n")
+                     selmatches <- readline(prompt=.text("selmatches"))
+                     if (identical(selmatches, "") || .confirm(selmatches)) {
+                        cat(.text("selmatchesconfirm"))
+                        selected <- files.all[seqident]
+                        run.rnd <- FALSE
+                        wait <- FALSE
+                        mode <- "add"
+                        seqno <- 1
+                     }
+                  } else {
+                     cat(.text("noseqsfound"))
+                  }
                   eval(expr=switch2)
                   next
                }
@@ -974,7 +1011,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                seqident <- sapply(dat.all, function(x) identical(sub$moves[1:(i-1),1:4], x$moves[1:(i-1),1:4]))
                eval(expr=switch1)
                if (any(seqident)) {
-                  cat(.text("seqsmatch"))
+                  cat(.text("seqsmatchstart"))
                   tab <- data.frame(Name=files.all[seqident])
                   tab$Name <- format(tab$Name, justify="left")
                   names(tab)[1] <- ""
@@ -1459,8 +1496,15 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   arrows  <- matrix(nrow=0, ncol=4)
                   sidetoplay <- "w"
 
+                  if (is.null(sub$moves$circles))
+                     sub$moves$circles <- ""
+                  if (is.null(sub$moves$arrows))
+                     sub$moves$arrows <- ""
+                  if (is.null(sub$moves$fen))
+                     sub$moves$fen <- ""
+
                   cat(.text("evalupdateold"))
-                  print(sub$moves)
+                  print(sub$moves[-11])
                   cat("\n")
                   cat(.text("evalupdatestart"))
                   cat("\n")
@@ -1484,12 +1528,18 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                      sfrun    <- tmp$sfrun
                      .draweval(evalval, flip=flip, eval=eval, evalsteps=evalsteps)
                      sub$moves$eval[i] <- evalval
+                     sub$moves$fen[i] <- fen
                   }
                   .printinfo(mode, show, player, seqname, seqnum, score, played, i+1, totalmoves, selmode)
                   .drawsideindicator(sidetoplay, flip)
                   cat(.text("evalupdatenew"))
-                  print(sub$moves)
+                  print(sub$moves[-11])
                   saveRDS(sub, file=file.path(seqdir, seqname))
+                  playsound(system.file("sounds", "complete.ogg", package="chesstrainer"), volume=volume)
+                  if (!pause) {
+                     run.rnd <- FALSE
+                     wait <- FALSE
+                  }
 
                } else {
 
@@ -1948,7 +1998,9 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                sub$moves$circles <- ""
             if (is.null(sub$moves$arrows))
                sub$moves$arrows <- ""
-            sub$moves <- rbind(sub$moves, data.frame(x1=click1.x, y1=click1.y, x2=click2.x, y2=click2.y, show=show, move=attr(pos,"move"), eval=evalval, comment=comment, circles=circlesvar, arrows=arrowsvar))
+            if (is.null(sub$moves$fen))
+               sub$moves$fen <- ""
+            sub$moves <- rbind(sub$moves, data.frame(x1=click1.x, y1=click1.y, x2=click2.x, y2=click2.y, show=show, move=attr(pos,"move"), eval=evalval, comment=comment, circles=circlesvar, arrows=arrowsvar, fen=fen))
             comment <- ""
 
          } else {
