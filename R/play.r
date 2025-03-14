@@ -854,6 +854,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                if (doprompt)
                   searchterm <- readline(prompt=.text("seqsearch"))
 
+               # empty prompt = select all sequences
+
                if (identical(searchterm , "")) {
                   cat(.text("allseqselected"))
                   selected <- NULL
@@ -865,7 +867,9 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   next
                }
 
-               if (grepl("^([rnbqkpRNBQKP1-8]+/){7}[rnbqkpRNBQKP1-8]+ [wb] .*$", searchterm)) {
+               # FEN entered (use piece placement, active color, and castling availability for matching)
+
+               if (grepl("^([rnbqkpRNBQKP1-8]+/){7}[rnbqkpRNBQKP1-8]+ [wb] (-|[KQkq]{1,4}) (-|[a-h][36]) \\d+ \\d+$", searchterm)) {
                   searchterm <- paste(strsplit(searchterm, " ", fixed=TRUE)[[1]][1:3], collapse=" ")
                   seqident <- sapply(dat.all, function(x) any(grepl(searchterm, x$moves$fen, fixed=TRUE)))
                   if (any(seqident)) {
@@ -875,7 +879,6 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                      names(tab)[1] <- ""
                      rownames(tab) <- which(seqident)
                      print(tab, print.gap=2)
-                     cat("\n")
                      selmatches <- readline(prompt=.text("selmatches"))
                      if (identical(selmatches, "") || .confirm(selmatches)) {
                         cat(.text("selmatchesconfirm"))
@@ -891,6 +894,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   eval(expr=switch2)
                   next
                }
+
+               # 'number - number' entered
 
                tmp <- strcapture("^([[:digit:]]+)\\s*-\\s*([[:digit:]]+)$", searchterm, data.frame(seq.lo=integer(), seq.hi=integer()))
 
@@ -909,6 +914,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   next
                }
 
+               # 'number' entered
+
                if (grepl("^[0-9]+$", searchterm)) {
                   seqno <- as.numeric(searchterm)
                   if (seqno < 1 || seqno > k.all) {
@@ -924,6 +931,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   eval(expr=switch2)
                   next
                }
+
+               # 'score >/</>=/<= value' entered
 
                tmp <- strcapture(.text("strcapscore"), searchterm, data.frame(text=character(), sign=character(), cutoff=integer()))
 
@@ -945,6 +954,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   next
                }
 
+               # 'played >/</>=/<= value' entered
+
                tmp <- strcapture(.text("strcapplayed"), searchterm, data.frame(text=character(), sign=character(), cutoff=integer()))
 
                if (!is.na(tmp$cutoff)) {
@@ -964,6 +975,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   eval(expr=switch2)
                   next
                }
+
+               # 'days >/</>=/<= value' entered
 
                tmp <- strcapture(.text("strcapdays"), searchterm, data.frame(text=character(), sign=character(), cutoff=numeric()))
 
@@ -985,6 +998,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   eval(expr=switch2)
                   next
                }
+
+               # if nothing above applies, then a string was entered for matching against the file names
 
                cat(.text("seqsearchterm", searchterm))
 
@@ -1017,7 +1032,6 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   names(tab)[1] <- ""
                   rownames(tab) <- which(seqident)
                   print(tab, print.gap=2)
-                  cat("\n")
                   selmatches <- readline(prompt=.text("selmatches"))
                   if (identical(selmatches, "") || .confirm(selmatches)) {
                      cat(.text("selmatchesconfirm"))
@@ -1505,9 +1519,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
                   cat(.text("evalupdateold"))
                   print(sub$moves[-11])
-                  cat("\n")
                   cat(.text("evalupdatestart"))
-                  cat("\n")
 
                   for (i in 1:nrow(sub$moves)) {
                      pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE, volume=volume, verbose=verbose)

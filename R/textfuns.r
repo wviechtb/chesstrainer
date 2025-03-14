@@ -214,8 +214,8 @@
 
    if (x == "seqsearch") {
       return(switch(lang,
-                    de = "Sequenzsuche ('Begriff', 'Nummer1-Nummer2', 'Nummer', 'Punkte > Wert', 'Gespielt < Wert', 'Tage > Wert'): ",
-                         "Sequence search ('string', 'number1-number2', 'number', 'score > value', 'played < value', 'days > value'): "
+                    de = "Sequenzsuche ('Begriff', 'Nummer1-Nummer2', 'Nummer', 'Punkte > Wert', 'Gespielt < Wert', 'Tage > Wert', FEN):\n",
+                         "Sequence search ('string', 'number1-number2', 'number', 'score > value', 'played < value', 'days > value', FEN):\n"
    ))}
 
    if (x == "allseqselected") {
@@ -256,8 +256,8 @@
 
    if (x == "selseqscore") {
       return(switch(lang,
-                    de = paste0("Suche nach Sequenzen mit Punkten ", arg[[1]], " ", arg[[2]], ".\n"),
-                         paste0("Searching for sequences with score ", arg[[1]], " ", arg[[2]], ".\n")
+                    de = paste0("\nSuche nach Sequenzen mit Punkten ", arg[[1]], " ", arg[[2]], ".\n"),
+                         paste0("\nSearching for sequences with score ", arg[[1]], " ", arg[[2]], ".\n")
    ))}
 
    if (x == "numseqfound") {
@@ -274,8 +274,8 @@
 
    if (x == "selseqplayed") {
       return(switch(lang,
-                    de = paste0("Suche nach Sequenzen die ", arg[[1]], " ", arg[[2]], " Mal gespielt wurden.\n"),
-                         paste0("Searching for sequences that were played ", arg[[1]], " ", arg[[2]], " times.\n")
+                    de = paste0("\nSuche nach Sequenzen die ", arg[[1]], " ", arg[[2]], " Mal gespielt wurden.\n"),
+                         paste0("\nSearching for sequences that were played ", arg[[1]], " ", arg[[2]], " times.\n")
    ))}
 
    if (x == "strcapdays") {
@@ -294,8 +294,8 @@
 
    if (x == "seqsearchterm") {
       return(switch(lang,
-                    de = paste0("Suche nach Sequenzen mit dem Begriff '", arg, "' ...\n"),
-                         paste0("Searching for sequences with string '", arg, "' ...\n")
+                    de = paste0("\nSuche nach Sequenzen mit dem Begriff '", arg, "' ...\n"),
+                         paste0("\nSearching for sequences with string '", arg, "' ...\n")
    ))}
 
    if (x == "seqsmatchstart") {
@@ -306,14 +306,14 @@
 
    if (x == "seqsmatchfen") {
       return(switch(lang,
-                    de = "Sequenzen mit der gleichen FEN: \n",
-                         "Sequences with the same FEN: \n"
+                    de = "\nSequenzen mit der gleichen FEN: \n",
+                         "\nSequences with the same FEN: \n"
    ))}
 
    if (x == "selmatches") {
       return(switch(lang,
-                    de = "Diese Sequenzen selektieren? (J/n): ",
-                         "Select these sequences? (Y/n): "
+                    de = "\nDiese Sequenzen selektieren? (J/n): ",
+                         "\nSelect these sequences? (Y/n): "
    ))}
 
    if (x == "selmatchesconfirm") {
@@ -588,8 +588,8 @@
 
    if (x == "evalupdatestart") {
       return(switch(lang,
-                    de = "Starte Neuberechnung der Bewertungen ...\n",
-                         "Starting recalculation of the evaluations ...\n"
+                    de = "\nStarte Neuberechnung der Bewertungen ...\n\n",
+                         "\nStarting recalculation of the evaluations ...\n\n"
    ))}
 
    if (x == "evalupdatenew") {

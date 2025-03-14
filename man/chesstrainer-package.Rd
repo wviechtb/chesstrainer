@@ -63,7 +63,7 @@
    \item sequential, where the sequences are played in order.
    }
 
-   The exponent value affects selection modes 1, 3, and 5. Setting the exponent value to a very large value makes mode 1 essentially the same as mode 2 (and similarly, mode 3 like mode 4 and mode 5 like mode 6). For modes 2, 4, and 6, if the highest score, lowest play frequency, or oldest date is the same for multiple sequences, the first one is selected. For modes 5 and 6, sequences that have never been played before are given highest priority. For all modes, sequences whose score was set to 0 are never selected.
+   The exponent value affects selection modes 1, 3, and 5. Setting the exponent value to a very large value makes mode 1 essentially the same as mode 2 (and similarly, mode 3 like mode 4 and mode 5 like mode 6). For modes 2, 4, and 6, if the highest score, lowest play frequency, or oldest date is the same for multiple sequences, the first one is selected. For modes 5 and 6, sequences that have never been played before are given the highest priority. For all modes, sequences whose score was set to 0 are never selected.
 
 }
 \section{Adding New Sequences}{
