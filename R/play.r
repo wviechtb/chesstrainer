@@ -731,7 +731,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             if (identical(click, "E")) {
                eval(expr=switch1)
                dosave <- FALSE
-               print(sub$moves[-11])
+               print(sub$moves[1:8])
                cat("\n")
                while (TRUE) {
                   comnum <- readline(prompt=.text("commenttoedit"))
@@ -746,7 +746,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                      sub$moves$comment[comnum] <- newcom
                      dosave <- TRUE
                      cat("\n")
-                     print(sub$moves[-11])
+                     print(sub$moves[1:8])
                      cat("\n")
                   }
                }
@@ -851,8 +851,10 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
                eval(expr=switch1)
 
-               if (doprompt)
-                  searchterm <- readline(prompt=.text("seqsearch"))
+               if (doprompt) {
+                  cat(.text("seqsearch"))
+                  searchterm <- readline(prompt=.text(""))
+               }
 
                # empty prompt = select all sequences
 
