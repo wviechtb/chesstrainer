@@ -853,7 +853,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
                if (doprompt) {
                   cat(.text("seqsearch"))
-                  searchterm <- readline(prompt=.text(""))
+                  searchterm <- readline(prompt="")
                }
 
                # empty prompt = select all sequences
