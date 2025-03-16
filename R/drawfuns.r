@@ -543,8 +543,8 @@
 
 .drawarrow <- function(x1, y1, x2, y2, lwd) {
 
-   length <- lwd*4*0.015
-   width  <- lwd*4*0.008
+   length <- min(max(0.25, lwd*4*0.015), 0.45)
+   width  <- min(max(0.15, lwd*4*0.010), 0.40)
 
    slp <- (y2-y1) / (x2-x1)
 

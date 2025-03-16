@@ -50,7 +50,7 @@
 
    The keywords \code{score}, \code{played}, and \code{days} can be abbreviated to \code{s}, \code{p} , and \code{d} (so \code{s > 80}, \code{p < 1}, and \code{d > 2} would also work). Other comparators such as \code{>=}, \code{<}, and \code{>=} can also be used (e.g., \code{s <= 10}).
 
-   Hitting \code{<enter>} at the prompt (i.e., not entering any search string) selects all sequences.
+   Hitting \code{<enter>} at the prompt (i.e., not entering any search string) keeps the current selection. Entering \code{*} at the prompt selects all sequences (the \code{<*>} key also selects all sequences without using the \code{</>} key first).
 
    By default, sequences are selected at random based on the score during \sQuote{play} mode as described above. However, you can toggle into a different selection mode with the \code{<r>} key. The options are:
    \enumerate{

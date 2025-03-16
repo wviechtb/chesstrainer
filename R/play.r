@@ -568,7 +568,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             #   click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
             #}
 
-            keys      <- c("q", " ", "n", "p", "e", "E", "l", "-", "=", "+", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F9", "F10", "F12", "m", "/", ",", ".", "<", ">", "w", "t", "h", "ctrl-R", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "v", "a", "G", "ctrl-C")
+            keys      <- c("q", " ", "n", "p", "e", "E", "l", "-", "=", "+", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F9", "F10", "F12", "m", "/", "*", ",", ".", "<", ">", "w", "t", "h", "ctrl-R", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "v", "a", "G", "ctrl-C")
             keys.add  <- c("f", "z", "c", "s", "0", "?", "b")
             keys.play <- c("z", "c", "s", "\b", "ctrl-D", "Right", "Left", "o", "u", "A", "g")
 
@@ -856,9 +856,16 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   searchterm <- readline(prompt="")
                }
 
-               # empty prompt = select all sequences
+               # empty prompt = do nothing
 
                if (identical(searchterm , "")) {
+                  eval(expr=switch2)
+                  next
+               }
+
+               # * = select all sequences
+
+               if (identical(searchterm , "*")) {
                   cat(.text("allseqselected"))
                   selected <- NULL
                   run.rnd <- FALSE
@@ -1020,6 +1027,20 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                eval(expr=switch2)
                next
 
+            }
+
+            # * to select all sequences
+
+            if (identical(click, "*")) {
+               eval(expr=switch1)
+               cat(.text("allseqselected"))
+               selected <- NULL
+               run.rnd <- FALSE
+               wait <- FALSE
+               mode <- "add"
+               seqno <- 1
+               eval(expr=switch2)
+               next
             }
 
             # ? to find all sequences that start in the same way (only in add mode)
@@ -1363,11 +1384,16 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
             if (identical(click, "m")) {
                if (volume == 0) {
-                  volume <- oldvolume
+                  if (oldvolume == 0) {
+                     volume <- oldvolume <- 50
+                  } else {
+                     volume <- oldvolume
+                  }
                } else {
                   oldvolume <- volume
                   volume <- 0
                }
+               playsound(system.file("sounds", "move.ogg", package="chesstrainer"), volume=volume)
                .texttop(.text("sound", volume > 0))
                Sys.sleep(0.75)
                .texttop(texttop)
@@ -1381,12 +1407,11 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             if (identical(click, "[") || identical(click, "]")) {
                if (identical(click, "[")) {
                   volume <- max(0, volume - 25)
-                  playsound(system.file("sounds", "move.ogg", package="chesstrainer"), volume=volume)
                } else {
                   volume <- min(100, volume + 25)
-                  playsound(system.file("sounds", "move.ogg", package="chesstrainer"), volume=volume)
                }
                oldvolume <- volume
+               playsound(system.file("sounds", "move.ogg", package="chesstrainer"), volume=volume)
                .texttop(paste0(.text("volume", round(volume)), "%"))
                Sys.sleep(0.5)
                .texttop(texttop)
