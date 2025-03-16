@@ -663,20 +663,3 @@
    return(FALSE)
 
 }
-
-.fileprefix <- function(flip) {
-
-   lang <- .get("lang")
-
-   if (flip) {
-      return(switch(lang,
-                    de = "s_",
-                         "b_"
-   ))} else {
-      return(switch(lang,
-                    de = "w_",
-                         "w_"
-
-   ))}
-
-}

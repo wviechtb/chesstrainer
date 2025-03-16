@@ -77,8 +77,6 @@
 
    If a sequence should start not at the starting position of a chess game, but later on, you can move the pieces into the desired position and then use the \code{<0>} key to make the current position the starting position for a particular sequence. Alternatively, you can use the \code{<b>} key to start a board editor (see below for details).
 
-   When saving a sequence, the color of the pieces to be played is automatically prepended to the filename (i.e., as \code{w_} or \code{b_}). This can be useful when selecting sequences (e.g., using the search term \code{^w_} will select all sequences that start with \code{w_} and are hence sequences where the player plays with white).
-
    The \code{<e>} key can be used to edit the comments for a particular sequence. The \code{<E>} key opens up the \code{\link[=edit]{data editor}} on the data frame that contains the moves for the current sequence. This can also be used to add, edit, and remove comments in the \code{comment} column or make adjustments to the other columns (but this should only be done if their meaning is clear).
 
    With the \code{<?>} key, you can find all sequences that start with the same moves that have been entered so far. If any matching sequences are found, a prompt will ask if they should be selected. This is useful for checking what sequences are already available based on some initial moves (and then practicing these sequences).

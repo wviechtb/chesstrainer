@@ -689,9 +689,9 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   eval(expr=switch2)
                   next
                }
-               filename <- sub("^[wbs]_", "", filename) # strip [wbs]_ from beginning of filename
+               #filename <- sub("^[wbs]_", "", filename) # strip [wbs]_ from beginning of filename
                filename <- sub("\\.rds$", "", filename) # strip .rds from end of filename
-               filenamefull <- file.path(seqdir, paste0(.fileprefix(flip), filename, ".rds"))
+               filenamefull <- file.path(seqdir, filename, ".rds")
                dosave <- TRUE
                if (file.exists(filenamefull)) {
                   dosave <- FALSE
