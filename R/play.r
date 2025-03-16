@@ -712,23 +712,9 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                next
             }
 
-            # e to edit a sequence using edit()
+            # e to edit the comments using prompts
 
             if (identical(click, "e")) {
-               sub$moves <- edit(sub$moves)
-               sub$moves$comment[is.na(sub$moves$comment)] <- ""
-               if (!is.null(sub$moves$circles))
-                  sub$moves$circles[is.na(sub$moves$circles)] <- ""
-               if (!is.null(sub$moves$arrows))
-               sub$moves$arrows[is.na(sub$moves$arrows)] <- ""
-               if (mode == "play")
-                  saveRDS(sub, file=file.path(seqdir, seqname))
-               next
-            }
-
-            # E to edit the comments using prompts
-
-            if (identical(click, "E")) {
                eval(expr=switch1)
                dosave <- FALSE
                print(sub$moves[1:8])
@@ -753,6 +739,20 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                if (dosave && mode == "play")
                   saveRDS(sub, file=file.path(seqdir, seqname))
                eval(expr=switch2)
+               next
+            }
+
+            # E to edit a sequence using edit()
+
+            if (identical(click, "E")) {
+               sub$moves <- edit(sub$moves)
+               sub$moves$comment[is.na(sub$moves$comment)] <- ""
+               if (!is.null(sub$moves$circles))
+                  sub$moves$circles[is.na(sub$moves$circles)] <- ""
+               if (!is.null(sub$moves$arrows))
+               sub$moves$arrows[is.na(sub$moves$arrows)] <- ""
+               if (mode == "play")
+                  saveRDS(sub, file=file.path(seqdir, seqname))
                next
             }
 
@@ -883,6 +883,34 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                   seqident <- sapply(dat.all, function(x) any(grepl(searchterm, x$moves$fen, fixed=TRUE)))
                   if (any(seqident)) {
                      cat(.text("seqsmatchfen"))
+                     tab <- data.frame(Name=files.all[seqident])
+                     tab$Name <- format(tab$Name, justify="left")
+                     names(tab)[1] <- ""
+                     rownames(tab) <- which(seqident)
+                     print(tab, print.gap=2)
+                     selmatches <- readline(prompt=.text("selmatches"))
+                     if (identical(selmatches, "") || .confirm(selmatches)) {
+                        cat(.text("selmatchesconfirm"))
+                        selected <- files.all[seqident]
+                        run.rnd <- FALSE
+                        wait <- FALSE
+                        mode <- "add"
+                        seqno <- 1
+                     }
+                  } else {
+                     cat(.text("noseqsfound"))
+                  }
+                  eval(expr=switch2)
+                  next
+               }
+
+               # C: ... (or c: or K: or k:) entered (search among the comments)
+
+               if (grepl("^[CcKk]:\\s.*$", searchterm)) {
+                  searchterm <- tolower(trimws(strsplit(searchterm, ":")[[1]][2]))
+                  seqident <- sapply(dat.all, function(x) any(grepl(searchterm, tolower(x$moves$comment), fixed=TRUE)))
+                  if (any(seqident)) {
+                     cat(.text("seqsmatchcomment"))
                      tab <- data.frame(Name=files.all[seqident])
                      tab$Name <- format(tab$Name, justify="left")
                      names(tab)[1] <- ""

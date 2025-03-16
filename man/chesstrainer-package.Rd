@@ -8,7 +8,7 @@
    The purpose of the \pkg{chesstrainer} package is to create sequences of moves (lines), save them, and then test yourself on these sequences. This is especially useful for training openings, but can also be used for creating chess puzzles or training tactics.
 
 }
-\section{Starting the Trainer for the First Time}{
+\section{Starting the Trainer}{
 
    To start the trainer, run \code{\link{play}()} from the console. When starting the trainer for the first time, a directory is created for storing settings and a directory where sequences will be stored. A few example sequences also come with the package and you will receive a prompt whether to copy these sequences to the sequence directory. To familiarize yourself with the trainer, it would be good to do so.
 
@@ -25,16 +25,16 @@
 
    The trainer keeps track of a score for each sequence. For a new sequence, the score starts out at 100. The score is multiplied by 0.8 after completing a sequence without any mistakes (rounded up to the nearest integer). When making a wrong move when playing a sequence, the score is increased by 40 points (up to a maximum of 100). Receiving a hint increases the score by 20 points (40 points when asking for both the starting and the target square).
 
-   The trainer uses the score to select the next sequence to play. Sequences with higher scores have a higher chance to be presented. The probability of selecting a particular sequence is computed with \eqn{p_i = s_i^e / \sum s_i^e}, where \eqn{s_i} is the score of the \eqn{i}th sequence and \eqn{e} is the \sQuote{exponent value}. This is set to 2 by default and enhances the probability that sequences with higher scores are more likely to be selected. The exponent value can be adjusted with the \code{<^>} key. Setting the exponent value to 0 makes all sequences equally likely to be selected. Setting it to a large value (e.g., 100) almost guarantees that the sequence with the highest score is selected next. The score for the current sequence can also be set manually with the \code{<o>} key. Setting the score to 0 means that the sequence has a zero probability of being selected (even when \eqn{e} is equal to 0).
+   The trainer uses the score to choose the sequence to play next. Sequences with higher scores have a higher chance to be presented. The probability of playing a particular sequence is computed with \eqn{p_i = s_i^e / \sum s_i^e}, where \eqn{s_i} is the score of the \eqn{i}th sequence and \eqn{e} is the \sQuote{exponent value}. This is set to 2 by default and enhances the probability that sequences with higher scores are more likely to be played. The exponent value can be adjusted with the \code{<^>} key. Setting the exponent value to 0 makes all sequences equally likely to be played. Setting it to a large value (e.g., 100) almost guarantees that the sequence with the highest score is played next. The score for the current sequence can also be set manually with the \code{<o>} key. Setting the score to 0 means that the sequence has a zero probability of being played (even when \eqn{e} is equal to 0).
 
    If you make a misclick during a move and want to take the score adjustment back, you can do so with the \code{<t>} key.
 
    After completing a sequence, the current score for the sequence is saved (together with the number of times that the sequence has been played and when it was last played) to the sequence file. This way, your progress in learning the sequence is saved permanently across sessions. Note that this information is player specific. Using the \code{<g>} key, a progress graph for the current sequence can be shown (if the sequence has been played before). Using the \code{<G>} key, you can toggle whether the progress graph will be automatically shown at the end of each completed sequence.
 
 }
-\section{Managing/Selecting Sequences}{
+\section{Managing and Selecting Sequences}{
 
-   Using the \code{<l>} key, you can list all sequences, together with their current score, the number of times they have been played (the play frequency), the last time they have been played (in days; \code{NA} if a sequence has not been played before), and the current probability of selection (with 0 to 5 asterisks next to it based on the probability). During \sQuote{play} mode, you can use the \code{Ctrl-<d>} key to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.
+   Using the \code{<l>} key, you can list all sequences, together with their current score, the number of times they have been played (the play frequency), the last time they have been played (in days; \code{NA} if a sequence has not been played before), and the current play probability (with 0 to 5 asterisks next to it based on the probability). During \sQuote{play} mode, you can use the \code{Ctrl-<d>} key to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.
 
    Using the \code{</>} key (or \code{<,>} which is useful for a German keyboard layout), you can select a subset of the sequences in various ways:
 
@@ -45,30 +45,31 @@
    \item by entering something like \code{score > 80} to select sequences with a score above a certain threshold,
    \item by entering something like \code{played < 1} to select sequences that have been played less than a certain number of times,
    \item by entering something like \code{days > 2} to select sequences that have been played more than a certain number of days ago,
-   \item by entering a \href{https://en.wikipedia.org/wiki/Forsyth-Edwards_Notation}{FEN} to select all sequences that contain a position matching the FEN.
+   \item by entering a \href{https://en.wikipedia.org/wiki/Forsyth-Edwards_Notation}{FEN} to select all sequences that contain a position matching the FEN,
+   \item by entering \code{c: } followed by a (case insensitive) text string to select all sequences where a comment contains the text string.
    }
 
    The keywords \code{score}, \code{played}, and \code{days} can be abbreviated to \code{s}, \code{p} , and \code{d} (so \code{s > 80}, \code{p < 1}, and \code{d > 2} would also work). Other comparators such as \code{>=}, \code{<}, and \code{>=} can also be used (e.g., \code{s <= 10}).
 
    Hitting \code{<enter>} at the prompt (i.e., not entering any search string) keeps the current selection. Entering \code{*} at the prompt selects all sequences (the \code{<*>} key also selects all sequences without using the \code{</>} key first).
 
-   By default, sequences are selected at random based on the score during \sQuote{play} mode as described above. However, you can toggle into a different selection mode with the \code{<r>} key. The options are:
+   During \sQuote{play} mode, sequences are played by default at random based on the score as described above. However, you can toggle into a different selection mode with the \code{<r>} key. The options are:
    \enumerate{
-   \item selection based on the score at random where sequences with higher scores have a higher probability of selection (the default),
+   \item selection based on the score at random where sequences with higher scores have a higher play probability (the default),
    \item selection based on the score where the sequence with the highest score is played next,
-   \item selection based on the play frequency at random where sequences with lower play frequencies have a higher probability of selection,
+   \item selection based on the play frequency at random where sequences with lower play frequencies have a higher play probability,
    \item selection based on the play frequency where the sequence with the lowest frequency is played next,
-   \item selection based on the date at random where sequences that have last been played longer ago have a higher probability of selection,
+   \item selection based on the date at random where sequences that have last been played longer ago have a higher play probability,
    \item selection based on the date where the oldest sequence is played next,
    \item sequential, where the sequences are played in order.
    }
 
-   The exponent value affects selection modes 1, 3, and 5. Setting the exponent value to a very large value makes mode 1 essentially the same as mode 2 (and similarly, mode 3 like mode 4 and mode 5 like mode 6). For modes 2, 4, and 6, if the highest score, lowest play frequency, or oldest date is the same for multiple sequences, the first one is selected. For modes 5 and 6, sequences that have never been played before are given the highest priority. For all modes, sequences whose score was set to 0 are never selected.
+   The exponent value affects selection modes 1, 3, and 5. Setting the exponent value to a very large value makes mode 1 essentially the same as mode 2 (and similarly, mode 3 like mode 4 and mode 5 like mode 6). For modes 2, 4, and 6, if the highest score, lowest play frequency, or oldest date is the same for multiple sequences, the first one is played next. For modes 5 and 6, sequences that have never been played before are given the highest priority. For all modes, sequences whose score was set to 0 are never played.
 
 }
 \section{Adding New Sequences}{
 
-   With \code{<space>}, you can switch into the \sQuote{add} mode. This is where you can enter new sequences. The first thing to decide is whether the player should play with white or black. With the \code{<f>} key, the board can be flipped accordingly (the player always plays with the pieces at the bottom). Next, you need to decide whether some moves will be automatically played at the beginning of a sequence. If some moves should be played automatically, then simply make these moves on the board. Note that there is no check if the moves are legal and/or are played in the correct sequence, so care must be taken to do so appropriately. Once you arrive at the position where a player should start making moves, hit the \code{<z>} key (note that \sQuote{Show} at the bottom left then turns from \sQuote{Yes} to \sQuote{No}). Now continue playing the line as it should be played. The sequence should end with a move of the player. If you make a mistake when playing a move, use the \code{<t>} key to take the move back. Once the sequence is complete, use the \code{<s>} key to save the sequence. You will be prompted for a filename. Once the sequence has been saved, it will automatically become part of the sequences that may be selected in \sQuote{play} mode.
+   With \code{<space>}, you can switch into the \sQuote{add} mode. This is where you can enter new sequences. The first thing to decide is whether the player should play with white or black. With the \code{<f>} key, the board can be flipped accordingly (the player always plays with the pieces at the bottom). Next, you need to decide whether some moves will be automatically played at the beginning of a sequence. If some moves should be played automatically, then simply make these moves on the board. Note that there is no check if the moves are legal and/or are played in the correct sequence, so care must be taken to do so appropriately. Once you arrive at the position where a player should start making moves, hit the \code{<z>} key (note that \sQuote{Show} at the bottom left then turns from \sQuote{Yes} to \sQuote{No}). Now continue playing the line as it should be played. The sequence should end with a move of the player. If you make a mistake when playing a move, use the \code{<t>} key to take the move back. Once the sequence is complete, use the \code{<s>} key to save the sequence. You will be prompted for a filename. Once the sequence has been saved, it will automatically become part of the sequences that may be presented in \sQuote{play} mode.
 
    A sequence may also start immediately in the starting position. Here, you will hit the \code{<z>} key right at the beginning. Since it is then essentially impossible for a player to know what they should play (since there are many sensible moves one could make), you will have to instruct the player what they should do. Using the \code{<c>} key, you can add a comment to the current move which will be shown to the player. For example, you could tell the player to play the Spanish (Ruy Lopez) opening. You should then make the appropriate moves on the board.
 
@@ -78,21 +79,21 @@
 
    When saving a sequence, the color of the pieces to be played is automatically prepended to the filename (i.e., as \code{w_} or \code{b_}). This can be useful when selecting sequences (e.g., using the search term \code{^w_} will select all sequences that start with \code{w_} and are hence sequences where the player plays with white).
 
-   The \code{<e>} key opens up the \code{\link[=edit]{data editor}} on the data frame that contains the moves for the current sequence. This is most useful for adding or removing comments in the \code{comment} column. Making adjustments to the other columns should only be done if their meaning is clear. You can also use the \code{<E>} key to edit a particular comment via the console.
+   The \code{<e>} key can be used to edit the comments for a particular sequence. The \code{<E>} key opens up the \code{\link[=edit]{data editor}} on the data frame that contains the moves for the current sequence. This can also be used to add, edit, and remove comments in the \code{comment} column or make adjustments to the other columns (but this should only be done if their meaning is clear).
 
-   With the \code{<?>} key, you can find all sequences that start with the same moves that have been entered so far. If any matching sequences are found, a prompt will ask if they should be selected. This is useful for checking what sequences are already available based on some initial moves.
+   With the \code{<?>} key, you can find all sequences that start with the same moves that have been entered so far. If any matching sequences are found, a prompt will ask if they should be selected. This is useful for checking what sequences are already available based on some initial moves (and then practicing these sequences).
 
-   With the \code{<.>} key, you can select the last saved sequence (if one was saved before in the current session). This is useful for checking the sequence and/or creating multiple branching lines from a certain position. Similarly, in \sQuote{play} mode, the \code{<a>} key will create a copy of the current sequence, which can then be extended with additional moves (and saved as a new sequence). The \code{<A>} key does the same thing, but only plays the moves to the currently shown position.
+   With the \code{<.>} key, you can select the last saved sequence (if one was saved before in the current session). This is useful for checking the sequence in \sQuote{play} mode and/or creating multiple branching lines from the ending position of this sequence. Similarly, in \sQuote{play} mode, the \code{<a>} key will create a copy of the current sequence, which can then be extended with additional moves (and saved as a new sequence). The \code{<A>} key does the same thing, but only plays the moves to the currently shown position.
 
    Note that sequences are quite personalized, since they involve going into a particular line that one deems most appropriate. Others may disagree and prefer a different line. Therefore, you should create sequences that you want to train yourself on, so you will be able to play them quickly from memory in actual games.
 
 }
-\section{Board Editor}{
+\section{The Board Editor}{
 
    When in \sQuote{add} mode, the \code{<b>} key opens up a board editor. Here, you can quickly set up a more advanced position (e.g., for a puzzle). With left-click and drag, pieces can be moved around. With right-click and drag, you can copy a piece. A right-click without a drag deletes a piece. The \code{<f>} key flips the board. The \code{<n>} key resets the board into the starting position. The \code{<c>} key clears the board. With \code{<F1>}, you can receive a help overlay. You can quit the board editor with the \code{<q>} or \code{<escape>} key.
 
 }
-\section{Managing/Selecting Players}{
+\section{Managing and Selecting Players}{
 
    The trainer can be used by multiple players. A player can be selected with the \code{<p>} key. You can either enter a player number, the name of an existing player, or enter a new player name. Note that player names must be syntactically valid (i.e., should start with a letter and not contain any spaces).
 
@@ -101,14 +102,14 @@
    With \code{<F2>}, a leaderboard (based on the lowest average score) and player statistics are shown (i.e., the average score, the standard deviation of the scores, the minimum and maximum score, and the total number of sequences played). The statistics are based on the currently selected sequences (or all sequences if no selection has been applied). Also, sequences whose score was manually set to 0 are not included in these statistics.
 
 }
-\section{Sound}{
+\section{Playing Sounds}{
 
    The trainer plays various sounds (when playing moves, when capturing pieces, when making a wrong move, or when completing a sequence). This may or may not work depending on your operating system and configuration. See the \code{\link{playsound}} function for further details.
 
-   % If the sound is working, it can be toggled on/off with the \code{<m>} key. This can be useful if playing sounds adds too much lag. The sound volume can be decreased/increased with the \code{<[>} and \code{<]>} keys.
+   If the sound is working, it can be toggled on/off with the \code{<m>} key. This can be useful if playing sounds adds too much lag. The sound volume can be decreased/increased with the \code{<[>} and \code{<]>} keys.
 
 }
-\section{Position Evaluations using Stockfish}{
+\section{Position Evaluations via Stockfish}{
 
    If Stockfish (\url{https://stockfishchess.org}) is installed, it can be used in the background to automatically obtain position evaluations when adding sequences. For this, specify the path (including the executable) to Stockfish via the \code{sfpath} argument of the \code{\link{play}} function. If this is set correctly, then position evaluations will be automatically computed and added to a sequence in \sQuote{add} mode. Evaluations are given in centipawns divided by 100, except for forced mates, which are given as \eqn{\pm99.9}. When playing a sequence, these evaluations are then shown as an evaluation bar on the left of the board.
 
@@ -121,7 +122,7 @@
    Note that asking Stockfish to evaluate impossible positions (e.g., black is in check but it is white's turn to move) crashes Stockfish. This should be handled gracefully by the trainer. With \code{<F7>}, you can adjust the Stockfish settings and also restart it.
 
 }
-\section{Other Options / Keyboard Shortcuts}{
+\section{Other Options and Shortcuts}{
 
    When playing a sequence, the graphical elements shown on the playing board are created by repeatedly drawing on top of the board. Therefore, when resizing the board, all elements are redrawn, which takes a few moments. With the \code{<escape>} key, the board can be redrawn in its current state, after which it can be resized without having to wait for all previous graphical elements to be redrawn.
 
@@ -152,7 +153,7 @@
    With \code{<F10>}, you can obtain histograms of the scores of the (selected) sequences, how many times they have been played, how long ago they were played, and a scatterplot of the number of times they have been played versus their scores.
 
 }
-\section{Resetting / Cleaning Up}{
+\section{Resetting and Cleaning Up}{
 
    If you would like to remove the config files (for the settings and colors), you can use the following two commands:
 

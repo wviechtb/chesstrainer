@@ -31,7 +31,7 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chesstrainer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-27</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-29</span>
       </span>
     </div>
 
@@ -88,8 +88,8 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
     </div>
 
 
-    <div id="starting-the-trainer-for-the-first-time">
-    <h2>Starting the Trainer for the First Time</h2>
+    <div id="starting-the-trainer">
+    <h2>Starting the Trainer</h2>
 
 
 <p>To start the trainer, run <code><a href="play.html">play</a>()</code> from the console. When starting the trainer for the first time, a directory is created for storing settings and a directory where sequences will be stored. A few example sequences also come with the package and you will receive a prompt whether to copy these sequences to the sequence directory. To familiarize yourself with the trainer, it would be good to do so.</p>
@@ -103,15 +103,15 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
 
 
 <p>The trainer keeps track of a score for each sequence. For a new sequence, the score starts out at 100. The score is multiplied by 0.8 after completing a sequence without any mistakes (rounded up to the nearest integer). When making a wrong move when playing a sequence, the score is increased by 40 points (up to a maximum of 100). Receiving a hint increases the score by 20 points (40 points when asking for both the starting and the target square).</p>
-<p>The trainer uses the score to select the next sequence to play. Sequences with higher scores have a higher chance to be presented. The probability of selecting a particular sequence is computed with \(p_i = s_i^e / \sum s_i^e\), where \(s_i\) is the score of the \(i\)th sequence and \(e\) is the ‘exponent value’. This is set to 2 by default and enhances the probability that sequences with higher scores are more likely to be selected. The exponent value can be adjusted with the <code>&lt;^&gt;</code> key. Setting the exponent value to 0 makes all sequences equally likely to be selected. Setting it to a large value (e.g., 100) almost guarantees that the sequence with the highest score is selected next. The score for the current sequence can also be set manually with the <code>&lt;o&gt;</code> key. Setting the score to 0 means that the sequence has a zero probability of being selected (even when \(e\) is equal to 0).</p>
+<p>The trainer uses the score to choose the sequence to play next. Sequences with higher scores have a higher chance to be presented. The probability of playing a particular sequence is computed with \(p_i = s_i^e / \sum s_i^e\), where \(s_i\) is the score of the \(i\)th sequence and \(e\) is the ‘exponent value’. This is set to 2 by default and enhances the probability that sequences with higher scores are more likely to be played. The exponent value can be adjusted with the <code>&lt;^&gt;</code> key. Setting the exponent value to 0 makes all sequences equally likely to be played. Setting it to a large value (e.g., 100) almost guarantees that the sequence with the highest score is played next. The score for the current sequence can also be set manually with the <code>&lt;o&gt;</code> key. Setting the score to 0 means that the sequence has a zero probability of being played (even when \(e\) is equal to 0).</p>
 <p>If you make a misclick during a move and want to take the score adjustment back, you can do so with the <code>&lt;t&gt;</code> key.</p>
 <p>After completing a sequence, the current score for the sequence is saved (together with the number of times that the sequence has been played and when it was last played) to the sequence file. This way, your progress in learning the sequence is saved permanently across sessions. Note that this information is player specific. Using the <code>&lt;g&gt;</code> key, a progress graph for the current sequence can be shown (if the sequence has been played before). Using the <code>&lt;G&gt;</code> key, you can toggle whether the progress graph will be automatically shown at the end of each completed sequence.</p>
     </div>
-    <div id="managing-selecting-sequences">
-    <h2>Managing/Selecting Sequences</h2>
+    <div id="managing-and-selecting-sequences">
+    <h2>Managing and Selecting Sequences</h2>
 
 
-<p>Using the <code>&lt;l&gt;</code> key, you can list all sequences, together with their current score, the number of times they have been played (the play frequency), the last time they have been played (in days; <code>NA</code> if a sequence has not been played before), and the current probability of selection (with 0 to 5 asterisks next to it based on the probability). During ‘play’ mode, you can use the <code>Ctrl-&lt;d&gt;</code> key to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.</p>
+<p>Using the <code>&lt;l&gt;</code> key, you can list all sequences, together with their current score, the number of times they have been played (the play frequency), the last time they have been played (in days; <code>NA</code> if a sequence has not been played before), and the current play probability (with 0 to 5 asterisks next to it based on the probability). During ‘play’ mode, you can use the <code>Ctrl-&lt;d&gt;</code> key to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.</p>
 <p>Using the <code>&lt;/&gt;</code> key (or <code>&lt;,&gt;</code> which is useful for a German keyboard layout), you can select a subset of the sequences in various ways:</p>
 <p></p><ul><li><p>by entering a search term (which is applied as a regular expression to the filenames of the sequences),</p></li>
 <li><p>by entering a sequence number (e.g., <code>2</code> to select the 2nd sequence),</p></li>
@@ -119,55 +119,56 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
 <li><p>by entering something like <code>score &gt; 80</code> to select sequences with a score above a certain threshold,</p></li>
 <li><p>by entering something like <code>played &lt; 1</code> to select sequences that have been played less than a certain number of times,</p></li>
 <li><p>by entering something like <code>days &gt; 2</code> to select sequences that have been played more than a certain number of days ago,</p></li>
-<li><p>by entering a <a href="https://en.wikipedia.org/wiki/Forsyth-Edwards_Notation" class="external-link">FEN</a> to select all sequences that contain a position matching the FEN.</p></li>
+<li><p>by entering a <a href="https://en.wikipedia.org/wiki/Forsyth-Edwards_Notation" class="external-link">FEN</a> to select all sequences that contain a position matching the FEN,</p></li>
+<li><p>by entering <code>c: </code> followed by a (case insensitive) text string to select all sequences where a comment contains the text string.</p></li>
 </ul><p>The keywords <code>score</code>, <code>played</code>, and <code>days</code> can be abbreviated to <code>s</code>, <code>p</code> , and <code>d</code> (so <code>s &gt; 80</code>, <code>p &lt; 1</code>, and <code>d &gt; 2</code> would also work). Other comparators such as <code>&gt;=</code>, <code>&lt;</code>, and <code>&gt;=</code> can also be used (e.g., <code>s &lt;= 10</code>).</p>
 <p>Hitting <code>&lt;enter&gt;</code> at the prompt (i.e., not entering any search string) keeps the current selection. Entering <code>*</code> at the prompt selects all sequences (the <code>&lt;*&gt;</code> key also selects all sequences without using the <code>&lt;/&gt;</code> key first).</p>
-<p>By default, sequences are selected at random based on the score during ‘play’ mode as described above. However, you can toggle into a different selection mode with the <code>&lt;r&gt;</code> key. The options are:</p><ol><li><p>selection based on the score at random where sequences with higher scores have a higher probability of selection (the default),</p></li>
+<p>During ‘play’ mode, sequences are played by default at random based on the score as described above. However, you can toggle into a different selection mode with the <code>&lt;r&gt;</code> key. The options are:</p><ol><li><p>selection based on the score at random where sequences with higher scores have a higher play probability (the default),</p></li>
 <li><p>selection based on the score where the sequence with the highest score is played next,</p></li>
-<li><p>selection based on the play frequency at random where sequences with lower play frequencies have a higher probability of selection,</p></li>
+<li><p>selection based on the play frequency at random where sequences with lower play frequencies have a higher play probability,</p></li>
 <li><p>selection based on the play frequency where the sequence with the lowest frequency is played next,</p></li>
-<li><p>selection based on the date at random where sequences that have last been played longer ago have a higher probability of selection,</p></li>
+<li><p>selection based on the date at random where sequences that have last been played longer ago have a higher play probability,</p></li>
 <li><p>selection based on the date where the oldest sequence is played next,</p></li>
 <li><p>sequential, where the sequences are played in order.</p></li>
-</ol><p>The exponent value affects selection modes 1, 3, and 5. Setting the exponent value to a very large value makes mode 1 essentially the same as mode 2 (and similarly, mode 3 like mode 4 and mode 5 like mode 6). For modes 2, 4, and 6, if the highest score, lowest play frequency, or oldest date is the same for multiple sequences, the first one is selected. For modes 5 and 6, sequences that have never been played before are given the highest priority. For all modes, sequences whose score was set to 0 are never selected.</p>
+</ol><p>The exponent value affects selection modes 1, 3, and 5. Setting the exponent value to a very large value makes mode 1 essentially the same as mode 2 (and similarly, mode 3 like mode 4 and mode 5 like mode 6). For modes 2, 4, and 6, if the highest score, lowest play frequency, or oldest date is the same for multiple sequences, the first one is played next. For modes 5 and 6, sequences that have never been played before are given the highest priority. For all modes, sequences whose score was set to 0 are never played.</p>
     </div>
     <div id="adding-new-sequences">
     <h2>Adding New Sequences</h2>
 
 
-<p>With <code>&lt;space&gt;</code>, you can switch into the ‘add’ mode. This is where you can enter new sequences. The first thing to decide is whether the player should play with white or black. With the <code>&lt;f&gt;</code> key, the board can be flipped accordingly (the player always plays with the pieces at the bottom). Next, you need to decide whether some moves will be automatically played at the beginning of a sequence. If some moves should be played automatically, then simply make these moves on the board. Note that there is no check if the moves are legal and/or are played in the correct sequence, so care must be taken to do so appropriately. Once you arrive at the position where a player should start making moves, hit the <code>&lt;z&gt;</code> key (note that ‘Show’ at the bottom left then turns from ‘Yes’ to ‘No’). Now continue playing the line as it should be played. The sequence should end with a move of the player. If you make a mistake when playing a move, use the <code>&lt;t&gt;</code> key to take the move back. Once the sequence is complete, use the <code>&lt;s&gt;</code> key to save the sequence. You will be prompted for a filename. Once the sequence has been saved, it will automatically become part of the sequences that may be selected in ‘play’ mode.</p>
+<p>With <code>&lt;space&gt;</code>, you can switch into the ‘add’ mode. This is where you can enter new sequences. The first thing to decide is whether the player should play with white or black. With the <code>&lt;f&gt;</code> key, the board can be flipped accordingly (the player always plays with the pieces at the bottom). Next, you need to decide whether some moves will be automatically played at the beginning of a sequence. If some moves should be played automatically, then simply make these moves on the board. Note that there is no check if the moves are legal and/or are played in the correct sequence, so care must be taken to do so appropriately. Once you arrive at the position where a player should start making moves, hit the <code>&lt;z&gt;</code> key (note that ‘Show’ at the bottom left then turns from ‘Yes’ to ‘No’). Now continue playing the line as it should be played. The sequence should end with a move of the player. If you make a mistake when playing a move, use the <code>&lt;t&gt;</code> key to take the move back. Once the sequence is complete, use the <code>&lt;s&gt;</code> key to save the sequence. You will be prompted for a filename. Once the sequence has been saved, it will automatically become part of the sequences that may be presented in ‘play’ mode.</p>
 <p>A sequence may also start immediately in the starting position. Here, you will hit the <code>&lt;z&gt;</code> key right at the beginning. Since it is then essentially impossible for a player to know what they should play (since there are many sensible moves one could make), you will have to instruct the player what they should do. Using the <code>&lt;c&gt;</code> key, you can add a comment to the current move which will be shown to the player. For example, you could tell the player to play the Spanish (Ruy Lopez) opening. You should then make the appropriate moves on the board.</p>
 <p>Comments can be added to any move using the <code>&lt;c&gt;</code> key. This may be useful if one could venture into multiple sensible lines in a given position. You would then have to instruct the player to make a particular move (either by telling the player directly which move to make or giving some appropriate hint, such as the name of a particular line). Comments are also useful for mentioning variation names or other useful information.</p>
 <p>If a sequence should start not at the starting position of a chess game, but later on, you can move the pieces into the desired position and then use the <code>&lt;0&gt;</code> key to make the current position the starting position for a particular sequence. Alternatively, you can use the <code>&lt;b&gt;</code> key to start a board editor (see below for details).</p>
 <p>When saving a sequence, the color of the pieces to be played is automatically prepended to the filename (i.e., as <code>w_</code> or <code>b_</code>). This can be useful when selecting sequences (e.g., using the search term <code>^w_</code> will select all sequences that start with <code>w_</code> and are hence sequences where the player plays with white).</p>
-<p>The <code>&lt;e&gt;</code> key opens up the <code><a href="https://rdrr.io/r/utils/edit.html" class="external-link">data editor</a></code> on the data frame that contains the moves for the current sequence. This is most useful for adding or removing comments in the <code>comment</code> column. Making adjustments to the other columns should only be done if their meaning is clear. You can also use the <code>&lt;E&gt;</code> key to edit a particular comment via the console.</p>
-<p>With the <code>&lt;?&gt;</code> key, you can find all sequences that start with the same moves that have been entered so far. If any matching sequences are found, a prompt will ask if they should be selected. This is useful for checking what sequences are already available based on some initial moves.</p>
-<p>With the <code>&lt;.&gt;</code> key, you can select the last saved sequence (if one was saved before in the current session). This is useful for checking the sequence and/or creating multiple branching lines from a certain position. Similarly, in ‘play’ mode, the <code>&lt;a&gt;</code> key will create a copy of the current sequence, which can then be extended with additional moves (and saved as a new sequence). The <code>&lt;A&gt;</code> key does the same thing, but only plays the moves to the currently shown position.</p>
+<p>The <code>&lt;e&gt;</code> key can be used to edit the comments for a particular sequence. The <code>&lt;E&gt;</code> key opens up the <code><a href="https://rdrr.io/r/utils/edit.html" class="external-link">data editor</a></code> on the data frame that contains the moves for the current sequence. This can also be used to add, edit, and remove comments in the <code>comment</code> column or make adjustments to the other columns (but this should only be done if their meaning is clear).</p>
+<p>With the <code>&lt;?&gt;</code> key, you can find all sequences that start with the same moves that have been entered so far. If any matching sequences are found, a prompt will ask if they should be selected. This is useful for checking what sequences are already available based on some initial moves (and then practicing these sequences).</p>
+<p>With the <code>&lt;.&gt;</code> key, you can select the last saved sequence (if one was saved before in the current session). This is useful for checking the sequence in ‘play’ mode and/or creating multiple branching lines from the ending position of this sequence. Similarly, in ‘play’ mode, the <code>&lt;a&gt;</code> key will create a copy of the current sequence, which can then be extended with additional moves (and saved as a new sequence). The <code>&lt;A&gt;</code> key does the same thing, but only plays the moves to the currently shown position.</p>
 <p>Note that sequences are quite personalized, since they involve going into a particular line that one deems most appropriate. Others may disagree and prefer a different line. Therefore, you should create sequences that you want to train yourself on, so you will be able to play them quickly from memory in actual games.</p>
     </div>
-    <div id="board-editor">
-    <h2>Board Editor</h2>
+    <div id="the-board-editor">
+    <h2>The Board Editor</h2>
 
 
 <p>When in ‘add’ mode, the <code>&lt;b&gt;</code> key opens up a board editor. Here, you can quickly set up a more advanced position (e.g., for a puzzle). With left-click and drag, pieces can be moved around. With right-click and drag, you can copy a piece. A right-click without a drag deletes a piece. The <code>&lt;f&gt;</code> key flips the board. The <code>&lt;n&gt;</code> key resets the board into the starting position. The <code>&lt;c&gt;</code> key clears the board. With <code>&lt;F1&gt;</code>, you can receive a help overlay. You can quit the board editor with the <code>&lt;q&gt;</code> or <code>&lt;escape&gt;</code> key.</p>
     </div>
-    <div id="managing-selecting-players">
-    <h2>Managing/Selecting Players</h2>
+    <div id="managing-and-selecting-players">
+    <h2>Managing and Selecting Players</h2>
 
 
 <p>The trainer can be used by multiple players. A player can be selected with the <code>&lt;p&gt;</code> key. You can either enter a player number, the name of an existing player, or enter a new player name. Note that player names must be syntactically valid (i.e., should start with a letter and not contain any spaces).</p>
 <p>The current player can be deleted with the <code>Ctrl-&lt;r&gt;</code> key. Since this deletes all progress information for this player from the sequence files, you will receive a prompt to confirm this.</p>
 <p>With <code>&lt;F2&gt;</code>, a leaderboard (based on the lowest average score) and player statistics are shown (i.e., the average score, the standard deviation of the scores, the minimum and maximum score, and the total number of sequences played). The statistics are based on the currently selected sequences (or all sequences if no selection has been applied). Also, sequences whose score was manually set to 0 are not included in these statistics.</p>
     </div>
-    <div id="sound">
-    <h2>Sound</h2>
+    <div id="playing-sounds">
+    <h2>Playing Sounds</h2>
 
 
 <p>The trainer plays various sounds (when playing moves, when capturing pieces, when making a wrong move, or when completing a sequence). This may or may not work depending on your operating system and configuration. See the <code><a href="playsound.html">playsound</a></code> function for further details.</p>
-<p><!-- % If the sound is working, it can be toggled on/off with the \code{&lt;m&gt;} key. This can be useful if playing sounds adds too much lag. The sound volume can be decreased/increased with the \code{&lt;[&gt;} and \code{&lt;]&gt;} keys. --></p>
+<p>If the sound is working, it can be toggled on/off with the <code>&lt;m&gt;</code> key. This can be useful if playing sounds adds too much lag. The sound volume can be decreased/increased with the <code>&lt;[&gt;</code> and <code>&lt;]&gt;</code> keys.</p>
     </div>
-    <div id="position-evaluations-using-stockfish">
-    <h2>Position Evaluations using Stockfish</h2>
+    <div id="position-evaluations-via-stockfish">
+    <h2>Position Evaluations via Stockfish</h2>
 
 
 <p>If Stockfish (<a href="https://stockfishchess.org" class="external-link">https://stockfishchess.org</a>) is installed, it can be used in the background to automatically obtain position evaluations when adding sequences. For this, specify the path (including the executable) to Stockfish via the <code>sfpath</code> argument of the <code><a href="play.html">play</a></code> function. If this is set correctly, then position evaluations will be automatically computed and added to a sequence in ‘add’ mode. Evaluations are given in centipawns divided by 100, except for forced mates, which are given as \(\pm99.9\). When playing a sequence, these evaluations are then shown as an evaluation bar on the left of the board.</p>
@@ -176,8 +177,8 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
 <p>In ‘play’ mode, the <code>&lt;u&gt;</code> key updates the evaluations for all moves in a sequence by recalculating the evaluations with the current setting for the calculation parameter. This way, you can obtain very accurate evaluations by using a high search depth or search time. After updating the evaluations, they are automatically saved to the sequence file.</p>
 <p>Note that asking Stockfish to evaluate impossible positions (e.g., black is in check but it is white's turn to move) crashes Stockfish. This should be handled gracefully by the trainer. With <code>&lt;F7&gt;</code>, you can adjust the Stockfish settings and also restart it.</p>
     </div>
-    <div id="other-options-keyboard-shortcuts">
-    <h2>Other Options / Keyboard Shortcuts</h2>
+    <div id="other-options-and-shortcuts">
+    <h2>Other Options and Shortcuts</h2>
 
 
 <p>When playing a sequence, the graphical elements shown on the playing board are created by repeatedly drawing on top of the board. Therefore, when resizing the board, all elements are redrawn, which takes a few moments. With the <code>&lt;escape&gt;</code> key, the board can be redrawn in its current state, after which it can be resized without having to wait for all previous graphical elements to be redrawn.</p>
@@ -196,8 +197,8 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
 <p>With <code>&lt;F9&gt;</code>, the FEN of the current position is printed and the position is opened on the <a href="https://lichess.org" class="external-link">https://lichess.org</a> website for analysis. With <code>Ctrl-&lt;c&gt;</code>, the FEN is copied to the clipboard (this makes use of the <code><a href="http://matthewlincoln.net/clipr/reference/write_clip.html" class="external-link">write_clip</a></code> function from the <code>clipr</code> package).</p>
 <p>With <code>&lt;F10&gt;</code>, you can obtain histograms of the scores of the (selected) sequences, how many times they have been played, how long ago they were played, and a scatterplot of the number of times they have been played versus their scores.</p>
     </div>
-    <div id="resetting-cleaning-up">
-    <h2>Resetting / Cleaning Up</h2>
+    <div id="resetting-and-cleaning-up">
+    <h2>Resetting and Cleaning Up</h2>
 
 
 <p>If you would like to remove the config files (for the settings and colors), you can use the following two commands:</p>

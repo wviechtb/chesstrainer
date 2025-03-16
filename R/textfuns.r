@@ -214,8 +214,8 @@
 
    if (x == "seqsearch") {
       return(switch(lang,
-                    de = "Sequenzsuche ('Begriff', 'Nummer1-Nummer2', 'Nummer', 'Punkte > Wert', 'Gespielt < Wert', 'Tage > Wert', FEN):\n",
-                         "Sequence search ('string', 'number1-number2', 'number', 'score > value', 'played < value', 'days > value', FEN):\n"
+                    de = "Sequenzsuche (Text, Nummer1-Nummer2, Nummer, Punkte > Wert, Gespielt < Wert, Tage > Wert, FEN, K: Text):\n",
+                         "Sequence search (string, number1-number2, number, score > value, played < value, days > value, FEN, c: string):\n"
    ))}
 
    if (x == "allseqselected") {
@@ -308,6 +308,12 @@
       return(switch(lang,
                     de = "\nSequenzen mit der gleichen FEN: \n",
                          "\nSequences with the same FEN: \n"
+   ))}
+
+   if (x == "seqsmatchcomment") {
+      return(switch(lang,
+                    de = "\nSequenzen mit dem Kommentar: \n",
+                         "\nSequences with the comment: \n"
    ))}
 
    if (x == "selmatches") {
