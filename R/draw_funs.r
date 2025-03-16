@@ -587,16 +587,36 @@
 .drawsquare <- function(x, y, col=ifelse(.is.even(x+y), .get("col.square.d"), .get("col.square.l")))
    rect(y, x, y+1, x+1, col=col, border=NA)
 
-.texttop <- function(text) {
-   if (length(text) == 0L)
+.texttop <- function(txt) {
+
+   if (length(txt) == 0L)
       return()
-   ytop <- grconvertY(dev.size()[2], from="inches", to="user")
-   rect(-2, 9.1, ytop, 11, col=.get("col.bg"), border=NA)
-   if (!identical(text, "")) {
-      text <- gsub("\\n", "\n", text, fixed=TRUE)
-      text(5, 9+(ytop-9)/2, text, cex=.get("cex.top"), col=.get("col.top"))
+
+   xleft   <- 0
+   xright  <- 10
+   ybottom <- 9.1
+   ytop    <- grconvertY(dev.size()[2], from="inches", to="user")
+
+   rect(xleft, ybottom, xright, ytop, col=.get("col.bg"), border=NA)
+
+   if (!identical(txt, "")) {
+      txt <- gsub("\\n", "\n", txt, fixed=TRUE)
+      txt <- strsplit(txt, "\n", fixed=TRUE)[[1]]
+      max_line_width <- max(sapply(txt, strwidth))
+      max_line_height <- max(sapply(txt, strheight))
+      total_text_height <- length(txt) * max_line_height
+      cex <- min(.get("cex.top"), (xright-xleft) / max_line_width, (ytop-ybottom) / total_text_height)
+      ypos <- seq(from = (ytop - ybottom) / 2 + ybottom + (length(txt) - 1) * 0.6 * max_line_height * cex,
+                  to   = (ytop - ybottom) / 2 + ybottom - (length(txt) - 1) * 0.6 * max_line_height * cex,
+                  length.out = length(txt))
+      for (i in seq_along(txt)) {
+         text(x = (xleft + xright) / 2, y=ypos[i], labels=txt[i], cex=cex, col=.get("col.top"))
+      }
    }
-   return(text)
+
+   txt <- paste(txt, collapse="\n")
+   return(txt)
+
 }
 
 .drawsideindicator <- function(sidetoplay, flip, clear=TRUE) {
