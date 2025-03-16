@@ -214,8 +214,8 @@
 
    if (x == "seqsearch") {
       return(switch(lang,
-                    de = "Sequenzsuche (Text, Nummer1-Nummer2, Nummer, Punkte > Wert, Gespielt < Wert, Tage > Wert, FEN, K: Text):\n",
-                         "Sequence search (string, number1-number2, number, score > value, played < value, days > value, FEN, c: string):\n"
+                    de = "Sequenzsuche (Text, Nummer1-Nummer2, Nummer, Punkte > Wert, Gespielt < Wert, Tage > Wert, FEN, K: Text, *):\n",
+                         "Sequence search (string, number1-number2, number, score > value, played < value, days > value, FEN, c: string, *):\n"
    ))}
 
    if (x == "allseqselected") {
@@ -622,16 +622,46 @@
                          c("Language", "Player name", "Mode", "Selection mode for sequences", "Exponent value", "Multiplier for completed sequences", "Score penalty for wrong moves", "Score penalty per hint", "Show evaluation bar", "Animation steps for the evaluation bar", "Pause between sequences", "Time between moves (seconds)", "Line width", "Sound volume (%)", "Show progress graph after sequences", "Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Stockfish path", "Calculation parameter for Stockfish")
    ))}
 
-   if (x == "commenttoedit") {
+   if (x == "commentedit") {
       return(switch(lang,
-                    de = paste0("Zu bearbeitender Kommentar (<Nummer> oder <Enter> zum Verlassen): "),
-                         paste0("Comment to edit (<number> or <enter> to quit): ")
+                    de = paste0("Kommentar bearbeiten (<Nummer>, 'l' (Kommentar l\U000000F6schen), 'e' (Endkommentar bearbeiten), oder <Enter> zum Verlassen): "),
+                         paste0("Edit a comment (<number>, 'd' (delete a comment), 'e' (edit the end comment), or <enter> to quit): ")
    ))}
 
-   if (x == "newcomment") {
+   if (x == "commentnew") {
       return(switch(lang,
                     de = paste0("Neuer Kommentar: "),
                          paste0("New comment: ")
+   ))}
+
+   if (x == "commentdelete") {
+      return(switch(lang,
+                    de = paste0("Zu l\U000000F6schender Kommentar (<Nummer> oder 'e' f\U000000FCr Endkommentar): "),
+                         paste0("Comment to delete (<number> or 'e' for endcomment): ")
+   ))}
+
+   if (x == "commentend") {
+      return(switch(lang,
+                    de = paste0("\nEndkommentar: ", arg, "\n"),
+                         paste0("\nEnd comment: ", arg, "\n")
+   ))}
+
+   if (x == "commentendnow") {
+      return(switch(lang,
+                    de = paste0("Aktueller Endkommentar: ", arg, "\n"),
+                         paste0("Current end comment: ", arg, "\n")
+   ))}
+
+   if (x == "commentendnew") {
+      return(switch(lang,
+                    de = paste0("Neuer Endkommentar: "),
+                         paste0("New end comment: ")
+   ))}
+
+   if (x == "commentenddeleted") {
+      return(switch(lang,
+                    de = paste0("Endkommentar gel\U000000F6scht.\n"),
+                         paste0("Deleted end comment.\n")
    ))}
 
    if (x == "copyfen") {

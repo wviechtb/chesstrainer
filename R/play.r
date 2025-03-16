@@ -676,9 +676,9 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             # s to save the sequence (only in add mode)
 
             if (mode == "add" && identical(click, "s")) {
+               eval(expr=switch1)
                .texttop(.text("saveseq"))
                seqident <- sapply(dat.all, function(x) identical(sub$moves[1:5], x$moves[1:5]))
-               eval(expr=switch1)
                if (any(seqident)) {
                   cat(.text("seqexists", files.all[which(seqident)[1]]))
                   cat(.text("addmoves"))
@@ -691,7 +691,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                }
                #filename <- sub("^[wbs]_", "", filename) # strip [wbs]_ from beginning of filename
                filename <- sub("\\.rds$", "", filename) # strip .rds from end of filename
-               filenamefull <- file.path(seqdir, filename, ".rds")
+               filenamefull <- file.path(seqdir, paste0(filename, ".rds"))
                dosave <- TRUE
                if (file.exists(filenamefull)) {
                   dosave <- FALSE
@@ -716,28 +716,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
             if (identical(click, "e")) {
                eval(expr=switch1)
-               dosave <- FALSE
-               print(sub$moves[1:8])
-               cat("\n")
-               while (TRUE) {
-                  comnum <- readline(prompt=.text("commenttoedit"))
-                  if (identical(comnum, ""))
-                     break
-                  if (grepl("^[0-9]+$", comnum)) {
-                     comnum <- round(as.numeric(comnum))
-                     if (comnum < 1 || comnum > nrow(sub$moves))
-                        next
-                     newcom <- readline(prompt=.text("newcomment"))
-                     newcom <- gsub("\\n", "\n", newcom, fixed=TRUE)
-                     sub$moves$comment[comnum] <- newcom
-                     dosave <- TRUE
-                     cat("\n")
-                     print(sub$moves[1:8])
-                     cat("\n")
-                  }
-               }
-               if (dosave && mode == "play")
-                  saveRDS(sub, file=file.path(seqdir, seqname))
+               sub <- .editcomments(sub, seqdir, seqname, mode)
                eval(expr=switch2)
                next
             }
@@ -1074,8 +1053,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             # ? to find all sequences that start in the same way (only in add mode)
 
             if (mode == "add" && identical(click, "?")) {
-               seqident <- sapply(dat.all, function(x) identical(sub$moves[1:(i-1),1:4], x$moves[1:(i-1),1:4]))
                eval(expr=switch1)
+               seqident <- sapply(dat.all, function(x) identical(sub$moves[1:(i-1),1:4], x$moves[1:(i-1),1:4]))
                if (any(seqident)) {
                   cat(.text("seqsmatchstart"))
                   tab <- data.frame(Name=files.all[seqident])
@@ -1644,8 +1623,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             # F3 to print the settings
 
             if (identical(click, "F3")) {
-               settings <- data.frame(lang, player, mode, selmode, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, pause, sleep, lwd, volume, showgraph, cex.top, cex.bot, cex.eval, sfpath, sfgo)
                eval(expr=switch1)
+               settings <- data.frame(lang, player, mode, selmode, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, pause, sleep, lwd, volume, showgraph, cex.top, cex.bot, cex.eval, sfpath, sfgo)
                tab <- t(settings)
                tab <- cbind(tab, .text("explsettings"))
                colnames(tab) <- c("", "")
@@ -1726,8 +1705,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             # F9 to print the FEN and open the position on lichess
 
             if (identical(click, "F9")) {
-               fen <- .genfen(pos, flip, sidetoplay, i)
                eval(expr=switch1)
+               fen <- .genfen(pos, flip, sidetoplay, i)
                cat(fen, "\n")
                eval(expr=switch2)
                fen <- paste0("https://lichess.org/analysis/standard/", gsub(" ", "_", fen, fixed=TRUE))
@@ -1749,8 +1728,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             # ctrl-c to copy the FEN to the clipboard
 
             if (identical(click, "ctrl-C")) {
-               fen <- .genfen(pos, flip, sidetoplay, i)
                eval(expr=switch1)
+               fen <- .genfen(pos, flip, sidetoplay, i)
                cat(fen, "\n")
                eval(expr=switch2)
                clipr::write_clip(fen, object_type="character")
@@ -1942,7 +1921,14 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
             # end of the sequence in play mode
 
-            .texttop(.text("welldone"))
+            if (is.null(sub$commentend)) {
+               .texttop(.text("welldone"))
+            } else {
+               .texttop(sub$commentend)
+               if (!pause)
+                  getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=function(key) return(key))
+            }
+
             playsound(system.file("sounds", "complete.ogg", package="chesstrainer"), volume=volume)
 
             # adjust the score (but only if no mistake was made)
