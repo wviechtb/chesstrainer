@@ -595,22 +595,24 @@
    xleft   <- 0
    xright  <- 10
    ybottom <- 9.1
-   ytop    <- grconvertY(dev.size()[2], from="inches", to="user")
+   ytop    <- grconvertY(dev.size()[2], from="inches", to="user")-0.1
+   xcenter <- (xleft + xright) / 2
 
-   rect(xleft, ybottom, xright, ytop, col=.get("col.bg"), border=NA)
+   rect(xleft, ybottom-0.1, xright, ytop+0.1, col=.get("col.bg"), border=NA)
 
    if (!identical(txt, "")) {
       txt <- gsub("\\n", "\n", txt, fixed=TRUE)
       txt <- strsplit(txt, "\n", fixed=TRUE)[[1]]
       max_line_width <- max(sapply(txt, strwidth))
-      max_line_height <- max(sapply(txt, strheight))
+      max_line_height <- strheight("A")
       total_text_height <- length(txt) * max_line_height
       cex <- min(.get("cex.top"), (xright-xleft) / max_line_width, (ytop-ybottom) / total_text_height)
-      ypos <- seq(from = (ytop - ybottom) / 2 + ybottom + (length(txt) - 1) * 0.6 * max_line_height * cex,
-                  to   = (ytop - ybottom) / 2 + ybottom - (length(txt) - 1) * 0.6 * max_line_height * cex,
+      ypos <- seq(from = min(ytop,    (ytop - ybottom) / 2 + ybottom + (length(txt) - 1) * 1 * max_line_height * cex),
+                  to   = max(ybottom, (ytop - ybottom) / 2 + ybottom - (length(txt) - 1) * 1 * max_line_height * cex),
                   length.out = length(txt))
+      col.top <- .get("col.top")
       for (i in seq_along(txt)) {
-         text(x = (xleft + xright) / 2, y=ypos[i], labels=txt[i], cex=cex, col=.get("col.top"))
+         text(x=xcenter, y=ypos[i], labels=txt[i], cex=cex, col=col.top)
       }
    }
 
