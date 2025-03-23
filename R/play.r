@@ -1166,8 +1166,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                      .texttop(texttop)
                      .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                      scoreadd <- 0
-                     mistake <- FALSE
                   }
+                  mistake <- FALSE
                } else {
                   if (i > 1) {
                      if (is.null(sub$pos)) {

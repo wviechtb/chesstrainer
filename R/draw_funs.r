@@ -594,11 +594,11 @@
 
    xleft   <- 0
    xright  <- 10
-   ybottom <- 9.1
-   ytop    <- grconvertY(dev.size()[2], from="inches", to="user")-0.1
+   ybottom <- 9.2
+   ytop    <- grconvertY(dev.size()[2], from="inches", to="user")-0.2
    xcenter <- (xleft + xright) / 2
 
-   rect(xleft, ybottom-0.1, xright, ytop+0.1, col=.get("col.bg"), border=NA)
+   rect(xleft, ybottom-0.2, xright, ytop+0.2, col=.get("col.bg"), border=NA)
 
    if (!identical(txt, "")) {
       txt <- gsub("\\n", "\n", txt, fixed=TRUE)
