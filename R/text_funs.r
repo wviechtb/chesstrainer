@@ -574,6 +574,12 @@
                          "Cannot show best move (is Stockfish running?)."
    ))}
 
+   if (x == "sfdeepeval") {
+      return(switch(lang,
+                    de = "Beginne mit tiefer Analyse ...",
+                         "Starting deep evaluation ..."
+   ))}
+
    if (x == "quit") {
       return(switch(lang,
                     de = "Schachtrainer wird beendet ...\n",
@@ -624,8 +630,8 @@
 
    if (x == "commentedit") {
       return(switch(lang,
-                    de = paste0("Kommentar bearbeiten (<Nummer>, 'l' (Kommentar l\U000000F6schen), 'e' (Endkommentar bearbeiten), oder <Enter> zum Verlassen): "),
-                         paste0("Edit a comment (<number>, 'd' (delete a comment), 'e' (edit the end comment), or <enter> to quit): ")
+                    de = paste0("Kommentar bearbeiten (<Nummer>, 's' (Startkommentar) 'e' (Endkommentar), 'l' (l\U000000F6schen), oder <Enter> zum Verlassen): "),
+                         paste0("Edit a comment (<number>, 's' (start comment), 'e' (end comment), 'd' (delete), or <enter> to quit): ")
    ))}
 
    if (x == "commentnew") {
@@ -636,8 +642,8 @@
 
    if (x == "commentdelete") {
       return(switch(lang,
-                    de = paste0("Zu l\U000000F6schender Kommentar (<Nummer> oder 'e' f\U000000FCr Endkommentar): "),
-                         paste0("Comment to delete (<number> or 'e' for endcomment): ")
+                    de = paste0("Zu l\U000000F6schender Kommentar (<Nummer>, 's' f\U000000FCr Startkommentar, 'e' f\U000000FCr Endkommentar): "),
+                         paste0("Comment to delete (<number>, 's' for start comment, or 'e' for endcomment): ")
    ))}
 
    if (x == "commentend") {
@@ -662,6 +668,30 @@
       return(switch(lang,
                     de = paste0("Endkommentar gel\U000000F6scht.\n"),
                          paste0("Deleted end comment.\n")
+   ))}
+
+   if (x == "commentstart") {
+      return(switch(lang,
+                    de = paste0("\nStartkommentar: ", arg, "\n"),
+                         paste0("\nStart comment: ", arg, "\n")
+   ))}
+
+   if (x == "commentstartnow") {
+      return(switch(lang,
+                    de = paste0("Aktueller Startkommentar: ", arg, "\n"),
+                         paste0("Current start comment: ", arg, "\n")
+   ))}
+
+   if (x == "commentstartnew") {
+      return(switch(lang,
+                    de = paste0("Neuer Startkommentar: "),
+                         paste0("New start comment: ")
+   ))}
+
+   if (x == "commentstartdeleted") {
+      return(switch(lang,
+                    de = paste0("Startkommentar gel\U000000F6scht.\n"),
+                         paste0("Deleted start comment.\n")
    ))}
 
    if (x == "copyfen") {

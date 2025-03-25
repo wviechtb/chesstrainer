@@ -2,6 +2,10 @@
 
    dosave <- FALSE
 
+   if (!is.null(sub$commentstart)) {
+      cat(.text("commentstart", sub$ommentstart))
+      cat("\n")
+   }
    print(sub$moves[1:8])
    if (!is.null(sub$commentend))
       cat(.text("commentend", sub$commentend))
@@ -29,6 +33,10 @@
          sub$moves$comment[comnum] <- newcom
          dosave <- TRUE
          cat("\n")
+         if (!is.null(sub$commentstart)) {
+            cat(.text("commentstart", sub$commentstart))
+            cat("\n")
+         }
          print(sub$moves[1:8])
          if (!is.null(sub$commentend))
             cat(.text("commentend", sub$commentend))
@@ -48,6 +56,10 @@
             sub$moves$comment[comdel] <- ""
             dosave <- TRUE
             cat("\n")
+            if (!is.null(sub$commentstart)) {
+               cat(.text("commentstart", sub$commentstart))
+               cat("\n")
+            }
             print(sub$moves[1:8])
             if (!is.null(sub$commentend))
                cat(.text("commentend", sub$commentend))
@@ -58,7 +70,21 @@
             dosave <- TRUE
             cat(.text("commentenddeleted"))
             cat("\n")
+            if (!is.null(sub$commentstart)) {
+               cat(.text("commentstart", sub$commentstart))
+               cat("\n")
+            }
             print(sub$moves[1:8])
+            cat("\n")
+         }
+         if (grepl("^[Ss]$", comdel)) {
+            sub$commentstart <- NULL
+            dosave <- TRUE
+            cat(.text("commentstartdeleted"))
+            cat("\n")
+            print(sub$moves[1:8])
+            if (!is.null(sub$commentend))
+               cat(.text("commentend", sub$commentend))
             cat("\n")
          }
       }
@@ -74,6 +100,31 @@
          sub$commentend <- endcom
          dosave <- TRUE
          cat("\n")
+         if (!is.null(sub$commentstart)) {
+            cat(.text("commentstart", sub$commentstart))
+            cat("\n")
+         }
+         print(sub$moves[1:8])
+         if (!is.null(sub$commentend))
+            cat(.text("commentend", sub$commentend))
+         cat("\n")
+      }
+
+      # s or S = to edit the start comment
+
+      if (grepl("^[Ss]$", resp)) {
+         if (!is.null(sub$commentstart))
+            cat(.text("commentstartnow", sub$commentstart))
+         startcom <- readline(prompt=.text("commentstartnew"))
+         if (identical(startcom, ""))
+            next
+         sub$commentstart <- startcom
+         dosave <- TRUE
+         cat("\n")
+         if (!is.null(sub$commentstart)) {
+            cat(.text("commentstart", sub$commentstart))
+            cat("\n")
+         }
          print(sub$moves[1:8])
          if (!is.null(sub$commentend))
             cat(.text("commentend", sub$commentend))

@@ -754,6 +754,34 @@
 
 }
 
+.startcomment <- function(txt, lwd) {
+
+   rect(1+0.2, 1+0.2, 9-0.2, 9-0.2, col=.get("col.bg"), border=.get("col.help.border"), lwd=lwd+3)
+
+   xleft   <- 1
+   xright  <- 9
+   ybottom <- 2
+   ytop    <- 8
+   xcenter <- (xleft + xright) / 2
+
+   txt <- gsub("\\n", "\n", txt, fixed=TRUE)
+   txt <- strsplit(txt, "\n", fixed=TRUE)[[1]]
+   max_line_width <- max(sapply(txt, strwidth))
+   max_line_height <- strheight("A")
+   total_text_height <- length(txt) * max_line_height
+   cex <- min(.get("cex.top"), (xright-xleft) / max_line_width, (ytop-ybottom) / total_text_height)
+   ypos <- seq(from = min(ytop,    (ytop - ybottom) / 2 + ybottom + (length(txt) - 1) * 1 * max_line_height * cex),
+               to   = max(ybottom, (ytop - ybottom) / 2 + ybottom - (length(txt) - 1) * 1 * max_line_height * cex),
+               length.out = length(txt))
+   col.top <- .get("col.top")
+   for (i in seq_along(txt)) {
+      text(x=xcenter, y=ypos[i], labels=txt[i], cex=cex, col=col.top)
+   }
+
+   getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button, x, y) return(""), onKeybd=function(key) return(""))
+
+}
+
 .quit <- function() {
 
    #return()

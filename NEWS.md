@@ -1,4 +1,4 @@
-# chesstrainer 0.9-34 (2025-03-23)
+# chesstrainer 0.9-35 (2025-03-25)
 
 - can play en passant
 - can promote pawns
@@ -22,6 +22,7 @@
 - simplified the arguments of the `play()` function
 - sequences now also save drawn circles and arrows during add mode and replay them during play mode
 - sequences now also save the FEN for each move; can use this to select sequences
+- sequences can have a start and/or end comment now
 
 # chesstrainer 0.1-0 (2024-12-17)
 

@@ -413,7 +413,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
          }
       }
 
-      if (selmode == "sequential") {
+      if (selmode == "sequential" && length(scores.selected) >= 1L) {
          while (scores.selected[seqno] == 0) {
             seqno <- seqno + 1
          }
@@ -483,6 +483,14 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
          ###### [b] ######
 
          if (mode == "play") {
+
+            if (!is.null(sub$commentstart)) {
+               .startcomment(sub$commentstart, lwd=lwd)
+               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode)
+               .draweval(sub$moves$eval[i], flip=flip, eval=eval, evalsteps=evalsteps)
+               circles <- matrix(nrow=0, ncol=2)
+               arrows  <- matrix(nrow=0, ncol=4)
+            }
 
             # play shown moves
 
@@ -568,7 +576,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             #   click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
             #}
 
-            keys      <- c("q", " ", "n", "p", "e", "E", "l", "-", "=", "+", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F9", "F10", "F12", "m", "/", "*", "8", ",", ".", "<", ">", "w", "t", "h", "ctrl-R", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "v", "a", "G", "ctrl-C")
+            keys      <- c("q", " ", "n", "p", "e", "E", "l", "-", "=", "+", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F9", "F10", "F12", "m", "/", "*", "8", ",", ".", "<", ">", "w", "t", "h", "H", "ctrl-R", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "v", "a", "G", "ctrl-C")
             keys.add  <- c("f", "z", "c", "s", "0", "?", "b")
             keys.play <- c("z", "c", "s", "\b", "ctrl-D", "Right", "Left", "o", "u", "A", "g")
 
@@ -1090,6 +1098,21 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                }
                eval(expr=switch2)
                next
+            }
+
+            # H to do a deep evaluation in add mode and show the best move
+
+            if (identical(click, "H") && mode == "add" && !is.null(sfproc) && sfrun) {
+               fen <- .genfen(pos, flip, sidetoplay, i)
+               .texttop(.text("sfdeepeval"))
+               tmp <- .sf.eval(sfproc, sfrun, "depth 32", fen, sidetoplay, verbose)
+               evalval  <- tmp$eval
+               bestmove <- tmp$bestmove
+               sfproc   <- tmp$sfproc
+               sfrun    <- tmp$sfrun
+               .draweval(evalval, flip=flip, eval=eval, evalsteps=evalsteps)
+               playsound(system.file("sounds", "complete.ogg", package="chesstrainer"), volume=volume)
+               click <- "h"
             }
 
             # h to get a hint
