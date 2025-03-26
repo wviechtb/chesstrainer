@@ -2,16 +2,16 @@
 
    dosave <- FALSE
 
-   if (!is.null(sub$commentstart)) {
-      cat(.text("commentstart", sub$ommentstart))
-      cat("\n")
-   }
-   print(sub$moves[1:8])
-   if (!is.null(sub$commentend))
-      cat(.text("commentend", sub$commentend))
-   cat("\n")
-
    while (TRUE) {
+
+      if (!is.null(sub$commentstart)) {
+         cat(.text("commentstart", sub$commentstart))
+         cat("\n")
+      }
+      print(sub$moves[1:8])
+      if (!is.null(sub$commentend))
+         cat(.text("commentend", sub$commentend))
+      cat("\n")
 
       resp <- readline(prompt=.text("commentedit"))
 
@@ -32,15 +32,6 @@
          newcom <- gsub("\\n", "\n", newcom, fixed=TRUE)
          sub$moves$comment[comnum] <- newcom
          dosave <- TRUE
-         cat("\n")
-         if (!is.null(sub$commentstart)) {
-            cat(.text("commentstart", sub$commentstart))
-            cat("\n")
-         }
-         print(sub$moves[1:8])
-         if (!is.null(sub$commentend))
-            cat(.text("commentend", sub$commentend))
-         cat("\n")
       }
 
       # d (or D, L, or l) = to delete a comment
@@ -55,37 +46,16 @@
                next
             sub$moves$comment[comdel] <- ""
             dosave <- TRUE
-            cat("\n")
-            if (!is.null(sub$commentstart)) {
-               cat(.text("commentstart", sub$commentstart))
-               cat("\n")
-            }
-            print(sub$moves[1:8])
-            if (!is.null(sub$commentend))
-               cat(.text("commentend", sub$commentend))
-            cat("\n")
          }
          if (grepl("^[Ee]$", comdel)) {
             sub$commentend <- NULL
             dosave <- TRUE
             cat(.text("commentenddeleted"))
-            cat("\n")
-            if (!is.null(sub$commentstart)) {
-               cat(.text("commentstart", sub$commentstart))
-               cat("\n")
-            }
-            print(sub$moves[1:8])
-            cat("\n")
          }
          if (grepl("^[Ss]$", comdel)) {
             sub$commentstart <- NULL
             dosave <- TRUE
             cat(.text("commentstartdeleted"))
-            cat("\n")
-            print(sub$moves[1:8])
-            if (!is.null(sub$commentend))
-               cat(.text("commentend", sub$commentend))
-            cat("\n")
          }
       }
 
@@ -99,15 +69,6 @@
             next
          sub$commentend <- endcom
          dosave <- TRUE
-         cat("\n")
-         if (!is.null(sub$commentstart)) {
-            cat(.text("commentstart", sub$commentstart))
-            cat("\n")
-         }
-         print(sub$moves[1:8])
-         if (!is.null(sub$commentend))
-            cat(.text("commentend", sub$commentend))
-         cat("\n")
       }
 
       # s or S = to edit the start comment
@@ -120,15 +81,6 @@
             next
          sub$commentstart <- startcom
          dosave <- TRUE
-         cat("\n")
-         if (!is.null(sub$commentstart)) {
-            cat(.text("commentstart", sub$commentstart))
-            cat("\n")
-         }
-         print(sub$moves[1:8])
-         if (!is.null(sub$commentend))
-            cat(.text("commentend", sub$commentend))
-         cat("\n")
       }
 
    }

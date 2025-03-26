@@ -484,12 +484,19 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
          if (mode == "play") {
 
-            if (!is.null(sub$commentstart)) {
+            if (i == 1 && !is.null(sub$commentstart)) {
                .startcomment(sub$commentstart, lwd=lwd)
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode)
                .draweval(sub$moves$eval[i], flip=flip, eval=eval, evalsteps=evalsteps)
                circles <- matrix(nrow=0, ncol=2)
                arrows  <- matrix(nrow=0, ncol=4)
+            }
+
+            if (nrow(sub$moves) == 0L) {
+               # useful when a sequence is just a start comment to present some text
+               .texttop(" ")
+               run.rnd <- FALSE
+               next
             }
 
             # play shown moves
@@ -684,6 +691,10 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             # s to save the sequence (only in add mode)
 
             if (mode == "add" && identical(click, "s")) {
+               if (all(sub$moves$show)) {
+                  .texttop(.text("allmovesshown"))
+                  next
+               }
                eval(expr=switch1)
                .texttop(.text("saveseq"))
                seqident <- sapply(dat.all, function(x) identical(sub$moves[1:5], x$moves[1:5]))

@@ -758,14 +758,20 @@
 
    rect(1+0.2, 1+0.2, 9-0.2, 9-0.2, col=.get("col.bg"), border=.get("col.help.border"), lwd=lwd+3)
 
-   xleft   <- 1
-   xright  <- 9
-   ybottom <- 2
-   ytop    <- 8
-   xcenter <- (xleft + xright) / 2
+   xleft   <- 1.5
+   xright  <- 8.5
+   ybottom <- 1.5
+   ytop    <- 8.5
+   xtext   <- (xleft + xright) / 2
+   center  <- TRUE
 
    txt <- gsub("\\n", "\n", txt, fixed=TRUE)
    txt <- strsplit(txt, "\n", fixed=TRUE)[[1]]
+   if (startsWith(txt[1], "\\l")) {
+      xtext <- xleft
+      center  <- FALSE
+      txt[1] <- gsub("\\l", "", txt[1], fixed=TRUE)
+   }
    max_line_width <- max(sapply(txt, strwidth))
    max_line_height <- strheight("A")
    total_text_height <- length(txt) * max_line_height
@@ -775,7 +781,11 @@
                length.out = length(txt))
    col.top <- .get("col.top")
    for (i in seq_along(txt)) {
-      text(x=xcenter, y=ypos[i], labels=txt[i], cex=cex, col=col.top)
+      if (center) {
+         text(x=xtext, y=ypos[i], labels=txt[i], cex=cex, col=col.top)
+      } else {
+         text(x=xtext, y=ypos[i], labels=txt[i], cex=cex, col=col.top, pos=4)
+      }
    }
 
    getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button, x, y) return(""), onKeybd=function(key) return(""))

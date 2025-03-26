@@ -68,7 +68,7 @@
 
    rochade <- attr(pos,"rochade")
 
-   if (identical(rochade, rep(FALSE,4))) {
+   if (identical(rochade, rep(FALSE,4)) || is.null(rochade)) {
       rochade <- "-"
    } else {
       rochade <- paste0(c("K", "Q", "k", "q")[rochade], collapse="")

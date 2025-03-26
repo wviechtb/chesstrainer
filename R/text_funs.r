@@ -706,6 +706,12 @@
                          paste0("Sequence bookmarked: ", arg, "\n")
    ))}
 
+   if (x == "allmovesshown") {
+      return(switch(lang,
+                    de = paste0("Alle Z\U000000FCge der Sequenz werden automatisch angezeigt.\nEs muss mindestens einen Zug geben, der gespielt werden muss."),
+                         paste0("All moves in the sequence are automatically shown.\nThere must be at least one move that has to be played.")
+   ))}
+
 }
 
 .confirm <- function(x) {
