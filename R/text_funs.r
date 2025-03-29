@@ -522,8 +522,8 @@
 
    if (x == "sfoptions") {
       return(switch(lang,
-                    de = "1 - Stockfisch (neu) starten\n2 - Stockfisch beenden\n3 - Pfad \U000000E4ndern\n4 - Berechnungstiefe 1 \U000000E4ndern\n5 - Berechnungstiefe 2 \U000000E4ndern\n6 - Einstellungen anzeigen\n",
-                         "1 - (Re)start Stockfisch\n2 - Quit Stockfisch\n3 - Change path\n4 - Change calculation depth 1\n5 - Change calculation depth 2\n6 - Show settings"
+                    de = "1 - Stockfisch (neu) starten\n2 - Stockfisch beenden\n3 - Pfad \U000000E4ndern\n4 - Berechnungstiefe (schnell) \U000000E4ndern\n5 - Berechnungstiefe (tief) \U000000E4ndern\n6 - Einstellungen anzeigen\n",
+                         "1 - (Re)start Stockfisch\n2 - Quit Stockfisch\n3 - Change path\n4 - Change calculation depth (fast)\n5 - Change calculation depth (deep)\n6 - Show settings"
    ))}
 
    if (x == "sfoptionwhich") {
@@ -630,8 +630,8 @@
 
    if (x == "explsettings") {
       return(switch(lang,
-                    de = c("Sprache", "Spielername", "Modus", "Selektionsmodus f\U000000FCr Sequenzen", "Exponentenwert", "Multiplikator f\U000000FCr abgeschlossene Sequenzen", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Bewertungsleiste anzeigen", "Animationsschritte f\U000000FCr die Bewertungsleiste", "Pause zwischen Sequenzen", "Zeit zwischen den Z\U000000FCgen (Sekunden)", "Linienbreite", "Lautst\U000000E4rke (%)", "Fortschrittsdiagramm nach Sequenzen anzeigen", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Stockfish Pfad", "Berechnungstiefe 1 f\U000000FCr Stockfish", "Berechnungstiefe 2 f\U000000FCr Stockfish"),
-                         c("Language", "Player name", "Mode", "Selection mode for sequences", "Exponent value", "Multiplier for completed sequences", "Score penalty for wrong moves", "Score penalty per hint", "Show evaluation bar", "Animation steps for the evaluation bar", "Pause between sequences", "Time between moves (seconds)", "Line width", "Sound volume (%)", "Show progress graph after sequences", "Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Stockfish path", "Calculation depth 1 for Stockfish", "Calculation depth 2 for Stockfish")
+                    de = c("Sprache", "Spielername", "Modus", "Selektionsmodus f\U000000FCr Sequenzen", "Exponentenwert", "Multiplikator f\U000000FCr abgeschlossene Sequenzen", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Bewertungsleiste anzeigen", "Animationsschritte f\U000000FCr die Bewertungsleiste", "Pause zwischen Sequenzen", "Zeit zwischen den Z\U000000FCgen (Sekunden)", "Linienbreite", "Lautst\U000000E4rke (%)", "Fortschrittsdiagramm nach Sequenzen anzeigen", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Stockfish Pfad", "Berechnungstiefe (schnell) f\U000000FCr Stockfish", "Berechnungstiefe (tief) f\U000000FCr Stockfish"),
+                         c("Language", "Player name", "Mode", "Selection mode for sequences", "Exponent value", "Multiplier for completed sequences", "Score penalty for wrong moves", "Score penalty per hint", "Show evaluation bar", "Animation steps for the evaluation bar", "Pause between sequences", "Time between moves (seconds)", "Line width", "Sound volume (%)", "Show progress graph after sequences", "Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Stockfish path", "Calculation depth (fast) for Stockfish", "Calculation depth (deep) for Stockfish")
    ))}
 
    if (x == "comment") {

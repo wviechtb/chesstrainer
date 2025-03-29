@@ -111,13 +111,11 @@
 
    If Stockfish (\url{https://stockfishchess.org}) is installed, it can be used in the background to automatically obtain position evaluations when adding sequences. For this, specify the path (including the executable) to Stockfish via the \code{sfpath} argument of the \code{\link{play}} function. If this is set correctly, then position evaluations will be automatically computed and added to a sequence in \sQuote{add} mode. Evaluations are given in centipawns divided by 100, except for forced mates, which are given as \eqn{\pm99.9}. When playing a sequence, these evaluations are then shown as an evaluation bar on the left of the board.
 
-   By default, evaluations are based on a search depth of 20 half-moves. Obtaining such an evaluation for a given position should be relatively quick and not add much lag when creating a sequence. You can adjust the calculation depth using the \code{depth1} argument. In \sQuote{add} mode, the \code{<h>} key shows the best move according to Stockfish in a given position.
+   By default, evaluations are based on a search depth of 20 half-moves. Obtaining such an evaluation for a given position should be relatively quick and not add much lag when creating a sequence. In \sQuote{add} mode, the \code{<h>} key shows the best move according to Stockfish in a given position. The \code{<H>} key will run a deeper analysis (by default based on search depth of 30) and show the best move according to Stockfish. Since this may take some time, a progress bar is shown at the top while the analysis is running. With \code{<F7>}, you can adjust the Stockfish settings.
 
-   The \code{depth2} argument is used to specify a deeper search depth (the default is 30). In \sQuote{add} mode, the \code{<H>} key will run a deeper analysis and show the best move according to Stockfish. Since this may take some time, a progress bar is shown at the top while the analysis is running.
+   In \sQuote{play} mode, the \code{<u>} key updates the evaluations for all moves in a sequence by recalculating the evaluations with the current setting for a deeper analysis. Note that this can take a bit of time, depending on the number of moves in the sequence. After updating the evaluations, they are automatically saved to the sequence file.
 
-   In \sQuote{play} mode, the \code{<u>} key updates the evaluations for all moves in a sequence by recalculating the evaluations with the current setting for the \code{depth2} parameter. After updating the evaluations, they are automatically saved to the sequence file.
-
-   Note that asking Stockfish to evaluate impossible positions (e.g., black is in check but it is white's turn to move) crashes Stockfish. This should be handled gracefully by the trainer. With \code{<F7>}, you can adjust the Stockfish settings and also restart it.
+   Note that asking Stockfish to evaluate impossible positions (e.g., black is in check but it is white's turn to move) crashes Stockfish. This should be handled gracefully by the trainer.
 
 }
 \section{Other Options and Shortcuts}{

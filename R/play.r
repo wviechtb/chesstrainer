@@ -1,4 +1,4 @@
-play <- function(player="", lang="en", seqdir="", sfpath="", depth1=20, depth2=30, ...) {
+play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
 
    if (!interactive())
       return(.text("interactive"))
@@ -26,6 +26,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", depth1=20, depth2=3
    cex.top     <- ifelse(is.null(ddd$cex.top),     1.4,            ddd$cex.top)
    cex.bot     <- ifelse(is.null(ddd$cex.bot),     0.7,            ddd$cex.bot)
    cex.eval    <- ifelse(is.null(ddd$cex.eval),    0.5,            ddd$cex.eval)
+   depth1      <- ifelse(is.null(ddd$depth1),      20,             ddd$depth1)
+   depth2      <- ifelse(is.null(ddd$depth2),      30,             ddd$depth2)
 
    if (is.null(ddd[["switch1"]])) {
       switch1 <- parse(text="invisible(NULL)")
