@@ -111,7 +111,7 @@
 
    If Stockfish (\url{https://stockfishchess.org}) is installed, it can be used in the background to automatically obtain position evaluations when adding sequences. For this, specify the path (including the executable) to Stockfish via the \code{sfpath} argument of the \code{\link{play}} function. If this is set correctly, then position evaluations will be automatically computed and added to a sequence in \sQuote{add} mode. Evaluations are given in centipawns divided by 100, except for forced mates, which are given as \eqn{\pm99.9}. When playing a sequence, these evaluations are then shown as an evaluation bar on the left of the board.
 
-   By default, evaluations are based on a search depth of 20 half-moves. Obtaining such an evaluation for a given position should be relatively quick and not add much lag when creating a sequence. In \sQuote{add} mode, the \code{<h>} key shows the best move according to Stockfish in a given position. The \code{<H>} key will run a deeper analysis (by default based on search depth of 30) and show the best move according to Stockfish. Since this may take some time, a progress bar is shown at the top while the analysis is running. With \code{<F7>}, you can adjust the Stockfish settings.
+   By default, evaluations are based on a search depth of 20 half-moves. Obtaining such an evaluation for a given position should be relatively quick and not add much lag when creating a sequence. In \sQuote{add} mode, the \code{<h>} key shows the best move according to Stockfish in a given position. The \code{<H>} key will run a deeper analysis (by default based on search depth of 30) and show the best move according to Stockfish. Since this may take some time, a progress bar is shown at the top while the analysis is running. With \code{<F7>}, you can adjust the Stockfish settings, including the calculation depths, the number of threads that Stockfish can use during its calculations (the default is 1), and the hash size in MB (the default is 256).
 
    In \sQuote{play} mode, the \code{<u>} key updates the evaluations for all moves in a sequence by recalculating the evaluations with the current setting for a deeper analysis. Note that this can take a bit of time, depending on the number of moves in the sequence. After updating the evaluations, they are automatically saved to the sequence file.
 
@@ -141,8 +141,6 @@
    With \code{<F5>}, you can adjust the size of the text at the top, the text at the bottom, and the size of the evaluation value in the evaluation bar (if it is shown).
 
    With \code{<F6>}, you can adjust some miscellaneous settings, namely the multiplier for the score when completing a sequence without any mistakes (0.8 by default), the score penalty when making a wrong move (40 by default), the score penalty per hint (20 by default), and the number of animation steps for the evaluation bar (10 by default).
-
-   With \code{<F7>}, you can adjust the Stockfish settings, namely the path and the calculation depths (see above).
 
    With \code{<F9>}, the FEN of the current position is printed and the position is opened on the \url{https://lichess.org} website for analysis. With \code{Ctrl-<c>}, the FEN is copied to the clipboard (this makes use of the \code{\link[clipr]{write_clip}} function from the \code{clipr} package).
 

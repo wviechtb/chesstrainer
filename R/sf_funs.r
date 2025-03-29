@@ -1,4 +1,4 @@
-.sf.start <- function(sfproc=NULL, sfrun=FALSE, sfpath) {
+.sf.start <- function(sfproc=NULL, sfrun=FALSE, sfpath, threads, hash) {
 
    tmp <- .sf.stop(sfproc, sfrun)
    sfproc <- tmp$sfproc
@@ -18,6 +18,7 @@
    if (sfrun) {
       sfproc$write_input("uci\n")
       .sf.ready(sfproc)
+      .sf.setoptions(sfproc, threads, hash)
    }
 
    return(list(sfproc=sfproc, sfrun=sfrun))
@@ -31,11 +32,21 @@
    repeat {
       sfout <- sfproc$read_output_lines()
       if (length(sfout) > 0) {
-         if (any(grepl("readyok", sfout)))
+         if (any(grepl("readyok", sfout, fixed=TRUE)))
             break
       }
    }
 
+   return()
+
+}
+
+.sf.setoptions <- function(sfproc, threads, hash) {
+
+   sfproc$write_input(paste0("setoption name Threads value ", threads, "\n"))
+   Sys.sleep(0.2)
+   sfproc$write_input(paste0("setoption name Hash value 256\n"))
+   Sys.sleep(0.2)
    return()
 
 }
@@ -163,12 +174,14 @@
 
 }
 
-.sfsettings <- function(sfproc, sfrun, sfpath, depth1, depth2) {
+.sfsettings <- function(sfproc, sfrun, sfpath, depth1, depth2, threads, hash) {
 
    cat(.text("sfrunning", sfrun))
-   cat(.text("sfpath", sfpath))
-   cat(.text("depth1", depth1))
-   cat(.text("depth2", depth2))
+   cat(.text("sfpath",    sfpath))
+   cat(.text("depth1",    depth1))
+   cat(.text("depth2",    depth2))
+   cat(.text("threads",   threads))
+   cat(.text("hash",      hash))
 
    cat("\n")
    cat(.text("sfoptions"))
@@ -180,12 +193,12 @@
          break
       if (grepl("^[1-9]$", resp)) {
          resp <- round(as.numeric(resp))
-         if (resp < 1 || resp > 6)
+         if (resp < 1 || resp > 8)
             next
          if (identical(resp, 1)) {
             # (re)start Stockfish
             cat("\n")
-            tmp <- .sf.start(sfproc, sfrun, sfpath)
+            tmp <- .sf.start(sfproc, sfrun, sfpath, threads, hash)
             sfproc <- tmp$sfproc
             sfrun  <- tmp$sfrun
          }
@@ -214,7 +227,7 @@
             }
          }
          if (identical(resp, 4)) {
-            # set depth parameter
+            # set depth1 parameter
             cat("\n")
             newdepth <- readline(prompt=.text("depthenter"))
             if (identical(newdepth, "")) {
@@ -232,7 +245,7 @@
             }
          }
          if (identical(resp, 5)) {
-            # set depth parameter
+            # set depth2 parameter
             cat("\n")
             newdepth <- readline(prompt=.text("depthenter"))
             if (identical(newdepth, "")) {
@@ -250,18 +263,58 @@
             }
          }
          if (identical(resp, 6)) {
+            # set threads parameter
+            cat("\n")
+            newthreads <- readline(prompt=.text("threadsenter"))
+            if (identical(newthreads, "")) {
+               next
+            } else {
+               if (grepl("^[1-9]+$", newthreads)) {
+                  newthreads <- round(as.numeric(newthreads))
+                  newthreads <- max(1, newthreads)
+                  threads <- newthreads
+                  cat(.text("threadssetsuccess"))
+                  .sf.setoptions(sfproc, threads, hash)
+               } else {
+                  cat(.text("threadssetfail"))
+                  next
+               }
+            }
+         }
+         if (identical(resp, 7)) {
+            # set hash parameter
+            cat("\n")
+            newhash <- readline(prompt=.text("hashenter"))
+            if (identical(newhash, "")) {
+               next
+            } else {
+               if (grepl("^[1-9]+$", newhash)) {
+                  newhash <- round(as.numeric(newhash))
+                  newhash <- max(16, newhash)
+                  hash <- newhash
+                  cat(.text("hashsetsuccess"))
+                  .sf.setoptions(sfproc, threads, hash)
+               } else {
+                  cat(.text("hashsetfail"))
+                  next
+               }
+            }
+         }
+         if (identical(resp, 8)) {
             # show settings
             cat("\n")
             cat(.text("sfrunning", sfrun))
-            cat(.text("sfpath", sfpath))
-            cat(.text("depth1", depth1))
-            cat(.text("depth2", depth2))
+            cat(.text("sfpath",    sfpath))
+            cat(.text("depth1",    depth1))
+            cat(.text("depth2",    depth2))
+            cat(.text("threads",   threads))
+            cat(.text("hash",      hash))
             cat("\n")
             cat(.text("sfoptions"))
          }
       }
    }
 
-   return(list(sfproc=sfproc, sfrun=sfrun, sfpath=sfpath, depth1=depth1, depth2=depth2))
+   return(list(sfproc=sfproc, sfrun=sfrun, sfpath=sfpath, depth1=depth1, depth2=depth2, threads=threads))
 
 }

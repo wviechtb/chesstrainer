@@ -520,10 +520,22 @@
                          paste0("Calculation depth (deep): ", arg, "\n")
    ))}
 
+   if (x == "threads") {
+      return(switch(lang,
+                    de = paste0("Anzahl der Threads:         ", arg, "\n"),
+                         paste0("Number of threads:        ", arg, "\n")
+   ))}
+
+   if (x == "hash") {
+      return(switch(lang,
+                    de = paste0("Hashgr\U000000F6\U000000DFe:                  ", arg, "\n"),
+                         paste0("Hash size:                ", arg, "\n")
+   ))}
+
    if (x == "sfoptions") {
       return(switch(lang,
-                    de = "1 - Stockfisch (neu) starten\n2 - Stockfisch beenden\n3 - Pfad \U000000E4ndern\n4 - Berechnungstiefe (schnell) \U000000E4ndern\n5 - Berechnungstiefe (tief) \U000000E4ndern\n6 - Einstellungen anzeigen\n",
-                         "1 - (Re)start Stockfisch\n2 - Quit Stockfisch\n3 - Change path\n4 - Change calculation depth (fast)\n5 - Change calculation depth (deep)\n6 - Show settings"
+                    de = "1 - Stockfisch (neu) starten\n2 - Stockfisch beenden\n3 - Pfad \U000000E4ndern\n4 - Berechnungstiefe (schnell) \U000000E4ndern\n5 - Berechnungstiefe (tief) \U000000E4ndern\n6 - Anzahl der Threads \U000000E4ndern\n7 - Hashgr\U000000F6\U000000DFe \U000000E4ndern\n8 - Einstellungen anzeigen\n",
+                         "1 - (Re)start Stockfisch\n2 - Quit Stockfisch\n3 - Change path\n4 - Change calculation depth (fast)\n5 - Change calculation depth (deep)\n6 - Change number of threads\n7 - Change hash size\n8 - Show settings"
    ))}
 
    if (x == "sfoptionwhich") {
@@ -566,6 +578,42 @@
       return(switch(lang,
                     de = "Neuer Berechnungstiefe konnte nicht gesetzt werden.\n",
                          "New calculation depth could not be set.\n"
+   ))}
+
+   if (x == "threadsenter") {
+      return(switch(lang,
+                    de = "Anzahl der Threads: ",
+                         "Number of threads: "
+   ))}
+
+   if (x == "threadssetsuccess") {
+      return(switch(lang,
+                    de = "Neue Anzahl der Threads wurde erfolgreich gesetzt.\n",
+                         "New number of threads was set successfully.\n"
+   ))}
+
+   if (x == "threadssetfail") {
+      return(switch(lang,
+                    de = "Neue Anzahl der Threads konnte nicht gesetzt werden.\n",
+                         "New number of threads could not be set.\n"
+   ))}
+
+   if (x == "hashenter") {
+      return(switch(lang,
+                    de = "Hashgr\U000000F6\U000000DFe: ",
+                         "Hash size: "
+   ))}
+
+   if (x == "hashsetsuccess") {
+      return(switch(lang,
+                    de = "Neue Hashgr\U000000F6\U000000DFe wurde erfolgreich gesetzt.\n",
+                         "New hash size was set successfully.\n"
+   ))}
+
+   if (x == "hashsetfail") {
+      return(switch(lang,
+                    de = "Neue Hashgr\U000000F6\U000000DFe konnte nicht gesetzt werden.\n",
+                         "New hash size could not be set.\n"
    ))}
 
    if (x == "sfsegfault") {
@@ -630,8 +678,8 @@
 
    if (x == "explsettings") {
       return(switch(lang,
-                    de = c("Sprache", "Spielername", "Modus", "Selektionsmodus f\U000000FCr Sequenzen", "Exponentenwert", "Multiplikator f\U000000FCr abgeschlossene Sequenzen", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Bewertungsleiste anzeigen", "Animationsschritte f\U000000FCr die Bewertungsleiste", "Pause zwischen Sequenzen", "Zeit zwischen den Z\U000000FCgen (Sekunden)", "Linienbreite", "Lautst\U000000E4rke (%)", "Fortschrittsdiagramm nach Sequenzen anzeigen", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Stockfish Pfad", "Berechnungstiefe (schnell) f\U000000FCr Stockfish", "Berechnungstiefe (tief) f\U000000FCr Stockfish"),
-                         c("Language", "Player name", "Mode", "Selection mode for sequences", "Exponent value", "Multiplier for completed sequences", "Score penalty for wrong moves", "Score penalty per hint", "Show evaluation bar", "Animation steps for the evaluation bar", "Pause between sequences", "Time between moves (seconds)", "Line width", "Sound volume (%)", "Show progress graph after sequences", "Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Stockfish path", "Calculation depth (fast) for Stockfish", "Calculation depth (deep) for Stockfish")
+                    de = c("Sprache", "Spielername", "Modus", "Selektionsmodus f\U000000FCr Sequenzen", "Exponentenwert", "Multiplikator f\U000000FCr abgeschlossene Sequenzen", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Bewertungsleiste anzeigen", "Animationsschritte f\U000000FCr die Bewertungsleiste", "Pause zwischen Sequenzen", "Zeit zwischen den Z\U000000FCgen (Sekunden)", "Linienbreite", "Lautst\U000000E4rke (%)", "Fortschrittsdiagramm nach Sequenzen anzeigen", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Stockfish Pfad", "Berechnungstiefe (schnell) f\U000000FCr Stockfish", "Berechnungstiefe (tief) f\U000000FCr Stockfish", "Anzahl der Threads f\U000000FCr Stockfish", "Hashgr\U000000F6\U000000DFe f\U000000FCr Stockfish"),
+                         c("Language", "Player name", "Mode", "Selection mode for sequences", "Exponent value", "Multiplier for completed sequences", "Score penalty for wrong moves", "Score penalty per hint", "Show evaluation bar", "Animation steps for the evaluation bar", "Pause between sequences", "Time between moves (seconds)", "Line width", "Sound volume (%)", "Show progress graph after sequences", "Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Stockfish path", "Calculation depth (fast) for Stockfish", "Calculation depth (deep) for Stockfish", "Number of threads for Stockfish", "Hash size for Stockfish")
    ))}
 
    if (x == "comment") {

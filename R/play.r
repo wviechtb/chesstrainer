@@ -28,6 +28,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
    cex.eval    <- ifelse(is.null(ddd$cex.eval),    0.5,            ddd$cex.eval)
    depth1      <- ifelse(is.null(ddd$depth1),      20,             ddd$depth1)
    depth2      <- ifelse(is.null(ddd$depth2),      30,             ddd$depth2)
+   threads     <- ifelse(is.null(ddd$threads),     1,              ddd$threads)
+   hash        <- ifelse(is.null(ddd$hash),        256,            ddd$hash)
 
    if (is.null(ddd[["switch1"]])) {
       switch1 <- parse(text="invisible(NULL)")
@@ -60,6 +62,9 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
    cex.top[cex.top < 0.1] <- 0.1
    cex.bot[cex.bot < 0.1] <- 0.1
    cex.eval[cex.eval < 0.1] <- 0.1
+   depth1[depth1 < 1] <- 1
+   depth2[depth2 < 1] <- 1
+   hash[hash < 16] <- 16
 
    verbose <- isTRUE(ddd$verbose)
 
@@ -76,7 +81,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
       success <- dir.create(configdir, recursive=TRUE)
       if (!success)
          stop(.text("dircreateerror"), call.=FALSE)
-      settings <- data.frame(lang, player, mode, selmode, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, pause, sleep, lwd, volume, showgraph, cex.top, cex.bot, cex.eval, sfpath, depth1, depth2)
+      settings <- data.frame(lang, player, mode, selmode, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, pause, sleep, lwd, volume, showgraph, cex.top, cex.bot, cex.eval, sfpath, depth1, depth2, threads, hash)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       cols <- sapply(cols.all, function(x) .get(x))
       saveRDS(cols, file=file.path(configdir, "colors.rds"))
@@ -128,9 +133,13 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
             depth1 <- settings$depth1
          if (is.null(mc$depth2))
             depth2 <- settings$depth2
+         if (is.null(mc$threads))
+            threads <- settings$threads
+         if (is.null(mc$hash))
+            hash <- settings$hash
       }
       sfpath <- suppressWarnings(normalizePath(sfpath))
-      settings <- data.frame(lang, player, mode, selmode, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, pause, sleep, lwd, volume, showgraph, cex.top, cex.bot, cex.eval, sfpath, depth1, depth2)
+      settings <- data.frame(lang, player, mode, selmode, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, pause, sleep, lwd, volume, showgraph, cex.top, cex.bot, cex.eval, sfpath, depth1, depth2, threads, hash)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       if (file.exists(file.path(configdir, "colors.rds"))) {
          cols <- readRDS(file.path(configdir, "colors.rds"))
@@ -179,7 +188,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
 
    # start Stockfish
 
-   tmp <- .sf.start(sfpath=sfpath)
+   tmp <- .sf.start(sfpath=sfpath, threads=threads, hash=hash)
    sfproc <- tmp$sfproc
    sfrun  <- tmp$sfrun
 
@@ -1676,7 +1685,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
 
             if (identical(click, "F3")) {
                eval(expr=switch1)
-               settings <- data.frame(lang, player, mode, selmode, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, pause, sleep, lwd, volume, showgraph, cex.top, cex.bot, cex.eval, sfpath, depth1, depth2)
+               settings <- data.frame(lang, player, mode, selmode, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, pause, sleep, lwd, volume, showgraph, cex.top, cex.bot, cex.eval, sfpath, depth1, depth2, threads, hash)
                tab <- t(settings)
                tab <- cbind(tab, .text("explsettings"))
                colnames(tab) <- c("", "")
@@ -1742,16 +1751,20 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
 
             if (identical(click, "F7")) {
                eval(expr=switch1)
-               tmp <- .sfsettings(sfproc, sfrun, sfpath, depth1, depth2)
+               tmp <- .sfsettings(sfproc, sfrun, sfpath, depth1, depth2, threads, hash)
                eval(expr=switch2)
-               sfproc <- tmp$sfproc
-               sfrun  <- tmp$sfrun
-               sfpath <- tmp$sfpath
-               depth1 <- tmp$depth1
-               depth2 <- tmp$depth2
-               settings$sfpath <- sfpath
-               settings$depth1 <- depth1
-               settings$depth2 <- depth2
+               sfproc  <- tmp$sfproc
+               sfrun   <- tmp$sfrun
+               sfpath  <- tmp$sfpath
+               depth1  <- tmp$depth1
+               depth2  <- tmp$depth2
+               threads <- tmp$threads
+               hash    <- tmp$hash
+               settings$sfpath  <- sfpath
+               settings$depth1  <- depth1
+               settings$depth2  <- depth2
+               settings$threads <- threads
+               settings$hash    <- hash
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
