@@ -69,7 +69,7 @@
 
 }
 
-.sf.eval <- function(sfproc, sfrun, sfgo, fen, sidetoplay, verbose) {
+.sf.eval <- function(sfproc, sfrun, depth, fen, sidetoplay, verbose, progbar=FALSE) {
 
    sfout    <- NULL
    eval     <- NA_real_
@@ -78,11 +78,14 @@
    cp       <- NA_real_
    alive    <- TRUE
 
+   if (progbar)
+      col.top <- .get("col.top")
+
    if (sfrun) {
 
       .sf.newgame(sfproc, sfrun)
       sfproc$write_input(paste("position fen", fen, "\n"))
-      sfproc$write_input(paste0("go ", sfgo, "\n"))
+      sfproc$write_input(paste0("go depth ", depth, "\n"))
 
       if (alive) {
 
@@ -93,17 +96,27 @@
                break
             }
             sfout <- c(sfout, sfproc$read_output_lines())
-            if (any(grepl("bestmove", sfout))) {
-               movepos <- grep("bestmove", sfout)
-               bestmove <- strsplit(sfout[movepos], " ")[[1]][2]
-               cppos <- grep("score cp", sfout)
+            if (progbar) {
+               curdepth <- grep("info depth", sfout, fixed=TRUE)
+               if (length(curdepth) >= 1L) {
+                  curdepth <- max(curdepth)
+                  curdepth <- strsplit(sfout[curdepth], " ", fixed=TRUE)[[1]][3]
+                  curdepth <- as.numeric(curdepth)
+                  rect(1, 9.3, 9, 9.4, col=NA, border=col.top)
+                  rect(1, 9.3, max(1,curdepth/depth*8.9), 9.4, col=col.top, border=NA)
+               }
+            }
+            if (any(grepl("bestmove", sfout, fixed=TRUE))) {
+               movepos <- grep("bestmove", sfout, fixed=TRUE)
+               bestmove <- strsplit(sfout[movepos], " ", fixed=TRUE)[[1]][2]
+               cppos <- grep("score cp", sfout, fixed=TRUE)
                if (length(cppos) >= 1L) {
                   sflast <- sfout[max(cppos)]
                   cp <- strcapture("score cp ([-]*[[:digit:]]+)", sflast, data.frame(x=numeric()))$x
                } else {
                   cp <- NA_real_
                }
-               matepos <- grep("score mate", sfout)
+               matepos <- grep("score mate", sfout, fixed=TRUE)
                if (length(matepos) >= 1L) {
                   sflast <- sfout[max(matepos)]
                   mate <- strcapture("score mate ([-]*[[:digit:]]+)", sflast, data.frame(x=numeric()))$x
@@ -150,11 +163,12 @@
 
 }
 
-.sfsettings <- function(sfproc, sfrun, sfpath, sfgo) {
+.sfsettings <- function(sfproc, sfrun, sfpath, depth1, depth2) {
 
    cat(.text("sfrunning", sfrun))
    cat(.text("sfpath", sfpath))
-   cat(.text("sfgo", sfgo))
+   cat(.text("depth1", depth1))
+   cat(.text("depth2", depth2))
 
    cat("\n")
    cat(.text("sfoptions"))
@@ -166,7 +180,7 @@
          break
       if (grepl("^[1-9]$", resp)) {
          resp <- round(as.numeric(resp))
-         if (resp < 1 || resp > 5)
+         if (resp < 1 || resp > 6)
             next
          if (identical(resp, 1)) {
             # (re)start Stockfish
@@ -200,33 +214,54 @@
             }
          }
          if (identical(resp, 4)) {
-            # set calculation parameter
-            oldsfgo <- sfgo
+            # set depth parameter
             cat("\n")
-            sfgo <- readline(prompt=.text("sfentergo"))
-            if (identical(sfgo, "")) {
-               sfgo <- oldsfgo
+            newdepth <- readline(prompt=.text("depthenter"))
+            if (identical(newdepth, "")) {
+               next
             } else {
-               if (grepl("^depth\\s[[:digit:]]+$", sfgo) || grepl("^movetime\\s[[:digit:]]+$", sfgo)) {
-                  cat(.text("sfgosuccess"))
+               if (grepl("^[1-9]+$", newdepth)) {
+                  newdepth <- round(as.numeric(newdepth))
+                  newdepth <- max(1, newdepth)
+                  depth1 <- newdepth
+                  cat(.text("depthsetsuccess"))
                } else {
-                  cat(.text("sfgofail"))
-                  sfgo <- oldsfgo
+                  cat(.text("depthsetfail"))
+                  next
                }
             }
          }
          if (identical(resp, 5)) {
+            # set depth parameter
+            cat("\n")
+            newdepth <- readline(prompt=.text("depthenter"))
+            if (identical(newdepth, "")) {
+               next
+            } else {
+               if (grepl("^[1-9]+$", newdepth)) {
+                  newdepth <- round(as.numeric(newdepth))
+                  newdepth <- max(1, newdepth)
+                  depth2 <- newdepth
+                  cat(.text("depthsetsuccess"))
+               } else {
+                  cat(.text("depthsetfail"))
+                  next
+               }
+            }
+         }
+         if (identical(resp, 6)) {
             # show settings
             cat("\n")
             cat(.text("sfrunning", sfrun))
             cat(.text("sfpath", sfpath))
-            cat(.text("sfgo", sfgo))
+            cat(.text("depth1", depth1))
+            cat(.text("depth2", depth2))
             cat("\n")
             cat(.text("sfoptions"))
          }
       }
    }
 
-   return(list(sfproc=sfproc, sfrun=sfrun, sfpath=sfpath, sfgo=sfgo))
+   return(list(sfproc=sfproc, sfrun=sfrun, sfpath=sfpath, depth1=depth1, depth2=depth2))
 
 }

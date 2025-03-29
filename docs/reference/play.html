@@ -29,7 +29,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chesstrainer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-36</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-37</span>
       </span>
     </div>
 
@@ -84,7 +84,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">play</span><span class="op">(</span>player<span class="op">=</span><span class="st">""</span>, lang<span class="op">=</span><span class="st">"en"</span>, seqdir<span class="op">=</span><span class="st">""</span>, sfpath<span class="op">=</span><span class="st">""</span>, sfgo<span class="op">=</span><span class="st">"depth 20"</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">play</span><span class="op">(</span>player<span class="op">=</span><span class="st">""</span>, lang<span class="op">=</span><span class="st">"en"</span>, seqdir<span class="op">=</span><span class="st">""</span>, sfpath<span class="op">=</span><span class="st">""</span>, depth1<span class="op">=</span><span class="fl">20</span>, depth2<span class="op">=</span><span class="fl">30</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -102,8 +102,11 @@
    <dt id="arg-sfpath">sfpath<a class="anchor" aria-label="anchor" href="#arg-sfpath"></a></dt>
 <dd><p>character string giving the path (including the executable) to Stockfish. If blank, Stockfish is not used for position evaluations.</p></dd>
 
-   <dt id="arg-sfgo">sfgo<a class="anchor" aria-label="anchor" href="#arg-sfgo"></a></dt>
-<dd><p>character string to specify the calculation parameter for Stockfish. Either something like <code>"depth 20"</code> (to fix the search depth in terms of the number of half-moves) or <code>"movetime 1000"</code> (to fix the search time in milliseconds).</p></dd>
+   <dt id="arg-depth-">depth1<a class="anchor" aria-label="anchor" href="#arg-depth-"></a></dt>
+<dd><p>integer to specify the search depth for a quick evaluation (only relevant if Stockfish is running).</p></dd>
+
+   <dt id="arg-depth-">depth2<a class="anchor" aria-label="anchor" href="#arg-depth-"></a></dt>
+<dd><p>integer to specify the search depth for a deep evaluation (only relevant if Stockfish is running).</p></dd>
 
    <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
 <dd><p>other arguments</p></dd>

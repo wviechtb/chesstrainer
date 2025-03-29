@@ -1,4 +1,4 @@
-play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ...) {
+play <- function(player="", lang="en", seqdir="", sfpath="", depth1=20, depth2=30, ...) {
 
    if (!interactive())
       return(.text("interactive"))
@@ -74,7 +74,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
       success <- dir.create(configdir, recursive=TRUE)
       if (!success)
          stop(.text("dircreateerror"), call.=FALSE)
-      settings <- data.frame(lang, player, mode, selmode, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, pause, sleep, lwd, volume, showgraph, cex.top, cex.bot, cex.eval, sfpath, sfgo)
+      settings <- data.frame(lang, player, mode, selmode, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, pause, sleep, lwd, volume, showgraph, cex.top, cex.bot, cex.eval, sfpath, depth1, depth2)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       cols <- sapply(cols.all, function(x) .get(x))
       saveRDS(cols, file=file.path(configdir, "colors.rds"))
@@ -122,11 +122,13 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             cex.eval <- settings$cex.eval
          if (is.null(mc$sfpath))
             sfpath <- settings$sfpath
-         if (is.null(mc$sfgo))
-            sfgo <- settings$sfgo
+         if (is.null(mc$depth1))
+            depth1 <- settings$depth1
+         if (is.null(mc$depth2))
+            depth2 <- settings$depth2
       }
       sfpath <- suppressWarnings(normalizePath(sfpath))
-      settings <- data.frame(lang, player, mode, selmode, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, pause, sleep, lwd, volume, showgraph, cex.top, cex.bot, cex.eval, sfpath, sfgo)
+      settings <- data.frame(lang, player, mode, selmode, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, pause, sleep, lwd, volume, showgraph, cex.top, cex.bot, cex.eval, sfpath, depth1, depth2)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       if (file.exists(file.path(configdir, "colors.rds"))) {
          cols <- readRDS(file.path(configdir, "colors.rds"))
@@ -195,6 +197,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
    seqno <- 1
    filename <- ""
    bookmark <- ""
+   bestmove <- ""
+   useflip <- TRUE
 
    # create the getGraphicsEvent() functions
 
@@ -292,7 +296,10 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
       evalval <- NA_real_
       i <- 1
       texttop <- ""
-      flip <- FALSE
+      if (useflip) {
+         flip <- FALSE
+         useflip <- TRUE
+      }
       circles <- matrix(nrow=0, ncol=2) # to store circles
       arrows  <- matrix(nrow=0, ncol=4) # to store arrows
       drawcircles <- TRUE
@@ -623,6 +630,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             # n to start a new sequence (starts a new round)
 
             if (identical(click, "n")) {
+               useflip <- FALSE
                run.rnd <- FALSE
                wait <- FALSE
                next
@@ -1116,7 +1124,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
             if (identical(click, "H") && mode == "add" && !is.null(sfproc) && sfrun) {
                fen <- .genfen(pos, flip, sidetoplay, i)
                .texttop(.text("sfdeepeval"))
-               tmp <- .sf.eval(sfproc, sfrun, "depth 32", fen, sidetoplay, verbose)
+               tmp <- .sf.eval(sfproc, sfrun, depth2, fen, sidetoplay, verbose, progbar=TRUE)
                evalval  <- tmp$eval
                bestmove <- tmp$bestmove
                sfproc   <- tmp$sfproc
@@ -1225,7 +1233,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                      .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                      .drawsideindicator(sidetoplay, flip)
                      fen <- .genfen(pos, flip, sidetoplay, i)
-                     tmp <- .sf.eval(sfproc, sfrun, sfgo, fen, sidetoplay, verbose)
+                     tmp <- .sf.eval(sfproc, sfrun, depth1, fen, sidetoplay, verbose)
                      evalval  <- tmp$eval
                      bestmove <- tmp$bestmove
                      sfproc   <- tmp$sfproc
@@ -1278,33 +1286,41 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                arrows  <- matrix(nrow=0, ncol=4)
 
                if (identical(click, "A"))
-                  sub$moves <- sub$moves[1:(i-1),,drop=FALSE]
+                  sub$moves <- sub$moves[seq_len(i-1),,drop=FALSE]
 
-               for (i in 1:nrow(sub$moves)) {
-                  pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE, volume=volume, verbose=verbose)
-                  #sub$moves$move[i] <- attr(pos,"move")
-                  if (identical(sub$moves$comment[i], "") && !identical(sub$moves$comment[i-1], "")) {
-                     texttop <- .texttop(sub$moves$comment[i-1])
-                  } else {
-                     texttop <- .texttop(sub$moves$comment[i])
+               # when 'A' is pressed at the start position sub$pos, then i is 1 and
+               # sub$moves has 0 rows, so we need to skip the following loop then
+
+               if (nrow(sub$moves) > 0) {
+
+                  for (i in 1:nrow(sub$moves)) {
+                     pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE, volume=volume, verbose=verbose)
+                     #sub$moves$move[i] <- attr(pos,"move")
+                     if (identical(sub$moves$comment[i], "") && !identical(sub$moves$comment[i-1], "")) {
+                        texttop <- .texttop(sub$moves$comment[i-1])
+                     } else {
+                        texttop <- .texttop(sub$moves$comment[i])
+                     }
+                     .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
+                     .draweval(sub$moves$eval[i], sub$moves$eval[i-1], flip=flip, eval=eval, evalsteps=evalsteps)
+                     if (identical(click, "a"))
+                        Sys.sleep(sleep)
                   }
-                  .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
-                  .draweval(sub$moves$eval[i], sub$moves$eval[i-1], flip=flip, eval=eval, evalsteps=evalsteps)
-                  if (identical(click, "a"))
-                     Sys.sleep(sleep)
+
+                  i <- i + 1
+                  if (identical(click, "A")) {
+                     sidetoplay <- ifelse(flip, "b", "w")
+                  } else {
+                     sidetoplay <- ifelse(flip, "w", "b")
+                  }
+                  show <- FALSE
+
                }
 
-               i <- i + 1
-               if (identical(click, "A")) {
-                  sidetoplay <- ifelse(flip, "b", "w")
-               } else {
-                  sidetoplay <- ifelse(flip, "w", "b")
-               }
-               show <- FALSE
                .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                .drawsideindicator(sidetoplay, flip)
                fen <- .genfen(pos, flip, sidetoplay, i)
-               tmp <- .sf.eval(sfproc, sfrun, sfgo, fen, sidetoplay, verbose)
+               tmp <- .sf.eval(sfproc, sfrun, depth1, fen, sidetoplay, verbose)
                evalval  <- tmp$eval
                bestmove <- tmp$bestmove
                sfproc   <- tmp$sfproc
@@ -1601,7 +1617,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
                      sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                      .drawsideindicator(sidetoplay, flip)
                      fen <- .genfen(pos, flip, sidetoplay, i)
-                     tmp <- .sf.eval(sfproc, sfrun, sfgo, fen, sidetoplay, verbose)
+                     tmp <- .sf.eval(sfproc, sfrun, depth2, fen, sidetoplay, verbose, progbar=TRUE)
                      evalval  <- tmp$eval
                      bestmove <- tmp$bestmove
                      sfproc   <- tmp$sfproc
@@ -1658,7 +1674,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
             if (identical(click, "F3")) {
                eval(expr=switch1)
-               settings <- data.frame(lang, player, mode, selmode, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, pause, sleep, lwd, volume, showgraph, cex.top, cex.bot, cex.eval, sfpath, sfgo)
+               settings <- data.frame(lang, player, mode, selmode, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, pause, sleep, lwd, volume, showgraph, cex.top, cex.bot, cex.eval, sfpath, depth1, depth2)
                tab <- t(settings)
                tab <- cbind(tab, .text("explsettings"))
                colnames(tab) <- c("", "")
@@ -1724,14 +1740,16 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
             if (identical(click, "F7")) {
                eval(expr=switch1)
-               tmp <- .sfsettings(sfproc, sfrun, sfpath, sfgo)
+               tmp <- .sfsettings(sfproc, sfrun, sfpath, depth1, depth2)
                eval(expr=switch2)
                sfproc <- tmp$sfproc
                sfrun  <- tmp$sfrun
                sfpath <- tmp$sfpath
-               sfgo   <- tmp$sfgo
+               depth1 <- tmp$depth1
+               depth2 <- tmp$depth2
                settings$sfpath <- sfpath
-               settings$sfgo   <- sfgo
+               settings$depth1 <- depth1
+               settings$depth2 <- depth2
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
@@ -2072,7 +2090,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", sfgo="depth 20", ..
 
             fen <- .genfen(pos, flip, sidetoplay, i)
             evalvallast <- evalval
-            tmp <- .sf.eval(sfproc, sfrun, sfgo, fen, sidetoplay, verbose)
+            tmp <- .sf.eval(sfproc, sfrun, depth1, fen, sidetoplay, verbose)
             evalval  <- tmp$eval
             bestmove <- tmp$bestmove
             sfproc   <- tmp$sfproc

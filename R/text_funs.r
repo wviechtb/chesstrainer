@@ -498,26 +498,32 @@
 
    if (x == "sfrunning") {
       return(switch(lang,
-                    de = paste0("Stockfish Status:     ", ifelse(arg, "an", "aus"), "\n"),
-                         paste0("Stockfish status:      ", ifelse(arg, "on", "off"), "\n")
+                    de = paste0("Stockfish Status:           ", ifelse(arg, "an", "aus"), "\n"),
+                         paste0("Stockfish status:         ", ifelse(arg, "on", "off"), "\n")
    ))}
 
    if (x == "sfpath") {
       return(switch(lang,
-                    de = paste0("Stockfish Pfad:       ", arg, "\n"),
-                         paste0("Stockfish Path:        ", arg, "\n")
+                    de = paste0("Stockfish Pfad:             ", arg, "\n"),
+                         paste0("Stockfish Path:           ", arg, "\n")
    ))}
 
-   if (x == "sfgo") {
+   if (x == "depth1") {
       return(switch(lang,
-                    de = paste0("Berechnungsparameter: ", arg, "\n"),
-                         paste0("Calculation parameter: ", arg, "\n")
+                    de = paste0("Berechnungstiefe (schnell): ", arg, "\n"),
+                         paste0("Calculation depth (fast): ", arg, "\n")
+   ))}
+
+   if (x == "depth2") {
+      return(switch(lang,
+                    de = paste0("Berechnungstiefe (tief):    ", arg, "\n"),
+                         paste0("Calculation depth (deep): ", arg, "\n")
    ))}
 
    if (x == "sfoptions") {
       return(switch(lang,
-                    de = "1 - Stockfisch (neu) starten\n2 - Stockfisch beenden\n3 - Pfad \U000000E4ndern\n4 - Berechnungsparameter \U000000E4ndern\n5 - Einstellungen anzeigen\n",
-                         "1 - (Re)start Stockfisch\n2 - Quit Stockfisch\n3 - Change path\n4 - Change calculation parameter\n5 - Show settings"
+                    de = "1 - Stockfisch (neu) starten\n2 - Stockfisch beenden\n3 - Pfad \U000000E4ndern\n4 - Berechnungstiefe 1 \U000000E4ndern\n5 - Berechnungstiefe 2 \U000000E4ndern\n6 - Einstellungen anzeigen\n",
+                         "1 - (Re)start Stockfisch\n2 - Quit Stockfisch\n3 - Change path\n4 - Change calculation depth 1\n5 - Change calculation depth 2\n6 - Show settings"
    ))}
 
    if (x == "sfoptionwhich") {
@@ -544,22 +550,22 @@
                          "Could not find/set path.\n"
    ))}
 
-   if (x == "sfentergo") {
+   if (x == "depthenter") {
       return(switch(lang,
-                    de = "Berechnungsparameter ('depth <Nummer>' oder 'movetime <Millisekunden>'): ",
-                         "Calculation parameter ('depth <number>' or 'movetime <milliseconds>'): "
+                    de = "Berechnungstiefe: ",
+                         "Calculation depth: "
    ))}
 
-   if (x == "sfgosuccess") {
+   if (x == "depthsetsuccess") {
       return(switch(lang,
-                    de = "Neuer Berechnungsparameter wurde erfolgreich gesetzt.\n",
-                         "New calculation parameter was set successfully.\n"
+                    de = "Neuer Berechnungstiefe wurde erfolgreich gesetzt.\n",
+                         "New calculation depth was set successfully.\n"
    ))}
 
-   if (x == "sfgofail") {
+   if (x == "depthsetfail") {
       return(switch(lang,
-                    de = "Neuer Berechnungsparameter konnte nicht gesetzt werden.\n",
-                         "New calculation parameter could not be set.\n"
+                    de = "Neuer Berechnungstiefe konnte nicht gesetzt werden.\n",
+                         "New calculation depth could not be set.\n"
    ))}
 
    if (x == "sfsegfault") {
@@ -578,6 +584,12 @@
       return(switch(lang,
                     de = "Beginne mit tiefer Analyse ...",
                          "Starting deep evaluation ..."
+   ))}
+
+   if (x == "curdepth") {
+      return(switch(lang,
+                    de = paste0("Tiefe: ", arg),
+                         paste0("Depth: ", arg)
    ))}
 
    if (x == "quit") {
@@ -618,8 +630,8 @@
 
    if (x == "explsettings") {
       return(switch(lang,
-                    de = c("Sprache", "Spielername", "Modus", "Selektionsmodus f\U000000FCr Sequenzen", "Exponentenwert", "Multiplikator f\U000000FCr abgeschlossene Sequenzen", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Bewertungsleiste anzeigen", "Animationsschritte f\U000000FCr die Bewertungsleiste", "Pause zwischen Sequenzen", "Zeit zwischen den Z\U000000FCgen (Sekunden)", "Linienbreite", "Lautst\U000000E4rke (%)", "Fortschrittsdiagramm nach Sequenzen anzeigen", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Stockfish Pfad", "Berechnungsparameter f\U000000FCr Stockfish"),
-                         c("Language", "Player name", "Mode", "Selection mode for sequences", "Exponent value", "Multiplier for completed sequences", "Score penalty for wrong moves", "Score penalty per hint", "Show evaluation bar", "Animation steps for the evaluation bar", "Pause between sequences", "Time between moves (seconds)", "Line width", "Sound volume (%)", "Show progress graph after sequences", "Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Stockfish path", "Calculation parameter for Stockfish")
+                    de = c("Sprache", "Spielername", "Modus", "Selektionsmodus f\U000000FCr Sequenzen", "Exponentenwert", "Multiplikator f\U000000FCr abgeschlossene Sequenzen", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Bewertungsleiste anzeigen", "Animationsschritte f\U000000FCr die Bewertungsleiste", "Pause zwischen Sequenzen", "Zeit zwischen den Z\U000000FCgen (Sekunden)", "Linienbreite", "Lautst\U000000E4rke (%)", "Fortschrittsdiagramm nach Sequenzen anzeigen", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Stockfish Pfad", "Berechnungstiefe 1 f\U000000FCr Stockfish", "Berechnungstiefe 2 f\U000000FCr Stockfish"),
+                         c("Language", "Player name", "Mode", "Selection mode for sequences", "Exponent value", "Multiplier for completed sequences", "Score penalty for wrong moves", "Score penalty per hint", "Show evaluation bar", "Animation steps for the evaluation bar", "Pause between sequences", "Time between moves (seconds)", "Line width", "Sound volume (%)", "Show progress graph after sequences", "Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Stockfish path", "Calculation depth 1 for Stockfish", "Calculation depth 2 for Stockfish")
    ))}
 
    if (x == "comment") {
