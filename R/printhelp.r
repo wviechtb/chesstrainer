@@ -98,7 +98,7 @@
       "f        - Brett umdrehen",
       "z        - Z\U000000FCge zeigen (automatisch spielen) an/aus",
       "c        - Kommentar zum aktuellen Zug hinzuf\U000000FCgen",
-      "h unn H  - den besten Zug laut Stockfish anzeigen (falls laufend)",
+      "h und H  - den besten Zug laut Stockfish anzeigen (falls laufend)",
       "0        - aktuelle Position zur Ausgangsposition der Sequenz machen",
       "t        - Zug zur\U000000FCcknehmen",
       "b        - Bretteditor starten",
