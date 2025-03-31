@@ -10,26 +10,26 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
 
    ddd <- list(...)
 
-   mode        <- ifelse(is.null(ddd$mode),        "add",          ddd$mode)
-   selmode     <- ifelse(is.null(ddd$selmode),     "score_random", ddd$selmode)
-   expval      <- ifelse(is.null(ddd$expval),      2,              ddd$expval)
-   multiplier  <- ifelse(is.null(ddd$multiplier),  0.8,            ddd$multiplier)
-   adjustwrong <- ifelse(is.null(ddd$adjustwrong), 40,             ddd$adjustwrong)
-   adjusthint  <- ifelse(is.null(ddd$adjusthint),  20,             ddd$adjusthint)
-   eval        <- ifelse(is.null(ddd$eval),        TRUE,           isTRUE(ddd$eval))
-   evalsteps   <- ifelse(is.null(ddd$evalsteps),   10,             ddd$evalsteps)
-   pause       <- ifelse(is.null(ddd$pause),       TRUE,           isTRUE(ddd$pause))
-   sleep       <- ifelse(is.null(ddd$sleep),       0.5,            ddd$sleep)
-   lwd         <- ifelse(is.null(ddd$lwd),         2,              ddd$lwd)
-   volume      <- ifelse(is.null(ddd$volume),      50,             ddd$volume)
-   showgraph   <- ifelse(is.null(ddd$showgraph),   FALSE,          ddd$showgraph)
-   cex.top     <- ifelse(is.null(ddd$cex.top),     1.4,            ddd$cex.top)
-   cex.bot     <- ifelse(is.null(ddd$cex.bot),     0.7,            ddd$cex.bot)
-   cex.eval    <- ifelse(is.null(ddd$cex.eval),    0.5,            ddd$cex.eval)
-   depth1      <- ifelse(is.null(ddd$depth1),      20,             ddd$depth1)
-   depth2      <- ifelse(is.null(ddd$depth2),      30,             ddd$depth2)
-   threads     <- ifelse(is.null(ddd$threads),     1,              ddd$threads)
-   hash        <- ifelse(is.null(ddd$hash),        256,            ddd$hash)
+   mode        <- ifelse(is.null(ddd[["mode"]]),        "add",          ddd[["mode"]])
+   selmode     <- ifelse(is.null(ddd[["selmode"]]),     "score_random", ddd[["selmode"]])
+   expval      <- ifelse(is.null(ddd[["expval"]]),      2,              ddd[["expval"]])
+   multiplier  <- ifelse(is.null(ddd[["multiplier"]]),  0.8,            ddd[["multiplier"]])
+   adjustwrong <- ifelse(is.null(ddd[["adjustwrong"]]), 40,             ddd[["adjustwrong"]])
+   adjusthint  <- ifelse(is.null(ddd[["adjusthint"]]),  20,             ddd[["adjusthint"]])
+   eval        <- ifelse(is.null(ddd[["eval"]]),        TRUE,           isTRUE(ddd[["eval"]]))
+   evalsteps   <- ifelse(is.null(ddd[["evalsteps"]]),   10,             ddd[["evalsteps"]])
+   pause       <- ifelse(is.null(ddd[["pause"]]),       TRUE,           isTRUE(ddd[["pause"]]))
+   sleep       <- ifelse(is.null(ddd[["sleep"]]),       0.5,            ddd[["sleep"]])
+   lwd         <- ifelse(is.null(ddd[["lwd"]]),         2,              ddd[["lwd"]])
+   volume      <- ifelse(is.null(ddd[["volume"]]),      50,             ddd[["volume"]])
+   showgraph   <- ifelse(is.null(ddd[["showgraph"]]),   FALSE,          ddd[["showgraph"]])
+   cex.top     <- ifelse(is.null(ddd[["cex.top"]]),     1.4,            ddd[["cex.top"]])
+   cex.bot     <- ifelse(is.null(ddd[["cex.bot"]]),     0.7,            ddd[["cex.bot"]])
+   cex.eval    <- ifelse(is.null(ddd[["cex.eval"]]),    0.5,            ddd[["cex.eval"]])
+   depth1      <- ifelse(is.null(ddd[["depth1"]]),      20,             ddd[["depth1"]])
+   depth2      <- ifelse(is.null(ddd[["depth2"]]),      30,             ddd[["depth2"]])
+   threads     <- ifelse(is.null(ddd[["threads"]]),     1,              ddd[["threads"]])
+   hash        <- ifelse(is.null(ddd[["hash"]]),        256,            ddd[["hash"]])
 
    if (is.null(ddd[["switch1"]])) {
       switch1 <- parse(text="invisible(NULL)")
@@ -91,52 +91,52 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
          # apply settings, but only for those that are not set via play()
          settings <- readRDS(file.path(configdir, "settings.rds"))
          mc <- as.list(match.call())
-         if (is.null(mc$lang))
-            lang <- settings$lang
-         if (is.null(mc$player))
-            player <- settings$player
-         if (is.null(mc$mode))
-            mode <- settings$mode
-         if (is.null(mc$selmode))
-            selmode <- settings$selmode
-         if (is.null(mc$expval))
-            expval <- settings$expval
-         if (is.null(mc$multiplier))
-            multiplier <- settings$multiplier
-         if (is.null(mc$adjustwrong))
-            adjustwrong <- settings$adjustwrong
-         if (is.null(mc$adjusthint))
-            adjusthint <- settings$adjusthint
-         if (is.null(mc$eval))
-            eval <- settings$eval
-         if (is.null(mc$evalsteps))
-            evalsteps <- settings$evalsteps
-         if (is.null(mc$pause))
-            pause <- settings$pause
-         if (is.null(mc$sleep))
-            sleep <- settings$sleep
-         if (is.null(mc$lwd))
-            lwd <- settings$lwd
-         if (is.null(mc$volume))
-            volume <- settings$volume
-         if (is.null(mc$showgraph))
-            showgraph <- settings$showgraph
-         if (is.null(mc$cex.top))
-            cex.top <- settings$cex.top
-         if (is.null(mc$cex.bot))
-            cex.bot <- settings$cex.bot
-         if (is.null(mc$cex.eval))
-            cex.eval <- settings$cex.eval
-         if (is.null(mc$sfpath))
-            sfpath <- settings$sfpath
-         if (is.null(mc$depth1))
-            depth1 <- settings$depth1
-         if (is.null(mc$depth2))
-            depth2 <- settings$depth2
-         if (is.null(mc$threads))
-            threads <- settings$threads
-         if (is.null(mc$hash))
-            hash <- settings$hash
+         if (is.null(mc[["lang"]]))
+            lang <- settings[["lang"]]
+         if (is.null(mc[["player"]]))
+            player <- settings[["player"]]
+         if (is.null(mc[["mode"]]))
+            mode <- settings[["mode"]]
+         if (is.null(mc[["selmode"]]))
+            selmode <- settings[["selmode"]]
+         if (is.null(mc[["expval"]]))
+            expval <- settings[["expval"]]
+         if (is.null(mc[["multiplier"]]))
+            multiplier <- settings[["multiplier"]]
+         if (is.null(mc[["adjustwrong"]]))
+            adjustwrong <- settings[["adjustwrong"]]
+         if (is.null(mc[["adjusthint"]]))
+            adjusthint <- settings[["adjusthint"]]
+         if (is.null(mc[["eval"]]))
+            eval <- settings[["eval"]]
+         if (is.null(mc[["evalsteps"]]))
+            evalsteps <- settings[["evalsteps"]]
+         if (is.null(mc[["pause"]]))
+            pause <- settings[["pause"]]
+         if (is.null(mc[["sleep"]]))
+            sleep <- settings[["sleep"]]
+         if (is.null(mc[["lwd"]]))
+            lwd <- settings[["lwd"]]
+         if (is.null(mc[["volume"]]))
+            volume <- settings[["volume"]]
+         if (is.null(mc[["showgraph"]]))
+            showgraph <- settings[["showgraph"]]
+         if (is.null(mc[["cex.top"]]))
+            cex.top <- settings[["cex.top"]]
+         if (is.null(mc[["cex.bot"]]))
+            cex.bot <- settings[["cex.bot"]]
+         if (is.null(mc[["cex.eval"]]))
+            cex.eval <- settings[["cex.eval"]]
+         if (is.null(mc[["sfpath"]]))
+            sfpath <- settings[["sfpath"]]
+         if (is.null(mc[["depth1"]]))
+            depth1 <- settings[["depth1"]]
+         if (is.null(mc[["depth2"]]))
+            depth2 <- settings[["depth2"]]
+         if (is.null(mc[["threads"]]))
+            threads <- settings[["threads"]]
+         if (is.null(mc[["hash"]]))
+            hash <- settings[["hash"]]
       }
       sfpath <- suppressWarnings(normalizePath(sfpath))
       settings <- data.frame(lang, player, mode, selmode, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, pause, sleep, lwd, volume, showgraph, cex.top, cex.bot, cex.eval, sfpath, depth1, depth2, threads, hash)
@@ -313,8 +313,9 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
       }
       circles <- matrix(nrow=0, ncol=2) # to store circles
       arrows  <- matrix(nrow=0, ncol=4) # to store arrows
-      drawcircles <- TRUE
-      drawarrows  <- TRUE
+      drawcircles  <- TRUE
+      drawarrows   <- TRUE
+      showstartcom <- TRUE
       scoreadd <- 0
       sidetoplay <- "w"
       givehint1 <- FALSE
@@ -502,7 +503,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
 
          if (mode == "play") {
 
-            if (i == 1 && !is.null(sub$commentstart)) {
+            if (i == 1 && !is.null(sub$commentstart) && showstartcom) {
                .startcomment(sub$commentstart, lwd=lwd)
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode)
                .draweval(sub$moves$eval[i], flip=flip, eval=eval, evalsteps=evalsteps)
@@ -1167,6 +1168,15 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
                   }
                   .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                } else {
+                  if (i == 1) {
+                     fen <- .genfen(pos, flip, sidetoplay, i)
+                     tmp <- .sf.eval(sfproc, sfrun, depth1, fen, sidetoplay, verbose)
+                     evalval  <- tmp$eval
+                     bestmove <- tmp$bestmove
+                     sfproc   <- tmp$sfproc
+                     sfrun    <- tmp$sfrun
+                     .draweval(evalval, flip=flip, eval=eval, evalsteps=evalsteps)
+                  }
                   if (!identical(bestmove, "")) {
                      .texttop(.text("bestmove", bestmove))
                      hintx1 <- as.numeric(substr(bestmove, 2, 2))
@@ -1219,6 +1229,10 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
                      .texttop(texttop)
                      .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                      scoreadd <- 0
+                  } else {
+                     .texttop(.text("setscoreback100"))
+                     Sys.sleep(0.75)
+                     .texttop(texttop)
                   }
                   mistake <- FALSE
                } else {
@@ -1326,6 +1340,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
                   }
                   show <- FALSE
 
+               } else {
+                  sidetoplay <- ifelse(flip, "b", "w")
                }
 
                .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
@@ -1911,13 +1927,15 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
          if (identical(button, 2L)) {
             .drawarrow(click1.y+0.5, click1.x+0.5, click2.y+0.5, click2.x+0.5, lwd=lwd)
             arrows <- rbind(arrows, c(click1.x, click1.y, click2.x, click2.y))
-            drawcircles <- FALSE # to prevent circles from being redrawn
-            drawarrows  <- FALSE # to prevent arrows from being redrawn
+            drawcircles  <- FALSE # to prevent circles from being redrawn
+            drawarrows   <- FALSE # to prevent arrows from being redrawn
+            showstartcom <- FALSE # to prevent the start comment being shown again
             next
          }
 
-         drawcircles <- TRUE
-         drawarrows  <- TRUE
+         drawcircles  <- TRUE
+         drawarrows   <- TRUE
+         showstartcom <- TRUE
 
          # if button 0 was used for the move and there are arrows/circles, redraw the board before making the move
 

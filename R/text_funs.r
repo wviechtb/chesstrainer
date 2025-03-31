@@ -352,6 +352,12 @@
                          paste0("Setting the score back to ", arg, ".")
    ))}
 
+   if (x == "setscoreback100") {
+      return(switch(lang,
+                    de = paste0("Der Punktestand lag bereits bei 100."),
+                         paste0("The score was already at 100.")
+   ))}
+
    if (x == "setposstart") {
       return(switch(lang,
                     de = "Setze die jetzige Stellung als Startposition.",
