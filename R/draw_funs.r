@@ -69,7 +69,7 @@
 
 }
 
-.boardeditor.drawboard <- function(pos, flip=FALSE, lwd) {
+.boardeditor.drawboard <- function(pos, flip=FALSE, sidetoplay, lwd) {
 
    col.bg <- .get("col.bg")
    col.fg <- .get("col.fg")
@@ -104,6 +104,8 @@
          }
       }
    }
+
+   .drawsideindicator(sidetoplay, flip, adj=1)
 
 }
 
@@ -587,7 +589,7 @@
 .drawsquare <- function(x, y, col=ifelse(.is.even(x+y), .get("col.square.d"), .get("col.square.l")))
    rect(y, x, y+1, x+1, col=col, border=NA)
 
-.texttop <- function(txt) {
+.texttop <- function(txt, sleep=0) {
 
    if (length(txt) == 0L)
       return()
@@ -616,37 +618,45 @@
       }
    }
 
+   Sys.sleep(sleep)
+
    txt <- paste(txt, collapse="\n")
    return(txt)
 
 }
 
-.drawsideindicator <- function(sidetoplay, flip, clear=TRUE) {
+.drawsideindicator <- function(sidetoplay, flip, adj=0, clear=TRUE) {
 
    col.side.w <- .get("col.side.w")
    col.side.b <- .get("col.side.b")
 
    indsize <- 0.25
 
-   if (clear) {
-      col.bg <- .get("col.bg")
-      rect(9.25, 1.0, 9.25+indsize, 1.0+indsize, border=NA, col=col.bg)
-      rect(9.25, 9.0, 9.25+indsize, 9.0-indsize, border=NA, col=col.bg)
-   }
+   if (clear)
+      .clearsideindicator(adj)
 
    if (flip) {
       if (sidetoplay == "w") {
-         rect(9.25, 9.0, 9.25+indsize, 9.0-indsize, border=NA, col=col.side.w)
+         rect(9.25+adj, 9.0+adj, 9.25+indsize+adj, 9.0-indsize+adj, border=NA, col=col.side.w)
       } else {
-         rect(9.25, 1.0, 9.25+indsize, 1.0+indsize, border=NA, col=col.side.b)
+         rect(9.25+adj, 1.0+adj, 9.25+indsize+adj, 1.0+indsize+adj, border=NA, col=col.side.b)
       }
    } else {
       if (sidetoplay == "w") {
-         rect(9.25, 1.0, 9.25+indsize, 1.0+indsize, border=NA, col=col.side.w)
+         rect(9.25+adj, 1.0+adj, 9.25+indsize+adj, 1.0+indsize+adj, border=NA, col=col.side.w)
       } else {
-         rect(9.25, 9.0, 9.25+indsize, 9.0-indsize, border=NA, col=col.side.b)
+         rect(9.25+adj, 9.0+adj, 9.25+indsize+adj, 9.0-indsize+adj, border=NA, col=col.side.b)
       }
    }
+
+}
+
+.clearsideindicator <- function(adj=0) {
+
+   indsize <- 0.25
+   col.bg <- .get("col.bg")
+   rect(9.25+adj, 1.0+adj, 9.25+indsize+adj, 1.0+indsize+adj, border=NA, col=col.bg)
+   rect(9.25+adj, 9.0+adj, 9.25+indsize+adj, 9.0-indsize+adj, border=NA, col=col.bg)
 
 }
 
@@ -746,9 +756,7 @@
    .drawboard(pos, flip)
    .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
    .texttop(texttop)
-
-   if (mode == "add")
-      .drawsideindicator(sidetoplay, flip)
+   .drawsideindicator(sidetoplay, flip)
 
    invisible()
 

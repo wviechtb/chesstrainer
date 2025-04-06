@@ -1,4 +1,4 @@
-.boardeditor <- function(pos, flip, lwd, verbose) {
+.boardeditor <- function(pos, flip, sidetoplay, lwd, verbose) {
 
    pos <- rbind("", pos, "")
    pos <- cbind("", pos, "")
@@ -7,7 +7,7 @@
    pos[1,3:8]  <- c("WK","WQ","WR","WB","WN","WP")
    pos[10,3:8] <- c("BK","BQ","BR","BB","BN","BP")
 
-   .boardeditor.drawboard(pos, flip, lwd)
+   .boardeditor.drawboard(pos, flip, sidetoplay, lwd)
 
    while (TRUE) {
 
@@ -81,7 +81,7 @@
 
       click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
 
-      keys <- c("q", "\033", "ctrl-[", "n", "f", "c", "F1")
+      keys <- c("q", "\033", "ctrl-[", "n", "f", "s", "c", "F1")
 
       if (is.character(click) && !is.element(click, keys))
          next
@@ -97,7 +97,7 @@
 
       if (identical(click, "n")) {
          pos <- .get("boardeditorpos")
-         .boardeditor.drawboard(pos, flip, lwd)
+         .boardeditor.drawboard(pos, flip, sidetoplay, lwd)
          next
       }
 
@@ -105,7 +105,15 @@
 
       if (identical(click, "f")) {
          flip <- !flip
-         .boardeditor.drawboard(pos, flip, lwd)
+         .boardeditor.drawboard(pos, flip, sidetoplay, lwd)
+         next
+      }
+
+      # s to switch sidetoplay
+
+      if (identical(click, "s")) {
+         sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
+         .drawsideindicator(sidetoplay, flip, adj=1)
          next
       }
 
@@ -113,7 +121,7 @@
 
       if (identical(click, "c")) {
          pos[2:9,2:9] <- ""
-         .boardeditor.drawboard(pos, flip, lwd)
+         .boardeditor.drawboard(pos, flip, sidetoplay, lwd)
          next
       }
 
@@ -121,7 +129,7 @@
 
       if (identical(click, "F1")) {
          .boardeditor.printhelp(lwd=lwd)
-         .boardeditor.drawboard(pos, flip, lwd)
+         .boardeditor.drawboard(pos, flip, sidetoplay, lwd)
          next
       }
 
@@ -153,7 +161,7 @@
 
    }
 
-   return(list(pos=pos[2:9,2:9], flip=flip))
+   return(list(pos=pos[2:9,2:9], flip=flip, sidetoplay=sidetoplay))
 
 }
 
@@ -173,6 +181,7 @@
       "right-click          - delete the piece",
       "",
       "f  - flip the board",
+      "s  - set which side plays the first move",
       "n  - reset the board into the starting position",
       "c  - clear the board",
       "F1 - show this help",
@@ -191,6 +200,7 @@
       "Rechtsklick            - Figur l\U000000F6schen",
       "",
       "f  - Brett umdrehen",
+      "s  - festlegen, welche Seite den ersten Zug macht",
       "n  - Brett in die Ausgangsposition zur\U000000FCcksetzen",
       "c  - Brett leer r\U000000E4umen",
       "F1 - diese Hilfe anzeigen",
