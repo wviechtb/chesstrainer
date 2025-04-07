@@ -533,7 +533,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
 
             if (!identical(sub$moves$comment[i], "")) {
                texttop <- .texttop(sub$moves$comment[i])
-               Sys.sleep(sleep)
+               if (isTRUE(show[i+1]))
+                  Sys.sleep(sleep)
             }
 
             if (drawcircles) {
@@ -1300,6 +1301,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
 
                if (is.null(sub$pos)) {
                   pos <- start.pos
+                  sidetoplay <- "w"
                } else {
                   pos <- sub$pos
                   if (flip) {
