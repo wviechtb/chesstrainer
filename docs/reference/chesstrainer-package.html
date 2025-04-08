@@ -31,7 +31,7 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chesstrainer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-40</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-42</span>
       </span>
     </div>
 
@@ -141,7 +141,7 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
 <p>Comments can be added to any move using the <code>&lt;c&gt;</code> key. This may be useful if one could venture into multiple sensible lines in a given position. You would then have to instruct the player to make a particular move (either by telling the player directly which move to make or giving some appropriate hint, such as the name of a particular line). Comments are also useful for mentioning variation names or other useful information.</p>
 <p>If a sequence should start not at the starting position of a chess game, but later on, you can move the pieces into the desired position and then use the <code>&lt;0&gt;</code> key to make the current position the starting position for a particular sequence. Alternatively, you can use the <code>&lt;b&gt;</code> key to start a board editor (see below for details).</p>
 <p>The <code>&lt;e&gt;</code> key can be used to edit the comments for a particular sequence. This way, one can also add a ‘start comment’ and/or an ‘end comment’ to a particular sequence (the former will be shown in an overlay box before the sequence starts, the latter at the top instead of the default text). The <code>&lt;E&gt;</code> key opens up the <code><a href="https://rdrr.io/r/utils/edit.html" class="external-link">data editor</a></code> on the data frame that contains the moves for the current sequence. This can also be used to add, edit, and remove comments in the <code>comment</code> column or make adjustments to the other columns (but this should only be done if their meaning is clear).</p>
-<p>With the <code>&lt;?&gt;</code> key, you can find all sequences that start with the same moves that have been entered so far. If any matching sequences are found, a prompt will ask if they should be selected. This is useful for checking what sequences are already available based on some initial moves (and then practicing these sequences).</p>
+<p>With the <code>&lt;?&gt;</code> key, you can find all sequences that start with the same moves that have been entered/played so far. If any matching sequences are found, a prompt will ask if they should be selected. This is useful for checking what sequences are already available based on some initial moves (and then practicing these sequences) or finding other sequences similar to the one currently being played.</p>
 <p>With the <code>&lt;.&gt;</code> key, you can select the last saved sequence (if one was saved before in the current session). This is useful for checking the sequence in ‘play’ mode and/or creating multiple branching lines from the ending position of this sequence. Similarly, in ‘play’ mode, the <code>&lt;a&gt;</code> key will create a copy of the current sequence, which can then be extended with additional moves (and saved as a new sequence). The <code>&lt;A&gt;</code> key does the same thing, but only plays the moves to the currently shown position.</p>
 <p>Note that sequences are quite personalized, since they involve going into a particular line that one deems most appropriate. Others may disagree and prefer a different line. Therefore, you should create sequences that you want to train yourself on, so you will be able to play them quickly from memory in actual games.</p>
     </div>
@@ -164,7 +164,7 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
 
 
 <p>The trainer plays various sounds (when playing moves, when capturing pieces, when making a wrong move, or when completing a sequence). This may or may not work depending on your operating system and configuration. See the <code><a href="playsound.html">playsound</a></code> function for further details.</p>
-<p>If the sound is working, it can be toggled on/off with the <code>&lt;m&gt;</code> key. This can be useful if playing sounds adds too much lag. The sound volume can be decreased/increased with the <code>&lt;[&gt;</code> and <code>&lt;]&gt;</code> keys.</p>
+<p><!-- % If the sound is working, it can be toggled on/off with the \code{&lt;m&gt;} key. This can be useful if playing sounds adds too much lag. The sound volume can be decreased/increased with the \code{&lt;[&gt;} and \code{&lt;]&gt;} keys. --></p>
     </div>
     <div id="position-evaluations-via-stockfish">
     <h2>Position Evaluations via Stockfish</h2>

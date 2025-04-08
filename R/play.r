@@ -614,8 +614,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
             #   click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
             #}
 
-            keys      <- c("q", " ", "n", "p", "e", "E", "l", "-", "=", "+", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F9", "F10", "F12", "m", "/", "*", "8", ",", ".", "<", ">", "w", "t", "h", "H", "ctrl-R", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "v", "a", "G", "ctrl-C")
-            keys.add  <- c("f", "z", "c", "s", "0", "?", "b")
+            keys      <- c("q", " ", "n", "p", "e", "E", "l", "-", "=", "+", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F9", "F10", "F12", "m", "/", "*", "8", "?", ",", ".", "<", ">", "w", "t", "h", "H", "ctrl-R", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "v", "a", "G", "ctrl-C")
+            keys.add  <- c("f", "z", "c", "s", "0", "b")
             keys.play <- c("z", "c", "s", "ctrl-D", "Right", "Left", "o", "u", "A", "g")
 
             if (mode == "add" && is.character(click) && !is.element(click, c(keys, keys.add)))
@@ -1098,9 +1098,11 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
                next
             }
 
-            # ? to find all sequences that start in the same way (only in add mode)
+            # ? to find all sequences that start in the same way
 
-            if (mode == "add" && identical(click, "?")) {
+            if (identical(click, "?")) {
+               if (i == 1)
+                  next
                eval(expr=switch1)
                seqident <- sapply(dat.all, function(x) identical(sub$moves[1:(i-1),1:4], x$moves[1:(i-1),1:4]))
                if (any(seqident)) {

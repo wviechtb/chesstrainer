@@ -79,7 +79,7 @@
 
    The \code{<e>} key can be used to edit the comments for a particular sequence. This way, one can also add a \sQuote{start comment} and/or an \sQuote{end comment} to a particular sequence (the former will be shown in an overlay box before the sequence starts, the latter at the top instead of the default text). The \code{<E>} key opens up the \code{\link[=edit]{data editor}} on the data frame that contains the moves for the current sequence. This can also be used to add, edit, and remove comments in the \code{comment} column or make adjustments to the other columns (but this should only be done if their meaning is clear).
 
-   With the \code{<?>} key, you can find all sequences that start with the same moves that have been entered so far. If any matching sequences are found, a prompt will ask if they should be selected. This is useful for checking what sequences are already available based on some initial moves (and then practicing these sequences).
+   With the \code{<?>} key, you can find all sequences that start with the same moves that have been entered/played so far. If any matching sequences are found, a prompt will ask if they should be selected. This is useful for checking what sequences are already available based on some initial moves (and then practicing these sequences) or finding other sequences similar to the one currently being played.
 
    With the \code{<.>} key, you can select the last saved sequence (if one was saved before in the current session). This is useful for checking the sequence in \sQuote{play} mode and/or creating multiple branching lines from the ending position of this sequence. Similarly, in \sQuote{play} mode, the \code{<a>} key will create a copy of the current sequence, which can then be extended with additional moves (and saved as a new sequence). The \code{<A>} key does the same thing, but only plays the moves to the currently shown position.
 
@@ -104,7 +104,7 @@
 
    The trainer plays various sounds (when playing moves, when capturing pieces, when making a wrong move, or when completing a sequence). This may or may not work depending on your operating system and configuration. See the \code{\link{playsound}} function for further details.
 
-   If the sound is working, it can be toggled on/off with the \code{<m>} key. This can be useful if playing sounds adds too much lag. The sound volume can be decreased/increased with the \code{<[>} and \code{<]>} keys.
+   % If the sound is working, it can be toggled on/off with the \code{<m>} key. This can be useful if playing sounds adds too much lag. The sound volume can be decreased/increased with the \code{<[>} and \code{<]>} keys.
 
 }
 \section{Position Evaluations via Stockfish}{

@@ -13,6 +13,7 @@
       "l        - list all sequences",
       "/ and .  - select sequences / select the last saved sequence",
       "* and 8  - select all sequences",
+      "?        - find all sequences with the same moves",
       "e and E  - edit the comments / edit the sequence file",
       "-+       - decrease/increase the time between moves",
       "w        - pause between completed sequences on/off",
@@ -49,8 +50,7 @@
       "0        - make the current position the starting position for the sequence",
       "t        - take back move",
       "b        - start the board editor",
-      "s        - save the sequence",
-      "?        - find all sequences with the same moves"
+      "s        - save the sequence"
       )
 
    }
@@ -66,6 +66,7 @@
       "l        - alle Sequenzen auflisten",
       "/ und .  - Sequenzen ausw\U000000E4hlen / zuletzt gespeicherte Sequenz ausw\U000000E4hlen",
       "* und 8  - alle Sequenzen ausw\U000000E4hlen",
+      "?        - alle Sequenzen mit den gleichen Z\U000000FCgen finden",
       "e und E  - Kommentar editieren / Sequenzfile editieren",
       "-+       - Zeit zwischen den Z\U000000FCgen verringern/erh\U000000F6hen",
       "w        - Pause zwischen abgeschlossenen Sequenzen an/aus",
@@ -102,8 +103,7 @@
       "0        - aktuelle Position zur Ausgangsposition der Sequenz machen",
       "t        - Zug zur\U000000FCcknehmen",
       "b        - Bretteditor starten",
-      "s        - Sequenz abspeichern",
-      "?        - alle Sequenzen mit den gleichen Z\U000000FCgen finden"
+      "s        - Sequenz abspeichern"
       )
 
    }
