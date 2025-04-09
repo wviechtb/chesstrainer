@@ -1,4 +1,4 @@
-play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
+play <- function(lang="en", sfpath="", ...) {
 
    if (!interactive())
       return(.text("interactive"))
@@ -10,6 +10,14 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
 
    ddd <- list(...)
 
+   if (is.null(ddd[["seqdir"]])) {
+      seqdir <- ""
+   } else {
+      seqdir <- ddd[["seqdir"]]
+   }
+
+   player      <- ifelse(is.null(ddd[["player"]]),      "",             ddd[["player"]])
+   seqdirpos   <- ifelse(is.null(ddd[["seqdirpos"]]),   1,              ddd[["seqdirpos"]])
    mode        <- ifelse(is.null(ddd[["mode"]]),        "add",          ddd[["mode"]])
    selmode     <- ifelse(is.null(ddd[["selmode"]]),     "score_random", ddd[["selmode"]])
    expval      <- ifelse(is.null(ddd[["expval"]]),      2,              ddd[["expval"]])
@@ -48,6 +56,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
    if (!is.element(mode, c("add","play")))
       stop(.text("modecheck"), call.=FALSE)
 
+   seqdirpos <- round(seqdirpos)
    expval[expval < 0] <- 0
    multiplier[multiplier < 0] <- 0
    multiplier[multiplier > 1] <- 1
@@ -81,7 +90,11 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
       success <- dir.create(configdir, recursive=TRUE)
       if (!success)
          stop(.text("dircreateerror"), call.=FALSE)
-      settings <- data.frame(lang, player, mode, selmode, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, pause, sleep, lwd, volume, showgraph, cex.top, cex.bot, cex.eval, sfpath, depth1, depth2, threads, hash)
+      settings <- list(lang=lang, player=player, mode=mode, seqdir=seqdir, seqdirpos=seqdirpos,
+                       selmode=selmode, expval=expval, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint,
+                       eval=eval, evalsteps=evalsteps, pause=pause, sleep=sleep, lwd=lwd, volume=volume, showgraph=showgraph,
+                       cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval,
+                       sfpath=sfpath, depth1=depth1, depth2=depth2, threads=threads, hash=hash)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       cols <- sapply(cols.all, function(x) .get(x))
       saveRDS(cols, file=file.path(configdir, "colors.rds"))
@@ -97,6 +110,10 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
             player <- settings[["player"]]
          if (is.null(mc[["mode"]]))
             mode <- settings[["mode"]]
+         if (is.null(mc[["seqdir"]]))
+            seqdir <- settings[["seqdir"]]
+         if (is.null(mc[["seqdirpos"]]))
+            seqdirpos <- settings[["seqdirpos"]]
          if (is.null(mc[["selmode"]]))
             selmode <- settings[["selmode"]]
          if (is.null(mc[["expval"]]))
@@ -139,7 +156,11 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
             hash <- settings[["hash"]]
       }
       sfpath <- suppressWarnings(normalizePath(sfpath))
-      settings <- data.frame(lang, player, mode, selmode, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, pause, sleep, lwd, volume, showgraph, cex.top, cex.bot, cex.eval, sfpath, depth1, depth2, threads, hash)
+      settings <- list(lang=lang, player=player, mode=mode, seqdir=seqdir, seqdirpos=seqdirpos,
+                       selmode=selmode, expval=expval, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint,
+                       eval=eval, evalsteps=evalsteps, pause=pause, sleep=sleep, lwd=lwd, volume=volume, showgraph=showgraph,
+                       cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval,
+                       sfpath=sfpath, depth1=depth1, depth2=depth2, threads=threads, hash=hash)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       if (file.exists(file.path(configdir, "colors.rds"))) {
          cols <- readRDS(file.path(configdir, "colors.rds"))
@@ -157,10 +178,36 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
    assign("cex.bot", cex.bot, envir=.chesstrainer)
    assign("cex.eval", cex.eval, envir=.chesstrainer)
 
-   # create / check sequence directory
+   # if seqdir is not an empty string, remove any directories from seqdir that do not exist
 
-   if (seqdir == "") {
+   if (!identical(seqdir, "")) {
+
+      direxists <- dir.exists(seqdir)
+
+      if (any(!direxists)) {
+         seqdir <- seqdir[!direxists]
+         if (length(seqdir) == 0L)
+            seqdir <- ""
+         seqdirpos <- 1
+         settings$seqdir <- seqdir
+         settings$seqdirpos <- seqdirpos
+         saveRDS(settings, file=file.path(configdir, "settings.rds"))
+      }
+
+      if (seqdirpos < 1 || seqdirpos > length(seqdir)) {
+         seqdirpos <- 1
+         settings$seqdirpos <- 1
+         saveRDS(settings, file=file.path(configdir, "settings.rds"))
+      }
+
+   }
+
+   # if seqdir is an empty string, create the default sequence directory and (prompt to) copy the example sequences to the directory
+
+   if (identical(seqdir, "")) {
+
       seqdir <- tools::R_user_dir(package="chesstrainer", which="data")
+
       if (!dir.exists(seqdir)) {
          cat(.text("createseqdir", seqdir))
          success <- dir.create(seqdir, recursive=TRUE)
@@ -168,22 +215,26 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
             stop(.text("dircreateerror"), call.=FALSE)
          copyseqs <- readline(prompt=.text("copyseqs"))
          if (identical(copyseqs, "") || .confirm(copyseqs))
-            tmp <- file.copy(list.files(system.file("sequences", package="chesstrainer"), full.names=TRUE, pattern=".rds$"), seqdir)
+            file.copy(list.files(system.file("sequences", package="chesstrainer"), full.names=TRUE, pattern=".rds$"), seqdir)
       }
+      seqdirpos <- 1
+      settings$seqdir <- seqdir
+      settings$seqdirpos <- seqdirpos
+      saveRDS(settings, file=file.path(configdir, "settings.rds"))
+
    }
 
-   if (!dir.exists(seqdir))
-      stop(.text("dirnotexists"), call.=FALSE)
-   if (file.access(seqdir, mode=4L) != 0L)
-      stop(.text("noreadaccess"), call.=FALSE)
-   if (file.access(seqdir, mode=2L) != 0L)
-      stop(.text("nowriteaccess"), call.=FALSE)
+   # TODO: what to do with this?
+   #if (file.access(seqdir, mode=4L) != 0L)
+   #   stop(.text("noreadaccess"), call.=FALSE)
+   #if (file.access(seqdir, mode=2L) != 0L)
+   #   stop(.text("nowriteaccess"), call.=FALSE)
 
-   cat(.text("seqdir", seqdir))
+   cat(.text("seqdir", seqdir[seqdirpos]))
 
    # .sequential file in sequence directory overrides selmode setting
 
-   if (file.exists(file.path(seqdir, ".sequential")))
+   if (file.exists(file.path(seqdir[seqdirpos], ".sequential")))
       selmode <- "sequential"
 
    # start Stockfish
@@ -327,15 +378,15 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
       # select a player if no player is currently selected
 
       if (player == "") {
-         player <- .selectplayer(player, seqdir, mustselect=TRUE)
+         player <- .selectplayer(player, seqdir[seqdirpos], mustselect=TRUE)
          settings$player <- player
          saveRDS(settings, file=file.path(configdir, "settings.rds"))
       }
 
       # load all sequences into 'dat.all'
 
-      files.all <- list.files(seqdir, pattern=".rds$")
-      dat.all <- lapply(file.path(seqdir, files.all), readRDS)
+      files.all <- list.files(seqdir[seqdirpos], pattern=".rds$")
+      dat.all <- lapply(file.path(seqdir[seqdirpos], files.all), readRDS)
 
       k.all <- length(files.all)
 
@@ -614,7 +665,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
             #   click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
             #}
 
-            keys      <- c("q", " ", "n", "p", "e", "E", "l", "-", "=", "+", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F9", "F10", "F12", "m", "/", "*", "8", "?", ",", ".", "<", ">", "w", "t", "h", "H", "ctrl-R", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "v", "a", "G", "ctrl-C")
+            keys      <- c("q", " ", "n", "p", "e", "E", "l", "-", "=", "+", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F12", "m", "/", "*", "8", "?", ",", ".", "<", ">", "w", "t", "h", "H", "ctrl-R", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "v", "a", "G", "ctrl-C")
             keys.add  <- c("f", "z", "c", "s", "0", "b")
             keys.play <- c("z", "c", "s", "ctrl-D", "Right", "Left", "o", "u", "A", "g")
 
@@ -664,7 +715,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
 
             if (identical(click, "p")) {
                eval(expr=switch1)
-               player <- .selectplayer(player, seqdir)
+               player <- .selectplayer(player, seqdir[seqdirpos])
                eval(expr=switch2)
                settings$player <- player
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
@@ -679,8 +730,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
                eval(expr=switch1)
                rmplayer <- readline(prompt=.text("rlydelplayer", player))
                if (.confirm(rmplayer)) {
-                  .removeplayer(player, seqdir)
-                  player <- .selectplayer(player, seqdir, mustselect=TRUE)
+                  .removeplayer(player, seqdir[seqdirpos])
+                  player <- .selectplayer(player, seqdir[seqdirpos], mustselect=TRUE)
                   run.rnd <- FALSE
                   wait <- FALSE
                }
@@ -740,7 +791,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
                   next
                }
                filename <- sub("\\.rds$", "", filename) # strip .rds from end of filename
-               filenamefull <- file.path(seqdir, paste0(filename, ".rds"))
+               filenamefull <- file.path(seqdir[seqdirpos], paste0(filename, ".rds"))
                dosave <- TRUE
                if (file.exists(filenamefull)) {
                   dosave <- FALSE
@@ -765,7 +816,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
 
             if (identical(click, "e")) {
                eval(expr=switch1)
-               sub <- .editcomments(sub, seqdir, seqname, mode)
+               sub <- .editcomments(sub, seqdir[seqdirpos], seqname, mode)
                eval(expr=switch2)
                next
             }
@@ -780,7 +831,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
                if (!is.null(sub$moves$arrows))
                sub$moves$arrows[is.na(sub$moves$arrows)] <- ""
                if (mode == "play")
-                  saveRDS(sub, file=file.path(seqdir, seqname))
+                  saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
                next
             }
 
@@ -968,7 +1019,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
                      cat(.text("noseqsfound"))
                   } else {
                      cat(.text("selseq12", c(tmp$seq.lo, tmp$seq.hi)))
-                     selected <- list.files(seqdir, pattern=".rds$")[tmp$seq.lo:tmp$seq.hi]
+                     selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[tmp$seq.lo:tmp$seq.hi]
                      run.rnd <- FALSE
                      wait <- FALSE
                      mode <- "add"
@@ -986,7 +1037,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
                      cat(.text("noseqfound"))
                   } else {
                      cat(.text("selseq", seqno))
-                     selected <- list.files(seqdir, pattern=".rds$")[seqno]
+                     selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[seqno]
                      run.rnd <- FALSE
                      wait <- FALSE
                      mode <- "add"
@@ -1003,7 +1054,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
                if (!is.na(tmp$cutoff)) {
                   cat(.text("selseqscore", list(tmp$sign, tmp$cutoff)))
                   selected <- eval(parse(text = paste("scores.all", tmp$sign, tmp$cutoff)))
-                  selected <- list.files(seqdir, pattern=".rds$")[selected]
+                  selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected]
                   if (length(selected) == 0L) {
                      cat(.text("noseqsfound"))
                      selected <- NULL
@@ -1025,7 +1076,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
                if (!is.na(tmp$cutoff)) {
                   cat(.text("selseqplayed", list(tmp$sign, tmp$cutoff)))
                   selected <- eval(parse(text = paste("played.all", tmp$sign, tmp$cutoff)))
-                  selected <- list.files(seqdir, pattern=".rds$")[selected]
+                  selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected]
                   if (length(selected) == 0L) {
                      cat(.text("noseqsfound"))
                      selected <- NULL
@@ -1048,7 +1099,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
                   cat(.text("selseqdays", list(tmp$sign, tmp$cutoff)))
                   selected <- eval(parse(text = paste("dayslp.all", tmp$sign, tmp$cutoff)))
                   selected[is.na(selected)] <- FALSE
-                  selected <- list.files(seqdir, pattern=".rds$")[selected]
+                  selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected]
                   if (length(selected) == 0L) {
                      cat(.text("noseqsfound"))
                      selected <- NULL
@@ -1071,7 +1122,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
                   cat(.text("noseqsfound"))
                } else {
                   selected <- grepl(searchterm, files.all)
-                  selected <- list.files(seqdir, pattern=".rds$")[selected]
+                  selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected]
                   cat(.text("numseqfound", length(selected)))
                   run.rnd <- FALSE
                   wait <- FALSE
@@ -1134,7 +1185,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
                answer <- readline(prompt=.text("rlydelseq"))
                if (.confirm(answer)) {
                   cat(.text("delseq"))
-                  file.remove(file.path(seqdir, seqname))
+                  file.remove(file.path(seqdir[seqdirpos], seqname))
                   run.rnd <- FALSE
                   wait <- FALSE
                }
@@ -1660,7 +1711,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
                   .drawsideindicator(sidetoplay, flip)
                   cat(.text("evalupdatenew"))
                   print(sub$moves[-11])
-                  saveRDS(sub, file=file.path(seqdir, seqname))
+                  saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
                   playsound(system.file("sounds", "complete.ogg", package="chesstrainer"), volume=volume)
                   if (!pause) {
                      run.rnd <- FALSE
@@ -1694,7 +1745,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
 
             if (identical(click, "F2")) {
                .clearsideindicator()
-               .leaderboard(seqdir, files, lwd)
+               .leaderboard(seqdir[seqdirpos], files, lwd)
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode)
                .draweval(sub$moves$eval[i], flip=flip, eval=eval, evalsteps=evalsteps)
                circles <- matrix(nrow=0, ncol=2)
@@ -1706,8 +1757,8 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
 
             if (identical(click, "F3")) {
                eval(expr=switch1)
-               settings <- data.frame(lang, player, mode, selmode, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, pause, sleep, lwd, volume, showgraph, cex.top, cex.bot, cex.eval, sfpath, depth1, depth2, threads, hash)
-               tab <- t(settings)
+               tab <- data.frame(lang, player, mode, seqdir=seqdir[seqdirpos], selmode, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, pause, sleep, lwd, volume, showgraph, cex.top, cex.bot, cex.eval, sfpath, depth1, depth2, threads, hash)
+               tab <- t(tab)
                tab <- cbind(tab, .text("explsettings"))
                colnames(tab) <- c("", "")
                print(tab, quote=FALSE, print.gap=3)
@@ -1787,6 +1838,27 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
                settings$threads <- threads
                settings$hash    <- hash
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
+               next
+            }
+
+            # F8 to manage / select the sequence directory
+
+            if (identical(click, "F8")) {
+               eval(expr=switch1)
+               tmp <- .seqdirsettings(seqdir, seqdirpos)
+               eval(expr=switch2)
+               seqdirold <- seqdir
+               seqdirposold <- seqdirpos
+               seqdir <- tmp$seqdir
+               seqdirpos <- tmp$seqdirpos
+               settings$seqdir <- seqdir
+               settings$seqdirpos <- seqdirpos
+               saveRDS(settings, file=file.path(configdir, "settings.rds"))
+               if (!identical(seqdir, seqdirold) || !identical(seqdirpos, seqdirposold)) {
+                  seqno <- 1
+                  run.rnd <- FALSE
+                  wait <- FALSE
+               }
                next
             }
 
@@ -2119,7 +2191,7 @@ play <- function(player="", lang="en", seqdir="", sfpath="", ...) {
 
             }
 
-            saveRDS(sub, file=file.path(seqdir, seqname))
+            saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
             Sys.sleep(2*sleep)
             run.rnd <- FALSE
             next

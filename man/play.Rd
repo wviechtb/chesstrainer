@@ -5,12 +5,10 @@
    Function to start the chess trainer.
 }
 \usage{
-play(player="", lang="en", seqdir="", sfpath="", \dots)
+play(lang="en", sfpath="", \dots)
 }
 \arguments{
-   \item{player}{character string to specify a player. If blank, the trainer will prompt for a (new) player name.}
    \item{lang}{character string to specify the language (either \code{"en"} for English or \code{"de"} for German).}
-   \item{seqdir}{character string giving the path to a directory where sequences will be stored. If blank, the default directory is used.}
    \item{sfpath}{character string giving the path (including the executable) to Stockfish. If blank, Stockfish is not used for position evaluations.}
    \item{\dots}{other arguments}
 }

@@ -40,32 +40,14 @@
 
    if (x == "dircreateerror") {
       return(switch(lang,
-                    de = "Verzeichnis f\U000000FCr kann nicht erstellt werden.",
-                         "Cannot create directory."
+                    de = "Das Verzeichnis konnte nicht erstellt werden.\n",
+                         "The directory could not be created.\n"
    ))}
 
    if (x == "copyseqs") {
       return(switch(lang,
                     de = "Beispielsequenzen in das Sequenzverzeichnis kopieren? (J/n): ",
                          "Copy example sequences to the sequence directory? (Y/n): "
-   ))}
-
-   if (x == "dirnotexists") {
-      return(switch(lang,
-                    de = "Das angegebene Sequenzverzeichnis existiert nicht.",
-                         "Specified sequence directory does not exist."
-   ))}
-
-   if (x == "noreadaccess") {
-      return(switch(lang,
-                    de = "Keine Leseberechtigung f\U000000FCr das angegebene Sequenzverzeichnis.",
-                         "No read permissions for the specified sequence directory."
-   ))}
-
-   if (x == "nowriteaccess") {
-      return(switch(lang,
-                    de = "Keine Schreibberechtigung f\U000000FCr das angegebene Sequenzverzeichnis.",
-                         "No write permissions for the specified sequence directory."
    ))}
 
    if (x == "zeroseqsfound") {
@@ -684,8 +666,8 @@
 
    if (x == "explsettings") {
       return(switch(lang,
-                    de = c("Sprache", "Spielername", "Modus", "Selektionsmodus f\U000000FCr Sequenzen", "Exponentenwert", "Multiplikator f\U000000FCr abgeschlossene Sequenzen", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Bewertungsleiste anzeigen", "Animationsschritte f\U000000FCr die Bewertungsleiste", "Pause zwischen Sequenzen", "Zeit zwischen den Z\U000000FCgen (Sekunden)", "Linienbreite", "Lautst\U000000E4rke (%)", "Fortschrittsdiagramm nach Sequenzen anzeigen", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Stockfish Pfad", "Berechnungstiefe (schnell) f\U000000FCr Stockfish", "Berechnungstiefe (tief) f\U000000FCr Stockfish", "Anzahl der Threads f\U000000FCr Stockfish", "Hashgr\U000000F6\U000000DFe f\U000000FCr Stockfish"),
-                         c("Language", "Player name", "Mode", "Selection mode for sequences", "Exponent value", "Multiplier for completed sequences", "Score penalty for wrong moves", "Score penalty per hint", "Show evaluation bar", "Animation steps for the evaluation bar", "Pause between sequences", "Time between moves (seconds)", "Line width", "Sound volume (%)", "Show progress graph after sequences", "Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Stockfish path", "Calculation depth (fast) for Stockfish", "Calculation depth (deep) for Stockfish", "Number of threads for Stockfish", "Hash size for Stockfish")
+                    de = c("Sprache", "Spielername", "Modus", "Aktuelles Sequenzverzeichnis", "Selektionsmodus f\U000000FCr Sequenzen", "Exponentenwert", "Multiplikator f\U000000FCr abgeschlossene Sequenzen", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Bewertungsleiste anzeigen", "Animationsschritte f\U000000FCr die Bewertungsleiste", "Pause zwischen Sequenzen", "Zeit zwischen den Z\U000000FCgen (Sekunden)", "Linienbreite", "Lautst\U000000E4rke (%)", "Fortschrittsdiagramm nach Sequenzen anzeigen", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Stockfish Pfad", "Berechnungstiefe (schnell) f\U000000FCr Stockfish", "Berechnungstiefe (tief) f\U000000FCr Stockfish", "Anzahl der Threads f\U000000FCr Stockfish", "Hashgr\U000000F6\U000000DFe f\U000000FCr Stockfish"),
+                         c("Language", "Player name", "Mode", "Current sequence directory", "Selection mode for sequences", "Exponent value", "Multiplier for completed sequences", "Score penalty for wrong moves", "Score penalty per hint", "Show evaluation bar", "Animation steps for the evaluation bar", "Pause between sequences", "Time between moves (seconds)", "Line width", "Sound volume (%)", "Show progress graph after sequences", "Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Stockfish path", "Calculation depth (fast) for Stockfish", "Calculation depth (deep) for Stockfish", "Number of threads for Stockfish", "Hash size for Stockfish")
    ))}
 
    if (x == "comment") {
@@ -776,6 +758,72 @@
       return(switch(lang,
                     de = paste0("Alle Z\U000000FCge der Sequenz werden automatisch angezeigt.\nEs muss mindestens einen Zug geben, der gespielt werden muss."),
                          paste0("All moves in the sequence are automatically shown.\nThere must be at least one move that has to be played.")
+   ))}
+
+   if (x == "seqdiroptionwhich") {
+      return(switch(lang,
+                    de = paste0("Option (<Nummer>, 'h' (hinzuf\U000000FCgen), 'e' (entfernen), 'p' (Position ver\U000000E4ndern), oder <Enter> zum Verlassen): "),
+                         paste0("Option (<number>, 'a' (add), 'r' (remove), 'p' (change position), or <enter> to quit): ")
+   ))}
+
+   if (x == "selectedseqdir") {
+      return(switch(lang,
+                    de = "ausgew\U000000E4hlt",
+                         "selected"
+   ))}
+
+   if (x == "addseqdir") {
+      return(switch(lang,
+                    de = paste0("\nSequenzverzeichnis hinzuf\U000000FCgen: "),
+                         paste0("\nSequence directory to add: ")
+   ))}
+
+   if (x == "dirdoesnotexist") {
+      return(switch(lang,
+                    de = "Das angegebene Sequenzverzeichnis existiert nicht.\n",
+                         "Specified sequence directory does not exist.\n"
+   ))}
+
+   if (x == "createdir") {
+      return(switch(lang,
+                    de = "Soll das angegebene Sequenzverzeichnis erstellt werden? (J/n): ",
+                         "Should the specified sequence directory be created? (Y/n): "
+   ))}
+
+   if (x == "seqdirtoremove") {
+      return(switch(lang,
+                    de = paste0("\nSequenzverzeichnis zum Entfernen (<Nummer> oder <Enter> zum Verlassen): "),
+                         paste0("\nSequence directory to remove (<number> or <enter> to quit)): ")
+   ))}
+
+   if (x == "cannotremovesingleseqdir") {
+      return(switch(lang,
+                    de = paste0("\nEin Verzeichnis kann nicht entfernt werden, wenn es nur ein einziges Sequenzverzeichnis gibt.\n"),
+                         paste0("\nCannot remove a directory when there is only a single sequence directory.\n")
+   ))}
+
+   if (x == "seqdirtomove") {
+      return(switch(lang,
+                    de = paste0("\nSequenzverzeichnis dessen Position ver\U000000E4ndert werden soll (<Nummer> oder <Enter> zum Verlassen): "),
+                         paste0("\nSequence directory whose position should be changed (<number> or <enter> to quit)): ")
+   ))}
+
+   if (x == "seqdirnewpos") {
+      return(switch(lang,
+                    de = paste0("Neue Position f\U000000FCr das Sequenzverzeichnis (<Nummer> oder <Enter> zum Verlassen): "),
+                         paste0("New position for the sequence directory (<number> or <enter> to quit)): ")
+   ))}
+
+   if (x == "noreadaccess") {
+      return(switch(lang,
+                    de = "Keine Leseberechtigung f\U000000FCr das angegebene Sequenzverzeichnis.",
+                         "No read permissions for the specified sequence directory."
+   ))}
+
+   if (x == "nowriteaccess") {
+      return(switch(lang,
+                    de = "Keine Schreibberechtigung f\U000000FCr das angegebene Sequenzverzeichnis.",
+                         "No write permissions for the specified sequence directory."
    ))}
 
 }

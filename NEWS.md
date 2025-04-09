@@ -1,4 +1,4 @@
-# chesstrainer 0.9-42 (2025-04-08)
+# chesstrainer 0.9-43 (2025-04-10)
 
 - can play en passant
 - can promote pawns
@@ -23,6 +23,7 @@
 - sequences now also save drawn circles and arrows during add mode and replay them during play mode
 - sequences now also save the FEN for each move; can use this to select sequences
 - sequences can have a start and/or end comment now
+- can now add, remove, and select sequence directories with `<F8>`
 
 # chesstrainer 0.1-0 (2024-12-17)
 
