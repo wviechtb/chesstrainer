@@ -49,22 +49,48 @@
 
 }
 
-.redrawpos <- function(pos, flip=FALSE) {
+.redrawpos <- function(pos, posold, flip=FALSE) {
 
-   if (flip) {
-      for (i in 1:8) {
-         for (j in 1:8) {
-            .drawsquare(i, j)
-            .drawpiece(i, j, pos[9-i,9-j])
+   if (missing(posold)) {
+
+      if (flip) {
+         for (i in 1:8) {
+            for (j in 1:8) {
+               .drawsquare(i, j)
+               .drawpiece(i, j, pos[9-i,9-j])
+            }
+         }
+      } else {
+         for (i in 1:8) {
+            for (j in 1:8) {
+               .drawsquare(i, j)
+               .drawpiece(i, j, pos[i,j])
+            }
          }
       }
+
    } else {
-      for (i in 1:8) {
-         for (j in 1:8) {
-            .drawsquare(i, j)
-            .drawpiece(i, j, pos[i,j])
+
+      if (flip) {
+         for (i in 1:8) {
+            for (j in 1:8) {
+               if (pos[9-i,9-j] != posold[9-i,9-j]) {
+                  .drawsquare(i, j)
+                  .drawpiece(i, j, pos[9-i,9-j])
+               }
+            }
+         }
+      } else {
+         for (i in 1:8) {
+            for (j in 1:8) {
+               if (pos[i,j] != posold[i,j]) {
+                  .drawsquare(i, j)
+                  .drawpiece(i, j, pos[i,j])
+               }
+            }
          }
       }
+
    }
 
 }
@@ -109,7 +135,7 @@
 
 }
 
-.updateboard <- function(pos, move, flip, autoprom, volume, verbose) {
+.updateboard <- function(pos, move, flip, autoprom, volume, verbose, draw=TRUE) {
 
    x1 <- unname(move[[1]])
    y1 <- unname(move[[2]])
@@ -161,33 +187,41 @@
          isrochade <- "0-0"
          pos[1,6] <- "WR"
          pos[1,8] <- ""
-         .drawsquare(9-1, 9-8)
-         .drawsquare(9-1, 9-6)
-         .drawpiece(9-1, 9-6, "WR")
+         if (draw) {
+            .drawsquare(9-1, 9-8)
+            .drawsquare(9-1, 9-6)
+            .drawpiece(9-1, 9-6, "WR")
+         }
       }
       if (identical(c(x1,y1), c(9-1,9-5)) && pos[9-x1,9-y1] == "WK" && identical(c(x2,y2), c(9-1,9-3))) {
          isrochade <- "0-0-0"
          pos[1,4] <- "WR"
          pos[1,1] <- ""
-         .drawsquare(9-1, 9-1)
-         .drawsquare(9-1, 9-4)
-         .drawpiece(9-1, 9-4, "WR")
+         if (draw) {
+            .drawsquare(9-1, 9-1)
+            .drawsquare(9-1, 9-4)
+            .drawpiece(9-1, 9-4, "WR")
+         }
       }
       if (identical(c(x1,y1), c(9-8,9-5)) && pos[9-x1,9-y1] == "BK" && identical(c(x2,y2), c(9-8,9-7))) {
          isrochade <- "0-0"
          pos[8,6] <- "BR"
          pos[8,8] <- ""
-         .drawsquare(9-8, 9-8)
-         .drawsquare(9-8, 9-6)
-         .drawpiece(9-8, 9-6, "BR")
+         if (draw) {
+            .drawsquare(9-8, 9-8)
+            .drawsquare(9-8, 9-6)
+            .drawpiece(9-8, 9-6, "BR")
+         }
       }
       if (identical(c(x1,y1), c(9-8,9-5)) && pos[9-x1,9-y1] == "BK" && identical(c(x2,y2), c(9-8,9-3))) {
          isrochade <- "0-0-0"
          pos[8,4] <- "BR"
          pos[8,1] <- ""
-         .drawsquare(9-8, 9-1)
-         .drawsquare(9-8, 9-4)
-         .drawpiece(9-8, 9-4, "BR")
+         if (draw) {
+            .drawsquare(9-8, 9-1)
+            .drawsquare(9-8, 9-4)
+            .drawpiece(9-8, 9-4, "BR")
+         }
       }
 
       # check for en passant
@@ -195,12 +229,12 @@
       if (identical(attr(pos, "ispp"), "b") && pos[9-x1,9-y1] == "WP" && x1 == 4 && attr(pos, "y1") == y2) {
          isenpassant <- "w"
          pos[4,y2] <- ""
-         .drawsquare(4, y2)
+         if (draw) .drawsquare(4, y2)
       }
       if (identical(attr(pos, "ispp"), "w") && pos[9-x1,9-y1] == "BP" && x1 == 5 && attr(pos, "y1") == y2) {
          isenpassant <- "b"
          pos[5,y2] <- ""
-         .drawsquare(5, y2)
+         if (draw) .drawsquare(5, y2)
       }
 
    } else {
@@ -211,33 +245,41 @@
          isrochade <- "0-0"
          pos[1,6] <- "WR"
          pos[1,8] <- ""
-         .drawsquare(1, 8)
-         .drawsquare(1, 6)
-         .drawpiece(1, 6, "WR")
+         if (draw) {
+            .drawsquare(1, 8)
+            .drawsquare(1, 6)
+            .drawpiece(1, 6, "WR")
+         }
       }
       if (identical(c(x1,y1), c(1,5)) && pos[x1,y1] == "WK" && identical(c(x2,y2), c(1,3))) {
          isrochade <- "0-0-0"
          pos[1,4] <- "WR"
          pos[1,1] <- ""
-         .drawsquare(1, 1)
-         .drawsquare(1, 4)
-         .drawpiece(1, 4, "WR")
+         if (draw) {
+            .drawsquare(1, 1)
+            .drawsquare(1, 4)
+            .drawpiece(1, 4, "WR")
+         }
       }
       if (identical(c(x1,y1), c(8,5)) && pos[x1,y1] == "BK" && identical(c(x2,y2), c(8,7))) {
          isrochade <- "0-0"
          pos[8,6] <- "BR"
          pos[8,8] <- ""
-         .drawsquare(8, 8)
-         .drawsquare(8, 6)
-         .drawpiece(8, 6, "BR")
+         if (draw) {
+            .drawsquare(8, 8)
+            .drawsquare(8, 6)
+            .drawpiece(8, 6, "BR")
+         }
       }
       if (identical(c(x1,y1), c(8,5)) && pos[x1,y1] == "BK" && identical(c(x2,y2), c(8,3))) {
          isrochade <- "0-0-0"
          pos[8,4] <- "BR"
          pos[8,1] <- ""
-         .drawsquare(8, 1)
-         .drawsquare(8, 4)
-         .drawpiece(8, 4, "BR")
+         if (draw) {
+            .drawsquare(8, 1)
+            .drawsquare(8, 4)
+            .drawpiece(8, 4, "BR")
+         }
       }
 
       # check for en passant
@@ -245,12 +287,12 @@
       if (identical(attr(pos, "ispp"), "b") && pos[x1,y1] == "WP" && x1 == 5 && attr(pos, "y1") == y2) {
          isenpassant <- "w"
          pos[5,y2] <- ""
-         .drawsquare(5, y2)
+         if (draw) .drawsquare(5, y2)
       }
       if (identical(attr(pos, "ispp"), "w") && pos[x1,y1] == "BP" && x1 == 4 && attr(pos, "y1") == y2) {
          isenpassant <- "b"
          pos[4,y2] <- ""
-         .drawsquare(4, y2)
+         if (draw) .drawsquare(4, y2)
       }
 
    }
@@ -364,12 +406,14 @@
       }
    }
 
-   .drawsquare(x1, y1)
-   .drawsquare(x2, y2)
+   if (draw) {
+      .drawsquare(x1, y1)
+      .drawsquare(x2, y2)
+   }
 
    if (flip) {
 
-      .drawpiece(x2, y2, pos[9-x1,9-y1])
+      if (draw) .drawpiece(x2, y2, pos[9-x1,9-y1])
 
       if (pos[9-x2,9-y2] != "" || isenpassant != "") {
          playsound(system.file("sounds", "capture.ogg", package="chesstrainer"), volume=volume)
@@ -384,13 +428,15 @@
 
       if (promotionpiece != "") {
          pos[9-x2,9-y2] <- promotionpiece
-         .drawsquare(x2, y2)
-         .drawpiece(x2, y2, pos[9-x2,9-y2])
+         if (draw) {
+            .drawsquare(x2, y2)
+            .drawpiece(x2, y2, pos[9-x2,9-y2])
+         }
       }
 
    } else {
 
-      .drawpiece(x2, y2, pos[x1,y1])
+      if (draw) .drawpiece(x2, y2, pos[x1,y1])
 
       if (pos[x2,y2] != "" || isenpassant != "") {
          playsound(system.file("sounds", "capture.ogg", package="chesstrainer"), volume=volume)
@@ -405,8 +451,10 @@
 
       if (promotionpiece != "") {
          pos[x2,y2] <- promotionpiece
-         .drawsquare(x2, y2)
-         .drawpiece(x2, y2, pos[x2,y2])
+         if (draw) {
+            .drawsquare(x2, y2)
+            .drawpiece(x2, y2, pos[x2,y2])
+         }
       }
 
    }

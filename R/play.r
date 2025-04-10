@@ -605,7 +605,7 @@ play <- function(lang="en", sfpath="", ...) {
             while (isTRUE(sub$moves$show[i])) {
                if (nrow(circles) >= 1L || nrow(arrows) >= 1L) {
                   Sys.sleep(sleep)
-                  .redrawpos(pos, flip)
+                  .redrawpos(pos, flip=flip)
                   circles <- matrix(nrow=0, ncol=2)
                   arrows  <- matrix(nrow=0, ncol=4)
                }
@@ -1297,23 +1297,29 @@ play <- function(lang="en", sfpath="", ...) {
                }
                if (mode == "add") {
                   if (i > 1) {
+                     posold <- pos
                      if (is.null(sub$pos)) {
                         pos <- start.pos
                      } else {
                         pos <- sub$pos
                      }
-                     .drawboard(pos, flip=flip)
-                     circles <- matrix(nrow=0, ncol=2)
-                     arrows  <- matrix(nrow=0, ncol=4)
                      i <- i - 1
                      sub$moves <- sub$moves[seq_len(i-1),,drop=FALSE]
                      sidetoplay <- sidetoplaystart
                      for (j in seq_len(i-1)) {
-                        pos <- .updateboard(pos, move=sub$moves[j,1:6], flip=flip, autoprom=TRUE, volume=0, verbose=verbose)
+                        pos <- .updateboard(pos, move=sub$moves[j,1:6], flip=flip, autoprom=TRUE, volume=0, verbose=verbose, draw=FALSE)
                         #sub$moves$move[j] <- attr(pos,"move")
                         sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                      }
                      comment <- ""
+                     playsound(system.file("sounds", "move.ogg", package="chesstrainer"), volume=volume)
+                     if (nrow(circles) >= 1L || nrow(arrows) >= 1L) {
+                        .redrawpos(pos, flip=flip)
+                        circles <- matrix(nrow=0, ncol=2)
+                        arrows  <- matrix(nrow=0, ncol=4)
+                     } else {
+                        .redrawpos(pos, posold, flip=flip)
+                     }
                      .draweval(sub$moves$eval[i-1], flip=flip, eval=eval, evalsteps=evalsteps)
                      .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                      .drawsideindicator(sidetoplay, flip)
@@ -1460,22 +1466,28 @@ play <- function(lang="en", sfpath="", ...) {
             if (mode == "play" && identical(click, "Left")) {
 
                if (i > 1) {
+                  posold <- pos
                   if (is.null(sub$pos)) {
                      pos <- start.pos
                   } else {
                      pos <- sub$pos
                   }
                   sidetoplay <- sidetoplaystart
-                  .drawboard(pos, flip=flip)
-                  circles <- matrix(nrow=0, ncol=2)
-                  arrows  <- matrix(nrow=0, ncol=4)
                   i <- i - 1
                   for (j in seq_len(i-1)) {
-                     pos <- .updateboard(pos, move=sub$moves[j,1:6], flip=flip, autoprom=TRUE, volume=0, verbose=verbose)
+                     pos <- .updateboard(pos, move=sub$moves[j,1:6], flip=flip, autoprom=TRUE, volume=0, verbose=verbose, draw=FALSE)
                      #sub$moves$move[j] <- attr(pos,"move")
                      sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                   }
                   comment <- ""
+                  playsound(system.file("sounds", "move.ogg", package="chesstrainer"), volume=volume)
+                  if (nrow(circles) >= 1L || nrow(arrows) >= 1L) {
+                     .redrawpos(pos, flip=flip)
+                     circles <- matrix(nrow=0, ncol=2)
+                     arrows  <- matrix(nrow=0, ncol=4)
+                  } else {
+                     .redrawpos(pos, posold, flip=flip)
+                  }
                   .draweval(sub$moves$eval[i-1], flip=flip, eval=eval, evalsteps=evalsteps)
                   .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                   .drawsideindicator(sidetoplay, flip)
@@ -1983,7 +1995,7 @@ play <- function(lang="en", sfpath="", ...) {
                   # if other buttons were pressed, clear arrows/circles (if there are any)
 
                   if (nrow(circles) >= 1L || nrow(arrows) >= 1L) {
-                     .redrawpos(pos, flip)
+                     .redrawpos(pos, flip=flip)
                      circles <- matrix(nrow=0, ncol=2)
                      arrows  <- matrix(nrow=0, ncol=4)
                   }
@@ -2024,7 +2036,7 @@ play <- function(lang="en", sfpath="", ...) {
          arrowsvar  <- ""
 
          if (identical(button, 0L) && (nrow(circles) >= 1L || nrow(arrows) >= 1L)) {
-            .redrawpos(pos, flip)
+            .redrawpos(pos, flip=flip)
             if (nrow(circles) >= 1L)
                circlesvar <- paste0(apply(circles, 1, function(x) paste0("(",x[1],",",x[2],")")), collapse=";")
             if (nrow(arrows) >= 1L)
@@ -2246,7 +2258,7 @@ play <- function(lang="en", sfpath="", ...) {
             .draweval(sub$moves$eval[i], sub$moves$eval[i-1], flip=flip, eval=eval, evalsteps=evalsteps)
             texttop <- .texttop(sub$moves$comment[i])
             if (nrow(circles) >= 1L || nrow(arrows) >= 1L) {
-               .redrawpos(pos, flip)
+               .redrawpos(pos, flip=flip)
                #apply(circles, 1, function(x) .drawsquare(x[1], x[2]))
                #apply(circles, 1, function(x) .drawpiece(x[1], x[2], ifelse(flip, pos[9-x[1],9-x[2]], pos[x[1],x[2]])))
                circles <- matrix(nrow=0, ncol=2)
