@@ -1877,7 +1877,7 @@ play <- function(lang="en", sfpath="", ...) {
             # F10 to show histograms / scatterplot
 
             if (identical(click, "F10")) {
-               .distributions(scores.selected, played.selected, dayslp.selected, lwd)
+               .distributions(scores.selected, played.selected, dayslp.selected, lwd, multiplier)
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode)
                .draweval(sub$moves$eval[i], flip=flip, eval=eval, evalsteps=evalsteps)
                circles <- matrix(nrow=0, ncol=2)

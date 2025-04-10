@@ -28,8 +28,8 @@
 
    if (x == "loadsettings") {
       return(switch(lang,
-                    de = paste0("Lade Einstellungen ...\n"),
-                         paste0("Loading settings ...\n")
+                    de = "Lade Einstellungen ...\n",
+                         "Loading settings ...\n"
    ))}
 
    if (x == "createseqdir") {
@@ -336,8 +336,8 @@
 
    if (x == "setscoreback100") {
       return(switch(lang,
-                    de = paste0("Der Punktestand lag bereits bei 100."),
-                         paste0("The score was already at 100.")
+                    de = "Der Punktestand lag bereits bei 100.",
+                         "The score was already at 100."
    ))}
 
    if (x == "setposstart") {
@@ -678,14 +678,14 @@
 
    if (x == "commentedit") {
       return(switch(lang,
-                    de = paste0("Kommentar bearbeiten (<Nummer>, 's' (Startkommentar) 'e' (Endkommentar), 'l' (l\U000000F6schen), oder <Enter> zum Verlassen): "),
-                         paste0("Edit a comment (<number>, 's' (start comment), 'e' (end comment), 'd' (delete), or <enter> to quit): ")
+                    de = "Kommentar bearbeiten (<Nummer>, 's' (Startkommentar) 'e' (Endkommentar), 'l' (l\U000000F6schen), oder <Enter> zum Verlassen): ",
+                         "Edit a comment (<number>, 's' (start comment), 'e' (end comment), 'd' (delete), or <enter> to quit): "
    ))}
 
    if (x == "commentnew") {
       return(switch(lang,
-                    de = paste0("Neuer Kommentar: "),
-                         paste0("New comment: ")
+                    de = "Neuer Kommentar: ",
+                         "New comment: "
    ))}
 
    if (x == "commentdelete") {
@@ -708,14 +708,14 @@
 
    if (x == "commentendnew") {
       return(switch(lang,
-                    de = paste0("Neuer Endkommentar: "),
-                         paste0("New end comment: ")
+                    de = "Neuer Endkommentar: ",
+                         "New end comment: "
    ))}
 
    if (x == "commentenddeleted") {
       return(switch(lang,
-                    de = paste0("Endkommentar gel\U000000F6scht.\n"),
-                         paste0("Deleted end comment.\n")
+                    de = "Endkommentar gel\U000000F6scht.\n",
+                         "Deleted end comment.\n"
    ))}
 
    if (x == "commentstart") {
@@ -732,20 +732,20 @@
 
    if (x == "commentstartnew") {
       return(switch(lang,
-                    de = paste0("Neuer Startkommentar: "),
-                         paste0("New start comment: ")
+                    de = "Neuer Startkommentar: ",
+                         "New start comment: "
    ))}
 
    if (x == "commentstartdeleted") {
       return(switch(lang,
-                    de = paste0("Startkommentar gel\U000000F6scht.\n"),
-                         paste0("Deleted start comment.\n")
+                    de = "Startkommentar gel\U000000F6scht.\n",
+                         "Deleted start comment.\n"
    ))}
 
    if (x == "copyfen") {
       return(switch(lang,
-                    de = paste0("FEN in die Zwischenablage kopiert."),
-                         paste0("Copied FEN to the clipboard.")
+                    de = "FEN in die Zwischenablage kopiert.",
+                         "Copied FEN to the clipboard."
    ))}
 
    if (x == "bookmarked") {
@@ -756,14 +756,14 @@
 
    if (x == "allmovesshown") {
       return(switch(lang,
-                    de = paste0("Alle Z\U000000FCge der Sequenz werden automatisch angezeigt.\nEs muss mindestens einen Zug geben, der gespielt werden muss."),
-                         paste0("All moves in the sequence are automatically shown.\nThere must be at least one move that has to be played.")
+                    de = "Alle Z\U000000FCge der Sequenz werden automatisch angezeigt.\nEs muss mindestens einen Zug geben, der gespielt werden muss.",
+                         "All moves in the sequence are automatically shown.\nThere must be at least one move that has to be played."
    ))}
 
    if (x == "seqdiroptionwhich") {
       return(switch(lang,
-                    de = paste0("Option (<Nummer>, 'h' (hinzuf\U000000FCgen), 'e' (entfernen), 'p' (Position ver\U000000E4ndern), oder <Enter> zum Verlassen): "),
-                         paste0("Option (<number>, 'a' (add), 'r' (remove), 'p' (change position), or <enter> to quit): ")
+                    de = "Option (<Nummer>, 'h' (hinzuf\U000000FCgen), 'e' (entfernen), 'p' (Position ver\U000000E4ndern), oder <Enter> zum Verlassen): ",
+                         "Option (<number>, 'a' (add), 'r' (remove), 'p' (change position), or <enter> to quit): "
    ))}
 
    if (x == "selectedseqdir") {
@@ -774,8 +774,8 @@
 
    if (x == "addseqdir") {
       return(switch(lang,
-                    de = paste0("\nSequenzverzeichnis hinzuf\U000000FCgen: "),
-                         paste0("\nSequence directory to add: ")
+                    de = "\nSequenzverzeichnis hinzuf\U000000FCgen: ",
+                         "\nSequence directory to add: "
    ))}
 
    if (x == "dirdoesnotexist") {
@@ -792,26 +792,32 @@
 
    if (x == "seqdirtoremove") {
       return(switch(lang,
-                    de = paste0("\nSequenzverzeichnis zum Entfernen (<Nummer> oder <Enter> zum Verlassen): "),
-                         paste0("\nSequence directory to remove (<number> or <enter> to quit)): ")
+                    de = "\nSequenzverzeichnis zum Entfernen (<Nummer> oder <Enter> zum Verlassen): ",
+                         "\nSequence directory to remove (<number> or <enter> to quit)): "
    ))}
 
    if (x == "cannotremovesingleseqdir") {
       return(switch(lang,
-                    de = paste0("\nEin Verzeichnis kann nicht entfernt werden, wenn es nur ein einziges Sequenzverzeichnis gibt.\n"),
-                         paste0("\nCannot remove a directory when there is only a single sequence directory.\n")
+                    de = "\nEin Verzeichnis kann nicht entfernt werden, wenn es nur ein einziges Sequenzverzeichnis gibt.\n",
+                         "\nCannot remove a directory when there is only a single sequence directory.\n"
    ))}
 
    if (x == "seqdirtomove") {
       return(switch(lang,
-                    de = paste0("\nSequenzverzeichnis dessen Position ver\U000000E4ndert werden soll (<Nummer> oder <Enter> zum Verlassen): "),
-                         paste0("\nSequence directory whose position should be changed (<number> or <enter> to quit)): ")
+                    de = "\nSequenzverzeichnis dessen Position ver\U000000E4ndert werden soll (<Nummer> oder <Enter> zum Verlassen): ",
+                         "\nSequence directory whose position should be changed (<number> or <enter> to quit)): "
    ))}
 
    if (x == "seqdirnewpos") {
       return(switch(lang,
-                    de = paste0("Neue Position f\U000000FCr das Sequenzverzeichnis (<Nummer> oder <Enter> zum Verlassen): "),
-                         paste0("New position for the sequence directory (<number> or <enter> to quit)): ")
+                    de = "Neue Position f\U000000FCr das Sequenzverzeichnis (<Nummer> oder <Enter> zum Verlassen): ",
+                         "New position for the sequence directory (<number> or <enter> to quit)): "
+   ))}
+
+   if (x == "plotlegend") {
+      return(switch(lang,
+                    de = c("bestm\U000000F6gliche Leistung", "tats\U000000E4chliche Leistung"),
+                         c("best possible performance", "actual performance")
    ))}
 
    if (x == "noreadaccess") {

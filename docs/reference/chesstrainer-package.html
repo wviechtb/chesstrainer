@@ -31,7 +31,7 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chesstrainer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-43</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-44</span>
       </span>
     </div>
 
@@ -191,7 +191,7 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
 </ul><p>The settings are stored across sessions and can be shown with <code>&lt;F3&gt;</code>. With <code>&lt;F4&gt;</code>, you can adjust the colors. With <code>&lt;F5&gt;</code>, you can adjust the size of the text at the top, the text at the bottom, and the size of the evaluation value in the evaluation bar (if it is shown).</p>
 <p>With <code>&lt;F6&gt;</code>, you can adjust some miscellaneous settings, namely the multiplier for the score when completing a sequence without any mistakes (0.8 by default), the score penalty when making a wrong move (40 by default), the score penalty per hint (20 by default), and the number of animation steps for the evaluation bar (10 by default).</p>
 <p>With <code>&lt;F9&gt;</code>, the FEN of the current position is printed and the position is opened on the <a href="https://lichess.org" class="external-link">https://lichess.org</a> website for analysis. With <code>Ctrl-&lt;c&gt;</code>, the FEN is copied to the clipboard (this makes use of the <code><a href="http://matthewlincoln.net/clipr/reference/write_clip.html" class="external-link">write_clip</a></code> function from the <code>clipr</code> package).</p>
-<p>With <code>&lt;F10&gt;</code>, you can obtain histograms of the scores of the (selected) sequences, how many times they have been played, how long ago they were played, and a scatterplot of the number of times they have been played versus their scores.</p>
+<p>With <code>&lt;F10&gt;</code>, you can obtain histograms of the scores of the (selected) sequences, how many times they have been played, how long ago they were played, and a scatterplot of the number of times they have been played versus their scores. In the scatterplot, the dotted line indicates the best possible performance (i.e., never making a mistake when playing the sequence over and over) and the solid line the actual performance (as estimated based on a regression model; only shown when there are 5 or more points).</p>
     </div>
     <div id="resetting-and-cleaning-up">
     <h2>Resetting and Cleaning Up</h2>
