@@ -255,12 +255,13 @@ play <- function(lang="en", sfpath="", ...) {
    # some defaults
 
    selected <- NULL
-   oldvolume <- volume
    seqno <- 1
    filename <- ""
    bookmark <- ""
+   lastseq  <- ""
    bestmove <- ""
-   useflip <- TRUE
+   useflip  <- TRUE
+   replast  <- FALSE
 
    # create the getGraphicsEvent() functions
 
@@ -502,18 +503,24 @@ play <- function(lang="en", sfpath="", ...) {
 
          # select a sequence
 
-         sel <- sample(seq_len(k), 1L, prob=probvals.selected)
+         if (replast && filename != "") {
 
-         if (selmode == "sequential") {
-            seqno <- seqno + 1
-            if (seqno > k)
-               seqno <- 1
+            sel <- grep(filename, files.all)
+            replast <- FALSE
+
+         } else {
+
+            sel <- sample(seq_len(k), 1L, prob=probvals.selected)
+
+            if (selmode == "sequential") {
+               seqno <- seqno + 1
+               if (seqno > k)
+                  seqno <- 1
+            }
+
          }
 
          sub <- dat[[sel]]
-
-         # overwrite defaults based on the current sequence
-
          seqname <- files[sel]
          seqnum  <- which(seqname == files.all)
 
@@ -665,9 +672,9 @@ play <- function(lang="en", sfpath="", ...) {
             #   click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
             #}
 
-            keys      <- c("q", " ", "n", "p", "e", "E", "l", "-", "=", "+", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F12", "m", "/", "*", "8", "?", ",", ".", "<", ">", "w", "t", "h", "H", "ctrl-R", "^", "[", "]", "i", "r", "(", ")", "ctrl-[", "\033", "v", "a", "G", "ctrl-C")
-            keys.add  <- c("f", "z", "c", "s", "0", "b")
-            keys.play <- c("z", "c", "s", "ctrl-D", "Right", "Left", "o", "u", "A", "g")
+            keys      <- c("q", " ", "n", "p", "e", "E", "l", "-", "=", "+", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F12", "m", "/", "*", "8", "?", ",", ".", "b", "B", "w", "t", "h", "H", "ctrl-R", "^", "[", "]", "i", "(", ")", "ctrl-[", "\033", "v", "a", "G", "ctrl-C")
+            keys.add  <- c("f", "z", "c", "s", "0")
+            keys.play <- c("z", "c", "s", "ctrl-D", "Right", "Left", "o", "u", "A", "g", "r")
 
             if (mode == "add" && is.character(click) && !is.element(click, c(keys, keys.add)))
                next
@@ -885,9 +892,9 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # < to bookmark a sequence (in add mode, last saved sequence; in play mode, current sequence)
+            # b to bookmark a sequence (in add mode, last saved sequence; in play mode, current sequence)
 
-            if (identical(click, "<")) {
+            if (identical(click, "b")) {
                if (mode == "add") {
                   if (filename != "")
                      bookmark <- filename
@@ -905,7 +912,7 @@ play <- function(lang="en", sfpath="", ...) {
 
             # / or , to select one or more sequences, . to select last saved sequence, > to select the bookmarked sequence
 
-            if (identical(click, "/") || identical(click, ",") || identical(click, ".") || identical(click, ">")) {
+            if (identical(click, "/") || identical(click, ",") || identical(click, ".") || identical(click, "B")) {
 
                doprompt <- TRUE
 
@@ -918,7 +925,7 @@ play <- function(lang="en", sfpath="", ...) {
                   }
                }
 
-               if (identical(click, ">")) {
+               if (identical(click, "B")) {
                   if (bookmark != "") {
                      searchterm <- bookmark
                      doprompt <- FALSE
@@ -1175,6 +1182,19 @@ play <- function(lang="en", sfpath="", ...) {
                   cat(.text("noseqsfound"))
                }
                eval(expr=switch2)
+               next
+            }
+
+            # r to repeat the last played sequence (only in play mode)
+
+            if (mode == "play" && identical(click, "r")) {
+               if (lastseq == "")
+                  next
+               .texttop(.text("replast"), sleep=0.75)
+               replast <- TRUE
+               filename <- lastseq
+               run.rnd <- FALSE
+               wait <- FALSE
                next
             }
 
@@ -1534,27 +1554,6 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # m to switch mute on/off
-
-            if (identical(click, "m")) {
-               if (volume == 0) {
-                  if (oldvolume == 0) {
-                     volume <- oldvolume <- 50
-                  } else {
-                     volume <- oldvolume
-                  }
-               } else {
-                  oldvolume <- volume
-                  volume <- 0
-               }
-               playsound(system.file("sounds", "move.ogg", package="chesstrainer"), volume=volume)
-               .texttop(.text("sound", volume > 0), sleep=0.75)
-               .texttop(texttop)
-               settings$volume <- volume
-               saveRDS(settings, file=file.path(configdir, "settings.rds"))
-               next
-            }
-
             # [/] to decrease/increase the volume
 
             if (identical(click, "[") || identical(click, "]")) {
@@ -1563,7 +1562,6 @@ play <- function(lang="en", sfpath="", ...) {
                } else {
                   volume <- min(100, volume + 25)
                }
-               oldvolume <- volume
                playsound(system.file("sounds", "move.ogg", package="chesstrainer"), volume=volume)
                .texttop(paste0(.text("volume", round(volume)), "%"), sleep=0.5)
                .texttop(texttop)
@@ -1613,9 +1611,9 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # r to choose a selection mode
+            # m to choose a selection mode
 
-            if (identical(click, "r")) {
+            if (identical(click, "m")) {
                selmodeold <- selmode
                selmode <- .selmodesetting(selmode, lwd)
                .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
@@ -2108,6 +2106,8 @@ play <- function(lang="en", sfpath="", ...) {
             }
 
             playsound(system.file("sounds", "complete.ogg", package="chesstrainer"), volume=volume)
+
+            lastseq <- seqname
 
             # adjust the score (but only if no mistake was made)
 

@@ -98,12 +98,6 @@
                          paste0("Show moves: ", ifelse(arg, "on", "off"))
    ))}
 
-   if (x == "sound") {
-      return(switch(lang,
-                    de = paste0("Sound: ", ifelse(arg, "an", "aus")),
-                         paste0("Sound: ", ifelse(arg, "on", "off"))
-   ))}
-
    if (x == "showgraph") {
       return(switch(lang,
                     de = paste0("Fortschrittsdiagramm am Ende von Sequenzen anzeigen: ", ifelse(arg, "an", "aus")),
@@ -830,6 +824,12 @@
       return(switch(lang,
                     de = "Keine Schreibberechtigung f\U000000FCr das angegebene Sequenzverzeichnis.",
                          "No write permissions for the specified sequence directory."
+   ))}
+
+   if (x == "replast") {
+      return(switch(lang,
+                    de = "Wiederhole die letzte Sequenz ...",
+                         "Repeating the last sequence ..."
    ))}
 
 }
