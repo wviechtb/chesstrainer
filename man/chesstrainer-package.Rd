@@ -69,6 +69,15 @@
    In \sQuote{play} mode, the \code{<r>} key repeats the last played sequence.
 
 }
+\section{Timed Mode}{
+
+   With the \code{<x>} key, one can switch into a timed mode. In this mode, all moves played during a sequence must be completed in a certain amount of time, which is given by the total number of moves that must be played in the sequence times the current setting for \sQuote{time per move} (which is 5 seconds by default). For example, if 8 moves must be played, then one has \eqn{8 \times 5 = 40} seconds to complete all moves (the time taken by the trainer for playing moves is not counted). Not completing the moves within this amount of time is treated like a mistake (i.e., the score is increased by 40 points).
+
+   During timed mode, the bar on the right indicates whether one's current playing time is above (in green) or below (in red) the amount of time one should have spent on the moves so far (i.e., if every move took exactly the amount of time allowed by the \sQuote{time per move} setting).
+
+   The \sQuote{time per move} setting can be adjusted via the \code{<F6>} key.
+
+}
 \section{Adding New Sequences}{
 
    As described above, the trainer comes with a few example sequences to teach you how it can be used, but serious use of the trainer requires that you add your own sequences. With \code{<space>}, you can switch into the \sQuote{add} mode, where you can enter new sequences. The first thing to decide is whether the player should play with white or black. With the \code{<f>} key, the board can be flipped accordingly (the player always plays with the pieces at the bottom). Next, you need to decide whether some moves will be automatically played at the beginning of a sequence. If some moves should be played automatically, then simply make these moves on the board. Note that there is no check if the moves are legal and/or are played in the correct sequence, so care must be taken to do so appropriately. Once you arrive at the position where a player should start making moves, hit the \code{<z>} key (note that \sQuote{Show} at the bottom left then turns from \sQuote{Yes} to \sQuote{No}). Now continue playing the line as it should be played. The sequence should end with a move by the player. If you make a mistake when playing a move, use the \code{<t>} key to take the move back. Once the sequence is complete, use the \code{<s>} key to save the sequence. You will be prompted for a filename. Once the sequence has been saved, it will automatically become part of the sequences that may be presented in \sQuote{play} mode.
@@ -108,7 +117,7 @@
 
    The trainer plays various sounds (when playing moves, when capturing pieces, when making a wrong move, or when completing a sequence). This may or may not work depending on your operating system and configuration. See the \code{\link{playsound}} function for further details.
 
-   The sound volume can be decreased/increased with the \code{<[>} and \code{<]>} keys. If the sound is not working, setting the volume to 0 disables the sound. This can also be useful if playing sounds adds too much lag.
+   % The sound volume can be decreased/increased with the \code{<[>} and \code{<]>} keys. If the sound is not working, setting the volume to 0 disables the sound. This can also be useful if playing sounds adds too much lag.
 
 }
 \section{Position Evaluations via Stockfish}{
@@ -140,7 +149,7 @@
 
    The settings are stored across sessions and can be shown with \code{<F3>}. With \code{<F4>}, you can adjust the colors. With \code{<F5>}, you can adjust the size of the text at the top, the text at the bottom, and the size of the evaluation value in the evaluation bar (if it is shown).
 
-   With \code{<F6>}, you can adjust some miscellaneous settings, namely the multiplier for the score when completing a sequence without any mistakes (0.8 by default), the score penalty when making a wrong move (40 by default), the score penalty per hint (20 by default), and the number of animation steps for the evaluation bar (10 by default).
+   With \code{<F6>}, you can adjust some miscellaneous settings, namely the multiplier for the score when completing a sequence without any mistakes (0.8 by default), the score penalty when making a wrong move (40 by default), the score penalty per hint (20 by default), the number of animation steps for the evaluation bar (10 by default), and the time per move for the timed mode (5 seconds by default).
 
    With \code{<F9>}, the FEN of the current position is printed and the position is opened on the \url{https://lichess.org} website for analysis. With \code{Ctrl-<c>}, the FEN is copied to the clipboard (this makes use of the \code{\link[clipr]{write_clip}} function from the \code{clipr} package).
 

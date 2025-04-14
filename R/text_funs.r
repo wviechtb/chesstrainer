@@ -1,4 +1,4 @@
-.text <- function(x, arg) {
+.text <- function(x, arg, arg2) {
 
    lang <- .get("lang")
 
@@ -90,6 +90,18 @@
       return(switch(lang,
                     de = paste0("Pause: ", ifelse(arg, "an", "aus")),
                          paste0("Pause: ", ifelse(arg, "on", "off"))
+   ))}
+
+   if (x == "timed") {
+      return(switch(lang,
+                    de = paste0("Zeitgesteuerter Modus: ", ifelse(arg, "an", "aus")),
+                         paste0("Timed mode: ", ifelse(arg, "on", "off"))
+   ))}
+
+   if (x == "tooslow") {
+      return(switch(lang,
+                    de = paste0("Gespielte Zeit (", arg, " Sekunden) ist langsamer als erlaubte Zeit (", arg2, " Sekunden)."),
+                         paste0("Play time (", arg, " seconds) is slower than permitted time (", arg2, " seconds).")
    ))}
 
    if (x == "showmoves") {
@@ -368,6 +380,12 @@
       return(switch(lang,
                     de = "Gut gemacht! Die n\U000000E4chste Sequenz ...",
                          "Well done! Next sequence ..."
+   ))}
+
+   if (x == "nextseq") {
+      return(switch(lang,
+                    de = "Weiter \U000000FCben! Die n\U000000E4chste Sequenz ...",
+                         "Keep practicing! Next sequence ..."
    ))}
 
    if (x == "noleader") {
@@ -660,8 +678,8 @@
 
    if (x == "explsettings") {
       return(switch(lang,
-                    de = c("Sprache", "Spielername", "Modus", "Aktuelles Sequenzverzeichnis", "Selektionsmodus f\U000000FCr Sequenzen", "Exponentenwert", "Multiplikator f\U000000FCr abgeschlossene Sequenzen", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Bewertungsleiste anzeigen", "Animationsschritte f\U000000FCr die Bewertungsleiste", "Pause zwischen Sequenzen", "Zeit zwischen den Z\U000000FCgen (Sekunden)", "Linienbreite", "Lautst\U000000E4rke (%)", "Fortschrittsdiagramm nach Sequenzen anzeigen", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Stockfish Pfad", "Berechnungstiefe (schnell) f\U000000FCr Stockfish", "Berechnungstiefe (tief) f\U000000FCr Stockfish", "Anzahl der Threads f\U000000FCr Stockfish", "Hashgr\U000000F6\U000000DFe f\U000000FCr Stockfish"),
-                         c("Language", "Player name", "Mode", "Current sequence directory", "Selection mode for sequences", "Exponent value", "Multiplier for completed sequences", "Score penalty for wrong moves", "Score penalty per hint", "Show evaluation bar", "Animation steps for the evaluation bar", "Pause between sequences", "Time between moves (seconds)", "Line width", "Sound volume (%)", "Show progress graph after sequences", "Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Stockfish path", "Calculation depth (fast) for Stockfish", "Calculation depth (deep) for Stockfish", "Number of threads for Stockfish", "Hash size for Stockfish")
+                    de = c("Sprache", "Spielername", "Modus", "Aktuelles Sequenzverzeichnis", "Selektionsmodus f\U000000FCr Sequenzen", "Zeitgesteuerter Modus", "Zeit pro Zug (im zeitgesteuerten Modus)", "Exponentenwert", "Multiplikator f\U000000FCr abgeschlossene Sequenzen", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Bewertungsleiste anzeigen", "Animationsschritte f\U000000FCr die Bewertungsleiste", "Pause zwischen Sequenzen", "Zeit zwischen den Z\U000000FCgen (Sekunden)", "Linienbreite", "Lautst\U000000E4rke (%)", "Fortschrittsdiagramm nach Sequenzen anzeigen", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Stockfish Pfad", "Berechnungstiefe (schnell) f\U000000FCr Stockfish", "Berechnungstiefe (tief) f\U000000FCr Stockfish", "Anzahl der Threads f\U000000FCr Stockfish", "Hashgr\U000000F6\U000000DFe f\U000000FCr Stockfish"),
+                         c("Language", "Player name", "Mode", "Current sequence directory", "Selection mode for sequences", "Timed mode", "Time per move (in timed mode)", "Exponent value", "Multiplier for completed sequences", "Score penalty for wrong moves", "Score penalty per hint", "Show evaluation bar", "Animation steps for the evaluation bar", "Pause between sequences", "Time between moves (seconds)", "Line width", "Sound volume (%)", "Show progress graph after sequences", "Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Stockfish path", "Calculation depth (fast) for Stockfish", "Calculation depth (deep) for Stockfish", "Number of threads for Stockfish", "Hash size for Stockfish")
    ))}
 
    if (x == "comment") {
@@ -830,6 +848,12 @@
       return(switch(lang,
                     de = "Wiederhole die letzte Sequenz ...",
                          "Repeating the last sequence ..."
+   ))}
+
+   if (x == "sequential") {
+      return(switch(lang,
+                    de = "Schalte in den sequenziellen Selektionsmodus ...",
+                         "Switching to the sequential selection mode ..."
    ))}
 
 }

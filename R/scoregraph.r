@@ -19,6 +19,6 @@
 
    getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button, x, y) return(""), onKeybd=function(key) return(""))
 
-   invisible()
+   return()
 
 }

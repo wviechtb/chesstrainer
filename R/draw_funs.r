@@ -699,6 +699,48 @@
 
 }
 
+.drawtimer <- function(movestoplay, movesplayed, timetotal, timepermove, clear=FALSE) {
+
+   col.bg        <- .get("col.bg")
+   col.square.be <- .get("col.square.be")
+
+   xpos <- 9.4
+   indsize <- 0.25
+
+   if (clear) {
+      rect(xpos, 1, xpos+indsize, 9, border=col.bg, col=col.bg, lwd=6)
+      return()
+   }
+
+   hlines <- seq(1, 9, length.out=movestoplay+1)
+
+   timepermitted <- timepermove * movestoplay
+   prop   <- min(0.99, timetotal / timepermitted)
+   intime <- timetotal <= movesplayed * timepermove
+   top    <- 9 - 8*prop
+   pos.top.hlines <- movestoplay-movesplayed+1
+
+   rect(xpos, max(hlines[pos.top.hlines],top), xpos+indsize, 9, col=col.bg, border=col.square.be)
+
+   #segments(xpos, hlines[(pos.top.hlines):(movestoplay+1)], xpos+indsize, hlines[(pos.top.hlines):(movestoplay+1)], col=col.square.be, lwd=2)
+   #segments(xpos, hlines[1:(pos.top.hlines)], xpos+indsize, hlines[1:(pos.top.hlines)], col=col.bg, lwd=2)
+
+   rect(xpos, 1, xpos+indsize, hlines[pos.top.hlines], border=NA, col=col.square.be)
+
+   # draw the progress rectangle in the appropriate color
+   if (intime) {
+      rect(xpos, 1, xpos+indsize, top, border=NA, col="#008000")
+   } else {
+      rect(xpos, 1, xpos+indsize, top, border=NA, col="#800000")
+   }
+
+   #segments(xpos, hlines, xpos+indsize, hlines, col=col.square.be, lwd=2)
+
+   # outline
+   rect(xpos, 1, xpos+indsize, 9, border=col.square.be, lwd=2)
+
+}
+
 .clearsideindicator <- function(adj=0) {
 
    indsize <- 0.25
@@ -725,12 +767,6 @@
 
    if (length(val) == 0L)
       return()
-
-   #if (is.na(val)) {
-   #   cols <- col2rgb(col.bg)
-   #   rect(xpos, 1, xpos+indsize, 9, border=NA, col=rgb(cols[1], cols[2], cols[3], 120, maxColorValue=255))
-   #   return()
-   #}
 
    col.fg <- .get("col.fg")
    col.side.w <- .get("col.side.w")
@@ -799,14 +835,18 @@
 
 }
 
-.redrawall <- function(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode) {
+.redrawall <- function(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove) {
 
    .drawboard(pos, flip)
    .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
    .texttop(texttop)
-   .drawsideindicator(sidetoplay, flip)
+   if (mode == "play" && timed) {
+      .drawtimer(movestoplay, movesplayed, timetotal, timepermove)
+   } else {
+      .drawsideindicator(sidetoplay, flip)
+   }
 
-   invisible()
+   return()
 
 }
 

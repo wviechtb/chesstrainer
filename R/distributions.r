@@ -3,7 +3,7 @@
    n <- length(scores)
 
    if (n == 1L)
-      return(invisible())
+      return()
 
    par(xpd=FALSE)
 
@@ -76,6 +76,6 @@
 
    getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button, x, y) return(""), onKeybd=function(key) return(""))
 
-   invisible()
+   return()
 
 }
