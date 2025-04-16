@@ -117,7 +117,7 @@
 
    The trainer plays various sounds (when playing moves, when capturing pieces, when making a wrong move, or when completing a sequence). This may or may not work depending on your operating system and configuration. See the \code{\link{playsound}} function for further details.
 
-   % The sound volume can be decreased/increased with the \code{<[>} and \code{<]>} keys. If the sound is not working, setting the volume to 0 disables the sound. This can also be useful if playing sounds adds too much lag.
+   The sound volume can be decreased/increased with the \code{<[>} and \code{<]>} keys. If the sound is not working, setting the volume to 0 disables the sound. This can also be useful if playing sounds adds too much lag.
 
 }
 \section{Position Evaluations via Stockfish}{
