@@ -637,6 +637,34 @@
 .drawsquare <- function(x, y, col=ifelse(.is.even(x+y), .get("col.square.d"), .get("col.square.l")))
    rect(y, x, y+1, x+1, col=col, border=NA)
 
+.rmannot <- function(pos, circles, arrows, flip) {
+
+   oldpos <- pos
+
+   if (nrow(circles) >= 1L) {
+      if (flip) {
+         oldpos[9-circles[,1], 9-circles[,2]] <- "x"
+      } else {
+         oldpos[circles[,1], circles[,2]] <- "x"
+      }
+   }
+
+   if (nrow(arrows) >= 1L) {
+      if (flip) {
+         for (j in 1:nrow(arrows)) {
+            oldpos[9-arrows[j,1]:arrows[j,3], 9-arrows[j,2]:arrows[j,4]] <- "x"
+         }
+      } else {
+         for (j in 1:nrow(arrows)) {
+            oldpos[arrows[j,1]:arrows[j,3], arrows[j,2]:arrows[j,4]] <- "x"
+         }
+      }
+   }
+
+   .redrawpos(pos, oldpos, flip=flip)
+
+}
+
 .texttop <- function(txt, sleep=0) {
 
    if (length(txt) == 0L)
