@@ -1274,6 +1274,13 @@ play <- function(lang="en", sfpath="", ...) {
                   }
                   .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                } else {
+                  if (nrow(circles) >= 1L || nrow(arrows) >= 1L || nrow(harrows) >= 1L) {
+                     .rmannot(pos, circles, rbind(arrows, harrows), flip)
+                     if (nrow(circles) >= 1L)
+                        apply(circles, 1, function(x) .drawcircle(x[1], x[2], lwd=lwd))
+                     if (nrow(arrows) >= 1L)
+                        apply(arrows, 1, function(x) .drawarrow(x[1], x[2], x[3], x[4], lwd=lwd))
+                  }
                   if (i == 1 && is.na(evalval)) {
                      fen <- .genfen(pos, flip, sidetoplay, i)
                      tmp <- .sf.eval(sfproc, sfrun, depth1, fen, sidetoplay, verbose)
@@ -1301,7 +1308,6 @@ play <- function(lang="en", sfpath="", ...) {
                      #.addrect(hintx2, hinty2, col=.get("col.hint"), lwd=lwd)
                      #givehint1 <- TRUE
                      #givehint2 <- TRUE
-                     #hintarrow <- TRUE
                   } else {
                      .texttop(.text("nobestmove"), sleep=0.75)
                      .texttop(" ")
@@ -1811,9 +1817,12 @@ play <- function(lang="en", sfpath="", ...) {
                .printhelp(lwd=lwd)
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
-               circles <- matrix(nrow=0, ncol=2)
-               arrows  <- matrix(nrow=0, ncol=4)
-               harrows <- matrix(nrow=0, ncol=4)
+               if (nrow(circles) >= 1L)
+                  apply(circles, 1, function(x) .drawcircle(x[1], x[2], lwd=lwd))
+               if (nrow(arrows) >= 1L)
+                  apply(arrows, 1, function(x) .drawarrow(x[1], x[2], x[3], x[4], lwd=lwd))
+               if (nrow(harrows) >= 1L)
+                  apply(harrows, 1, function(x) .drawarrow(x[1], x[2], x[3], x[4], lwd=lwd, col=adjustcolor(.get("col.best"), alpha.f=0.5)))
                next
             }
 
@@ -1824,9 +1833,12 @@ play <- function(lang="en", sfpath="", ...) {
                .leaderboard(seqdir[seqdirpos], files, lwd)
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
-               circles <- matrix(nrow=0, ncol=2)
-               arrows  <- matrix(nrow=0, ncol=4)
-               harrows <- matrix(nrow=0, ncol=4)
+               if (nrow(circles) >= 1L)
+                  apply(circles, 1, function(x) .drawcircle(x[1], x[2], lwd=lwd))
+               if (nrow(arrows) >= 1L)
+                  apply(arrows, 1, function(x) .drawarrow(x[1], x[2], x[3], x[4], lwd=lwd))
+               if (nrow(harrows) >= 1L)
+                  apply(harrows, 1, function(x) .drawarrow(x[1], x[2], x[3], x[4], lwd=lwd, col=adjustcolor(.get("col.best"), alpha.f=0.5)))
                next
             }
 
@@ -1851,9 +1863,12 @@ play <- function(lang="en", sfpath="", ...) {
                eval(expr=switch2)
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
-               circles <- matrix(nrow=0, ncol=2)
-               arrows  <- matrix(nrow=0, ncol=4)
-               harrows <- matrix(nrow=0, ncol=4)
+               if (nrow(circles) >= 1L)
+                  apply(circles, 1, function(x) .drawcircle(x[1], x[2], lwd=lwd))
+               if (nrow(arrows) >= 1L)
+                  apply(arrows, 1, function(x) .drawarrow(x[1], x[2], x[3], x[4], lwd=lwd))
+               if (nrow(harrows) >= 1L)
+                  apply(harrows, 1, function(x) .drawarrow(x[1], x[2], x[3], x[4], lwd=lwd, col=adjustcolor(.get("col.best"), alpha.f=0.5)))
                cols <- sapply(cols.all, function(x) .get(x))
                saveRDS(cols, file=file.path(configdir, "colors.rds"))
                next
@@ -1867,9 +1882,12 @@ play <- function(lang="en", sfpath="", ...) {
                eval(expr=switch2)
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
-               circles <- matrix(nrow=0, ncol=2)
-               arrows  <- matrix(nrow=0, ncol=4)
-               harrows <- matrix(nrow=0, ncol=4)
+               if (nrow(circles) >= 1L)
+                  apply(circles, 1, function(x) .drawcircle(x[1], x[2], lwd=lwd))
+               if (nrow(arrows) >= 1L)
+                  apply(arrows, 1, function(x) .drawarrow(x[1], x[2], x[3], x[4], lwd=lwd))
+               if (nrow(harrows) >= 1L)
+                  apply(harrows, 1, function(x) .drawarrow(x[1], x[2], x[3], x[4], lwd=lwd, col=adjustcolor(.get("col.best"), alpha.f=0.5)))
                cex.top <- .get("cex.top")
                cex.bot <- .get("cex.bot")
                cex.eval <- .get("cex.eval")
@@ -1965,9 +1983,12 @@ play <- function(lang="en", sfpath="", ...) {
                .distributions(scores.selected, played.selected, dayslp.selected, lwd, multiplier)
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
-               circles <- matrix(nrow=0, ncol=2)
-               arrows  <- matrix(nrow=0, ncol=4)
-               harrows <- matrix(nrow=0, ncol=4)
+               if (nrow(circles) >= 1L)
+                  apply(circles, 1, function(x) .drawcircle(x[1], x[2], lwd=lwd))
+               if (nrow(arrows) >= 1L)
+                  apply(arrows, 1, function(x) .drawarrow(x[1], x[2], x[3], x[4], lwd=lwd))
+               if (nrow(harrows) >= 1L)
+                  apply(harrows, 1, function(x) .drawarrow(x[1], x[2], x[3], x[4], lwd=lwd, col=adjustcolor(.get("col.best"), alpha.f=0.5)))
                next
             }
 
@@ -2098,7 +2119,7 @@ play <- function(lang="en", sfpath="", ...) {
             arrows <- rbind(arrows, c(click1.x, click1.y, click2.x, click2.y))
             drawcircles  <- FALSE # to prevent circles from being redrawn
             drawarrows   <- FALSE # to prevent arrows from being redrawn
-            showstartcom <- FALSE # to prevent the start comment being shown again
+            showstartcom <- FALSE # to prevent the start comment from being shown again
             next
          }
 
