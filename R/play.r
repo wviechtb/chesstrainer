@@ -81,7 +81,8 @@ play <- function(lang="en", sfpath="", ...) {
 
    cols.all <- c("col.bg", "col.fg", "col.square.l", "col.square.d", "col.square.be",
                  "col.top", "col.bot", "col.help", "col.help.border",
-                 "col.hint", "col.best", "col.wrong", "col.rect", "col.annot", "col.side.w", "col.side.b")
+                 "col.hint", "col.best", "col.wrong", "col.rect", "col.annot",
+                 "col.side.w", "col.side.b", "col.time.fast", "col.time.slow")
 
    # create config directory and read/save settings and colors
 

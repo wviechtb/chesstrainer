@@ -734,6 +734,8 @@
 
    col.bg        <- .get("col.bg")
    col.square.be <- .get("col.square.be")
+   col.time.fast <- .get("col.time.fast")
+   col.time.slow <- .get("col.time.slow")
 
    xpos <- 9.4
    indsize <- 0.25
@@ -760,9 +762,9 @@
 
    # draw the progress rectangle in the appropriate color
    if (intime) {
-      rect(xpos, 1, xpos+indsize, top, border=NA, col="#008000")
+      rect(xpos, 1, xpos+indsize, top, border=NA, col=col.time.fast)
    } else {
-      rect(xpos, 1, xpos+indsize, top, border=NA, col="#800000")
+      rect(xpos, 1, xpos+indsize, top, border=NA, col=col.time.slow)
    }
 
    #segments(xpos, hlines, xpos+indsize, hlines, col=col.square.be, lwd=2)
