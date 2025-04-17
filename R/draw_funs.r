@@ -591,7 +591,12 @@
 .drawcircle <- function(x, y, lwd)
    symbols(y+0.5, x+0.5, circles=0.45, inches=FALSE, lwd=lwd+2, fg=.get("col.annot"), add=TRUE)
 
-.drawarrow <- function(x1, y1, x2, y2, lwd) {
+.drawarrow <- function(y1, x1, y2, x2, lwd, col=.get("col.annot")) {
+
+   x1 <- x1 + 0.5
+   y1 <- y1 + 0.5
+   x2 <- x2 + 0.5
+   y2 <- y2 + 0.5
 
    length <- min(max(0.25, lwd*4*0.015), 0.45)
    width  <- min(max(0.15, lwd*4*0.010), 0.40)
@@ -627,10 +632,8 @@
       y5 <- y3 + width/sqrt(1+slp^2)
    }
 
-   col.annot <- .get("col.annot")
-
-   segments(x1, y1, x3, y3, col=col.annot, lwd=lwd*4, lend=1)
-   polygon(c(x4,x5,x2),c(y4,y5,y2), col=col.annot, border=col.annot)
+   segments(x1, y1, x3, y3, col=col, lwd=lwd*4, lend=1)
+   polygon(c(x4,x5,x2),c(y4,y5,y2), col=col, border=NA)
 
 }
 

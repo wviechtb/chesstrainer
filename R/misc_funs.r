@@ -130,3 +130,95 @@
    return(x)
 
 }
+
+.parsesfmove <- function(move, pos, flip, evalval) {
+
+   lang <- .get("lang")
+
+   move <- strsplit(move, "")[[1]]
+
+   if (flip) {
+      letters8 <- letters[8:1]
+      x1 <- as.numeric(which(move[2] == 8:1))
+      y1 <- as.numeric(which(move[1] == letters8))
+      x2 <- as.numeric(which(move[4] == 8:1))
+      y2 <- as.numeric(which(move[3] == letters8))
+      piece <- substr(pos[9-x1,9-y1], 2, 2)
+   } else {
+      letters8 <- letters[1:8]
+      x1 <- as.numeric(which(move[2] == 1:8))
+      y1 <- as.numeric(which(move[1] == letters8))
+      x2 <- as.numeric(which(move[4] == 1:18))
+      y2 <- as.numeric(which(move[3] == letters8))
+      piece <- substr(pos[x1,y1], 2, 2)
+   }
+
+   # check for rochade
+
+   rochade <- ""
+
+   if (flip) {
+      if (identical(c(x1,y1), c(9-1,9-5)) && pos[9-x1,9-y1] == "WK" && identical(c(x2,y2), c(9-1,9-7)))
+         rochade <- "0-0"
+      if (identical(c(x1,y1), c(9-1,9-5)) && pos[9-x1,9-y1] == "WK" && identical(c(x2,y2), c(9-1,9-3)))
+         rochade <- "0-0-0"
+      if (identical(c(x1,y1), c(9-8,9-5)) && pos[9-x1,9-y1] == "BK" && identical(c(x2,y2), c(9-8,9-7)))
+         rochade <- "0-0"
+      if (identical(c(x1,y1), c(9-8,9-5)) && pos[9-x1,9-y1] == "BK" && identical(c(x2,y2), c(9-8,9-3)))
+         rochade <- "0-0-0"
+   } else {
+      if (identical(c(x1,y1), c(1,5)) && pos[x1,y1] == "WK" && identical(c(x2,y2), c(1,7)))
+         rochade <- "0-0"
+      if (identical(c(x1,y1), c(1,5)) && pos[x1,y1] == "WK" && identical(c(x2,y2), c(1,3)))
+         rochade <- "0-0-0"
+      if (identical(c(x1,y1), c(8,5)) && pos[x1,y1] == "BK" && identical(c(x2,y2), c(8,7)))
+         rochade <- "0-0"
+      if (identical(c(x1,y1), c(8,5)) && pos[x1,y1] == "BK" && identical(c(x2,y2), c(8,3)))
+         rochade <- "0-0-0"
+   }
+
+   # check if a piece was captured (either the target square is not empty or a pawn moved diagonally)
+
+   if (flip) {
+      iscapture <- pos[9-x2,9-y2] != "" || (piece == "P" && y1 != y2)
+   } else {
+      iscapture <- pos[x2,y2] != "" || (piece == "P" && y1 != y2)
+   }
+
+   # check for pawn promotion
+
+   if (length(move) == 5L) {
+      promotiontxt <- paste0("=", toupper(move[5]))
+   } else {
+      promotiontxt <- ""
+   }
+
+   # construct the move text in long algebraic notation
+
+   if (identical(rochade, "")) {
+      txt <- paste0(piece, move[1], move[2], ifelse(iscapture, "x", "-"), move[3], move[4], promotiontxt, collapse="")
+   } else {
+      txt <- rochade
+   }
+
+   # rename pieces for other languages
+
+   if (lang == "de") {
+      txt <- sub("Q", "D", txt, fixed=TRUE)
+      txt <- sub("B", "L", txt, fixed=TRUE)
+      txt <- sub("N", "S", txt, fixed=TRUE)
+      txt <- sub("R", "T", txt, fixed=TRUE)
+   }
+
+   # remove P for pawns
+
+   txt <- sub("P", "", txt, fixed=TRUE)
+
+   # add evaluation
+
+   evalval <- formatC(evalval, format="f", digits=1, flag="+")
+   txt <- paste0(txt, " (", evalval, ")", collapse="")
+
+   return(txt)
+
+}
