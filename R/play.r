@@ -38,6 +38,8 @@ play <- function(lang="en", sfpath="", ...) {
    cex.eval    <- ifelse(is.null(ddd[["cex.eval"]]),    0.5,            ddd[["cex.eval"]])
    depth1      <- ifelse(is.null(ddd[["depth1"]]),      20,             ddd[["depth1"]])
    depth2      <- ifelse(is.null(ddd[["depth2"]]),      30,             ddd[["depth2"]])
+   multipv1    <- ifelse(is.null(ddd[["multipv1"]]),    1,              ddd[["multipv1"]])
+   multipv2    <- ifelse(is.null(ddd[["multipv2"]]),    1,              ddd[["multipv2"]])
    threads     <- ifelse(is.null(ddd[["threads"]]),     1,              ddd[["threads"]])
    hash        <- ifelse(is.null(ddd[["hash"]]),        256,            ddd[["hash"]])
 
@@ -75,6 +77,8 @@ play <- function(lang="en", sfpath="", ...) {
    cex.eval[cex.eval < 0.1] <- 0.1
    depth1[depth1 < 1] <- 1
    depth2[depth2 < 1] <- 1
+   multipv1[multipv1 < 1] <- 1
+   multipv2[multipv2 < 1] <- 1
    hash[hash < 16] <- 16
 
    verbose <- isTRUE(ddd$verbose)
@@ -97,7 +101,7 @@ play <- function(lang="en", sfpath="", ...) {
                        selmode=selmode, timed=timed, timepermove=timepermove, expval=expval, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint,
                        eval=eval, evalsteps=evalsteps, pause=pause, sleep=sleep, lwd=lwd, volume=volume, showgraph=showgraph,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval,
-                       sfpath=sfpath, depth1=depth1, depth2=depth2, threads=threads, hash=hash)
+                       sfpath=sfpath, depth1=depth1, depth2=depth2, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       cols <- sapply(cols.all, function(x) .get(x))
       saveRDS(cols, file=file.path(configdir, "colors.rds"))
@@ -157,6 +161,10 @@ play <- function(lang="en", sfpath="", ...) {
             depth1 <- settings[["depth1"]]
          if (is.null(mc[["depth2"]]))
             depth2 <- settings[["depth2"]]
+         if (is.null(mc[["multipv1"]]))
+            multipv1 <- settings[["multipv1"]]
+         if (is.null(mc[["multipv2"]]))
+            multipv2 <- settings[["multipv2"]]
          if (is.null(mc[["threads"]]))
             threads <- settings[["threads"]]
          if (is.null(mc[["hash"]]))
@@ -167,7 +175,7 @@ play <- function(lang="en", sfpath="", ...) {
                        selmode=selmode, timed=timed, timepermove=timepermove, expval=expval, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint,
                        eval=eval, evalsteps=evalsteps, pause=pause, sleep=sleep, lwd=lwd, volume=volume, showgraph=showgraph,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval,
-                       sfpath=sfpath, depth1=depth1, depth2=depth2, threads=threads, hash=hash)
+                       sfpath=sfpath, depth1=depth1, depth2=depth2, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       if (file.exists(file.path(configdir, "colors.rds"))) {
          cols <- readRDS(file.path(configdir, "colors.rds"))
@@ -1243,12 +1251,11 @@ play <- function(lang="en", sfpath="", ...) {
             if (mode == "add" && identical(click, "H") && !is.null(sfproc) && sfrun) {
                fen <- .genfen(pos, flip, sidetoplay, i)
                .texttop(.text("sfdeepeval"))
-               tmp <- .sf.eval(sfproc, sfrun, depth2, fen, sidetoplay, verbose, progbar=TRUE)
+               tmp <- .sf.eval(sfproc, sfrun, depth2, multipv2, fen, sidetoplay, verbose, progbar=TRUE)
                evalval  <- tmp$eval
                bestmove <- tmp$bestmove
                sfproc   <- tmp$sfproc
                sfrun    <- tmp$sfrun
-               #.draweval(evalval, sub$moves$eval[i-1], flip=flip, eval=eval, evalsteps=evalsteps)
                playsound(system.file("sounds", "complete.ogg", package="chesstrainer"), volume=volume)
                click <- "h"
             }
@@ -1282,33 +1289,37 @@ play <- function(lang="en", sfpath="", ...) {
                      if (nrow(arrows) >= 1L)
                         apply(arrows, 1, function(x) .drawarrow(x[1], x[2], x[3], x[4], lwd=lwd))
                   }
-                  if (i == 1 && is.na(evalval)) {
+                  if (i == 1 && is.na(evalval[1])) {
                      fen <- .genfen(pos, flip, sidetoplay, i)
-                     tmp <- .sf.eval(sfproc, sfrun, depth1, fen, sidetoplay, verbose)
+                     tmp <- .sf.eval(sfproc, sfrun, depth1, multipv1, fen, sidetoplay, verbose)
                      evalval  <- tmp$eval
                      bestmove <- tmp$bestmove
                      sfproc   <- tmp$sfproc
                      sfrun    <- tmp$sfrun
                   }
-                  if (!identical(bestmove, "")) {
-                     bestmovetxt <- .parsesfmove(bestmove, pos, flip, evalval)
-                     .texttop(.text("bestmove", bestmovetxt))
-                     hintx1 <- as.numeric(substr(bestmove, 2, 2))
-                     hinty1 <- which(letters[1:8] == substr(bestmove, 1, 1))
-                     hintx2 <- as.numeric(substr(bestmove, 4, 4))
-                     hinty2 <- which(letters[1:8] == substr(bestmove, 3, 3))
-                     if (flip) {
-                        hintx1 <- 9 - hintx1
-                        hinty1 <- 9 - hinty1
-                        hintx2 <- 9 - hintx2
-                        hinty2 <- 9 - hinty2
+                  if (any(bestmove != "")) {
+                     nmoves <- length(bestmove)
+                     bestmovetxt <- c()
+                     for (j in 1:nmoves) {
+                        if (bestmove[j] == "")
+                           next
+                        bestmovetxt <- c(bestmovetxt, .parsesfmove(bestmove[j], pos, flip, evalval[j]))
+                        bestx1 <- as.numeric(substr(bestmove[j], 2, 2))
+                        besty1 <- which(letters[1:8] == substr(bestmove[j], 1, 1))
+                        bestx2 <- as.numeric(substr(bestmove[j], 4, 4))
+                        besty2 <- which(letters[1:8] == substr(bestmove[j], 3, 3))
+                        if (flip) {
+                           bestx1 <- 9 - bestx1
+                           besty1 <- 9 - besty1
+                           bestx2 <- 9 - bestx2
+                           besty2 <- 9 - besty2
+                        }
+                        harrows <- rbind(harrows, c(bestx1, besty1, bestx2, besty2))
+                        .drawarrow(bestx1, besty1, bestx2, besty2, lwd, col=adjustcolor(.get("col.best"), alpha.f=sqrt((nmoves+1-j)/nmoves)*0.6))
                      }
-                     harrows <- rbind(harrows, c(hintx1, hinty1, hintx2, hinty2))
-                     .drawarrow(hintx1, hinty1, hintx2, hinty2, lwd, col=adjustcolor(.get("col.best"), alpha.f=0.5))
-                     #.addrect(hintx1, hinty1, col=.get("col.hint"), lwd=lwd)
-                     #.addrect(hintx2, hinty2, col=.get("col.hint"), lwd=lwd)
-                     #givehint1 <- TRUE
-                     #givehint2 <- TRUE
+                     if (nmoves > 1L)
+                        bestmovetxt <- paste0(seq_along(bestmovetxt), ": ", bestmovetxt)
+                     .texttop(paste0(bestmovetxt, collapse="\n"), pos=4, xpos=4.1)
                   } else {
                      .texttop(.text("nobestmove"), sleep=0.75)
                      .texttop(" ")
@@ -1381,9 +1392,9 @@ play <- function(lang="en", sfpath="", ...) {
                      .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                      .drawsideindicator(sidetoplay, flip)
                      fen <- .genfen(pos, flip, sidetoplay, i)
-                     tmp <- .sf.eval(sfproc, sfrun, depth1, fen, sidetoplay, verbose)
-                     evalval  <- tmp$eval
-                     bestmove <- tmp$bestmove
+                     tmp <- .sf.eval(sfproc, sfrun, depth1, multipv1, fen, sidetoplay, verbose)
+                     evalval  <- tmp$eval[1]
+                     bestmove <- tmp$bestmove[1]
                      sfproc   <- tmp$sfproc
                      sfrun    <- tmp$sfrun
                   }
@@ -1472,9 +1483,9 @@ play <- function(lang="en", sfpath="", ...) {
                .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                .drawsideindicator(sidetoplay, flip)
                fen <- .genfen(pos, flip, sidetoplay, i)
-               tmp <- .sf.eval(sfproc, sfrun, depth1, fen, sidetoplay, verbose)
-               evalval  <- tmp$eval
-               bestmove <- tmp$bestmove
+               tmp <- .sf.eval(sfproc, sfrun, depth1, multipv1, fen, sidetoplay, verbose)
+               evalval  <- tmp$eval[1]
+               bestmove <- tmp$bestmove[1]
                sfproc   <- tmp$sfproc
                sfrun    <- tmp$sfrun
                next
@@ -1723,7 +1734,7 @@ play <- function(lang="en", sfpath="", ...) {
                .texttop(.text("eval", eval), sleep=0.5)
                if (eval) {
                   if (mode == "add") {
-                     .draweval(evalval, 0, flip=flip, eval=eval, evalsteps=evalsteps)
+                     .draweval(evalval[1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                   } else {
                      .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                   }
@@ -1779,12 +1790,12 @@ play <- function(lang="en", sfpath="", ...) {
                      sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                      .drawsideindicator(sidetoplay, flip)
                      fen <- .genfen(pos, flip, sidetoplay, i)
-                     tmp <- .sf.eval(sfproc, sfrun, depth2, fen, sidetoplay, verbose, progbar=TRUE)
+                     tmp <- .sf.eval(sfproc, sfrun, depth2, multipv1, fen, sidetoplay, verbose, progbar=TRUE)
                      evalval  <- tmp$eval
                      bestmove <- tmp$bestmove
                      sfproc   <- tmp$sfproc
                      sfrun    <- tmp$sfrun
-                     sub$moves$eval[i] <- evalval
+                     sub$moves$eval[i] <- evalval[1]
                      sub$moves$fen[i] <- fen
                      .draweval(sub$moves$eval[i], sub$moves$eval[i-1], flip=flip, eval=eval, evalsteps=evalsteps)
                   }
@@ -1847,7 +1858,7 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (identical(click, "F3")) {
                eval(expr=switch1)
-               tab <- data.frame(lang, player, mode, seqdir=seqdir[seqdirpos], selmode, timed, timepermove, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, pause, sleep, lwd, volume, showgraph, cex.top, cex.bot, cex.eval, sfpath, depth1, depth2, threads, hash)
+               tab <- data.frame(lang, player, mode, seqdir=seqdir[seqdirpos], selmode, timed, timepermove, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, pause, sleep, lwd, volume, showgraph, cex.top, cex.bot, cex.eval, sfpath, depth1, depth2, multipv1, multipv2, threads, hash)
                tab <- t(tab)
                tab <- cbind(tab, .text("explsettings"))
                colnames(tab) <- c("", "")
@@ -1923,20 +1934,24 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (identical(click, "F7")) {
                eval(expr=switch1)
-               tmp <- .sfsettings(sfproc, sfrun, sfpath, depth1, depth2, threads, hash)
+               tmp <- .sfsettings(sfproc, sfrun, sfpath, depth1, depth2, multipv1, multipv2, threads, hash)
                eval(expr=switch2)
-               sfproc  <- tmp$sfproc
-               sfrun   <- tmp$sfrun
-               sfpath  <- tmp$sfpath
-               depth1  <- tmp$depth1
-               depth2  <- tmp$depth2
-               threads <- tmp$threads
-               hash    <- tmp$hash
-               settings$sfpath  <- sfpath
-               settings$depth1  <- depth1
-               settings$depth2  <- depth2
-               settings$threads <- threads
-               settings$hash    <- hash
+               sfproc   <- tmp$sfproc
+               sfrun    <- tmp$sfrun
+               sfpath   <- tmp$sfpath
+               depth1   <- tmp$depth1
+               depth2   <- tmp$depth2
+               multipv1 <- tmp$multipv1
+               multipv2 <- tmp$multipv2
+               threads  <- tmp$threads
+               hash     <- tmp$hash
+               settings$sfpath   <- sfpath
+               settings$depth1   <- depth1
+               settings$depth2   <- depth2
+               settings$multipv1 <- multipv1
+               settings$multipv2 <- multipv2
+               settings$threads  <- threads
+               settings$hash     <- hash
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
@@ -2346,13 +2361,13 @@ play <- function(lang="en", sfpath="", ...) {
          if (mode == "add") {
 
             fen <- .genfen(pos, flip, sidetoplay, i)
-            evalvallast <- evalval
-            tmp <- .sf.eval(sfproc, sfrun, depth1, fen, sidetoplay, verbose)
+            evalvallast <- evalval[1]
+            tmp <- .sf.eval(sfproc, sfrun, depth1, multipv1, fen, sidetoplay, verbose)
             evalval  <- tmp$eval
             bestmove <- tmp$bestmove
             sfproc   <- tmp$sfproc
             sfrun    <- tmp$sfrun
-            .draweval(evalval, evalvallast, flip=flip, eval=eval, evalsteps=evalsteps)
+            .draweval(evalval[1], evalvallast, flip=flip, eval=eval, evalsteps=evalsteps)
 
             # in add move, add the current move to sub
 
@@ -2362,7 +2377,7 @@ play <- function(lang="en", sfpath="", ...) {
                sub$moves$arrows <- ""
             if (is.null(sub$moves$fen))
                sub$moves$fen <- ""
-            sub$moves <- rbind(sub$moves, data.frame(x1=click1.x, y1=click1.y, x2=click2.x, y2=click2.y, show=show, move=attr(pos,"move"), eval=evalval, comment=comment, circles=circlesvar, arrows=arrowsvar, fen=fen))
+            sub$moves <- rbind(sub$moves, data.frame(x1=click1.x, y1=click1.y, x2=click2.x, y2=click2.y, show=show, move=attr(pos,"move"), eval=evalval[1], comment=comment, circles=circlesvar, arrows=arrowsvar, fen=fen))
             comment <- ""
 
          } else {

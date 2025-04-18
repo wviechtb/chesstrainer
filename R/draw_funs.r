@@ -668,7 +668,7 @@
 
 }
 
-.texttop <- function(txt, sleep=0) {
+.texttop <- function(txt, sleep=0, pos=NULL, xpos=NULL) {
 
    if (length(txt) == 0L)
       return()
@@ -678,6 +678,9 @@
    ybottom <- 9.2
    ytop    <- grconvertY(dev.size()[2], from="inches", to="user")-0.2
    xcenter <- (xleft + xright) / 2
+
+   if (!is.null(xpos))
+      xcenter <- xpos
 
    rect(xleft, ybottom-0.2, xright, ytop+0.2, col=.get("col.bg"), border=NA)
 
@@ -693,7 +696,7 @@
                   length.out = length(txt))
       col.top <- .get("col.top")
       for (i in seq_along(txt)) {
-         text(x=xcenter, y=ypos[i], labels=txt[i], cex=cex, col=col.top)
+         text(x=xcenter, y=ypos[i], labels=txt[i], cex=cex, col=col.top, pos=pos)
       }
    }
 

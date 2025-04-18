@@ -1,4 +1,4 @@
-# chesstrainer 0.9-48 (2025-04-17)
+# chesstrainer 0.9-49 (2025-04-18)
 
 - can play en passant
 - can promote pawns
@@ -24,6 +24,8 @@
 - sequences now also save the FEN for each move; can use this to select sequences
 - sequences can have a start and/or end comment now
 - can now add, remove, and select sequence directories with `<F8>`
+- can now evaluate multiple principal variations with Stockfish
+- added a 'timed' mode
 
 # chesstrainer 0.1-0 (2024-12-17)
 

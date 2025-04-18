@@ -45,7 +45,7 @@
 
    sfproc$write_input(paste0("setoption name Threads value ", threads, "\n"))
    Sys.sleep(0.2)
-   sfproc$write_input(paste0("setoption name Hash value 256\n"))
+   sfproc$write_input(paste0("setoption name Hash value ", hash, "\n"))
    Sys.sleep(0.2)
    return()
 
@@ -80,21 +80,28 @@
 
 }
 
-.sf.eval <- function(sfproc, sfrun, depth, fen, sidetoplay, verbose, progbar=FALSE) {
+.sf.eval <- function(sfproc, sfrun, depth, multipv, fen, sidetoplay, verbose, progbar=FALSE) {
 
    sfout    <- NULL
-   eval     <- NA_real_
-   bestmove <- ""
-   mate     <- NA_real_
-   cp       <- NA_real_
+   eval     <- rep(NA_real_, multipv)
+   bestmove <- rep("", multipv)
    alive    <- TRUE
 
    if (progbar)
       col.top <- .get("col.top")
 
+   olddepth <- 0
+
+   if (progbar) {
+      rect(1, 9.3, 9, 9.4, col=NA, border=col.top)
+      segments(seq(1,9,length.out=depth+1), 9.3, seq(1,9,length.out=depth+1), 9.4, col=adjustcolor(col.top, alpha.f=0.4))
+   }
+
    if (sfrun) {
 
       .sf.newgame(sfproc, sfrun)
+      sfproc$write_input(paste0("setoption name MultiPV value ", multipv, "\n"))
+      Sys.sleep(0.1)
       sfproc$write_input(paste("position fen", fen, "\n"))
       sfproc$write_input(paste0("go depth ", depth, "\n"))
 
@@ -106,50 +113,27 @@
                cat(.text("sfsegfault", sfrun))
                break
             }
-            sfout <- c(sfout, sfproc$read_output_lines())
+            sfoutnew <- sfproc$read_output_lines()
+            if (length(sfoutnew) == 0L)
+               next
+            if (verbose)
+               sapply(sfoutnew, function(x) cat(x, "\n"))
+            sfout <- c(sfout, sfoutnew)
             if (progbar) {
-               curdepth <- grep("info depth", sfout, fixed=TRUE)
+               curdepth <- grep("info depth ", sfout, fixed=TRUE)
                if (length(curdepth) >= 1L) {
                   curdepth <- max(curdepth)
-                  curdepth <- strsplit(sfout[curdepth], " ", fixed=TRUE)[[1]][3]
+                  curdepth <- strsplit(sfout[curdepth], " ", fixed=TRUE)[[1]][3] # get <number> from 'info depth <number> ...'
                   curdepth <- as.numeric(curdepth)
-                  rect(1, 9.3, 9, 9.4, col=NA, border=col.top)
-                  rect(1, 9.3, max(1,curdepth/depth*8.9), 9.4, col=col.top, border=NA)
+                  if (curdepth > olddepth) {
+                     rect(1, 9.3, 1+curdepth/depth*8, 9.4, col=col.top, border=NA)
+                     olddepth <- curdepth
+                  }
                }
             }
-            if (any(grepl("bestmove", sfout, fixed=TRUE))) {
-               movepos <- grep("bestmove", sfout, fixed=TRUE)
-               bestmove <- strsplit(sfout[movepos], " ", fixed=TRUE)[[1]][2]
-               cppos <- grep("score cp", sfout, fixed=TRUE)
-               if (length(cppos) >= 1L) {
-                  sflast <- sfout[max(cppos)]
-                  cp <- strcapture("score cp ([-]*[[:digit:]]+)", sflast, data.frame(x=numeric()))$x
-               } else {
-                  cp <- NA_real_
-               }
-               matepos <- grep("score mate", sfout, fixed=TRUE)
-               if (length(matepos) >= 1L) {
-                  sflast <- sfout[max(matepos)]
-                  mate <- strcapture("score mate ([-]*[[:digit:]]+)", sflast, data.frame(x=numeric()))$x
-               } else {
-                  mate <- NA_real_
-               }
+            if (any(grepl("bestmove ", sfout, fixed=TRUE))) # when we see 'bestmove <move>', then Stockfish is done
                break
-            }
          }
-
-         if (!is.na(mate)) {
-            if (identical(mate, 0)) {
-               eval <- -99.9
-            } else {
-               matesign <- sign(mate)
-               eval <- 99.9 * matesign
-            }
-         } else {
-            eval <- cp / 100
-         }
-
-         eval <- ifelse(sidetoplay == "w", eval, -eval)
 
       }
 
@@ -160,40 +144,81 @@
       sfrun <- FALSE
    }
 
+   if (is.null(sfout))
+      return(list(eval=eval, bestmove=bestmove, sfproc=sfproc, sfrun=sfrun))
+
+   # find positions in output of 'info depth <depth>' (there should be between 1 and 'multipv' such lines)
+   infodepthpos <- grep(paste("info depth", depth), sfout, fixed=TRUE)
+
+   if (length(infodepthpos) == 0L) # just in case
+      return(list(eval=eval, bestmove=bestmove, sfproc=sfproc, sfrun=sfrun))
+
+   # restrict sfout to those elements
+   sfout <- sfout[infodepthpos]
+
+   for (i in 1:multipv) {
+      # find the position of 'multipv <i> score'
+      pos <- grep(paste(" multipv", i, "score "), sfout, fixed=TRUE)
+      if (length(pos) == 0L)
+         next
+      if (length(pos) > 1L) # there really should only be one, but just in case
+         pos <- max(pos)
+      sfoutpos <- sfout[pos]
+      # check if there is a mate
+      ismate <- grepl(" score mate ", sfoutpos, fixed=TRUE)
+      # get the best move for the variation
+      tmp <- strsplit(sfoutpos, " pv ", fixed=TRUE)[[1]][2]
+      bestmove[i] <- strsplit(tmp, " ", fixed=TRUE)[[1]][1]
+      if (ismate) {
+         tmp <- strsplit(sfoutpos, " score mate ", fixed=TRUE)[[1]][2]
+         mateval <- as.numeric(strsplit(tmp, " ", fixed=TRUE)[[1]][1])
+         if (identical(mateval, 0)) { # not sure why this was needed
+            eval[i] <- -99.9
+         } else {
+            eval[i] <- sign(mateval) * 99.9
+         }
+      } else {
+         tmp <- strsplit(sfoutpos, " score cp ", fixed=TRUE)[[1]][2]
+         cpval <- as.numeric(strsplit(tmp, " ", fixed=TRUE)[[1]][1])
+         eval[i] <- cpval / 100
+      }
+   }
+
+   if (sidetoplay == "b")
+      eval <- -eval
+
    if (verbose) {
-      if (!is.null(sfout))
-         print(sfout)
-      cat("FEN:  ", fen, "\n", sep="")
-      if (!is.na(eval))
-         cat("Eval: ", eval, "\n", sep="")
-      if (bestmove != "")
-         cat("Best: ", bestmove, "\n", sep="")
+      cat("\nFEN:  ", fen, "\n")
+      cat("Eval: ", eval, "\n")
+      cat("Best: ", bestmove, "\n")
    }
 
    return(list(eval=eval, bestmove=bestmove, sfproc=sfproc, sfrun=sfrun))
 
 }
 
-.sfsettings <- function(sfproc, sfrun, sfpath, depth1, depth2, threads, hash) {
-
-   cat(.text("sfrunning", sfrun))
-   cat(.text("sfpath",    sfpath))
-   cat(.text("depth1",    depth1))
-   cat(.text("depth2",    depth2))
-   cat(.text("threads",   threads))
-   cat(.text("hash",      hash))
-
-   cat("\n")
-   cat(.text("sfoptions"))
+.sfsettings <- function(sfproc, sfrun, sfpath, depth1, depth2, multipv1, multipv2, threads, hash) {
 
    while (TRUE) {
+
       cat("\n")
+      cat(.text("sfrunning", sfrun))
+      cat(.text("sfpath",    sfpath))
+      cat(.text("depths",    depth1, depth2))
+      cat(.text("multipvs",  multipv1, multipv2))
+      cat(.text("threads",   threads))
+      cat(.text("hash",      hash))
+
+      cat("\n")
+      cat(.text("sfoptions"))
+      cat("\n\n")
+
       resp <- readline(prompt=.text("sfoptionwhich"))
       if (identical(resp, ""))
          break
       if (grepl("^[1-9]$", resp)) {
          resp <- round(as.numeric(resp))
-         if (resp < 1 || resp > 8)
+         if (resp < 1 || resp > 7)
             next
          if (identical(resp, 1)) {
             # (re)start Stockfish
@@ -227,16 +252,20 @@
             }
          }
          if (identical(resp, 4)) {
-            # set depth1 parameter
+            # set depth1/depth2 parameter
             cat("\n")
             newdepth <- readline(prompt=.text("depthenter"))
             if (identical(newdepth, "")) {
                next
             } else {
-               if (grepl("^[1-9]+$", newdepth)) {
-                  newdepth <- round(as.numeric(newdepth))
-                  newdepth <- max(1, newdepth)
-                  depth1 <- newdepth
+               if (grepl("^[0-9]+,\\s*[0-9]+$", newdepth)) {
+                  newdepth <- strsplit(newdepth, ",", fixed=TRUE)[[1]]
+                  newdepth1 <- round(as.numeric(newdepth[1]))
+                  newdepth2 <- round(as.numeric(newdepth[2]))
+                  newdepth1 <- max(1, newdepth1)
+                  newdepth2 <- max(1, newdepth2)
+                  depth1 <- newdepth1
+                  depth2 <- newdepth2
                   cat(.text("depthsetsuccess"))
                } else {
                   cat(.text("depthsetfail"))
@@ -245,19 +274,24 @@
             }
          }
          if (identical(resp, 5)) {
-            # set depth2 parameter
+            # set multipv1/multipv2 parameter
             cat("\n")
-            newdepth <- readline(prompt=.text("depthenter"))
-            if (identical(newdepth, "")) {
+            newmultipv <- readline(prompt=.text("multipventer"))
+            if (identical(newmultipv, "")) {
                next
             } else {
-               if (grepl("^[1-9]+$", newdepth)) {
-                  newdepth <- round(as.numeric(newdepth))
-                  newdepth <- max(1, newdepth)
-                  depth2 <- newdepth
-                  cat(.text("depthsetsuccess"))
+               if (grepl("^[0-9]+,\\s*[0-9]+$", newmultipv)) {
+                  newmultipv <- strsplit(newmultipv, ",", fixed=TRUE)[[1]]
+                  newmultipv1 <- round(as.numeric(newmultipv[1]))
+                  newmultipv2 <- round(as.numeric(newmultipv[2]))
+                  newmultipv1 <- max(1, newmultipv1)
+                  newmultipv2 <- max(1, newmultipv2)
+                  multipv1 <- newmultipv1
+                  multipv2 <- newmultipv2
+                  cat(.text("multipvsetsuccess"))
+                  .sf.setoptions(sfproc, threads, hash)
                } else {
-                  cat(.text("depthsetfail"))
+                  cat(.text("multipvsetfail"))
                   next
                }
             }
@@ -269,7 +303,7 @@
             if (identical(newthreads, "")) {
                next
             } else {
-               if (grepl("^[1-9]+$", newthreads)) {
+               if (grepl("^[0-9]+$", newthreads)) {
                   newthreads <- round(as.numeric(newthreads))
                   newthreads <- max(1, newthreads)
                   threads <- newthreads
@@ -288,7 +322,7 @@
             if (identical(newhash, "")) {
                next
             } else {
-               if (grepl("^[1-9]+$", newhash)) {
+               if (grepl("^[0-9]+$", newhash)) {
                   newhash <- round(as.numeric(newhash))
                   newhash <- max(16, newhash)
                   hash <- newhash
@@ -300,21 +334,9 @@
                }
             }
          }
-         if (identical(resp, 8)) {
-            # show settings
-            cat("\n")
-            cat(.text("sfrunning", sfrun))
-            cat(.text("sfpath",    sfpath))
-            cat(.text("depth1",    depth1))
-            cat(.text("depth2",    depth2))
-            cat(.text("threads",   threads))
-            cat(.text("hash",      hash))
-            cat("\n")
-            cat(.text("sfoptions"))
-         }
       }
    }
 
-   return(list(sfproc=sfproc, sfrun=sfrun, sfpath=sfpath, depth1=depth1, depth2=depth2, threads=threads))
+   return(list(sfproc=sfproc, sfrun=sfrun, sfpath=sfpath, depth1=depth1, depth2=depth2, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash))
 
 }
