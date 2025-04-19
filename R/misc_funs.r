@@ -216,7 +216,7 @@
 
    # add evaluation
 
-   evalval <- formatC(evalval, format="f", digits=1, flag="+")
+   evalval <- formatC(evalval, format="f", digits=2, flag="+")
    txt <- paste0(txt, " (", evalval, ")", collapse="")
 
    return(txt)
