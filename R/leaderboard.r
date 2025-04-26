@@ -1,5 +1,8 @@
 .leaderboard <- function(seqdir, files, lwd) {
 
+   .clearsideindicator()
+   .drawtimer(clear=TRUE)
+
    tmp <- lapply(file.path(seqdir, files), readRDS)
    tmp.scores <- lapply(tmp, function(x) sapply(x$player, function(x) tail(x$score,1)))
    players <- unique(unlist(lapply(tmp.scores, function(x) names(x))))
@@ -48,7 +51,7 @@
       text(1+0.5, seq(min(8.5, 5+nplayers*0.25), max(1.5, 5-nplayers*0.25), length.out=length(txt)),
            txt, pos=4, cex=cex, family=.get("font.mono"), col=.get("col.help"))
 
-      getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button, x, y) return(""), onKeybd=function(key) return(""))
+      .waitforclick()
 
    }
 

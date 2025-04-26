@@ -16,8 +16,8 @@
 
    if (x == "modecheck") {
       return(switch(lang,
-                    de = "Parameter 'mode' muss entweder 'add' oder 'play' sein.",
-                         "Argument 'mode' must be either 'add' or 'play'."
+                    de = "Parameter 'mode' muss entweder 'add', 'test', oder 'play' sein.",
+                         "Argument 'mode' must be either 'add', 'test', or 'play'."
    ))}
 
    if (x == "createconfigdir") {
@@ -56,7 +56,7 @@
                          "No sequences found.\n"
    ))}
 
-   if (x == "seqdir") {
+   if (x == "useseqdir") {
       return(switch(lang,
                     de = paste0("Benutze Sequenzverzeichnis: ", arg, "\n"),
                          paste0("Using sequence directory: ", arg, "\n")
@@ -86,10 +86,10 @@
                          paste0("Really delete player '", arg, "'? (y/N): ")
    ))}
 
-   if (x == "pause") {
+   if (x == "wait") {
       return(switch(lang,
-                    de = paste0("Pause: ", ifelse(arg, "an", "aus")),
-                         paste0("Pause: ", ifelse(arg, "on", "off"))
+                    de = paste0("Warten: ", ifelse(arg, "an", "aus")),
+                         paste0("Wait: ", ifelse(arg, "on", "off"))
    ))}
 
    if (x == "timed") {
@@ -310,7 +310,7 @@
                          "Sequences selected.\n"
    ))}
 
-   if (x == "waittime") {
+   if (x == "sleeptime") {
       return(switch(lang,
                     de = paste0("Zeit zwischen den Z\U000000FCgen: ", arg),
                          paste0("Time between moves: ", arg)
@@ -640,10 +640,22 @@
                          "Stockfish crashed ('segmentation fault').\n"
    ))}
 
+   if (x == "noplaymode") {
+      return(switch(lang,
+                    de = "Kann nicht in den Spielmodus wechseln ohne dass Stockfish l\U000000E4uft.\n",
+                         "Cannot switch to play mode without Stockfish running."
+   ))}
+
+   if (x == "nomove") {
+      return(switch(lang,
+                    de = "Stockfish hat keinen Zug angezeigt.\n",
+                         "Stockfish did not return a move.\n"
+   ))}
+
    if (x == "nobestmove") {
       return(switch(lang,
-                    de = "Kann den besten Zug nicht anzeigen (l\U000000E4uft Stockfish?).\n",
-                         "Cannot show best move (is Stockfish running?)."
+                    de = "Kann den besten Zug nicht anzeigen.\n",
+                         "Cannot show best move."
    ))}
 
    if (x == "sfdeepeval") {
@@ -690,8 +702,8 @@
 
    if (x == "explsettings") {
       return(switch(lang,
-                    de = c("Sprache", "Spielername", "Modus", "Aktuelles Sequenzverzeichnis", "Selektionsmodus f\U000000FCr Sequenzen", "Zeitgesteuerter Modus", "Zeit pro Zug (im zeitgesteuerten Modus)", "Exponentenwert", "Multiplikator f\U000000FCr abgeschlossene Sequenzen", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Bewertungsleiste anzeigen", "Animationsschritte f\U000000FCr die Bewertungsleiste", "Pause zwischen Sequenzen", "Zeit zwischen den Z\U000000FCgen (Sekunden)", "Linienbreite", "Lautst\U000000E4rke (%)", "Fortschrittsdiagramm nach Sequenzen anzeigen", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Stockfish Pfad", "Berechnungstiefe (schnell)", "Berechnungstiefe (tief)", "Anzahl der besten Zugvarianten (schnell)", "Anzahl der besten Zugvarianten (tief)", "Anzahl der Threads f\U000000FCr Stockfish", "Hashgr\U000000F6\U000000DFe f\U000000FCr Stockfish"),
-                         c("Language", "Player name", "Mode", "Current sequence directory", "Selection mode for sequences", "Timed mode", "Time per move (in timed mode)", "Exponent value", "Multiplier for completed sequences", "Score penalty for wrong moves", "Score penalty per hint", "Show evaluation bar", "Animation steps for the evaluation bar", "Pause between sequences", "Time between moves (seconds)", "Line width", "Sound volume (%)", "Show progress graph after sequences", "Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Stockfish path", "Calculation depth (fast)", "Calculation depth (deep)", "Number of principal variations (fast)", "Number of principal variations (deep)", "Number of threads for Stockfish", "Hash size for Stockfish")
+                    de = c("Sprache", "Spielername", "Modus", "Aktuelles Sequenzverzeichnis", "Selektionsmodus f\U000000FCr Sequenzen", "Zeitgesteuerter Modus", "Zeit pro Zug (im zeitgesteuerten Modus)", "Exponentenwert", "Multiplikator f\U000000FCr abgeschlossene Sequenzen", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Bewertungsleiste anzeigen", "Animationsschritte f\U000000FCr die Bewertungsleiste", "Warten zwischen Sequenzen", "Zeit zwischen den Z\U000000FCgen (Sekunden)", "Linienbreite", "Lautst\U000000E4rke (%)", "Fortschrittsdiagramm nach Sequenzen anzeigen", "Sequenzen nach Fehler wiederholen", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Stockfish Pfad", "Berechnungstiefe (schnell)", "Berechnungstiefe (tief)", "Anzahl der besten Zugvarianten (schnell)", "Anzahl der besten Zugvarianten (tief)", "Anzahl der Threads f\U000000FCr Stockfish", "Hashgr\U000000F6\U000000DFe f\U000000FCr Stockfish"),
+                         c("Language", "Player name", "Mode", "Current sequence directory", "Selection mode for sequences", "Timed mode", "Time per move (in timed mode)", "Exponent value", "Multiplier for completed sequences", "Score penalty for wrong moves", "Score penalty per hint", "Show evaluation bar", "Animation steps for the evaluation bar", "Wait between sequences", "Time between moves (seconds)", "Line width", "Sound volume (%)", "Show progress graph after sequences", "Repeat sequences after mistake", "Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Stockfish path", "Calculation depth (fast)", "Calculation depth (deep)", "Number of principal variations (fast)", "Number of principal variations (deep)", "Number of threads for Stockfish", "Hash size for Stockfish")
    ))}
 
    if (x == "comment") {
@@ -862,10 +874,52 @@
                          "Repeating the last sequence ..."
    ))}
 
+   if (x == "repmistake") {
+      return(switch(lang,
+                    de = paste0("Sequenzen nach Fehler wiederholen: ", ifelse(arg, "an", "aus")),
+                         paste0("Repeat sequences after mistake: ", ifelse(arg, "on", "off"))
+   ))}
+
+   if (x == "nolastseq") {
+      return(switch(lang,
+                    de = "Keine vorherige Sequenz gefunden ...",
+                         "Could not find a previous sequence ..."
+   ))}
+
    if (x == "sequential") {
       return(switch(lang,
                     de = "Schalte in den sequenziellen Selektionsmodus ...",
                          "Switching to the sequential selection mode ..."
+   ))}
+
+   if (x == "fliponlyatstart") {
+      return(switch(lang,
+                    de = "Das Brett kann nur am Anfang einer Sequenz gedreht werden.",
+                         "Can only flip the board at the beginning of a sequence."
+   ))}
+
+   if (x == "mate") {
+      return(switch(lang,
+                    de = "Matt!",
+                         "Mate!"
+   ))}
+
+   if (x == "stalemate") {
+      return(switch(lang,
+                    de = "Patt!",
+                         "Stalemate!"
+   ))}
+
+   if (x == "seqdirsettings") {
+      return(switch(lang,
+                    de = paste0("Sequenzverzeichnis: ", arg),
+                         paste0("Sequence directory: ", arg)
+   ))}
+
+   if (x == "sfpathsettings") {
+      return(switch(lang,
+                    de = paste0("Stockfish Pfad:     ", arg),
+                         paste0("Stockfish path:     ", arg)
    ))}
 
 }

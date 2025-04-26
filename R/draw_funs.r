@@ -500,7 +500,7 @@
    if (verbose) {
       cat("Move: ", move, "\n\n", sep="")
       printpos <- pos
-      printpos[printpos == ""] <- "."
+      printpos[printpos == ""] <- "\U00000B7"
       printpos[printpos == "WP"] <- "\U000265F"
       printpos[printpos == "WR"] <- "\U000265C"
       printpos[printpos == "WN"] <- "\U000265E"
@@ -591,6 +591,12 @@
 .drawcircle <- function(x, y, lwd)
    symbols(y+0.5, x+0.5, circles=0.45, inches=FALSE, lwd=lwd+2, fg=.get("col.annot"), add=TRUE)
 
+.drawcircles <- function(circles, lwd) {
+   if (nrow(circles) == 0L)
+      return()
+   apply(circles, 1, function(x) .drawcircle(x[1], x[2], lwd=lwd))
+}
+
 .drawarrow <- function(y1, x1, y2, x2, lwd, col=.get("col.annot")) {
 
    x1 <- x1 + 0.5
@@ -635,6 +641,20 @@
    segments(x1, y1, x3, y3, col=col, lwd=lwd*4, lend=1)
    polygon(c(x4,x5,x2),c(y4,y5,y2), col=col, border=NA)
 
+}
+
+.drawarrows <- function(arrows, lwd, hint=FALSE) {
+   if (nrow(arrows) == 0L)
+      return()
+   if (hint) {
+      n <- nrow(arrows)
+      col.best <- .get("col.best")
+      for (j in 1:nrow(arrows)) {
+         .drawarrow(arrows[j,1], arrows[j,2], arrows[j,3], arrows[j,4], lwd, col=adjustcolor(col.best, alpha.f=sqrt((n+1-j)/n)*0.6))
+      }
+   } else {
+      apply(arrows, 1, function(x) .drawarrow(x[1], x[2], x[3], x[4], lwd=lwd))
+   }
 }
 
 .drawsquare <- function(x, y, col=ifelse(.is.even(x+y), .get("col.square.d"), .get("col.square.l")))
@@ -707,6 +727,87 @@
 
 }
 
+.textbot <- function(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode) {
+
+   lang <- .get("lang")
+   cex  <- .get("cex.bot")
+   font <- .get("font.mono")
+   col  <- .get("col.bot")
+
+   rect(-2, -2, 12, 0.6, col=.get("col.bg"), border=NA)
+
+   if (lang == "en") {
+
+      if (mode == "add") {
+         text(0.0, 0.45, paste0("Mode: ", "Add"), pos=4, cex=cex, family=font, col=col)
+         text(0.0, 0.30, paste0("Show: ", ifelse(show, "Yes", "No")), pos=4, cex=cex, family=font, col=col)
+         text(0.0, 0.15, paste0("Move: ", i), pos=4, cex=cex, family=font, col=col)
+      }
+
+      selmode <- switch(selmode,
+                        score_random  = "score, at random",
+                        score_highest = "score, highest next",
+                        played_random = "play frequency, at random",
+                        played_lowest = "play frequency, lowest next",
+                        days_random   = "date, at random",
+                        days_oldest   = "date, oldest next",
+                        sequential    = "sequential")
+
+      if (mode == "test") {
+         seqname <- substr(seqname, 1, nchar(seqname)-4)
+         text(0, 0.45, paste0("Mode:   ", "Test (selection: ", selmode, ")"), pos=4, cex=cex, family=font, col=col)
+         text(0, 0.30, paste0("Name:   ", "(", seqnum, ") ", seqname), pos=4, cex=cex, family=font, col=col)
+         text(0, 0.15, paste0("Player: ", player), pos=4, cex=cex, family=font, col=col)
+         text(0, 0.00, paste0("Move:   ", i-1, " / ", totalmoves), pos=4, cex=cex, family=font, col=col)
+         text(9, 0.15, paste0("Played: ", played), pos=4, cex=cex, family=font, col=col)
+         text(9, 0.00, paste0("Score:  ", score), pos=4, cex=cex, family=font, col=col)
+      }
+
+      if (mode == "play") {
+         text(0, 0.45, paste0("Mode:   ", "Play"), pos=4, cex=cex, family=font, col=col)
+         text(0, 0.30, paste0("Player: ", player), pos=4, cex=cex, family=font, col=col)
+         text(0, 0.15, paste0("Move:   ", i), pos=4, cex=cex, family=font, col=col)
+      }
+
+   }
+
+   if (lang == "de") {
+
+      if (mode == "add") {
+         text(0, 0.45, paste0("Modus:  ", "Hinzuf\U000000FCgen"), pos=4, cex=cex, family=font, col=col)
+         text(0, 0.30, paste0("Zeigen: ", ifelse(show, "Ja", "Nein")), pos=4, cex=cex, family=font, col=col)
+         text(0, 0.15, paste0("Zug:    ", i), pos=4, cex=cex, family=font, col=col)
+      }
+
+      selmode <- switch(selmode,
+                        score_random  = "Punktewert, zuf\U000000E4llig",
+                        score_highest = "Punktewert, h\U000000F6chster",
+                        played_random = "Spielh\U000000E4ufigkeit, zuf\U000000E4llig",
+                        played_lowest = "Spielh\U000000E4ufigkeit, niedrigste",
+                        days_random   = "Datum, zuf\U000000E4llig",
+                        days_oldest   = "Datum, \U000000E4ltestes",
+                        sequential    = "sequenziell")
+
+      if (mode == "test") {
+         seqname <- substr(seqname, 1, nchar(seqname)-4)
+         text(0, 0.45, paste0("Modus:   ", "Test (Selektion: ", selmode, ")"), pos=4, cex=cex, family=font, col=col)
+         text(0, 0.30, paste0("Name:    ", "(", seqnum, ") ", seqname), pos=4, cex=cex, family=font, col=col)
+         text(0, 0.15, paste0("Spieler: ", player), pos=4, cex=cex, family=font, col=col)
+         text(0, 0.00, paste0("Zug:     ", i-1, " / ", totalmoves), pos=4, cex=cex, family=font, col=col)
+         text(9, 0.15, paste0("Gespielt: ", played), pos=4, cex=cex, family=font, col=col)
+         text(9, 0.00, paste0("Punkte:   ", score), pos=4, cex=cex, family=font, col=col)
+      }
+
+      if (mode == "play") {
+         text(0, 0.45, paste0("Modus:   ", "Spielen"), pos=4, cex=cex, family=font, col=col)
+         text(0, 0.30, paste0("Spieler: ", player), pos=4, cex=cex, family=font, col=col)
+         text(0, 0.15, paste0("Zug:     ", i), pos=4, cex=cex, family=font, col=col)
+      }
+
+   }
+
+}
+
 .drawsideindicator <- function(sidetoplay, flip, adj=0, clear=TRUE) {
 
    col.side.w <- .get("col.side.w")
@@ -733,14 +834,14 @@
 
 }
 
-.drawtimer <- function(movestoplay, movesplayed, timetotal, timepermove, clear=FALSE) {
+.drawtimer <- function(movestoplay, movesplayed, timetotal, timepermove, clear=FALSE, settings=FALSE) {
 
    col.bg        <- .get("col.bg")
    col.square.be <- .get("col.square.be")
    col.time.fast <- .get("col.time.fast")
    col.time.slow <- .get("col.time.slow")
 
-   xpos <- 9.4
+   xpos <- 9.4 + ifelse(settings, 0.25, 0)
    indsize <- 0.25
 
    if (clear) {
@@ -748,29 +849,39 @@
       return()
    }
 
-   hlines <- seq(1, 9, length.out=movestoplay+1)
+   if (settings) {
 
-   timepermitted <- timepermove * movestoplay
-   prop   <- min(0.99, timetotal / timepermitted)
-   intime <- timetotal <= movesplayed * timepermove
-   top    <- 9 - 8*prop
-   pos.top.hlines <- movestoplay-movesplayed+1
+      rect(xpos, 1, xpos+indsize, 9, border=NA, col=col.time.fast)
+      rect(xpos, 1, xpos+indsize, 6, border=NA, col=col.square.be)
+      rect(xpos, 1, xpos+indsize, 4, border=NA, col=col.time.slow)
 
-   rect(xpos, max(hlines[pos.top.hlines],top), xpos+indsize, 9, col=col.bg, border=col.square.be)
-
-   #segments(xpos, hlines[(pos.top.hlines):(movestoplay+1)], xpos+indsize, hlines[(pos.top.hlines):(movestoplay+1)], col=col.square.be, lwd=2)
-   #segments(xpos, hlines[1:(pos.top.hlines)], xpos+indsize, hlines[1:(pos.top.hlines)], col=col.bg, lwd=2)
-
-   rect(xpos, 1, xpos+indsize, hlines[pos.top.hlines], border=NA, col=col.square.be)
-
-   # draw the progress rectangle in the appropriate color
-   if (intime) {
-      rect(xpos, 1, xpos+indsize, top, border=NA, col=col.time.fast)
    } else {
-      rect(xpos, 1, xpos+indsize, top, border=NA, col=col.time.slow)
-   }
 
-   #segments(xpos, hlines, xpos+indsize, hlines, col=col.square.be, lwd=2)
+      hlines <- seq(1, 9, length.out=movestoplay+1)
+
+      timepermitted <- timepermove * movestoplay
+      prop   <- min(0.99, timetotal / timepermitted)
+      intime <- timetotal <= movesplayed * timepermove
+      top    <- 9 - 8*prop
+      pos.top.hlines <- movestoplay-movesplayed+1
+
+      rect(xpos, max(hlines[pos.top.hlines],top), xpos+indsize, 9, col=col.bg, border=col.square.be)
+
+      #segments(xpos, hlines[(pos.top.hlines):(movestoplay+1)], xpos+indsize, hlines[(pos.top.hlines):(movestoplay+1)], col=col.square.be, lwd=2)
+      #segments(xpos, hlines[1:(pos.top.hlines)], xpos+indsize, hlines[1:(pos.top.hlines)], col=col.bg, lwd=2)
+
+      rect(xpos, 1, xpos+indsize, hlines[pos.top.hlines], border=NA, col=col.square.be)
+
+      # draw the progress rectangle in the appropriate color
+      if (intime) {
+         rect(xpos, 1, xpos+indsize, top, border=NA, col=col.time.fast)
+      } else {
+         rect(xpos, 1, xpos+indsize, top, border=NA, col=col.time.slow)
+      }
+
+      #segments(xpos, hlines, xpos+indsize, hlines, col=col.square.be, lwd=2)
+
+   }
 
    # outline
    rect(xpos, 1, xpos+indsize, 9, border=col.square.be, lwd=2)
@@ -874,9 +985,9 @@
 .redrawall <- function(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove) {
 
    .drawboard(pos, flip)
-   .printinfo(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
+   .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
    .texttop(texttop)
-   if (mode == "play" && timed) {
+   if (mode == "test" && timed) {
       .drawtimer(movestoplay, movesplayed, timetotal, timepermove)
    } else {
       .drawsideindicator(sidetoplay, flip)
@@ -920,13 +1031,11 @@
       }
    }
 
-   getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button, x, y) return(""), onKeybd=function(key) return(""))
+   .waitforclick()
 
 }
 
 .quit <- function() {
-
-   #return()
 
    cols <- col2rgb(.get("col.bg"))
 

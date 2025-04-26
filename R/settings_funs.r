@@ -22,6 +22,7 @@
    .drawsideindicator("w", flip)
    .drawsideindicator("b", flip, clear=FALSE)
    .draweval(0, flip)
+   .drawtimer(settings=TRUE)
 
    while (TRUE) {
       resp <- readline(prompt=.text("colwhich"))
@@ -50,6 +51,7 @@
          .drawsideindicator("w", flip)
          .drawsideindicator("b", flip, clear=FALSE)
          .draweval(0, flip)
+         .drawtimer(settings=TRUE)
       }
    }
 
@@ -182,19 +184,19 @@
    text(1+0.5, seq(6.5, 3.5, length.out=length(txt)), txt, pos=4, cex=cex,
         family=.get("font.mono"), font=ifelse(c("","",selmodes)==selmode, 2, 1), col=.get("col.help"))
 
-   wait <- TRUE
+   input <- TRUE
 
-   while (wait) {
+   while (input) {
 
       resp <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=function(key) return(key))
 
       if (identical(resp, "\r") || identical(resp, "q") || identical(resp, "\033"))
-         wait <- FALSE
+         input <- FALSE
 
       for (j in 1:length(selmodes)) {
          if (identical(resp, as.character(j))) {
             selmode <- selmodes[j]
-            wait <- FALSE
+            input <- FALSE
          }
       }
 

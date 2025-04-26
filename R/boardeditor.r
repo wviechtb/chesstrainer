@@ -128,7 +128,7 @@
       # F1 to show the help
 
       if (identical(click, "F1")) {
-         .boardeditor.printhelp(lwd=lwd)
+         .showhelp.boardeditor(lwd=lwd)
          .boardeditor.drawboard(pos, flip, sidetoplay, lwd)
          next
       }
@@ -167,7 +167,7 @@
 
 ############################################################################
 
-.boardeditor.printhelp <- function(lwd) {
+.showhelp.boardeditor <- function(lwd) {
 
    lang <- .get("lang")
 
@@ -218,6 +218,6 @@
    text(2+0.5, seq(8, 4, length.out=length(txt)), txt, pos=4, cex=cex,
         family=.get("font.mono"), font=ifelse(grepl(":", txt), 2, 1), col=.get("col.help"))
 
-   getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button, x, y) return(""), onKeybd=function(key) return(""))
+   .waitforclick()
 
 }

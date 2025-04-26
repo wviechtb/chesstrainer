@@ -85,7 +85,7 @@
 
    }
 
-   if (dosave && mode == "play")
+   if (dosave && mode == "test")
       saveRDS(sub, file=file.path(seqdir, seqname))
 
    return(sub)

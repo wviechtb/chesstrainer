@@ -131,7 +131,7 @@
 
 }
 
-.parsesfmove <- function(move, pos, flip, evalval) {
+.parsesfmove <- function(move, pos, flip, evalval, rename=TRUE) {
 
    lang <- .get("lang")
 
@@ -203,11 +203,13 @@
 
    # rename pieces for other languages
 
-   if (lang == "de") {
-      txt <- sub("Q", "D", txt, fixed=TRUE)
-      txt <- sub("B", "L", txt, fixed=TRUE)
-      txt <- sub("N", "S", txt, fixed=TRUE)
-      txt <- sub("R", "T", txt, fixed=TRUE)
+   if (rename) {
+      if (lang == "de") {
+         txt <- sub("Q", "D", txt, fixed=TRUE)
+         txt <- sub("B", "L", txt, fixed=TRUE)
+         txt <- sub("N", "S", txt, fixed=TRUE)
+         txt <- sub("R", "T", txt, fixed=TRUE)
+      }
    }
 
    # remove P for pawns
@@ -216,9 +218,80 @@
 
    # add evaluation
 
-   evalval <- formatC(evalval, format="f", digits=2, flag="+")
-   txt <- paste0(txt, " (", evalval, ")", collapse="")
+   if (!is.na(evalval)) {
+      evalval <- formatC(evalval, format="f", digits=2, flag="+")
+      txt <- paste0(txt, " (", evalval, ")", collapse="")
+   }
 
-   return(txt)
+   out <- list(txt=txt, x1=x1, y1=y1, x2=x2, y2=y2)
+
+   return(out)
 
 }
+
+.printverbose <- function(selected, seqno, filename, bookmark, lastseq, flip, useflip, replast, oldmode, i,
+                          seqname, seqnum, score, played, totalmoves, show, comment, bestmove, evalval,
+                          texttop, scoreadd, sidetoplay, givehint1, givehint2, mistake, timetotal,
+                          movesplayed, movestoplay, drawcircles, drawarrows, showstartcom, pos) {
+
+   cat("\n")
+   cat("selected:     ", selected, "\n")
+   cat("seqno:        ", seqno, "\n")
+   cat("filename:     ", filename, "\n")
+   cat("bookmark:     ", bookmark, "\n")
+   cat("lastseq:      ", lastseq, "\n")
+   cat("flip:         ", flip, "\n")
+   cat("useflip:      ", useflip, "\n")
+   cat("replast:      ", replast, "\n")
+   cat("oldmode:      ", oldmode, "\n")
+   cat("i:            ", i, "\n")
+   cat("seqname:      ", seqname, "\n")
+   cat("seqnum:       ", seqnum, "\n")
+   cat("score:        ", score, "\n")
+   cat("played:       ", played, "\n")
+   cat("totalmoves:   ", totalmoves, "\n")
+   cat("show:         ", show, "\n")
+   cat("comment:      ", comment, "\n")
+   cat("bestmove:     ", bestmove, "\n")
+   cat("evalval:      ", evalval, "\n")
+   cat("texttop:      ", texttop, "\n")
+   cat("scoreadd:     ", scoreadd, "\n")
+   cat("sidetoplay:   ", sidetoplay, "\n")
+   cat("givehint1:    ", givehint1, "\n")
+   cat("givehint2:    ", givehint2, "\n")
+   cat("mistake:      ", mistake, "\n")
+   cat("timetotal:    ", timetotal, "\n")
+   cat("movesplayed:  ", movesplayed, "\n")
+   cat("movestoplay:  ", movestoplay, "\n")
+   cat("drawcircles:  ", drawcircles, "\n")
+   cat("drawarrows:   ", drawarrows, "\n")
+   cat("showstartcom: ", showstartcom, "\n")
+   cat("\n")
+
+   printpos <- pos
+   printpos[printpos == ""] <- "\U00000B7"
+   printpos[printpos == "WP"] <- "\U000265F"
+   printpos[printpos == "WR"] <- "\U000265C"
+   printpos[printpos == "WN"] <- "\U000265E"
+   printpos[printpos == "WB"] <- "\U000265D"
+   printpos[printpos == "WK"] <- "\U000265A"
+   printpos[printpos == "WQ"] <- "\U000265B"
+   printpos[printpos == "BP"] <- "\U0002659"
+   printpos[printpos == "BR"] <- "\U0002656"
+   printpos[printpos == "BN"] <- "\U0002658"
+   printpos[printpos == "BB"] <- "\U0002657"
+   printpos[printpos == "BK"] <- "\U0002654"
+   printpos[printpos == "BQ"] <- "\U0002655"
+
+   if (flip) {
+      print(printpos[,8:1], quote=FALSE)
+   } else {
+      print(printpos[8:1,], quote=FALSE)
+   }
+
+   return()
+
+}
+
+.waitforclick <- function()
+   getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button, x, y) return(""), onKeybd=function(key) return(""))

@@ -17,7 +17,7 @@
 
    par(new=FALSE, mar=rep(5.2,4))
 
-   getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button, x, y) return(""), onKeybd=function(key) return(""))
+   .waitforclick()
 
    return()
 
