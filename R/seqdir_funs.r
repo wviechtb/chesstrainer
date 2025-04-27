@@ -28,19 +28,24 @@
       # a or h = add a sequence directory
 
       if (grepl("^[ah]$", resp)) {
-         # could do someething like this here for Windows, but not done for now
-         #if (.Platform$OS.type == "windows")
-         #   seqdirnew <- choose.dir()
-         seqdirnew <- readline(prompt=.text("addseqdir"))
-         if (identical(seqdirnew, ""))
-            next
-         if (!dir.exists(seqdirnew)) {
-            cat(.text("dirdoesnotexist"))
-            createdir <- readline(prompt=.text("createdir"))
-            if (identical(createdir, "") || .confirm(createdir)) {
-               succces <- dir.create(seqdirnew, showWarnings=FALSE, recursive=TRUE)
-               if (!succces) {
-                  cat(.text("dircreateerror"))
+         if (.Platform$OS.type == "windows") {
+            seqdirnew <- choose.dir(caption="")
+            if (is.na(seqdirnew))
+               next
+         } else {
+            seqdirnew <- readline(prompt=.text("addseqdir"))
+            if (identical(seqdirnew, ""))
+               next
+            if (!dir.exists(seqdirnew)) {
+               cat(.text("dirdoesnotexist"))
+               createdir <- readline(prompt=.text("createdir"))
+               if (identical(createdir, "") || .confirm(createdir)) {
+                  succces <- dir.create(seqdirnew, showWarnings=FALSE, recursive=TRUE)
+                  if (!succces) {
+                     cat(.text("dircreateerror"))
+                     next
+                  }
+               } else {
                   next
                }
             }

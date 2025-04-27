@@ -239,20 +239,32 @@
             sfrun  <- tmp$sfrun
          }
          if (identical(resp, 3)) {
-            # change path
+            # change path to Stockfish executable
             oldpath <- sfpath
             cat("\n")
-            sfpath <- readline(prompt=.text("sfenterpath"))
-            if (identical(sfpath, "")) {
-               sfpath <- oldpath
-            } else {
-               sfpath <- suppressWarnings(normalizePath(sfpath))
-               if (file.exists(sfpath)) {
-                  cat(.text("sfpathsuccess"))
-               } else {
-                  cat(.text("sfpathfail"))
+            if (.Platform$OS.type == "windows") {
+               sfpath <- choose.files(caption="", multi=FALSE)
+               if (length(sfpath) == 0L)
                   sfpath <- oldpath
+            } else {
+               sfpath <- readline(prompt=.text("sfenterpath"))
+               if (!identical(sfpath, "")) {
+                  sfpath <- suppressWarnings(normalizePath(sfpath))
+                  if (file.exists(sfpath)) {
+                     cat(.text("sfpathsuccess"))
+                  } else {
+                     cat(.text("sfpathfail"))
+                  }
                }
+            }
+            if (oldpath != sfpath) {
+               # (re)start stockfish if the path is new
+               tmp <- .sf.stop(sfproc, sfrun)
+               sfproc <- tmp$sfproc
+               sfrun  <- tmp$sfrun
+               tmp <- .sf.start(sfproc, sfrun, sfpath, threads, hash)
+               sfproc <- tmp$sfproc
+               sfrun  <- tmp$sfrun
             }
          }
          if (identical(resp, 4)) {

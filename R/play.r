@@ -367,9 +367,9 @@ play <- function(lang="en", sfpath="", ...) {
    }
 
    keys      <- c("q", " ", "n", "p", "e", "E", "l", "-", "=", "+",
-                  "m", "/", "*", "8", "?", ",", ".", "b", "B", "w", "t", "h", "ctrl-R",
-                  "^", "[", "]", "i", "(", ")", "ctrl-[", "\033", "v", "a", "G", "R", "ctrl-C", "x", "<",
-                  "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F12", "\\")
+                  "m", "/", "*", "8", "?", "'", ",", ".", "b", "B", "w", "t", "h", "ctrl-R",
+                  "^", "6", "[", "]", "i", "(", ")", "ctrl-[", "\033", "v", "a", "G", "R", "ctrl-C", "x", "<",
+                  "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F12", "\\", "#")
    keys.add  <- c("f", "z", "c", "H", "0", "s")
    keys.test <- c("o", "r", "g", "A", "ctrl-D", "Right", "Left", "u")
    keys.play <- c("H")
@@ -1317,6 +1317,37 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
+            # ' to find all sequences with the same FEN
+
+            if (identical(click, "'")) {
+               if (i == 1)
+                  next
+               eval(expr=switch1)
+               searchterm <- .genfen(pos, flip, sidetoplay, i)
+               searchterm <- paste(strsplit(searchterm, " ", fixed=TRUE)[[1]][1:3], collapse=" ")
+               seqident <- sapply(dat.all, function(x) any(grepl(searchterm, x$moves$fen, fixed=TRUE)))
+               if (any(seqident)) {
+                  cat(.text("seqsmatchfen"))
+                  tab <- data.frame(Name=files.all[seqident])
+                  tab$Name <- format(tab$Name, justify="left")
+                  names(tab)[1] <- ""
+                  rownames(tab) <- which(seqident)
+                  print(tab, print.gap=2)
+                  selmatches <- readline(prompt=.text("selmatches"))
+                  if (identical(selmatches, "") || .confirm(selmatches)) {
+                     cat(.text("selmatchesconfirm"))
+                     selected <- files.all[seqident]
+                     run.rnd <- FALSE
+                     input <- FALSE
+                     seqno <- 1
+                  }
+               } else {
+                  cat(.text("noseqsfound"))
+               }
+               eval(expr=switch2)
+               next
+            }
+
             # ? to find all sequences that start in the same way
 
             if (identical(click, "?")) {
@@ -1758,9 +1789,9 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # ^ to edit the exponent value
+            # ^ (or 6) to edit the exponent value
 
-            if (identical(click, "^")) {
+            if (identical(click, "^") || identical(click, "6")) {
                eval(expr=switch1)
                newexpval <- readline(prompt=.text("newexpval", expval))
                if (grepl("^[0-9]+(.)?([0-9]+)?$", newexpval)) {
@@ -2143,7 +2174,7 @@ play <- function(lang="en", sfpath="", ...) {
             # b to start the board editor (only in add or play mode)
 
             if (mode %in% c("add","play") && identical(click, "b")) {
-               out <- .boardeditor(pos, flip, sidetoplay, lwd, verbose)
+               out <- .boardeditor(pos, flip, sidetoplay, lwd, verbose, switch1, switch2)
                pos <- out$pos
                colnames(pos) <- LETTERS[1:8]
                rownames(pos) <- 1:8
@@ -2163,18 +2194,21 @@ play <- function(lang="en", sfpath="", ...) {
                arrows  <- matrix(nrow=0, ncol=4)
                harrows <- matrix(nrow=0, ncol=4)
                sub$moves <- sub$moves[numeric(0),]
-               sub$pos <- pos
                sub$flip <- flip
-               attr(sub$pos, "move") <- NULL
-               attr(sub$pos, "ispp") <- NULL
-               attr(sub$pos, "y1") <- NULL
+               attr(pos, "move") <- NULL
+               attr(pos, "ispp") <- NULL
+               attr(pos, "y1") <- NULL
+               attr(pos,"moves50") <- 0
+               sub$pos <- pos
+               if (verbose)
+                  print(pos)
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                next
             }
 
-            # \ to switch into play mode (or back to add mode)
+            # \ (or #) to switch into play mode (or back to add mode)
 
-            if (identical(click, "\\")) {
+            if (identical(click, "\\") || identical(click, "#")) {
                sub$moves <- sub$moves[seq_len(i-1),,drop=FALSE]
                if (mode == "play") {
                   mode <- "add"
@@ -2443,7 +2477,7 @@ play <- function(lang="en", sfpath="", ...) {
                         break
                      }
 
-                     if (identical(click, "\\")) {
+                     if (identical(click, "\\") || identical(click, "#")) {
                         saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
                         sub$moves <- sub$moves[seq_len(i),,drop=FALSE]
                         oldmode <- "test"

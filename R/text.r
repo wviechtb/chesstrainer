@@ -558,7 +558,7 @@
 
    if (x == "sfpathfail") {
       return(switch(lang,
-                    de = "Pfad konnte nicht gefunden/eingestellt werden.\n",
+                    de = "Pfad konnte nicht gefunden/gesetzt werden.\n",
                          "Could not find/set path.\n"
    ))}
 
@@ -920,6 +920,18 @@
       return(switch(lang,
                     de = paste0("Stockfish Pfad:     ", arg),
                          paste0("Stockfish path:     ", arg)
+   ))}
+
+   if (x == "enterrochade") {
+      return(switch(lang,
+                    de = "Rochadem\U000000F6glichkeiten eingeben in FEN Notation (z.B., Kq): ",
+                         "Enter castling availability in FEN notation (e.g., Kq): "
+   ))}
+
+   if (x == "notcorrectrochade") {
+      return(switch(lang,
+                    de = "Falsche Rochade Angabe.\n",
+                         "Incorrect castling specification.\n"
    ))}
 
 }

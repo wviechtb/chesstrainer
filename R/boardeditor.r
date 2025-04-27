@@ -1,4 +1,4 @@
-.boardeditor <- function(pos, flip, sidetoplay, lwd, verbose) {
+.boardeditor <- function(pos, flip, sidetoplay, lwd, verbose, switch1, switch2) {
 
    pos <- rbind("", pos, "")
    pos <- cbind("", pos, "")
@@ -8,6 +8,8 @@
    pos[10,3:8] <- c("BK","BQ","BR","BB","BN","BP")
 
    .boardeditor.drawboard(pos, flip, sidetoplay, lwd)
+
+   rochadespec <- FALSE
 
    while (TRUE) {
 
@@ -81,7 +83,7 @@
 
       click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
 
-      keys <- c("q", "\033", "ctrl-[", "n", "f", "s", "c", "F1")
+      keys <- c("q", "\033", "ctrl-[", "n", "f", "s", "c", "r", "F1")
 
       if (is.character(click) && !is.element(click, keys))
          next
@@ -125,6 +127,21 @@
          next
       }
 
+      # r to enter rochade availability
+
+      if (identical(click, "r")) {
+         eval(expr=switch1)
+         resp <- readline(prompt=.text("enterrochade"))
+         if (grepl("^K?Q?k?q?$", resp)) {
+            rochade <- c(grepl("K", resp), grepl("Q", resp), grepl("k", resp), grepl("q", resp))
+            rochadespec <- TRUE
+         } else {
+            cat(.text("notcorrectrochade"))
+         }
+         eval(expr=switch2)
+         next
+      }
+
       # F1 to show the help
 
       if (identical(click, "F1")) {
@@ -161,7 +178,18 @@
 
    }
 
-   return(list(pos=pos[2:9,2:9], flip=flip, sidetoplay=sidetoplay))
+   pos <- pos[2:9,2:9]
+
+   # if rochade availability was not entered, then assume availability based on king and rook positions
+
+   if (!rochadespec) {
+      rochade <- c((pos[1,5] == "WK" && pos[1,8] == "WR"), (pos[1,5] == "WK" && pos[1,1] == "WR"),
+                   (pos[8,5] == "BK" && pos[8,8] == "BR"), (pos[8,5] == "BK" && pos[8,1] == "BR"))
+   }
+
+   attr(pos, "rochade") <- rochade
+
+   return(list(pos=pos, flip=flip, sidetoplay=sidetoplay))
 
 }
 
@@ -184,6 +212,7 @@
       "s  - set which side plays the first move",
       "n  - reset the board into the starting position",
       "c  - clear the board",
+      "r  - enter castling availability",
       "F1 - show this help",
       "q  - quit the board editor"
       )
@@ -203,6 +232,7 @@
       "s  - festlegen, welche Seite den ersten Zug macht",
       "n  - Brett in die Ausgangsposition zur\U000000FCcksetzen",
       "c  - Brett leer r\U000000E4umen",
+      "r  - Rochadem\U000000F6glichkeiten eingeben",
       "F1 - diese Hilfe anzeigen",
       "q  - Bretteditor beenden"
       )

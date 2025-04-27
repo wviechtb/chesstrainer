@@ -7,6 +7,28 @@ The purpose of the `chesstrainer` package is to create sequences of moves (lines
 
 ![](man/figures/screenshot.png "Find the mate in three!")
 
+## Features
+
+- provides an add mode for entering sequences and a test mode to practice sequences
+- the trainer tracks your performance in terms of a 'sequence score' for each sequence
+- sequences are presented randomly with higher probability for those with poor performance
+- alternatively let the trainer choose sequences based on play frequency or last play date
+- automatically repeat sequences where a wrong move was made (optionally)
+- add comments to sequences or particular moves (e.g., to name variations, provide hints, or other information)
+- add annotations (arrows and circles), which can also be replayed in test mode
+- subset sequences based on their name, performance, play frequency, last play date, moves made, or current position
+- timed mode for practicing sequences under time pressure
+- board editor for setting up advanced starting positions or chess puzzles
+- the trainer can be used with multiple players (performance is tracked separately for each player)
+- when [Stockfish](https://stockfishchess.org) is installed:
+  - automaticallly obtain and show position evaluations for each move in a sequence
+  - show the best move(s) for a given position
+  - play mode to play against Stockfish
+- adjust colors, text sizes, and various other settings
+- manage multiple sequence directories
+- toggle the language (English or German)
+- move and capture sounds
+
 ## Installation
 
 The development version of the `chesstrainer` package can be installed with:
