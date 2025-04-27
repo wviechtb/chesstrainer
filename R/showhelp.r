@@ -44,7 +44,7 @@
       "o        - manually enter the score for the current sequence",
       "r and R  - repeat the last sequence / toggle repeat after mistake",
       "g and G  - show the progress graph / toggle always show at end",
-      "a and A  - extend the current sequence/position with more moves",
+      "a and A  - extend the current sequence / position with more moves",
       "Ctrl-d   - delete the current sequence",
       "u        - recalculate the evaluations",
       "",
@@ -101,7 +101,7 @@
       "o        - Punktewert f\U000000FCr die aktuelle Sequenz manuell eingeben",
       "r und R  - die letzte Sequenz wiederholen / nach Fehler wiederholen an/aus",
       "g und G  - Fortschrittsdiagramm anzeigen / immer am Ende anzeigen an/aus",
-      "a und A  - die aktuelle Sequenz/Position mit Z\U000000FCgen erweitern",
+      "a und A  - die aktuelle Sequenz / Position mit Z\U000000FCgen erweitern",
       "Strg-d   - aktuelle Sequenz l\U000000F6schen",
       "u        - Bewertungen neu berechnen",
       "",
@@ -123,7 +123,7 @@
 
    maxsw <- max(sapply(txt, strwidth, family=.get("font.mono")))
    maxsh <- max(sapply(txt, strheight, family=.get("font.mono"))) * length(txt)
-   cex <- (8.5 - 1.5) / max(maxsw, maxsh) * 0.90
+   cex <- min(1.5, (8.5 - 1.5) / max(maxsw, maxsh) * 0.95)
 
    text(1+0.5, seq(8.5, 1.5, length.out=length(txt)), txt, pos=4, cex=cex,
         family=.get("font.mono"), font=ifelse(grepl(":", txt), 2, 1), col=.get("col.help"))
