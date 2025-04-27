@@ -25,7 +25,7 @@
 
    The trainer keeps track of a score for each sequence. For a new sequence, the score starts out at 100. The score is multiplied by 0.8 after completing a sequence without any mistakes. When making a wrong move when playing a sequence, the score is increased by 40 points (up to a maximum of 100). Receiving a hint increases the score by 20 points (40 points when asking for both the starting and the target square).
 
-   The trainer uses the score to choose the next sequence. Sequences with higher scores have a higher chance to be presented. The probability of playing a particular sequence is computed with \eqn{p_i = s_i^e / \sum s_i^e}, where \eqn{s_i} is the score of the \eqn{i}th sequence and \eqn{e} is the \sQuote{exponent value}. This is set to 2 by default and enhances the probability that sequences with higher scores are more likely to be played. The exponent value can be adjusted with the \code{<^>} or \code{<6>} key. Setting the exponent value to 0 makes all sequences equally likely to be played. Setting it to a large value (e.g., 100) almost guarantees that the sequence with the highest score is played next. The score for the current sequence can also be set manually with the \code{<o>} key. Setting the score to 0 means that the sequence has a zero probability of being presented.
+   The trainer uses the score to choose the next sequence. Sequences with higher scores have a higher chance to be presented. The probability of playing a particular sequence is computed with \eqn{p_i = s_i^e / \sum s_i^e}, where \eqn{s_i} is the score of the \eqn{i}th sequence and \eqn{e} is the \sQuote{exponent value}. This is set to 2 by default and enhances the probability that sequences with higher scores are more likely to be played. The exponent value can be adjusted with the \code{<^>} (or \code{<6>}) key. Setting the exponent value to 0 makes all sequences equally likely to be played. Setting it to a large value (e.g., 100) almost guarantees that the sequence with the highest score is played next. The score for the current sequence can also be set manually with the \code{<o>} key. Setting the score to 0 means that the sequence has a zero probability of being presented.
 
    Note that the trainer does not check for illegal or impossible moves. Therefore, if you make such a move by accident when playing a sequence (and hence receive the 40 point score penalty described above), you can use the \code{<t>} key to take the score adjustment back.
 
@@ -51,7 +51,7 @@
 
    The keywords \code{score}, \code{played}, and \code{days} can be abbreviated to \code{s}, \code{p} , and \code{d} (so \code{s > 80}, \code{p < 1}, and \code{d > 2} would also work). Other comparators such as \code{>=}, \code{<}, and \code{>=} can also be used (e.g., \code{s <= 10}).
 
-   Hitting \code{<enter>} at the prompt (i.e., not entering any search string) keeps the current selection. Entering \code{*} at the prompt selects all sequences. The \code{<*>} or \code{<8>} keys also select all sequences without using the \code{</>} key first.
+   Hitting \code{<enter>} at the prompt (i.e., not entering any search string) keeps the current selection. Entering \code{*} at the prompt selects all sequences. The \code{<*>} (or \code{<8>}) key also select all sequences without using \code{</>} first.
 
    In \sQuote{test} mode, sequences are played by default at random based on the score as described above. However, you can toggle into a different selection mode with the \code{<m>} key. The options are:
    \enumerate{
@@ -101,7 +101,7 @@
 }
 \section{The Board Editor}{
 
-   When in \sQuote{add} mode, the \code{<b>} key opens up a board editor. Here, you can quickly set up a more advanced position (e.g., for a chess puzzle). With left-click and drag, pieces can be moved around. With right-click and drag, you can copy a piece. A right-click without a drag deletes a piece. The \code{<f>} key flips the board. The \code{<n>} key resets the board into the starting position. The \code{<c>} key clears the board. The \code{<s>} key can be used to select which side plays the first move. With \code{<F1>}, you can receive a help overlay. You can quit the board editor with the \code{<q>} or \code{<escape>} key.
+   When in \sQuote{add} mode, the \code{<b>} key opens up a board editor. Here, you can quickly set up a more advanced position (e.g., for a chess puzzle). With left-click and drag, pieces can be moved around. With right-click and drag, you can copy a piece. A right-click without a drag deletes a piece. The \code{<f>} key flips the board. The \code{<n>} key resets the board into the starting position. The \code{<c>} key clears the board. The \code{<s>} key can be used to select which side plays the first move. With \code{<F1>}, you can receive a help overlay. You can quit the board editor with \code{<q>} or \code{<escape>}.
 
 }
 \section{Managing and Selecting Players}{
@@ -124,7 +124,7 @@
 
    If Stockfish (\url{https://stockfishchess.org}) is installed, it can be used in the background to automatically obtain position evaluations when adding sequences. For this, specify the path (including the executable) to Stockfish via the \code{sfpath} argument of the \code{\link{play}} function. If this is set correctly, then position evaluations will be automatically computed and added to a sequence in \sQuote{add} mode. Evaluations are given in centipawns divided by 100, except for forced mates, which are given as \eqn{\pm99.9}. When playing a sequence, these evaluations are then shown as an evaluation bar on the left of the board.
 
-   By default, evaluations are based on a search depth of 20 half-moves. Obtaining such an evaluation for a given position should be relatively quick and not add much lag when creating a sequence. In \sQuote{add} mode, the \code{<h>} key shows the best move according to Stockfish in a given position. The \code{<H>} key will run a deeper analysis (by default based on search depth of 30) and show the best move according to Stockfish. Since this may take some time, a progress bar is shown at the top while the analysis is running. With \code{<F7>}, you can adjust the Stockfish settings, including the calculation depths (for fast and deep evaluations), the number of principal evaluations that will be evaluated (for fast and deep evaluations), the number of threads that Stockfish can use during its calculations (the default is 1), and the hash size in MB (the default is 256).
+   By default, evaluations are based on a search depth of 20 half-moves. Obtaining such an evaluation for a given position should be relatively quick and not add much lag when creating a sequence. In \sQuote{add} mode, the \code{<h>} key shows the best move according to Stockfish in a given position. The \code{<H>} key will run a deeper analysis (by default based on search depth of 30) and show the best move according to Stockfish. Since this may take some time, a progress bar is shown at the top while the analysis is running. With \code{<F7>}, you can adjust the Stockfish settings, including the calculation depths (for fast and deep evaluations and for the play mode; see below), the number of principal evaluations that will be evaluated (for fast and deep evaluations), the number of threads that Stockfish can use during its calculations (the default is 1), and the hash size in MB (the default is 256).
 
    In \sQuote{test} mode, the \code{<u>} key updates the evaluations for all moves in a sequence by recalculating the evaluations with the current setting for a deeper analysis. Note that this can take a bit of time, depending on the number of moves in the sequence. After updating the evaluations, they are automatically saved to the sequence file.
 
@@ -133,7 +133,9 @@
 }
 \section{Play Mode}{
 
-   If Stockfish is running, you can switch into \sQuote{play} mode with the \code{<\>} or \code{<#>} key. This is especially useful at the end of a sequence, to continue playing further moves against the computer from the end position of a sequence (e.g., to practice holding an advantage gained during an opening sequence). As noted above, illegal positions crash Stockfish. Use \code{<F7>} to restart it. Also, there is no check if the moves are legal and/or are played for the correct side/color.
+   If Stockfish is running, you can switch into \sQuote{play} mode with \code{<\>} or \code{<#>}. This is especially useful at the end of a sequence, to continue playing further moves against the computer from the end position of a sequence (e.g., to practice holding an advantage gained during an opening sequence). In this mode, the computer chooses by default the best move according to search depth of 10 half-moves, but this can be adjusted via \code{<F7>}.
+
+   As noted above, illegal positions crash Stockfish. Use \code{<F7>} to restart it. Also, there is no check if the moves are legal and/or are played for the correct side/color.
 
 }
 \section{Other Options and Shortcuts}{

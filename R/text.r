@@ -1,4 +1,4 @@
-.text <- function(x, arg, arg2) {
+.text <- function(x, arg, arg2, arg3) {
 
    lang <- .get("lang")
 
@@ -498,38 +498,38 @@
 
    if (x == "sfrunning") {
       return(switch(lang,
-                    de = paste0("Stockfish Status:                       ", ifelse(arg, "an", "aus"), "\n"),
-                         paste0("Stockfish status:                 ", ifelse(arg, "on", "off"), "\n")
+                    de = paste0("Stockfish Status:                         ", ifelse(arg, "an", "aus"), "\n"),
+                         paste0("Stockfish status:                    ", ifelse(arg, "on", "off"), "\n")
    ))}
 
    if (x == "sfpath") {
       return(switch(lang,
-                    de = paste0("Stockfish Pfad:                         ", arg, "\n"),
-                         paste0("Stockfish path:                   ", arg, "\n")
+                    de = paste0("Stockfish Pfad:                           ", arg, "\n"),
+                         paste0("Stockfish path:                      ", arg, "\n")
    ))}
 
    if (x == "depths") {
       return(switch(lang,
-                    de = paste0("Berechnungstiefen (schnell,tief):       ", arg, ",", arg2, "\n"),
-                         paste0("Calculation depths (fast,deep):   ", arg, ",", arg2, "\n")
+                    de = paste0("Berechnungstiefen (schnell,tief,spielen): ", arg, ",", arg2, ",", arg3, "\n"),
+                         paste0("Calculation depths (fast,deep,play): ", arg, ",", arg2, ",", arg3, "\n")
    ))}
 
    if (x == "multipvs") {
       return(switch(lang,
-                    de = paste0("Anzahl der Zugvarianten (schnell,tief): ", arg, ",", arg2, "\n"),
-                         paste0("Number of variations (fast,deep): ", arg, ",", arg2, "\n")
+                    de = paste0("Anzahl der Zugvarianten (schnell,tief):   ", arg, ",", arg2, "\n"),
+                         paste0("Number of variations (fast,deep):    ", arg, ",", arg2, "\n")
    ))}
 
    if (x == "threads") {
       return(switch(lang,
-                    de = paste0("Anzahl der Threads:                     ", arg, "\n"),
-                         paste0("Number of threads:                ", arg, "\n")
+                    de = paste0("Anzahl der Threads:                       ", arg, "\n"),
+                         paste0("Number of threads:                   ", arg, "\n")
    ))}
 
    if (x == "hash") {
       return(switch(lang,
-                    de = paste0("Hashgr\U000000F6\U000000DFe:                              ", arg, "\n"),
-                         paste0("Hash size:                        ", arg, "\n")
+                    de = paste0("Hashgr\U000000F6\U000000DFe:                                ", arg, "\n"),
+                         paste0("Hash size:                           ", arg, "\n")
    ))}
 
    if (x == "sfoptions") {
@@ -564,8 +564,8 @@
 
    if (x == "depthenter") {
       return(switch(lang,
-                    de = "Berechnungstiefen (<schnell>,<tief>): ",
-                         "Calculation depths (<fast>,<deep>): "
+                    de = "Berechnungstiefen (<schnell>,<tief>,<spielen>): ",
+                         "Calculation depths (<fast>,<deep>,<play>): "
    ))}
 
    if (x == "depthsetsuccess") {
@@ -702,8 +702,8 @@
 
    if (x == "explsettings") {
       return(switch(lang,
-                    de = c("Sprache", "Spielername", "Modus", "Aktuelles Sequenzverzeichnis", "Selektionsmodus f\U000000FCr Sequenzen", "Zeitgesteuerter Modus", "Zeit pro Zug (im zeitgesteuerten Modus)", "Exponentenwert", "Multiplikator f\U000000FCr abgeschlossene Sequenzen", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Bewertungsleiste anzeigen", "Animationsschritte f\U000000FCr die Bewertungsleiste", "Warten zwischen Sequenzen", "Zeit zwischen den Z\U000000FCgen (Sekunden)", "Linienbreite", "Lautst\U000000E4rke (%)", "Fortschrittsdiagramm nach Sequenzen anzeigen", "Sequenzen nach Fehler wiederholen", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Stockfish Pfad", "Berechnungstiefe (schnell)", "Berechnungstiefe (tief)", "Anzahl der besten Zugvarianten (schnell)", "Anzahl der besten Zugvarianten (tief)", "Anzahl der Threads f\U000000FCr Stockfish", "Hashgr\U000000F6\U000000DFe f\U000000FCr Stockfish"),
-                         c("Language", "Player name", "Mode", "Current sequence directory", "Selection mode for sequences", "Timed mode", "Time per move (in timed mode)", "Exponent value", "Multiplier for completed sequences", "Score penalty for wrong moves", "Score penalty per hint", "Show evaluation bar", "Animation steps for the evaluation bar", "Wait between sequences", "Time between moves (seconds)", "Line width", "Sound volume (%)", "Show progress graph after sequences", "Repeat sequences after mistake", "Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Stockfish path", "Calculation depth (fast)", "Calculation depth (deep)", "Number of principal variations (fast)", "Number of principal variations (deep)", "Number of threads for Stockfish", "Hash size for Stockfish")
+                    de = c("Sprache", "Spielername", "Modus", "Aktuelles Sequenzverzeichnis", "Selektionsmodus f\U000000FCr Sequenzen", "Zeitgesteuerter Modus", "Zeit pro Zug (im zeitgesteuerten Modus)", "Exponentenwert", "Multiplikator f\U000000FCr abgeschlossene Sequenzen", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Bewertungsleiste anzeigen", "Animationsschritte f\U000000FCr die Bewertungsleiste", "Warten zwischen Sequenzen", "Zeit zwischen den Z\U000000FCgen (Sekunden)", "Linienbreite", "Lautst\U000000E4rke (%)", "Fortschrittsdiagramm nach Sequenzen anzeigen", "Sequenzen nach Fehler wiederholen", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Stockfish Pfad", "Berechnungstiefe (schnell)", "Berechnungstiefe (tief)", "Berechnungstiefe (spielen)", "Anzahl der besten Zugvarianten (schnell)", "Anzahl der besten Zugvarianten (tief)", "Anzahl der Threads f\U000000FCr Stockfish", "Hashgr\U000000F6\U000000DFe f\U000000FCr Stockfish"),
+                         c("Language", "Player name", "Mode", "Current sequence directory", "Selection mode for sequences", "Timed mode", "Time per move (in timed mode)", "Exponent value", "Multiplier for completed sequences", "Score penalty for wrong moves", "Score penalty per hint", "Show evaluation bar", "Animation steps for the evaluation bar", "Wait between sequences", "Time between moves (seconds)", "Line width", "Sound volume (%)", "Show progress graph after sequences", "Repeat sequences after mistake", "Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Stockfish path", "Calculation depth (fast)", "Calculation depth (deep)", "Calculation depth (play)", "Number of principal variations (fast)", "Number of principal variations (deep)", "Number of threads for Stockfish", "Hash size for Stockfish")
    ))}
 
    if (x == "comment") {

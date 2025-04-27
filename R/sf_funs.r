@@ -103,6 +103,7 @@
       sfproc$write_input(paste0("setoption name MultiPV value ", multipv, "\n"))
       Sys.sleep(0.1)
       sfproc$write_input(paste("position fen", fen, "\n"))
+      Sys.sleep(0.1)
       sfproc$write_input(paste0("go depth ", depth, "\n"))
 
       if (alive) {
@@ -201,14 +202,14 @@
 
 }
 
-.sfsettings <- function(sfproc, sfrun, sfpath, depth1, depth2, multipv1, multipv2, threads, hash) {
+.sfsettings <- function(sfproc, sfrun, sfpath, depth1, depth2, depth3, multipv1, multipv2, threads, hash) {
 
    while (TRUE) {
 
       cat("\n")
       cat(.text("sfrunning", sfrun))
       cat(.text("sfpath",    sfpath))
-      cat(.text("depths",    depth1, depth2))
+      cat(.text("depths",    depth1, depth2, depth3))
       cat(.text("multipvs",  multipv1, multipv2))
       cat(.text("threads",   threads))
       cat(.text("hash",      hash))
@@ -274,14 +275,17 @@
             if (identical(newdepth, "")) {
                next
             } else {
-               if (grepl("^[0-9]+,\\s*[0-9]+$", newdepth)) {
+               if (grepl("^[0-9]+,\\s*[0-9]+,\\s*[0-9]+$", newdepth)) {
                   newdepth <- strsplit(newdepth, ",", fixed=TRUE)[[1]]
                   newdepth1 <- round(as.numeric(newdepth[1]))
                   newdepth2 <- round(as.numeric(newdepth[2]))
+                  newdepth3 <- round(as.numeric(newdepth[3]))
                   newdepth1 <- max(1, newdepth1)
                   newdepth2 <- max(1, newdepth2)
+                  newdepth3 <- max(1, newdepth3)
                   depth1 <- newdepth1
                   depth2 <- newdepth2
+                  depth3 <- newdepth3
                   cat(.text("depthsetsuccess"))
                } else {
                   cat(.text("depthsetfail"))
@@ -353,6 +357,6 @@
       }
    }
 
-   return(list(sfproc=sfproc, sfrun=sfrun, sfpath=sfpath, depth1=depth1, depth2=depth2, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash))
+   return(list(sfproc=sfproc, sfrun=sfrun, sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash))
 
 }

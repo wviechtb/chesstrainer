@@ -41,6 +41,7 @@ play <- function(lang="en", sfpath="", ...) {
    cex.eval    <- ifelse(is.null(ddd[["cex.eval"]]),    0.5,            ddd[["cex.eval"]])
    depth1      <- ifelse(is.null(ddd[["depth1"]]),      20,             ddd[["depth1"]])
    depth2      <- ifelse(is.null(ddd[["depth2"]]),      30,             ddd[["depth2"]])
+   depth3      <- ifelse(is.null(ddd[["depth3"]]),      10,             ddd[["depth3"]])
    multipv1    <- ifelse(is.null(ddd[["multipv1"]]),    1,              ddd[["multipv1"]])
    multipv2    <- ifelse(is.null(ddd[["multipv2"]]),    1,              ddd[["multipv2"]])
    threads     <- ifelse(is.null(ddd[["threads"]]),     1,              ddd[["threads"]])
@@ -83,6 +84,7 @@ play <- function(lang="en", sfpath="", ...) {
    cex.eval[cex.eval < 0.1] <- 0.1
    depth1[depth1 < 1] <- 1
    depth2[depth2 < 1] <- 1
+   depth3[depth3 < 1] <- 1
    multipv1[multipv1 < 1] <- 1
    multipv2[multipv2 < 1] <- 1
    hash[hash < 16] <- 16
@@ -107,7 +109,7 @@ play <- function(lang="en", sfpath="", ...) {
                        selmode=selmode, timed=timed, timepermove=timepermove, expval=expval, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint,
                        eval=eval, evalsteps=evalsteps, wait=wait, sleep=sleep, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval,
-                       sfpath=sfpath, depth1=depth1, depth2=depth2, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash)
+                       sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       cols <- sapply(cols.all, function(x) .get(x))
       saveRDS(cols, file=file.path(configdir, "colors.rds"))
@@ -169,6 +171,8 @@ play <- function(lang="en", sfpath="", ...) {
             depth1 <- settings[["depth1"]]
          if (is.null(mc[["depth2"]]))
             depth2 <- settings[["depth2"]]
+         if (is.null(mc[["depth3"]]))
+            depth3 <- settings[["depth3"]]
          if (is.null(mc[["multipv1"]]))
             multipv1 <- settings[["multipv1"]]
          if (is.null(mc[["multipv2"]]))
@@ -183,7 +187,7 @@ play <- function(lang="en", sfpath="", ...) {
                        selmode=selmode, timed=timed, timepermove=timepermove, expval=expval, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint,
                        eval=eval, evalsteps=evalsteps, wait=wait, sleep=sleep, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval,
-                       sfpath=sfpath, depth1=depth1, depth2=depth2, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash)
+                       sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       if (file.exists(file.path(configdir, "colors.rds"))) {
          cols <- readRDS(file.path(configdir, "colors.rds"))
@@ -2002,7 +2006,7 @@ play <- function(lang="en", sfpath="", ...) {
             # F3 to print the settings
 
             if (identical(click, "F3")) {
-               tab <- data.frame(lang, player, mode, seqdir=seqdir[seqdirpos], selmode, timed, timepermove, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, wait, sleep, lwd, volume, showgraph, repmistake, cex.top, cex.bot, cex.eval, sfpath, depth1, depth2, multipv1, multipv2, threads, hash)
+               tab <- data.frame(lang, player, mode, seqdir=seqdir[seqdirpos], selmode, timed, timepermove, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, wait, sleep, lwd, volume, showgraph, repmistake, cex.top, cex.bot, cex.eval, sfpath, depth1, depth2, depth3, multipv1, multipv2, threads, hash)
                .showsettings(tab, lwd)
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
@@ -2073,13 +2077,14 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (identical(click, "F7")) {
                eval(expr=switch1)
-               tmp <- .sfsettings(sfproc, sfrun, sfpath, depth1, depth2, multipv1, multipv2, threads, hash)
+               tmp <- .sfsettings(sfproc, sfrun, sfpath, depth1, depth2, depth3, multipv1, multipv2, threads, hash)
                eval(expr=switch2)
                sfproc   <- tmp$sfproc
                sfrun    <- tmp$sfrun
                sfpath   <- tmp$sfpath
                depth1   <- tmp$depth1
                depth2   <- tmp$depth2
+               depth3   <- tmp$depth3
                multipv1 <- tmp$multipv1
                multipv2 <- tmp$multipv2
                threads  <- tmp$threads
@@ -2087,6 +2092,7 @@ play <- function(lang="en", sfpath="", ...) {
                settings$sfpath   <- sfpath
                settings$depth1   <- depth1
                settings$depth2   <- depth2
+               settings$depth3   <- depth3
                settings$multipv1 <- multipv1
                settings$multipv2 <- multipv2
                settings$threads  <- threads
@@ -2223,7 +2229,7 @@ play <- function(lang="en", sfpath="", ...) {
                mode <- "play"
                timed <- FALSE
                fen <- .genfen(pos, flip, sidetoplay, i)
-               res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, fen, sidetoplay, verbose)
+               res.sf <- .sf.eval(sfproc, sfrun, ifelse(flip, ifelse(sidetoplay=="b", depth1, depth3), ifelse(sidetoplay=="w", depth1, depth3)), multipv1, fen, sidetoplay, verbose)
                evalval  <- res.sf$eval[1]
                bestmove <- res.sf$bestmove[1]
                matetype <- res.sf$matetype
@@ -2488,7 +2494,7 @@ play <- function(lang="en", sfpath="", ...) {
                         .drawsideindicator(sidetoplay, flip)
                         i <- i + 1
                         fen <- .genfen(pos, flip, sidetoplay, i)
-                        res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, fen, sidetoplay, verbose)
+                        res.sf <- .sf.eval(sfproc, sfrun, ifelse(flip, ifelse(sidetoplay=="b", depth1, depth3), ifelse(sidetoplay=="w", depth1, depth3)), multipv1, fen, sidetoplay, verbose)
                         evalval  <- res.sf$eval[1]
                         bestmove <- res.sf$bestmove[1]
                         matetype <- res.sf$matetype
@@ -2564,7 +2570,7 @@ play <- function(lang="en", sfpath="", ...) {
 
             fen <- .genfen(pos, flip, sidetoplay, i)
             evalvallast <- evalval[1]
-            res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, fen, sidetoplay, verbose)
+            res.sf <- .sf.eval(sfproc, sfrun, ifelse(mode=="add", depth1, depth3), multipv1, fen, sidetoplay, verbose)
             evalval  <- res.sf$eval
             bestmove <- res.sf$bestmove
             matetype <- res.sf$matetype
