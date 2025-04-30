@@ -677,14 +677,14 @@ play <- function(lang="en", sfpath="", ...) {
                }
                circles <- .parseannot(sub$moves$circles[i], cols=2)
                arrows <- .parseannot(sub$moves$arrows[i], cols=4)
-               .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
+               .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode, onlyi=TRUE)
                .drawcircles(circles, lwd=lwd)
                .drawarrows(arrows, lwd=lwd)
                Sys.sleep(sleep)
             }
 
             show <- FALSE
-            .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
+            #.textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
 
          }
 
@@ -1435,6 +1435,7 @@ play <- function(lang="en", sfpath="", ...) {
                } else {
                   if (nrow(circles) >= 1L || nrow(arrows) >= 1L || nrow(harrows) >= 1L) {
                      .rmannot(pos, circles, rbind(arrows, harrows), flip)
+                     harrows <- matrix(nrow=0, ncol=4)
                      .drawcircles(circles, lwd=lwd)
                      .drawarrows(arrows, lwd=lwd)
                   }
@@ -1689,7 +1690,7 @@ play <- function(lang="en", sfpath="", ...) {
                   .drawsideindicator(sidetoplay, flip)
                }
                i <- i + 1
-               .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
+               .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode, onlyi=TRUE)
                if (identical(sub$moves$comment[i], "") && !identical(sub$moves$comment[i-1], "")) {
                   texttop <- .texttop(sub$moves$comment[i-1])
                } else {
@@ -1727,7 +1728,7 @@ play <- function(lang="en", sfpath="", ...) {
                   }
                   .redrawpos(pos, posold, flip=flip)
                   .draweval(sub$moves$eval[i-1], sub$moves$eval[i], flip=flip, eval=eval, evalsteps=evalsteps)
-                  .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
+                  .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode, onlyi=TRUE)
                   if (timed) {
                      .drawtimer(movestoplay, movesplayed, timetotal, timepermove)
                   } else {
@@ -1839,18 +1840,19 @@ play <- function(lang="en", sfpath="", ...) {
             if (identical(click, "m")) {
                selmodeold <- selmode
                selmode <- .selmodesetting(selmode, lwd)
-               .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
-               settings$selmode <- selmode
-               saveRDS(settings, file=file.path(configdir, "settings.rds"))
-               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
-               .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
-               .drawcircles(circles, lwd=lwd)
-               .drawarrows(arrows, lwd=lwd)
-               .drawarrows(harrows, lwd=lwd, hint=TRUE)
                if (selmodeold != selmode) {
                   seqno <- 1
                   run.rnd <- FALSE
                   input <- FALSE
+               } else {
+                  .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
+                  settings$selmode <- selmode
+                  saveRDS(settings, file=file.path(configdir, "settings.rds"))
+                  .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+                  .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
+                  .drawcircles(circles, lwd=lwd)
+                  .drawarrows(arrows, lwd=lwd)
+                  .drawarrows(harrows, lwd=lwd, hint=TRUE)
                }
                next
             }
@@ -1943,7 +1945,7 @@ play <- function(lang="en", sfpath="", ...) {
                      } else {
                         texttop <- .texttop(sub$moves$comment[i])
                      }
-                     .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
+                     .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode, onlyi=TRUE)
                      sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                      .drawsideindicator(sidetoplay, flip)
                      fen <- .genfen(pos, flip, sidetoplay, i)
@@ -1957,7 +1959,7 @@ play <- function(lang="en", sfpath="", ...) {
                      sub$moves$fen[i] <- fen
                      .draweval(sub$moves$eval[i], sub$moves$eval[i-1], flip=flip, eval=eval, evalsteps=evalsteps)
                   }
-                  .textbot(mode, show, player, seqname, seqnum, score, played, i+1, totalmoves, selmode)
+                  .textbot(mode, show, player, seqname, seqnum, score, played, i+1, totalmoves, selmode, onlyi=TRUE)
                   .drawsideindicator(sidetoplay, flip)
                   cat(.text("evalupdatenew"))
                   print(sub$moves[-11])
@@ -2606,7 +2608,7 @@ play <- function(lang="en", sfpath="", ...) {
 
             # in test mode, let the trainer play the next move and increase i
 
-            .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
+            .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode, onlyi=TRUE)
             if (timed) {
                .drawtimer(movestoplay, movesplayed, timetotal, timepermove)
             } else {
@@ -2636,7 +2638,7 @@ play <- function(lang="en", sfpath="", ...) {
 
          }
 
-         .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
+         .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode, onlyi=mode=="test")
          givehint1 <- FALSE
          givehint2 <- FALSE
 

@@ -727,14 +727,16 @@
 
 }
 
-.textbot <- function(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode) {
+.textbot <- function(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode, onlyi=FALSE) {
 
-   lang <- .get("lang")
-   cex  <- .get("cex.bot")
-   font <- .get("font.mono")
-   col  <- .get("col.bot")
+   lang   <- .get("lang")
+   cex    <- .get("cex.bot")
+   font   <- .get("font.mono")
+   col    <- .get("col.bot")
+   col.bg <- .get("col.bg")
 
-   rect(-2, -2, 12, 0.6, col=.get("col.bg"), border=NA)
+   if (!onlyi)
+      rect(-2, -1, 12, 0.6, col=col.bg, border=NA)
 
    if (lang == "en") {
 
@@ -754,13 +756,18 @@
                         sequential    = "sequential")
 
       if (mode == "test") {
-         seqname <- substr(seqname, 1, nchar(seqname)-4)
-         text(0, 0.45, paste0("Mode:   ", "Test (selection: ", selmode, ")"), pos=4, cex=cex, family=font, col=col)
-         text(0, 0.30, paste0("Name:   ", "(", seqnum, ") ", seqname), pos=4, cex=cex, family=font, col=col)
-         text(0, 0.15, paste0("Player: ", player), pos=4, cex=cex, family=font, col=col)
-         text(0, 0.00, paste0("Move:   ", i-1, " / ", totalmoves), pos=4, cex=cex, family=font, col=col)
-         text(9, 0.15, paste0("Played: ", played), pos=4, cex=cex, family=font, col=col)
-         text(9, 0.00, paste0("Score:  ", score), pos=4, cex=cex, family=font, col=col)
+         if (onlyi) {
+            text(0, 0.00, paste0("        ", paste0(rep("\U00002588",10), collapse="")), pos=4, cex=cex, family=font, col=col.bg)
+            text(0, 0.00, paste0("        ", i-1, " / ", totalmoves), pos=4, cex=cex, family=font, col=col)
+         } else {
+            seqname <- substr(seqname, 1, nchar(seqname)-4)
+            text(0, 0.45, paste0("Mode:   ", "Test (selection: ", selmode, ")"), pos=4, cex=cex, family=font, col=col)
+            text(0, 0.30, paste0("Name:   ", "(", seqnum, ") ", seqname), pos=4, cex=cex, family=font, col=col)
+            text(0, 0.15, paste0("Player: ", player), pos=4, cex=cex, family=font, col=col)
+            text(0, 0.00, paste0("Move:   ", i-1, " / ", totalmoves), pos=4, cex=cex, family=font, col=col)
+            text(9, 0.15, paste0("Played: ", played), pos=4, cex=cex, family=font, col=col)
+            text(9, 0.00, paste0("Score:  ", score), pos=4, cex=cex, family=font, col=col)
+         }
       }
 
       if (mode == "play") {
@@ -789,16 +796,22 @@
                         sequential    = "sequenziell")
 
       if (mode == "test") {
-         seqname <- substr(seqname, 1, nchar(seqname)-4)
-         text(0, 0.45, paste0("Modus:   ", "Test (Selektion: ", selmode, ")"), pos=4, cex=cex, family=font, col=col)
-         text(0, 0.30, paste0("Name:    ", "(", seqnum, ") ", seqname), pos=4, cex=cex, family=font, col=col)
-         text(0, 0.15, paste0("Spieler: ", player), pos=4, cex=cex, family=font, col=col)
-         text(0, 0.00, paste0("Zug:     ", i-1, " / ", totalmoves), pos=4, cex=cex, family=font, col=col)
-         text(9, 0.15, paste0("Gespielt: ", played), pos=4, cex=cex, family=font, col=col)
-         text(9, 0.00, paste0("Punkte:   ", score), pos=4, cex=cex, family=font, col=col)
+         if (onlyi) {
+            text(0, 0.00, paste0("         ", paste0(rep("\U00002588",10), collapse="")), pos=4, cex=cex, family=font, col=col.bg)
+            text(0, 0.00, paste0("         ", i-1, " / ", totalmoves), pos=4, cex=cex, family=font, col=col)
+         } else {
+            seqname <- substr(seqname, 1, nchar(seqname)-4)
+            text(0, 0.45, paste0("Modus:   ", "Test (Selektion: ", selmode, ")"), pos=4, cex=cex, family=font, col=col)
+            text(0, 0.30, paste0("Name:    ", "(", seqnum, ") ", seqname), pos=4, cex=cex, family=font, col=col)
+            text(0, 0.15, paste0("Spieler: ", player), pos=4, cex=cex, family=font, col=col)
+            text(0, 0.00, paste0("Zug:     ", i-1, " / ", totalmoves), pos=4, cex=cex, family=font, col=col)
+            text(9, 0.15, paste0("Gespielt: ", played), pos=4, cex=cex, family=font, col=col)
+            text(9, 0.00, paste0("Punkte:   ", score), pos=4, cex=cex, family=font, col=col)
+         }
       }
 
       if (mode == "play") {
+         text(0, 0.15, paste0("Zug:     ", i), pos=4, cex=cex, family=font, col=col)
          text(0, 0.45, paste0("Modus:   ", "Spielen"), pos=4, cex=cex, family=font, col=col)
          text(0, 0.30, paste0("Spieler: ", player), pos=4, cex=cex, family=font, col=col)
          text(0, 0.15, paste0("Zug:     ", i), pos=4, cex=cex, family=font, col=col)
