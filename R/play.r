@@ -212,7 +212,7 @@ play <- function(lang="en", sfpath="", ...) {
       direxists <- dir.exists(seqdir)
 
       if (any(!direxists)) {
-         seqdir <- seqdir[!direxists]
+         seqdir <- seqdir[direxists]
          if (length(seqdir) == 0L)
             seqdir <- ""
          seqdirpos <- 1
