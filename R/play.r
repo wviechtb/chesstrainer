@@ -421,6 +421,7 @@ play <- function(lang="en", sfpath="", ...) {
       circles <- matrix(nrow=0, ncol=2) # to store circles
       arrows  <- matrix(nrow=0, ncol=4) # to store arrows
       harrows <- matrix(nrow=0, ncol=4) # to store hint arrows
+      evalvals <- c()
 
       # start new game for Stockfish
 
@@ -890,6 +891,7 @@ play <- function(lang="en", sfpath="", ...) {
                circles <- matrix(nrow=0, ncol=2)
                arrows  <- matrix(nrow=0, ncol=4)
                harrows <- matrix(nrow=0, ncol=4)
+               evalvals <- c()
                next
             }
 
@@ -986,7 +988,7 @@ play <- function(lang="en", sfpath="", ...) {
                   .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                   .drawcircles(circles, lwd=lwd)
                   .drawarrows(arrows, lwd=lwd)
-                  .drawarrows(harrows, lwd=lwd, hint=TRUE)
+                  .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
                }
                next
             }
@@ -1451,10 +1453,12 @@ play <- function(lang="en", sfpath="", ...) {
                   if (any(bestmove != "")) {
                      nmoves <- length(bestmove)
                      bestmovetxt <- c()
+                     evalvals <- c()
                      for (j in 1:nmoves) {
                         if (bestmove[j] == "")
                            next
                         bestmovetxt <- c(bestmovetxt, .parsesfmove(bestmove[j], pos, flip, evalval[j])$txt)
+                        evalvals <- c(evalvals, evalval[j])
                         bestx1 <- as.numeric(substr(bestmove[j], 2, 2))
                         besty1 <- which(letters[1:8] == substr(bestmove[j], 1, 1))
                         bestx2 <- as.numeric(substr(bestmove[j], 4, 4))
@@ -1467,7 +1471,7 @@ play <- function(lang="en", sfpath="", ...) {
                         }
                         harrows <- rbind(harrows, c(bestx1, besty1, bestx2, besty2))
                      }
-                     .drawarrows(harrows, lwd=lwd, hint=TRUE)
+                     .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
                      if (nmoves > 1L)
                         bestmovetxt <- paste0(seq_along(bestmovetxt), ": ", bestmovetxt)
                      .texttop(paste0(bestmovetxt, collapse="\n"), pos=4, xpos=4.1)
@@ -1538,6 +1542,7 @@ play <- function(lang="en", sfpath="", ...) {
                         circles <- matrix(nrow=0, ncol=2)
                         arrows  <- matrix(nrow=0, ncol=4)
                         harrows <- matrix(nrow=0, ncol=4)
+                        evalvals <- c()
                      }
                      .redrawpos(pos, posold, flip=flip)
                      .draweval(sub$moves$eval[i-1], oldeval, flip=flip, eval=eval, evalsteps=evalsteps)
@@ -1545,8 +1550,8 @@ play <- function(lang="en", sfpath="", ...) {
                      .drawsideindicator(sidetoplay, flip)
                      fen <- .genfen(pos, flip, sidetoplay, i)
                      res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, fen, sidetoplay, verbose)
-                     evalval  <- res.sf$eval[1]
-                     bestmove <- res.sf$bestmove[1]
+                     evalval  <- res.sf$eval
+                     bestmove <- res.sf$bestmove
                      matetype <- res.sf$matetype
                      sfproc   <- res.sf$sfproc
                      sfrun    <- res.sf$sfrun
@@ -1593,6 +1598,7 @@ play <- function(lang="en", sfpath="", ...) {
                      circles <- matrix(nrow=0, ncol=2)
                      arrows  <- matrix(nrow=0, ncol=4)
                      harrows <- matrix(nrow=0, ncol=4)
+                     evalvals <- c()
                   }
 
                } else {
@@ -1614,6 +1620,7 @@ play <- function(lang="en", sfpath="", ...) {
                   circles <- matrix(nrow=0, ncol=2)
                   arrows  <- matrix(nrow=0, ncol=4)
                   harrows <- matrix(nrow=0, ncol=4)
+                  evalvals <- c()
 
                   if (!identical(sub$moves$comment[1], "")) {
                      texttop <- .texttop(sub$moves$comment[1])
@@ -1645,8 +1652,8 @@ play <- function(lang="en", sfpath="", ...) {
                .drawsideindicator(sidetoplay, flip)
                fen <- .genfen(pos, flip, sidetoplay, i)
                res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, fen, sidetoplay, verbose)
-               evalval  <- res.sf$eval[1]
-               bestmove <- res.sf$bestmove[1]
+               evalval  <- res.sf$eval
+               bestmove <- res.sf$bestmove
                matetype <- res.sf$matetype
                sfproc   <- res.sf$sfproc
                sfrun    <- res.sf$sfrun
@@ -1663,8 +1670,7 @@ play <- function(lang="en", sfpath="", ...) {
                comment <- ""
                sub$moves <- sub$moves[numeric(0),]
                sub$pos <- pos
-               #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
-               #.draweval(evalval, flip=flip, eval=eval, evalsteps=evalsteps)
+               .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
                next
             }
 
@@ -1749,6 +1755,7 @@ play <- function(lang="en", sfpath="", ...) {
                circles <- matrix(nrow=0, ncol=2)
                arrows  <- matrix(nrow=0, ncol=4)
                harrows <- matrix(nrow=0, ncol=4)
+               evalvals <- c()
                next
             }
 
@@ -1852,7 +1859,7 @@ play <- function(lang="en", sfpath="", ...) {
                   .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                   .drawcircles(circles, lwd=lwd)
                   .drawarrows(arrows, lwd=lwd)
-                  .drawarrows(harrows, lwd=lwd, hint=TRUE)
+                  .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
                }
                next
             }
@@ -1989,7 +1996,7 @@ play <- function(lang="en", sfpath="", ...) {
                .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                .drawcircles(circles, lwd=lwd)
                .drawarrows(arrows, lwd=lwd)
-               .drawarrows(harrows, lwd=lwd, hint=TRUE)
+               .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
                next
             }
 
@@ -2001,7 +2008,7 @@ play <- function(lang="en", sfpath="", ...) {
                .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                .drawcircles(circles, lwd=lwd)
                .drawarrows(arrows, lwd=lwd)
-               .drawarrows(harrows, lwd=lwd, hint=TRUE)
+               .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
                next
             }
 
@@ -2014,7 +2021,7 @@ play <- function(lang="en", sfpath="", ...) {
                .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                .drawcircles(circles, lwd=lwd)
                .drawarrows(arrows, lwd=lwd)
-               .drawarrows(harrows, lwd=lwd, hint=TRUE)
+               .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
                next
             }
 
@@ -2028,7 +2035,7 @@ play <- function(lang="en", sfpath="", ...) {
                .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                .drawcircles(circles, lwd=lwd)
                .drawarrows(arrows, lwd=lwd)
-               .drawarrows(harrows, lwd=lwd, hint=TRUE)
+               .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
                cols <- sapply(cols.all, function(x) .get(x))
                saveRDS(cols, file=file.path(configdir, "colors.rds"))
                next
@@ -2044,7 +2051,7 @@ play <- function(lang="en", sfpath="", ...) {
                .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                .drawcircles(circles, lwd=lwd)
                .drawarrows(arrows, lwd=lwd)
-               .drawarrows(harrows, lwd=lwd, hint=TRUE)
+               .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
                cex.top <- .get("cex.top")
                cex.bot <- .get("cex.bot")
                cex.eval <- .get("cex.eval")
@@ -2148,7 +2155,7 @@ play <- function(lang="en", sfpath="", ...) {
                .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                .drawcircles(circles, lwd=lwd)
                .drawarrows(arrows, lwd=lwd)
-               .drawarrows(harrows, lwd=lwd, hint=TRUE)
+               .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
                next
             }
 
@@ -2201,6 +2208,7 @@ play <- function(lang="en", sfpath="", ...) {
                circles <- matrix(nrow=0, ncol=2)
                arrows  <- matrix(nrow=0, ncol=4)
                harrows <- matrix(nrow=0, ncol=4)
+               evalvals <- c()
                sub$moves <- sub$moves[numeric(0),]
                sub$flip <- flip
                attr(pos, "move") <- NULL
@@ -2232,8 +2240,8 @@ play <- function(lang="en", sfpath="", ...) {
                timed <- FALSE
                fen <- .genfen(pos, flip, sidetoplay, i)
                res.sf <- .sf.eval(sfproc, sfrun, ifelse(flip, ifelse(sidetoplay=="b", depth1, depth3), ifelse(sidetoplay=="w", depth1, depth3)), multipv1, fen, sidetoplay, verbose)
-               evalval  <- res.sf$eval[1]
-               bestmove <- res.sf$bestmove[1]
+               evalval  <- res.sf$eval
+               bestmove <- res.sf$bestmove
                matetype <- res.sf$matetype
                sfproc   <- res.sf$sfproc
                sfrun    <- res.sf$sfrun
@@ -2288,6 +2296,7 @@ play <- function(lang="en", sfpath="", ...) {
                      circles <- matrix(nrow=0, ncol=2)
                      arrows  <- matrix(nrow=0, ncol=4)
                      harrows <- matrix(nrow=0, ncol=4)
+                     evalvals <- c()
                      next
                   }
 
@@ -2335,6 +2344,7 @@ play <- function(lang="en", sfpath="", ...) {
             circles <- matrix(nrow=0, ncol=2)
             arrows  <- matrix(nrow=0, ncol=4)
             harrows <- matrix(nrow=0, ncol=4)
+            evalvals <- c()
          }
 
          if (mode %in% c("add","play")) {
@@ -2498,8 +2508,8 @@ play <- function(lang="en", sfpath="", ...) {
                         i <- i + 1
                         fen <- .genfen(pos, flip, sidetoplay, i)
                         res.sf <- .sf.eval(sfproc, sfrun, ifelse(flip, ifelse(sidetoplay=="b", depth1, depth3), ifelse(sidetoplay=="w", depth1, depth3)), multipv1, fen, sidetoplay, verbose)
-                        evalval  <- res.sf$eval[1]
-                        bestmove <- res.sf$bestmove[1]
+                        evalval  <- res.sf$eval
+                        bestmove <- res.sf$bestmove
                         matetype <- res.sf$matetype
                         sfproc   <- res.sf$sfproc
                         sfrun    <- res.sf$sfrun

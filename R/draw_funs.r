@@ -643,14 +643,23 @@
 
 }
 
-.drawarrows <- function(arrows, lwd, hint=FALSE) {
+.drawarrows <- function(arrows, lwd, hint=FALSE, evalvals, sidetoplay) {
    if (nrow(arrows) == 0L)
       return()
    if (hint) {
       n <- nrow(arrows)
       col.best <- .get("col.best")
-      for (j in 1:nrow(arrows)) {
-         .drawarrow(arrows[j,1], arrows[j,2], arrows[j,3], arrows[j,4], lwd, col=adjustcolor(col.best, alpha.f=sqrt((n+1-j)/n)*0.6))
+      if (n == 1) {
+         .drawarrow(arrows[j,1], arrows[j,2], arrows[j,3], arrows[j,4], lwd, col=adjustcolor(col.best, alpha.f=0.6))
+      } else {
+         if(sidetoplay == "b")
+            evalvals <- -1 * evalvals
+         diffs <- max(evalvals) - evalvals
+         alphas <- exp(-0.5 * diffs) * c(0.65, rep(0.50, n-1))
+         alphas[alphas <= 0.1] <- 0
+         for (j in 1:nrow(arrows)) {
+            .drawarrow(arrows[j,1], arrows[j,2], arrows[j,3], arrows[j,4], lwd, col=adjustcolor(col.best, alpha.f=alphas[j]))
+         }
       }
    } else {
       apply(arrows, 1, function(x) .drawarrow(x[1], x[2], x[3], x[4], lwd=lwd))
