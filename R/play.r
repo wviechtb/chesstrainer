@@ -677,7 +677,7 @@ play <- function(lang="en", sfpath="", ...) {
                }
                circles <- .parseannot(sub$moves$circles[i], cols=2)
                arrows <- .parseannot(sub$moves$arrows[i], cols=4)
-               .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode, onlyi=TRUE)
+               .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
                .drawcircles(circles, lwd=lwd)
                .drawarrows(arrows, lwd=lwd)
                Sys.sleep(sleep)
@@ -740,7 +740,7 @@ play <- function(lang="en", sfpath="", ...) {
                   i <- i + 1
                   sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
 
-                  .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
+                  .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
 
                   fen <- .genfen(pos, flip, sidetoplay, i)
                   evalvallast <- evalval[1]
@@ -899,7 +899,7 @@ play <- function(lang="en", sfpath="", ...) {
                show <- !show
                .texttop(.text("showmoves", show), sleep=0.75)
                .texttop(texttop)
-               .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
+               .textbot(mode, show=show, onlyshow=TRUE)
                next
             }
 
@@ -1431,7 +1431,7 @@ play <- function(lang="en", sfpath="", ...) {
                         givehint2 <- TRUE
                      }
                   }
-                  .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
+                  .textbot(mode, score=score, onlyscore=TRUE)
                } else {
                   if (nrow(circles) >= 1L || nrow(arrows) >= 1L || nrow(harrows) >= 1L) {
                      .rmannot(pos, circles, rbind(arrows, harrows), flip)
@@ -1489,7 +1489,7 @@ play <- function(lang="en", sfpath="", ...) {
                   newscore[newscore < 0] <- 0
                   cat(.text("setnewscore", newscore))
                   score <- newscore
-                  .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
+                  .textbot(mode, score=score, onlyscore=TRUE)
                   saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
                }
                eval(expr=switch2)
@@ -1504,7 +1504,7 @@ play <- function(lang="en", sfpath="", ...) {
                      score <- score - scoreadd
                      .texttop(.text("setscoreback", score), sleep=1)
                      .texttop(texttop)
-                     .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
+                     .textbot(mode, score=score, onlyscore=TRUE)
                      scoreadd <- 0
                   } else {
                      if (score == 100) {
@@ -1541,7 +1541,7 @@ play <- function(lang="en", sfpath="", ...) {
                      }
                      .redrawpos(pos, posold, flip=flip)
                      .draweval(sub$moves$eval[i-1], oldeval, flip=flip, eval=eval, evalsteps=evalsteps)
-                     .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
+                     .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
                      .drawsideindicator(sidetoplay, flip)
                      fen <- .genfen(pos, flip, sidetoplay, i)
                      res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, fen, sidetoplay, verbose)
@@ -1630,7 +1630,7 @@ play <- function(lang="en", sfpath="", ...) {
                      } else {
                         texttop <- .texttop(sub$moves$comment[i])
                      }
-                     .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
+                     .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
                      .draweval(sub$moves$eval[i], sub$moves$eval[i-1], flip=flip, eval=eval, evalsteps=evalsteps)
                      sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                      Sys.sleep(sleep)
@@ -1641,7 +1641,7 @@ play <- function(lang="en", sfpath="", ...) {
 
                }
 
-               .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
+               .textbot(mode, show=show, i=i, totalmoves=totalmoves, onlyshow=TRUE, onlyi=TRUE)
                .drawsideindicator(sidetoplay, flip)
                fen <- .genfen(pos, flip, sidetoplay, i)
                res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, fen, sidetoplay, verbose)
@@ -1690,7 +1690,7 @@ play <- function(lang="en", sfpath="", ...) {
                   .drawsideindicator(sidetoplay, flip)
                }
                i <- i + 1
-               .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode, onlyi=TRUE)
+               .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
                if (identical(sub$moves$comment[i], "") && !identical(sub$moves$comment[i-1], "")) {
                   texttop <- .texttop(sub$moves$comment[i-1])
                } else {
@@ -1728,7 +1728,7 @@ play <- function(lang="en", sfpath="", ...) {
                   }
                   .redrawpos(pos, posold, flip=flip)
                   .draweval(sub$moves$eval[i-1], sub$moves$eval[i], flip=flip, eval=eval, evalsteps=evalsteps)
-                  .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode, onlyi=TRUE)
+                  .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
                   if (timed) {
                      .drawtimer(movestoplay, movesplayed, timetotal, timepermove)
                   } else {
@@ -1945,7 +1945,7 @@ play <- function(lang="en", sfpath="", ...) {
                      } else {
                         texttop <- .texttop(sub$moves$comment[i])
                      }
-                     .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode, onlyi=TRUE)
+                     .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
                      sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                      .drawsideindicator(sidetoplay, flip)
                      fen <- .genfen(pos, flip, sidetoplay, i)
@@ -1959,7 +1959,7 @@ play <- function(lang="en", sfpath="", ...) {
                      sub$moves$fen[i] <- fen
                      .draweval(sub$moves$eval[i], sub$moves$eval[i-1], flip=flip, eval=eval, evalsteps=evalsteps)
                   }
-                  .textbot(mode, show, player, seqname, seqnum, score, played, i+1, totalmoves, selmode, onlyi=TRUE)
+                  .textbot(mode, i=i+1, totalmoves=totalmoves, onlyi=TRUE)
                   .drawsideindicator(sidetoplay, flip)
                   cat(.text("evalupdatenew"))
                   print(sub$moves[-11])
@@ -2374,6 +2374,7 @@ play <- function(lang="en", sfpath="", ...) {
                   scoreadd <- min(adjustwrong, 100-score)
                   score <- score + scoreadd
                }
+               .textbot(mode, score=score, onlyscore=TRUE)
                .rmrect(click1.x, click1.y, lwd=lwd)
                .addrect(click2.x, click2.y, col=.get("col.wrong"), lwd=lwd)
                playsound(system.file("sounds", "error.ogg", package="chesstrainer"), volume=volume)
@@ -2515,7 +2516,7 @@ play <- function(lang="en", sfpath="", ...) {
                            newscore[newscore < 0] <- 0
                            cat(.text("setnewscore", newscore))
                            score <- newscore
-                           .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
+                           .textbot(mode, score=score, onlyscore=TRUE)
                            sub$player[[player]]$score[length(sub$player[[player]]$score)] <- score
                         }
                         eval(expr=switch2)
@@ -2608,7 +2609,7 @@ play <- function(lang="en", sfpath="", ...) {
 
             # in test mode, let the trainer play the next move and increase i
 
-            .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode, onlyi=TRUE)
+            .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
             if (timed) {
                .drawtimer(movestoplay, movesplayed, timetotal, timepermove)
             } else {
@@ -2638,7 +2639,7 @@ play <- function(lang="en", sfpath="", ...) {
 
          }
 
-         .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode, onlyi=mode=="test")
+         .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
          givehint1 <- FALSE
          givehint2 <- FALSE
 
