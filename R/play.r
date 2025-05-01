@@ -2496,6 +2496,13 @@ play <- function(lang="en", sfpath="", ...) {
                         break
                      }
 
+                     if (identical(click, "r")) {
+                        .texttop(.text("replast"), sleep=0.75)
+                        replast <- TRUE
+                        filename <- seqname
+                        break
+                     }
+
                      if (identical(click, "\\") || identical(click, "#")) {
                         saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
                         sub$moves <- sub$moves[seq_len(i),,drop=FALSE]
