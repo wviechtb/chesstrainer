@@ -1546,6 +1546,7 @@ play <- function(lang="en", sfpath="", ...) {
                      }
                      .redrawpos(pos, posold, flip=flip)
                      .draweval(sub$moves$eval[i-1], oldeval, flip=flip, eval=eval, evalsteps=evalsteps)
+                     .texttop(" ")
                      .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
                      .drawsideindicator(sidetoplay, flip)
                      fen <- .genfen(pos, flip, sidetoplay, i)
@@ -1586,6 +1587,8 @@ play <- function(lang="en", sfpath="", ...) {
 
                sub$player <- NULL
 
+               .texttop(" ")
+
                if (identical(click, "A")) {
 
                   # when 'A' is pressed at the start position sub$pos, then i is 1 and sub$moves has 0 rows
@@ -1600,6 +1603,8 @@ play <- function(lang="en", sfpath="", ...) {
                      harrows <- matrix(nrow=0, ncol=4)
                      evalvals <- c()
                   }
+
+                  .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
 
                } else {
 
@@ -1617,7 +1622,7 @@ play <- function(lang="en", sfpath="", ...) {
                   }
 
                   .drawboard(pos, flip=flip)
-                  .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
+                  .textbot(mode, show, player, seqname, seqnum, score, played, i=1, totalmoves, selmode)
                   circles <- matrix(nrow=0, ncol=2)
                   arrows  <- matrix(nrow=0, ncol=4)
                   harrows <- matrix(nrow=0, ncol=4)
@@ -2246,7 +2251,14 @@ play <- function(lang="en", sfpath="", ...) {
                matetype <- res.sf$matetype
                sfproc   <- res.sf$sfproc
                sfrun    <- res.sf$sfrun
+               .texttop(" ")
                .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
+               if (nrow(circles) >= 1L || nrow(arrows) >= 1L || nrow(harrows) >= 1L) {
+                  .rmannot(pos, circles, rbind(arrows, harrows), flip)
+                  circles <- matrix(nrow=0, ncol=2)
+                  arrows  <- matrix(nrow=0, ncol=4)
+                  harrows <- matrix(nrow=0, ncol=4)
+               }
                next
             }
 
