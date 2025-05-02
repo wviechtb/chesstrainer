@@ -1617,6 +1617,7 @@ play <- function(lang="en", sfpath="", ...) {
                   }
 
                   .drawboard(pos, flip=flip)
+                  .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                   circles <- matrix(nrow=0, ncol=2)
                   arrows  <- matrix(nrow=0, ncol=4)
                   harrows <- matrix(nrow=0, ncol=4)
@@ -1928,7 +1929,7 @@ play <- function(lang="en", sfpath="", ...) {
                   }
 
                   .drawboard(pos, flip=flip)
-                  .drawtimer(clear=TRUE)
+                  .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                   circles <- matrix(nrow=0, ncol=2)
                   arrows  <- matrix(nrow=0, ncol=4)
                   sidetoplay <- sidetoplaystart
