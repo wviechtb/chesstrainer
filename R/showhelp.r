@@ -18,6 +18,7 @@
       "/ and .  - select sequences / select the last saved sequence",
       "* and 8  - select all sequences",
       "? and '  - find all sequences with the same moves / position",
+      "< and B  - bookmark sequence / select and manage bookmarks",
       "m        - choose a sequence selection mode",
       "-+       - decrease/increase the time between moves",
       "w        - wait after completed sequences on/off",
@@ -74,7 +75,8 @@
       "l        - alle Sequenzen auflisten",
       "/ und .  - Sequenzen ausw\U000000E4hlen / zuletzt gespeicherte ausw\U000000E4hlen",
       "* und 8  - alle Sequenzen ausw\U000000E4hlen",
-      "? und '  - alle Sequenzen mit gleichen Z\U000000FCgen / Position finden",
+      "? und '  - alle Sequenzen mit gleichen Z\U000000FCgen / gleicher Position finden",
+      "< und B  - Lesezeichen f\U000000FCr Sequenz setzen / Lesezeichen ausw\U000000E4hlen und bearbeiten",
       "m        - Sequenzauswahlmodus w\U000000E4hlen",
       "-+       - Zeit zwischen den Z\U000000FCgen verringern/erh\U000000F6hen",
       "w        - Warten nach abgeschlossenen Sequenzen an/aus",
@@ -123,7 +125,7 @@
 
    maxsw <- max(sapply(txt, strwidth, family=.get("font.mono")))
    maxsh <- max(sapply(txt, strheight, family=.get("font.mono"))) * length(txt)
-   cex <- min(1.5, (8.5 - 1.5) / max(maxsw, maxsh) * 0.95)
+   cex <- min(1.5, (8.5 - 1.5) / max(maxsw, maxsh) * 0.9)
 
    text(1+0.5, seq(8.5, 1.5, length.out=length(txt)), txt, pos=4, cex=cex,
         family=.get("font.mono"), font=ifelse(grepl(":", txt), 2, 1), col=.get("col.help"))

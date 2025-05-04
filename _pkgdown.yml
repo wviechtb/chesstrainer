@@ -39,7 +39,7 @@ navbar:
   left:
     - icon: fa-home fa-lg
       href: index.html
-    - text: Intro
+    - text: Manual
       href: reference/chesstrainer-package.html
     - text: "Functions"
       href: reference/index.html

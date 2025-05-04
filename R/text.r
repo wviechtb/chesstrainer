@@ -786,9 +786,47 @@
 
    if (x == "bookmarked") {
       return(switch(lang,
-                    de = paste0("Sequenz vorgemerkt: ", arg, "\n"),
-                         paste0("Sequence bookmarked: ", arg, "\n")
+                    de = paste0("Lesezeichen f\U000000FCr Sequenz gesetzt:\n", arg),
+                         paste0("Sequence bookmarked:\n", arg)
    ))}
+
+   if (x == "nobookmarks") {
+      return(switch(lang,
+                    de = "Keine Lesezeichen gefunden.",
+                         "No bookmarks found."
+   ))}
+
+   if (x == "bookmarksoptionwhich") {
+      return(switch(lang,
+                    de = "Option (<Nummer>, 'e' (entfernen), 'p' (Position ver\U000000E4ndern), 'a' (alle entfernen), oder <Enter> zum Verlassen): ",
+                         "Option (<number>, 'r' (remove), 'p' (change position), 'a' (remove all), or <enter> to quit): "
+   ))}
+
+   if (x == "bookmarktoremove") {
+      return(switch(lang,
+                    de = "\nLesezeichen zum Entfernen (<Nummer> oder <Enter> zum Verlassen): ",
+                         "\nBookmark to remove (<number> or <enter> to quit)): "
+   ))}
+
+   if (x == "rlydelallbookmarks") {
+      return(switch(lang,
+                    de = paste0("Wirlich alle Lesezeichen l\U000000F6schen? (j/N): "),
+                         paste0("Really delete all bookmarks? (y/N): ")
+   ))}
+
+   if (x == "bookmarktomove") {
+      return(switch(lang,
+                    de = "\nLesezeichen dessen Position ver\U000000E4ndert werden soll (<Nummer> oder <Enter> zum Verlassen): ",
+                         "\nBookmark whose position should be changed (<number> or <enter> to quit)): "
+   ))}
+
+   if (x == "bookmarknewpos") {
+      return(switch(lang,
+                    de = "Neue Position f\U000000FCr das Lesezeichen (<Nummer> oder <Enter> zum Verlassen): ",
+                         "New position for the bookmark (<number> or <enter> to quit)): "
+   ))}
+
+   ######
 
    if (x == "allmovesshown") {
       return(switch(lang,

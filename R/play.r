@@ -287,7 +287,6 @@ play <- function(lang="en", sfpath="", ...) {
    selected <- NULL
    seqno <- 1
    filename <- ""
-   bookmark <- ""
    lastseq  <- ""
    bestmove <- ""
    useflip  <- TRUE
@@ -371,7 +370,7 @@ play <- function(lang="en", sfpath="", ...) {
    }
 
    keys      <- c("q", " ", "n", "p", "e", "E", "l", "-", "=", "+",
-                  "m", "/", "*", "8", "?", "'", ",", ".", "b", "B", "w", "t", "h", "ctrl-R",
+                  "m", "/", "|", "*", "8", "?", "'", ",", ".", "b", "B", "w", "t", "h", "ctrl-R",
                   "^", "6", "[", "]", "i", "(", ")", "ctrl-[", "\033", "v", "a", "G", "R", "ctrl-C", "x", "<",
                   "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F12", "\\", "#")
    keys.add  <- c("f", "z", "c", "H", "0", "s")
@@ -1061,40 +1060,56 @@ play <- function(lang="en", sfpath="", ...) {
             # < to bookmark a sequence (in add mode, last saved sequence; in test mode, current sequence)
 
             if (mode %in% c("add","test") && identical(click, "<")) {
+               bookmark <- ""
                if (mode == "add") {
                   if (filename != "")
                      bookmark <- filename
-               }
-               if (mode == "test") {
-                  if (seqname != "")
-                     bookmark <- seqname
+               } else {
+                  bookmark <- seqname
                }
                if (bookmark != "") {
-                  eval(expr=switch1)
-                  cat(.text("bookmarked", bookmark))
-                  eval(expr=switch2)
+                  if (file.exists(file.path(seqdir[seqdirpos], ".bookmarks"))) {
+                     tmp <- try(read.table(file.path(seqdir[seqdirpos], ".bookmarks"), header=FALSE), silent=TRUE)
+                     if (inherits(tmp, "try-error")) {
+                        bookmarks <- bookmark
+                     } else {
+                        bookmarks <- unique(c(bookmark, tmp[[1]]))
+                        bookmarks <- bookmarks[is.element(bookmarks, list.files(seqdir[seqdirpos], pattern=".rds$"))]
+                     }
+                  } else {
+                     bookmarks <- bookmark
+                  }
+                  write.table(data.frame(bookmarks), file=file.path(seqdir[seqdirpos], ".bookmarks"), col.names=FALSE, row.names=FALSE, quote=FALSE)
+                  .texttop(.text("bookmarked", bookmark), sleep=2)
+                  .texttop(texttop)
                }
                next
             }
 
-            # / or , to select one or more sequences, . to select last saved sequence, B to select the bookmarked sequence
+            # B to select / manage bookmarks
 
-            if (identical(click, "/") || identical(click, ",") || identical(click, ".") || identical(click, "B")) {
+            if (identical(click, "B")) {
+               bookmark <- .bookmarks(seqdir, seqdirpos, texttop, switch1, switch2)
+               if (bookmark != "") {
+                  selected <- grepl(bookmark, files.all)
+                  selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected]
+                  run.rnd <- FALSE
+                  input <- FALSE
+                  mode <- oldmode <- "add"
+                  seqno <- 1
+               }
+               next
+            }
+
+            # / or , to select one or more sequences, . to select last saved sequence, | to search/show sequences based on their filename
+
+            if (identical(click, "/") || identical(click, ",") || identical(click, ".") || identical(click, "|")) {
 
                doprompt <- TRUE
 
                if (identical(click, ".")) {
                   if (filename != "") {
                      searchterm <- filename
-                     doprompt <- FALSE
-                  } else {
-                     next
-                  }
-               }
-
-               if (identical(click, "B")) {
-                  if (bookmark != "") {
-                     searchterm <- bookmark
                      doprompt <- FALSE
                   } else {
                      next
@@ -1117,7 +1132,7 @@ play <- function(lang="en", sfpath="", ...) {
 
                # * = select all sequences
 
-               if (identical(searchterm , "*")) {
+               if (identical(searchterm , "*") && !identical(click, "|")) {
                   cat(.text("allseqselected"))
                   selected <- NULL
                   run.rnd <- FALSE
@@ -1295,13 +1310,22 @@ play <- function(lang="en", sfpath="", ...) {
                if (length(grep(searchterm, files.all)) == 0L) {
                   cat(.text("noseqsfound"))
                } else {
-                  selected <- grepl(searchterm, files.all)
-                  selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected]
-                  cat(.text("numseqfound", length(selected)))
-                  run.rnd <- FALSE
-                  input <- FALSE
-                  mode <- oldmode <- "add"
-                  seqno <- 1
+                  if (identical(click, "|")) {
+                     tmp <- grepl(searchterm, files.all)
+                     tab <- data.frame(Name=files.all[tmp])
+                     tab$Name <- format(tab$Name, justify="left")
+                     names(tab)[1] <- ""
+                     rownames(tab) <- which(tmp)
+                     print(tab, print.gap=2)
+                  } else {
+                     selected <- grepl(searchterm, files.all)
+                     selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected]
+                     cat(.text("numseqfound", length(selected)))
+                     run.rnd <- FALSE
+                     input <- FALSE
+                     mode <- oldmode <- "add"
+                     seqno <- 1
+                  }
                }
 
                eval(expr=switch2)
@@ -2116,7 +2140,7 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # F8 to manage / select sequence directories
+            # F8 to select / manage sequence directories
 
             if (identical(click, "F8")) {
                eval(expr=switch1)
@@ -2184,7 +2208,7 @@ play <- function(lang="en", sfpath="", ...) {
                verbose <- !verbose
                if (verbose) {
                   eval(expr=switch1)
-                  .printverbose(selected, seqno, filename, bookmark, lastseq, flip, useflip, replast, oldmode, i, seqname, seqnum, score, played, totalmoves, show, comment, bestmove, evalval, texttop, scoreadd, sidetoplay, givehint1, givehint2, mistake, timetotal, movesplayed, movestoplay, drawcircles, drawarrows, showstartcom, pos)
+                  .printverbose(selected, seqno, filename, lastseq, flip, useflip, replast, oldmode, i, seqname, seqnum, score, played, totalmoves, show, comment, bestmove, evalval, texttop, scoreadd, sidetoplay, givehint1, givehint2, mistake, timetotal, movesplayed, movestoplay, drawcircles, drawarrows, showstartcom, pos)
                   eval(expr=switch2)
                }
                .texttop(.text("verbose", verbose), sleep=0.5)
@@ -2552,6 +2576,24 @@ play <- function(lang="en", sfpath="", ...) {
                         eval(expr=switch2)
                      }
 
+                     if (identical(click, "<")) {
+                        bookmark <- seqname
+                        if (file.exists(file.path(seqdir[seqdirpos], ".bookmarks"))) {
+                           tmp <- try(read.table(file.path(seqdir[seqdirpos], ".bookmarks"), header=FALSE), silent=TRUE)
+                           if (inherits(tmp, "try-error")) {
+                              bookmarks <- bookmark
+                           } else {
+                              bookmarks <- unique(c(bookmark, tmp[[1]]))
+                              bookmarks <- bookmarks[is.element(bookmarks, list.files(seqdir[seqdirpos], pattern=".rds$"))]
+                           }
+                        } else {
+                           bookmarks <- bookmark
+                        }
+                        write.table(data.frame(bookmarks), file=file.path(seqdir[seqdirpos], ".bookmarks"), col.names=FALSE, row.names=FALSE, quote=FALSE)
+                        .texttop(.text("bookmarked", bookmark), sleep=2)
+                        .texttop(texttop)
+                     }
+
                      if (identical(click, "F9")) {
                         fen <- .genfen(pos, flip, ifelse(sidetoplay == "w", "b", "w"), i+1)
                         fen <- paste0("https://lichess.org/analysis/standard/", gsub(" ", "_", fen, fixed=TRUE))
@@ -2571,7 +2613,7 @@ play <- function(lang="en", sfpath="", ...) {
 
                      if (identical(click, "F12")) {
                         eval(expr=switch1)
-                        .printverbose(selected, seqno, filename, bookmark, lastseq, flip, useflip, replast, oldmode, i, seqname, seqnum, score, played, totalmoves, show, comment, bestmove, evalval, texttop, scoreadd, sidetoplay, givehint1, givehint2, mistake, timetotal, movesplayed, movestoplay, drawcircles, drawarrows, showstartcom, pos)
+                        .printverbose(selected, seqno, filename, lastseq, flip, useflip, replast, oldmode, i, seqname, seqnum, score, played, totalmoves, show, comment, bestmove, evalval, texttop, scoreadd, sidetoplay, givehint1, givehint2, mistake, timetotal, movesplayed, movestoplay, drawcircles, drawarrows, showstartcom, pos)
                         eval(expr=switch2)
                      }
 

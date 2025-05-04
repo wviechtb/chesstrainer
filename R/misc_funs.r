@@ -229,7 +229,7 @@
 
 }
 
-.printverbose <- function(selected, seqno, filename, bookmark, lastseq, flip, useflip, replast, oldmode, i,
+.printverbose <- function(selected, seqno, filename, lastseq, flip, useflip, replast, oldmode, i,
                           seqname, seqnum, score, played, totalmoves, show, comment, bestmove, evalval,
                           texttop, scoreadd, sidetoplay, givehint1, givehint2, mistake, timetotal,
                           movesplayed, movestoplay, drawcircles, drawarrows, showstartcom, pos) {
@@ -238,7 +238,6 @@
    cat("selected:     ", selected, "\n")
    cat("seqno:        ", seqno, "\n")
    cat("filename:     ", filename, "\n")
-   cat("bookmark:     ", bookmark, "\n")
    cat("lastseq:      ", lastseq, "\n")
    cat("flip:         ", flip, "\n")
    cat("useflip:      ", useflip, "\n")

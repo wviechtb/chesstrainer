@@ -11,12 +11,12 @@ The purpose of the `chesstrainer` package is to create sequences of moves (lines
 
 - provides an add mode for entering sequences and a test mode to practice sequences
 - the trainer tracks your performance in terms of a 'sequence score' for each sequence
-- sequences are presented randomly with higher probability for those with poor performance
-- alternatively let the trainer choose sequences based on play frequency or last play date
+- sequences are presented randomly but with higher probabilities for those with poorer performance
+- alternatively can let the trainer choose sequences based on play frequency or last play date
 - automatically repeat sequences when a wrong move was made (optionally)
 - add comments to sequences or particular moves (e.g., to name variations, provide hints, or other information)
-- add annotations (arrows and circles), which can also be replayed in test mode
-- select sequences based on their name, performance, play frequency, last play date, moves made, or position
+- add annotations (arrows and circles) to sequences, which can also be replayed in test mode
+- select sequences to practice based on their name, performance, play frequency, last play date, or moves/position
 - timed mode for practicing sequences under time pressure
 - board editor for setting up advanced starting positions or chess puzzles
 - the trainer can be used with multiple players (performance is tracked separately for each player)

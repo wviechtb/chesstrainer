@@ -14,6 +14,7 @@
    tab <- tab[rownames(tab) != "sfpath",]
 
    txt <- capture.output(print(tab, quote=FALSE, print.gap=3))
+   txt <- txt[-1]
 
    maxchars <- max(nchar(txt))
 

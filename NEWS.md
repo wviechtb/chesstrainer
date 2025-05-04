@@ -1,4 +1,4 @@
-# chesstrainer 0.9-56 (2025-05-02)
+# chesstrainer 0.9-57 (2025-05-04)
 
 - can play en passant
 - can promote pawns
@@ -26,6 +26,7 @@
 - can now add, remove, and select sequence directories with `<F8>`
 - can now evaluate multiple principal variations with Stockfish
 - added a 'timed' mode
+- can add, select, and manage bookmarks
 
 # chesstrainer 0.1-0 (2024-12-17)
 

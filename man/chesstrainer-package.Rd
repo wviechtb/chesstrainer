@@ -90,11 +90,13 @@
 
    The \verb{<e>} key can be used to edit the comments for a particular sequence. This way, you can also add a \sQuote{start comment} and/or an \sQuote{end comment} to a particular sequence (the former will be shown in an overlay box before the sequence starts, the latter at the top after the last move). The \verb{<E>} key opens up the \code{\link[=edit]{data editor}} on the data frame that contains the moves for the current sequence. This can also be used to add, edit, and remove comments in the \verb{comment} column or make adjustments to the other columns (but this should only be done if their meaning is clear).
 
-   With the \verb{<?>} key, you can search for sequences that start with the same moves that have been entered/played so far (this also works in \sQuote{test} mode). If any matching sequences are found, a prompt will ask if they should be selected. This is useful for checking what sequences are already available based on some initial moves (and then practicing these sequences) or finding other sequences similar to the one currently being played. Alternatively, with the \verb{<'>} key, you can search for sequences that include the same position (irrespective of the particular sequence of moves that led to the position).
+   With the \verb{<?>} key, you can search for sequences that start with the same moves that have been entered/played so far (this also works in \sQuote{test} mode). If any matching sequences are found, a prompt will ask if they should be selected. This is useful for checking what sequences are already available based on some initial moves (and then practicing these sequences) or finding other sequences similar to the one currently being played. Alternatively, with the \verb{<'>} key, you can search for sequences that include the same position (irrespective of the particular moves that led to the position).
 
    With the \verb{<.>} key, you can select the last saved sequence (if one was saved before in the current session). This is useful for checking the sequence in \sQuote{test} mode and/or creating multiple branching lines from the ending position of this sequence. Similarly, in \sQuote{test} mode, the \verb{<a>} key will create a copy of the current sequence, which can then be extended with additional moves (and saved as a new sequence). The \verb{<A>} key does the same thing, but only plays the moves to the currently shown position.
 
-   Sequences are saved to and selected from the current sequence directory. You can add, remove, and select sequence directories with the \verb{<F8>} key. Removing a sequence directory simply removes it from being shown in the list of sequence directories (i.e., it does not delete the directory).
+   In \sQuote{add} or \sQuote{test} mode, you can bookmark a sequence with the \verb{<<>} key. In \sQuote{add} mode, the last saved sequence is bookmarked. In \sQuote{test} mode, the currently played sequence is bookmarked. With the \verb{<B>} key, you can select and manage bookmarks. This is useful for creating multiple branching lines from the ending position of certain sequences.
+
+   Sequences are saved to and selected from the current sequence directory. You can add, remove, and select sequence directories with the \verb{<F8>} key. Removing a sequence directory simply removes it from being shown in the list of sequence directories (i.e., it does not delete the directory). Bookmarks are specific to each sequence directory.
 
    Note that sequences are quite personalized, since they involve going into a particular line that one deems most appropriate (and hence wants to remember). Others may disagree and prefer a different line. Therefore, you should create sequences that you want to train yourself on, so you will be able to play them quickly from memory in actual games.
 
@@ -133,9 +135,11 @@
 }
 \section{Play Mode}{
 
-   If Stockfish is running, you can switch into \sQuote{play} mode with \verb{<\>} or \verb{<#>}. This is especially useful at the end of a sequence, to continue playing further moves against the computer from the end position of a sequence (e.g., to practice holding an advantage gained during an opening sequence). In this mode, the computer chooses by default the best move according to search depth of 10 half-moves, but this can be adjusted via \verb{<F7>}.
+   If Stockfish is running, you can switch into \sQuote{play} mode at any time with \verb{<\>} or \verb{<#>}. This is especially useful at the end of a sequence, to continue playing further moves against the computer from the end position of a sequence (e.g., to practice holding an advantage gained during an opening sequence). In this mode, the computer chooses by default the best move according to search depth of 10 half-moves, but this can be adjusted via \verb{<F7>}.
 
    As noted above, illegal positions crash Stockfish. Use \verb{<F7>} to restart it. Also, there is no check if the moves are legal and/or are played for the correct side/color.
+
+   The \verb{<\>} or \verb{<#>} key when in \sQuote{play} mode always takes you to \sQuote{add} mode. On the other hand, \verb{<space>} takes you back to the mode that was active before \sQuote{play} mode was chosen.
 
 }
 \section{Other Options and Shortcuts}{
