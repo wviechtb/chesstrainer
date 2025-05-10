@@ -183,7 +183,7 @@
       write.table(data.frame(bookmarks), file=file.path(seqdir[seqdirpos], ".bookmarks"), col.names=FALSE, row.names=FALSE, quote=FALSE)
    }
 
-   .erase(1.3, 1.3, 8.7, 8.7)
+   #.erase(1, 1, 9, 9)
 
    return(bookmark)
 

@@ -1107,18 +1107,28 @@
 
 }
 
-.erase <- function(x1, y1, x2, y2, steps=40) {
+.erase <- function(x1, y1, x2, y2, steps=50) {
 
    col.bg <- .get("col.bg")
 
-   pos <- seq(y2, y1, length.out=steps)
+   xmid <- (x1 + x2) / 2
+   ymid <- (y1 + y2) / 2
+
+   x1pos <- seq(xmid, x1, length.out=steps)
+   x2pos <- seq(xmid, x2, length.out=steps)
+   y1pos <- seq(ymid, y1, length.out=steps)
+   y2pos <- seq(ymid, y2, length.out=steps)
 
    for (j in 1:steps)
-      rect(x1, y2, x2, pos[j], col=col.bg, border=NA)
+      rect(x1pos[j], y1pos[j], x2pos[j], y2pos[j], col=col.bg, border=NA)
 
 }
 
 .quit <- function() {
+
+   .erase(-1,-1,11,11)
+
+   return()
 
    cols <- col2rgb(.get("col.bg"))
 

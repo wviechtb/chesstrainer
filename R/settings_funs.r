@@ -202,7 +202,7 @@
 
    }
 
-   .erase(1.3, 1.3, 8.7, 8.7)
+   #.erase(1, 1, 9, 9)
 
    return(selmode)
 
@@ -249,7 +249,7 @@
 
    .waitforclick()
 
-   .erase(1.3, 1.3, 8.7, 8.7)
+   #.erase(1, 1, 9, 9)
 
    return()
 

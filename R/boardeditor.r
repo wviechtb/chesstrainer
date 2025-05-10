@@ -250,7 +250,7 @@
 
    .waitforclick()
 
-   .erase(2.3, 2.3, 9.7, 9.7)
+   #.erase(2, 2, 10, 10)
 
    return()
 
