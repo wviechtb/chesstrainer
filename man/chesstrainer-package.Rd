@@ -94,7 +94,7 @@
 
    With the \verb{<.>} key, you can select the last saved sequence (if one was saved before in the current session). This is useful for checking the sequence in \sQuote{test} mode and/or creating multiple branching lines from the ending position of this sequence. Similarly, in \sQuote{test} mode, the \verb{<a>} key will create a copy of the current sequence, which can then be extended with additional moves (and saved as a new sequence). The \verb{<A>} key does the same thing, but only plays the moves to the currently shown position.
 
-   In \sQuote{add} or \sQuote{test} mode, you can bookmark a sequence with the \verb{<<>} key. In \sQuote{add} mode, the last saved sequence is bookmarked. In \sQuote{test} mode, the currently played sequence is bookmarked. With the \verb{<>>} key, you can select and manage bookmarks. This is useful for creating multiple branching lines from the ending position of certain sequences.
+   In \sQuote{add} or \sQuote{test} mode, you can bookmark a sequence with the \verb{<<>} key. In \sQuote{add} mode, the last saved sequence is bookmarked. In \sQuote{test} mode, the currently played sequence is bookmarked. With the \verb{<>>} key, you can select and manage bookmarks (use \verb{<F1>} while  managing the bookmarks to obtain help). This is useful for creating multiple branching lines from the ending position of certain sequences.
 
    Sequences are saved to and selected from the current sequence directory. You can add, remove, and select sequence directories with the \verb{<F8>} key. Removing a sequence directory simply removes it from being shown in the list of sequence directories (i.e., it does not delete the directory). Bookmarks are specific to each sequence directory.
 

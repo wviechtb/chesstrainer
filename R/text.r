@@ -828,7 +828,7 @@
 
    if (x == "rlydelallbookmarks") {
       return(switch(lang,
-                    de = paste0("Wirlich alle Lesezeichen l\U000000F6schen? (j/N): "),
+                    de = paste0("Wirklich alle Lesezeichen l\U000000F6schen? (j/N): "),
                          paste0("Really delete all bookmarks? (y/N): ")
    ))}
 

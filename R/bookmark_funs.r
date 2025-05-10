@@ -51,7 +51,7 @@
       if (length(bookmarks) == 0L)
          break
 
-      rect(1.4, 1.5, 8.7, 2.4, col=.get("col.bg"), border=NA)
+      rect(1.4, 1.9, 8.7, 2.2, col=.get("col.bg"), border=NA)
 
       if (keymode=="s")
          text(1+0.5, 2, .text("selbookmark", ifelse(num==0, "", num)), pos=4, cex=cex, family=.get("font.mono"), font=1, col=.get("col.help"))
@@ -85,7 +85,6 @@
       if (is.element(key, 0:9)) {
          num <- paste0(num, key, collapse="")
          num <- as.numeric(num)
-         print(num)
          next
       }
 
@@ -141,7 +140,6 @@
          } else {
             num <- as.numeric(substr(num, 1, nchar(num)-1))
          }
-         print(num)
          next
       }
 
