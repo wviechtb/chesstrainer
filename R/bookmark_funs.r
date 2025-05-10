@@ -31,7 +31,7 @@
    while (TRUE) {
 
       cat("\n")
-      tab <- data.frame(bookmarks)
+      tab <- data.frame(sub("\\.rds$", "", bookmarks))
       names(tab) <- ""
       out <- capture.output(print(tab, right=FALSE))[-1]
       for (i in 1:length(out)) {

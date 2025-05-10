@@ -5,7 +5,7 @@
       cat("\n")
       tab <- data.frame(seqdir=seqdir, selected="( )")
       tab$selected[seqdirpos] <- "(*)"
-      names(tab)[2] <- .text("selectedseqdir")
+      names(tab) <- .text("selectedseqdir")
       print(tab, right=FALSE, print.gap=3)
       cat("\n")
 

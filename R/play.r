@@ -51,13 +51,13 @@ play <- function(lang="en", sfpath="", ...) {
    # get switch1/switch2 functions if they are specified via ...
 
    if (is.null(ddd[["switch1"]])) {
-      switch1 <- parse(text="invisible(NULL)")
+      switch1 <- parse(text="invisible()")
    } else {
       switch1 <- parse(text = ddd[["switch1"]])
    }
 
    if (is.null(ddd[["switch2"]])) {
-      switch2 <- parse(text="invisible(NULL)")
+      switch2 <- parse(text="invisible()")
    } else {
       switch2 <- parse(text = ddd[["switch2"]])
    }
@@ -369,10 +369,11 @@ play <- function(lang="en", sfpath="", ...) {
       return(1)
    }
 
-   keys      <- c("q", " ", "n", "p", "e", "E", "l", "-", "=", "+",
-                  "m", "/", "|", "*", "8", "?", "'", ",", ".", "b", "B", "w", "t", "h", "ctrl-R",
-                  "^", "6", "[", "]", "i", "(", ")", "ctrl-[", "\033", "v", "a", "G", "R", "ctrl-C", "x", "<",
-                  "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F12", "\\", "#")
+   keys      <- c("q", " ", "n", "p", "e", "E", "-", "=", "+", "m", "\\", "#",
+                  "l", "/", "|", "*", "8", "?", "'", ",", ".", "<", ">",
+                  "b", "w", "t", "h", "ctrl-R", "^", "6", "[", "]", "i", "(", ")", "v", "x",
+                  "ctrl-[", "\033", "a", "G", "R", "ctrl-C",
+                  "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F12")
    keys.add  <- c("f", "z", "c", "H", "0", "s")
    keys.test <- c("o", "r", "g", "A", "ctrl-D", "Right", "Left", "u")
    keys.play <- c("H")
@@ -1063,7 +1064,7 @@ play <- function(lang="en", sfpath="", ...) {
                bookmark <- ""
                if (mode == "add") {
                   if (filename != "")
-                     bookmark <- filename
+                     bookmark <- paste0(filename, ".rds")
                } else {
                   bookmark <- seqname
                }
@@ -1080,15 +1081,15 @@ play <- function(lang="en", sfpath="", ...) {
                      bookmarks <- bookmark
                   }
                   write.table(data.frame(bookmarks), file=file.path(seqdir[seqdirpos], ".bookmarks"), col.names=FALSE, row.names=FALSE, quote=FALSE)
-                  .texttop(.text("bookmarked", bookmark), sleep=2)
+                  .texttop(.text("bookmarked", sub("\\.rds$", "", bookmark)), sleep=2)
                   .texttop(texttop)
                }
                next
             }
 
-            # B to select / manage bookmarks
+            # > to select / manage bookmarks
 
-            if (identical(click, "B")) {
+            if (identical(click, ">")) {
                bookmark <- .bookmarks(seqdir, seqdirpos, texttop, switch1, switch2)
                if (bookmark != "") {
                   selected <- grepl(bookmark, files.all)
@@ -2721,6 +2722,6 @@ play <- function(lang="en", sfpath="", ...) {
 
    }
 
-   invisible()
+   return(invisible())
 
 }

@@ -842,8 +842,8 @@
 
    if (x == "selectedseqdir") {
       return(switch(lang,
-                    de = "ausgew\U000000E4hlt",
-                         "selected"
+                    de = c("Verzeichnis", "ausgew\U000000E4hlt"),
+                         c("directory", "selected")
    ))}
 
    if (x == "addseqdir") {
