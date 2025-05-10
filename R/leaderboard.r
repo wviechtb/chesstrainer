@@ -1,7 +1,7 @@
 .leaderboard <- function(seqdir, files, lwd) {
 
-   .clearsideindicator()
-   .drawtimer(clear=TRUE)
+   #.clearsideindicator()
+   #.drawtimer(clear=TRUE)
 
    tmp <- lapply(file.path(seqdir, files), readRDS)
    tmp.scores <- lapply(tmp, function(x) sapply(x$player, function(x) tail(x$score,1)))
@@ -42,16 +42,18 @@
       txt <- capture.output(print(tmp, print.gap=3))
       txt <- c(txt[1], paste0(rep("-", max(nchar(txt))), collapse=""), txt[2:length(txt)])
 
-      rect(1+0.2, 1+0.2, 9-0.2, 9-0.2, col=.get("col.bg"), border=.get("col.help.border"), lwd=lwd+3)
+      rect(1.2, 1.2, 8.8, 8.8, col=.get("col.bg"), border=.get("col.help.border"), lwd=lwd+3)
 
       maxsw <- max(sapply(txt, strwidth, family=.get("font.mono")))
       maxsh <- max(sapply(txt, strheight, family=.get("font.mono"))) * length(txt)
-      cex <- min(1.5, (8.5 - 1.5) / max(maxsw, maxsh) * 0.95)
+      cex <- min(1.5, (8.5 - 1.5) / max(maxsw, maxsh) * 0.9)
 
       text(1+0.5, seq(min(8.5, 5+nplayers*0.25), max(1.5, 5-nplayers*0.25), length.out=length(txt)),
            txt, pos=4, cex=cex, family=.get("font.mono"), col=.get("col.help"))
 
       .waitforclick()
+
+      .erase(1.3, 1.3, 8.7, 8.7)
 
    }
 

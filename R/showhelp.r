@@ -1,7 +1,7 @@
 .showhelp <- function(lwd) {
 
-   .clearsideindicator()
-   .drawtimer(clear=TRUE)
+   #.clearsideindicator()
+   #.drawtimer(clear=TRUE)
 
    lang <- .get("lang")
 
@@ -121,7 +121,7 @@
 
    }
 
-   rect(1+0.2, 1+0.2, 9-0.2, 9-0.2, col=.get("col.bg"), border=.get("col.help.border"), lwd=lwd+3)
+   rect(1.2, 1.2, 8.8, 8.8, col=.get("col.bg"), border=.get("col.help.border"), lwd=lwd+3)
 
    maxsw <- max(sapply(txt, strwidth, family=.get("font.mono")))
    maxsh <- max(sapply(txt, strheight, family=.get("font.mono"))) * length(txt)
@@ -131,5 +131,9 @@
         family=.get("font.mono"), font=ifelse(grepl(":", txt), 2, 1), col=.get("col.help"))
 
    .waitforclick()
+
+   .erase(1.3, 1.3, 8.7, 8.7)
+
+   return()
 
 }

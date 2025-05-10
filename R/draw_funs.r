@@ -1,3 +1,6 @@
+.drawsquare <- function(x, y, col=ifelse(.is.even(x+y), .get("col.square.d"), .get("col.square.l")))
+   rect(y, x, y+1, x+1, col=col, border=NA)
+
 .drawpiece <- function(x, y, piece) {
    if (piece != "") {
       txt <- paste0("rasterImage(img.", piece, ",", y, ",", x, ",", y+1, ",", x+1, ")")
@@ -53,17 +56,22 @@
 
    if (missing(posold)) {
 
+      mat <- outer(1:8, 1:8, function(x,y) .is.even(x+y))
+      par(new=TRUE)
+      image(1:8+0.5, 1:8+0.5, mat, col=c(.get("col.square.l"), .get("col.square.d")), xaxs="i", yaxs="i", xlab="", ylab="", xaxt="n", yaxt="n", bty="n", useRaster=TRUE)
+      par(new=FALSE)
+
       if (flip) {
          for (i in 1:8) {
             for (j in 1:8) {
-               .drawsquare(i, j)
+               #.drawsquare(i, j)
                .drawpiece(i, j, pos[9-i,9-j])
             }
          }
       } else {
          for (i in 1:8) {
             for (j in 1:8) {
-               .drawsquare(i, j)
+               #.drawsquare(i, j)
                .drawpiece(i, j, pos[i,j])
             }
          }
@@ -92,6 +100,21 @@
       }
 
    }
+
+}
+
+.redrawall <- function(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove) {
+
+   .drawboard(pos, flip)
+   .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
+   .texttop(texttop)
+   if (mode == "test" && timed) {
+      .drawtimer(movestoplay, movesplayed, timetotal, timepermove)
+   } else {
+      .drawsideindicator(sidetoplay, flip)
+   }
+
+   return()
 
 }
 
@@ -666,9 +689,6 @@
    }
 }
 
-.drawsquare <- function(x, y, col=ifelse(.is.even(x+y), .get("col.square.d"), .get("col.square.l")))
-   rect(y, x, y+1, x+1, col=col, border=NA)
-
 .rmannot <- function(pos, circles, arrows, flip) {
 
    oldpos <- pos
@@ -1049,24 +1069,9 @@
 
 }
 
-.redrawall <- function(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove) {
-
-   .drawboard(pos, flip)
-   .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
-   .texttop(texttop)
-   if (mode == "test" && timed) {
-      .drawtimer(movestoplay, movesplayed, timetotal, timepermove)
-   } else {
-      .drawsideindicator(sidetoplay, flip)
-   }
-
-   return()
-
-}
-
 .startcomment <- function(txt, lwd) {
 
-   rect(1+0.2, 1+0.2, 9-0.2, 9-0.2, col=.get("col.bg"), border=.get("col.help.border"), lwd=lwd+3)
+   rect(1.2, 1.2, 8.8, 8.8, col=.get("col.bg"), border=.get("col.help.border"), lwd=lwd+3)
 
    xleft   <- 1.5
    xright  <- 8.5
@@ -1099,6 +1104,17 @@
    }
 
    .waitforclick()
+
+}
+
+.erase <- function(x1, y1, x2, y2, steps=40) {
+
+   col.bg <- .get("col.bg")
+
+   pos <- seq(y2, y1, length.out=steps)
+
+   for (j in 1:steps)
+      rect(x1, y2, x2, pos[j], col=col.bg, border=NA)
 
 }
 

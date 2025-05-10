@@ -239,15 +239,19 @@
 
    }
 
-   rect(2+0.2, 2+0.2, 10-0.2, 10-0.2, col=.get("col.bg"), border=.get("col.help.border"), lwd=lwd+3)
+   rect(2.2, 2.2, 9.8, 9.8, col=.get("col.bg"), border=.get("col.help.border"), lwd=lwd+3)
 
    maxsw <- max(sapply(txt, strwidth, family=.get("font.mono")))
    maxsh <- max(sapply(txt, strheight, family=.get("font.mono"))) * length(txt)
-   cex <- (8.5 - 1.5) / max(maxsw, maxsh) * 0.95
+   cex <- min(1.5, (8.5 - 1.5) / max(maxsw, maxsh) * 0.8)
 
    text(2+0.5, seq(8, 4, length.out=length(txt)), txt, pos=4, cex=cex,
         family=.get("font.mono"), font=ifelse(grepl(":", txt), 2, 1), col=.get("col.help"))
 
    .waitforclick()
+
+   .erase(2.3, 2.3, 9.7, 9.7)
+
+   return()
 
 }

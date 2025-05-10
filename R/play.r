@@ -984,8 +984,9 @@ play <- function(lang="en", sfpath="", ...) {
             if (mode == "test" && identical(click, "g")) {
                if (!is.null(sub$player[[player]]$score)) {
                   .scoregraph(sub$player[[player]], lwd=lwd)
-                  .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
-                  .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
+                  #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+                  .redrawpos(pos, flip=flip)
+                  #.draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                   .drawcircles(circles, lwd=lwd)
                   .drawarrows(arrows, lwd=lwd)
                   .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
@@ -1070,18 +1071,18 @@ play <- function(lang="en", sfpath="", ...) {
                }
                if (bookmark != "") {
                   if (file.exists(file.path(seqdir[seqdirpos], ".bookmarks"))) {
-                     tmp <- try(read.table(file.path(seqdir[seqdirpos], ".bookmarks"), header=FALSE), silent=TRUE)
+                     tmp <- try(read.table(file.path(seqdir[seqdirpos], ".bookmarks"), header=FALSE), silent=TRUE) # if .bookmarks is empty, get an error
                      if (inherits(tmp, "try-error")) {
                         bookmarks <- bookmark
                      } else {
-                        bookmarks <- unique(c(bookmark, tmp[[1]]))
-                        bookmarks <- bookmarks[is.element(bookmarks, list.files(seqdir[seqdirpos], pattern=".rds$"))]
+                        bookmarks <- unique(c(bookmark, tmp[[1]])) # add bookmark at front and remove duplicates
+                        bookmarks <- bookmarks[is.element(bookmarks, list.files(seqdir[seqdirpos], pattern=".rds$"))] # keep only existing bookmarks
                      }
                   } else {
                      bookmarks <- bookmark
                   }
                   write.table(data.frame(bookmarks), file=file.path(seqdir[seqdirpos], ".bookmarks"), col.names=FALSE, row.names=FALSE, quote=FALSE)
-                  .texttop(.text("bookmarked", sub("\\.rds$", "", bookmark)), sleep=2)
+                  .texttop(.text("bookmarked", sub("\\.rds$", "", bookmark)), sleep=1.5)
                   .texttop(texttop)
                }
                next
@@ -1090,7 +1091,8 @@ play <- function(lang="en", sfpath="", ...) {
             # > to select / manage bookmarks
 
             if (identical(click, ">")) {
-               bookmark <- .bookmarks(seqdir, seqdirpos, texttop, switch1, switch2)
+               bookmark <- .bookmarks(seqdir, seqdirpos, texttop, lwd)
+               #bookmark <- .bookmarks.old(seqdir, seqdirpos, texttop, switch1, switch2)
                if (bookmark != "") {
                   selected <- grepl(bookmark, files.all)
                   selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected]
@@ -1098,6 +1100,13 @@ play <- function(lang="en", sfpath="", ...) {
                   input <- FALSE
                   mode <- oldmode <- "add"
                   seqno <- 1
+               } else {
+                  #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+                  .redrawpos(pos, flip=flip)
+                  #.draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
+                  .drawcircles(circles, lwd=lwd)
+                  .drawarrows(arrows, lwd=lwd)
+                  .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
                }
                next
             }
@@ -1879,15 +1888,16 @@ play <- function(lang="en", sfpath="", ...) {
                selmodeold <- selmode
                selmode <- .selmodesetting(selmode, lwd)
                if (selmodeold != selmode) {
+                  settings$selmode <- selmode
+                  saveRDS(settings, file=file.path(configdir, "settings.rds"))
                   seqno <- 1
                   run.rnd <- FALSE
                   input <- FALSE
                } else {
-                  .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
-                  settings$selmode <- selmode
-                  saveRDS(settings, file=file.path(configdir, "settings.rds"))
-                  .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
-                  .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
+                  #.textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
+                  #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+                  .redrawpos(pos, flip=flip)
+                  #.draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                   .drawcircles(circles, lwd=lwd)
                   .drawarrows(arrows, lwd=lwd)
                   .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
@@ -2023,8 +2033,9 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (identical(click, "F1")) {
                .showhelp(lwd=lwd)
-               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
-               .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
+               #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+               .redrawpos(pos, flip=flip)
+               #.draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                .drawcircles(circles, lwd=lwd)
                .drawarrows(arrows, lwd=lwd)
                .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
@@ -2035,8 +2046,9 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (identical(click, "F2")) {
                .leaderboard(seqdir[seqdirpos], files, lwd)
-               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
-               .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
+               #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+               .redrawpos(pos, flip=flip)
+               #.draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                .drawcircles(circles, lwd=lwd)
                .drawarrows(arrows, lwd=lwd)
                .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
@@ -2048,8 +2060,9 @@ play <- function(lang="en", sfpath="", ...) {
             if (identical(click, "F3")) {
                tab <- data.frame(lang, player, mode, seqdir=seqdir[seqdirpos], selmode, timed, timepermove, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, wait, sleep, lwd, volume, showgraph, repmistake, cex.top, cex.bot, cex.eval, sfpath, depth1, depth2, depth3, multipv1, multipv2, threads, hash)
                .showsettings(tab, lwd)
-               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
-               .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
+               #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+               .redrawpos(pos, flip=flip)
+               #.draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                .drawcircles(circles, lwd=lwd)
                .drawarrows(arrows, lwd=lwd)
                .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
@@ -2499,8 +2512,9 @@ play <- function(lang="en", sfpath="", ...) {
 
                if (showgraph) {
                   .scoregraph(sub$player[[player]], lwd=lwd)
-                  .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
-                  .draweval(sub$moves$eval[i], flip=flip, eval=eval, evalsteps=evalsteps)
+                  #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+                  .redrawpos(pos, flip=flip)
+                  #.draweval(sub$moves$eval[i], flip=flip, eval=eval, evalsteps=evalsteps)
                }
 
                if (wait) {
@@ -2591,7 +2605,7 @@ play <- function(lang="en", sfpath="", ...) {
                            bookmarks <- bookmark
                         }
                         write.table(data.frame(bookmarks), file=file.path(seqdir[seqdirpos], ".bookmarks"), col.names=FALSE, row.names=FALSE, quote=FALSE)
-                        .texttop(.text("bookmarked", bookmark), sleep=2)
+                        .texttop(.text("bookmarked", bookmark), sleep=1.5)
                         .texttop(texttop)
                      }
 
@@ -2608,8 +2622,9 @@ play <- function(lang="en", sfpath="", ...) {
 
                      if (identical(click, "g")) {
                         .scoregraph(sub$player[[player]], lwd=lwd)
-                        .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
-                        .draweval(sub$moves$eval[i], flip=flip, eval=eval, evalsteps=evalsteps)
+                        #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+                        .redrawpos(pos, flip=flip)
+                        #.draweval(sub$moves$eval[i], flip=flip, eval=eval, evalsteps=evalsteps)
                      }
 
                      if (identical(click, "F12")) {
