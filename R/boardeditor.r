@@ -187,7 +187,7 @@
                    (pos[8,5] == "BK" && pos[8,8] == "BR"), (pos[8,5] == "BK" && pos[8,1] == "BR"))
    }
 
-   attr(pos, "rochade") <- rochade
+   attr(pos,"rochade") <- rochade
 
    return(list(pos=pos, flip=flip, sidetoplay=sidetoplay))
 

@@ -59,8 +59,8 @@
    pos[8,5] <- "BK"
    colnames(pos) <- LETTERS[1:8]
    rownames(pos) <- 1:8
-   attr(pos, "rochade") <- rep(TRUE,4)
-   attr(pos, "moves50") <- 0
+   attr(pos,"rochade") <- rep(TRUE,4)
+   attr(pos,"moves50") <- 0
    assign("pos", pos, envir=.chesstrainer)
 
    pos <- rbind("", pos, "")

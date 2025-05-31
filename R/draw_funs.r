@@ -258,12 +258,12 @@
 
       # check for en passant
 
-      if (identical(attr(pos, "ispp"), "b") && piece == "WP" && x1 == 4 && attr(pos, "y1") == y2) {
+      if (identical(attr(pos,"ispp"), "b") && piece == "WP" && x1 == 4 && attr(pos,"y1") == y2) {
          isenpassant <- "w"
          pos[5,9-y2] <- ""
          if (draw) .drawsquare(4, y2)
       }
-      if (identical(attr(pos, "ispp"), "w") && piece == "BP" && x1 == 5 && attr(pos, "y1") == y2) {
+      if (identical(attr(pos,"ispp"), "w") && piece == "BP" && x1 == 5 && attr(pos,"y1") == y2) {
          isenpassant <- "b"
          pos[4,9-y2] <- ""
          if (draw) .drawsquare(5, y2)
@@ -316,12 +316,12 @@
 
       # check for en passant
 
-      if (identical(attr(pos, "ispp"), "b") && piece == "WP" && x1 == 5 && attr(pos, "y1") == y2) {
+      if (identical(attr(pos,"ispp"), "b") && piece == "WP" && x1 == 5 && attr(pos,"y1") == y2) {
          isenpassant <- "w"
          pos[5,y2] <- ""
          if (draw) .drawsquare(5, y2)
       }
-      if (identical(attr(pos, "ispp"), "w") && piece == "BP" && x1 == 4 && attr(pos, "y1") == y2) {
+      if (identical(attr(pos,"ispp"), "w") && piece == "BP" && x1 == 4 && attr(pos,"y1") == y2) {
          isenpassant <- "b"
          pos[4,y2] <- ""
          if (draw) .drawsquare(4, y2)
@@ -493,7 +493,8 @@
 
    # check which kings are in check
 
-   ischeck <- .ischeck(pos)
+   ischeck <- c(.isattacked(pos, xy=c(which(pos=="WK", arr.ind=TRUE)), attackcolor="b"),
+                .isattacked(pos, xy=c(which(pos=="BK", arr.ind=TRUE)), attackcolor="w"))
 
    piecename <- substr(piece, 2, 2)
    piecename <- ifelse(piecename == "P", "", piecename)
@@ -525,16 +526,16 @@
    if (pos[8,1] != "BR")
       rochade[4] <- FALSE
 
-   attr(pos, "move") <- move
-   attr(pos, "ispp") <- ispp
-   attr(pos, "y1") <- y1
-   attr(pos, "rochade") <- rochade
-   attr(pos, "ischeck") <- ischeck
+   attr(pos,"move") <- move
+   attr(pos,"ispp") <- ispp
+   attr(pos,"y1") <- y1
+   attr(pos,"rochade") <- rochade
+   attr(pos,"ischeck") <- ischeck
 
    if (pawnmove || iscapture) {
-      attr(pos, "moves50") <- 0
+      attr(pos,"moves50") <- 0
    } else {
-      attr(pos, "moves50") <- attr(pos, "moves50") + 1
+      attr(pos,"moves50") <- attr(pos,"moves50") + 1
    }
 
    if (verbose) {
@@ -621,6 +622,8 @@
    rect(y+offset, x+offset, y+1-offset, x+1-offset, lwd=lwd+2, border=ifelse(.is.even(x+y), .get("col.square.d"), .get("col.square.l")), ljoin=1)
 
 .boardeditor.rmrect <- function(x, y, offset=0.028, lwd) {
+   if (is.na(x) || is.na(y))
+      return()
    if (x <= 1 || x >= 10 || y <= 1 || y >= 10) {
       rect(y+offset, x+offset, y+1-offset, x+1-offset, lwd=lwd+2, border=.get("col.bg"), ljoin=1)
    } else {
