@@ -1,4 +1,4 @@
-# chesstrainer 0.9-59 (2025-05-10)
+# chesstrainer 0.9-60 (2025-05-31)
 
 - can play en passant
 - can promote pawns
@@ -27,6 +27,7 @@
 - can now evaluate multiple principal variations with Stockfish
 - added a 'timed' mode
 - can add, select, and manage bookmarks
+- checks now whether a move is legal
 
 # chesstrainer 0.1-0 (2024-12-17)
 

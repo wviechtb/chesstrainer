@@ -47,6 +47,7 @@ play <- function(lang="en", sfpath="", ...) {
    threads     <- ifelse(is.null(ddd[["threads"]]),     1,              ddd[["threads"]])
    hash        <- ifelse(is.null(ddd[["hash"]]),        256,            ddd[["hash"]])
    quitanim    <- ifelse(is.null(ddd[["quitanim"]]),    TRUE,           ddd[["quitanim"]])
+   inhibit     <- ifelse(is.null(ddd[["inhibit"]]),     FALSE,          ddd[["inhibit"]])
 
    # get switch1/switch2 functions if they are specified via ...
 
@@ -293,6 +294,13 @@ play <- function(lang="en", sfpath="", ...) {
    replast  <- FALSE
    oldmode  <- ifelse(mode == "play", "add", mode)
 
+   # save par() if a device is already open
+
+   if (dev.cur() != 1L) {
+      opar <- par(no.readonly=TRUE)
+      on.exit(par(opar))
+   }
+
    # create the getGraphicsEvent() functions
 
    mousedown <- function(buttons, x, y) {
@@ -372,7 +380,7 @@ play <- function(lang="en", sfpath="", ...) {
    keys      <- c("q", " ", "n", "p", "e", "E", "-", "=", "+", "m", "\\", "#",
                   "l", "/", "|", "*", "8", "?", "'", ",", ".", "<", ">",
                   "b", "w", "t", "h", "ctrl-R", "^", "6", "[", "]", "i", "(", ")", "v", "x",
-                  "ctrl-[", "\033", "a", "G", "R", "ctrl-C",
+                  "ctrl-[", "\033", "a", "G", "R", "ctrl-C", "ctrl-S",
                   "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F12")
    keys.add  <- c("f", "z", "c", "H", "0", "s")
    keys.test <- c("o", "r", "g", "A", "ctrl-D", "Right", "Left", "u")
@@ -610,7 +618,7 @@ play <- function(lang="en", sfpath="", ...) {
 
       # draw board and add info at the bottom
 
-      .drawboard(pos, flip=flip)
+      .drawboard(pos, flip=flip, inhibit=inhibit)
       .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
 
       # check for getGraphicsEvent() capabilities of the current plotting device
@@ -1051,7 +1059,10 @@ play <- function(lang="en", sfpath="", ...) {
                   names(tab)[1] <- ""
                   if (!is.null(selected))
                      rownames(tab) <- which(files.all %in% selected)
-                  print(tab, print.gap=2)
+                  txt <- capture.output(print(tab, print.gap=2))
+                  if (length(txt) > 50)
+                     txt <- c(txt, txt[1])
+                  .print(txt)
                } else {
                   cat(.text("zeroseqsfound"))
                }
@@ -1630,6 +1641,8 @@ play <- function(lang="en", sfpath="", ...) {
                   if (nrow(sub$moves) > 0L)
                      sub$moves <- sub$moves[seq_len(i-1),,drop=FALSE]
 
+                  texttop <- ""
+
                   if (nrow(circles) >= 1L || nrow(arrows) >= 1L || nrow(harrows) >= 1L) {
                      .rmannot(pos, circles, rbind(arrows, harrows), flip)
                      circles <- matrix(nrow=0, ncol=2)
@@ -1655,7 +1668,7 @@ play <- function(lang="en", sfpath="", ...) {
                      sidetoplay <- ifelse(startsWith(piece, "W"), "w", "b")
                   }
 
-                  .drawboard(pos, flip=flip)
+                  .drawboard(pos, flip=flip, inhibit=inhibit)
                   .textbot(mode, show, player, seqname, seqnum, score, played, i=1, totalmoves, selmode)
                   circles <- matrix(nrow=0, ncol=2)
                   arrows  <- matrix(nrow=0, ncol=4)
@@ -1968,7 +1981,7 @@ play <- function(lang="en", sfpath="", ...) {
                      pos <- sub$pos
                   }
 
-                  .drawboard(pos, flip=flip)
+                  .drawboard(pos, flip=flip, inhibit=inhibit)
                   .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                   circles <- matrix(nrow=0, ncol=2)
                   arrows  <- matrix(nrow=0, ncol=4)
@@ -2203,7 +2216,7 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # ctrl-c to copy the FEN to the clipboard
+            # ctrl-c to print and copy the FEN to the clipboard
 
             if (identical(click, "ctrl-C")) {
                eval(expr=switch1)
@@ -2213,6 +2226,18 @@ play <- function(lang="en", sfpath="", ...) {
                clipr::write_clip(fen, object_type="character")
                .texttop(.text("copyfen"), sleep=0.75)
                .texttop(texttop)
+               next
+            }
+
+            # ctrl-s to print and copy the sequence name to the clipboard
+
+            if (identical(click, "ctrl-S")) {
+               if (seqname != "") {
+                  eval(expr=switch1)
+                  print(seqname)
+                  clipr::write_clip(seqname, object_type="character")
+                  eval(expr=switch2)
+               }
                next
             }
 
@@ -2305,9 +2330,9 @@ play <- function(lang="en", sfpath="", ...) {
             # if click is an actual click (and drag) on the board
 
             if (verbose) {
-               cat("Click 1: ", click1.x, ", ", click1.y, sep="")
+               cat("(click1.x, click1.y): ", click1.x, ", ", click1.y, sep="")
                cat("\n")
-               cat("Click 2: ", click2.x, ", ", click2.y, sep="")
+               cat("(click2.x, click2.y): ", click2.x, ", ", click2.y, sep="")
                cat("\n")
             }
 
@@ -2398,9 +2423,30 @@ play <- function(lang="en", sfpath="", ...) {
             evalvals <- c()
          }
 
+         # check that the move is legal
+
+         islegal <- .islegal(click1.x, click1.y, click2.x, click2.y, pos, flip, sidetoplay)
+
+         if (!islegal)
+            next
+
          if (mode %in% c("add","play")) {
 
-            # if in add or play mode, make the move
+            # if in add or play mode, try to make the move (note: using autoprom=TRUE and "=Q" to autopromote to queen, but this
+            # is only relevant if a pawn move for promotion would put the king in check, which would not be a legal move)
+
+            tmp <- .updateboard(pos, move=data.frame(click1.x, click1.y, click2.x, click2.y, NA, "=Q"), flip=flip, autoprom=TRUE, volume=0, verbose=verbose, draw=FALSE)
+
+            # check if king is still in check after the move, it is not a legal move
+
+            ischeck <- attr(tmp,"ischeck")
+
+            if (sidetoplay == "w" && ischeck[1])
+               next
+            if (sidetoplay == "b" && ischeck[2])
+               next
+
+            # if this is not the case, then actually carry out the move
 
             pos <- .updateboard(pos, move=data.frame(click1.x, click1.y, click2.x, click2.y, NA, NA), flip=flip, autoprom=FALSE, volume=volume, verbose=verbose)
             .texttop(" ")
@@ -2544,6 +2590,13 @@ play <- function(lang="en", sfpath="", ...) {
                         .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
                         sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                         .drawsideindicator(sidetoplay, flip)
+                        fen <- .genfen(pos, flip, sidetoplay, i)
+                        res.sf <- .sf.eval(sfproc, sfrun, ifelse(flip, ifelse(sidetoplay=="b", depth1, depth3), ifelse(sidetoplay=="w", depth1, depth3)), multipv1, fen, sidetoplay, verbose)
+                        evalval  <- res.sf$eval
+                        bestmove <- res.sf$bestmove
+                        matetype <- res.sf$matetype
+                        sfproc   <- res.sf$sfproc
+                        sfrun    <- res.sf$sfrun
                         donext <- TRUE
                         break
                      }

@@ -15,6 +15,9 @@ play(lang="en", sfpath="", \dots)
 \details{
    This is the main function to start the chess trainer. See the \pkg{\link{chesstrainer-package}} documentation for an introduction to the package.
 }
+\value{
+   The function does not return an object.
+}
 \author{
    Wolfgang Viechtbauer (\email{wvb@wvbauer.com}).
 }

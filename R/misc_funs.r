@@ -177,7 +177,7 @@
          rochade <- "0-0-0"
    }
 
-   # check if a piece was captured (either the target square is not empty or a pawn moved diagonally)
+   # check if a piece was captured (either the target square is not empty or a pawn moved diagonally, which covers en passant)
 
    if (flip) {
       iscapture <- pos[9-x2,9-y2] != "" || (piece == "P" && y1 != y2)
@@ -193,12 +193,17 @@
       promotiontxt <- ""
    }
 
+   # determine if the move results in a check
+
+   tmp <- .updateboard(pos, move=data.frame(x1, y1, x2, y2, NA, ifelse(promotiontxt=="", NA, promotiontxt)), flip=flip, autoprom=TRUE, volume=0, verbose=FALSE, draw=FALSE)
+   ischeck <- attr(tmp,"ischeck")
+
    # construct the move text in long algebraic notation
 
    if (identical(rochade, "")) {
-      txt <- paste0(piece, move[1], move[2], ifelse(iscapture, "x", "-"), move[3], move[4], promotiontxt, collapse="")
+      txt <- paste0(piece, move[1], move[2], ifelse(iscapture, "x", "-"), move[3], move[4], promotiontxt, ifelse(any(ischeck), "+", ""), collapse="")
    } else {
-      txt <- rochade
+      txt <- paste0(rochade, ifelse(any(ischeck), "+", ""))
    }
 
    # rename pieces for other languages
@@ -294,3 +299,374 @@
 
 .waitforclick <- function()
    getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button, x, y) return(""), onKeybd=function(key) return(""))
+
+.print <- function(x) {
+   n <- length(x)
+   for (i in 1:n) {
+      cat(x[i], "\n")
+   }
+   return()
+}
+
+.islegal <- function(x1, y1, x2, y2, pos, flip, sidetoplay) {
+
+   islegal <- FALSE
+
+   # get the piece moved and the piece on the target square ("" if the target square is empty)
+   if (flip) {
+      piece <- pos[9-x1,9-y1]
+      target <- pos[9-x2,9-y2]
+   } else {
+      piece <- pos[x1,y1]
+      target <- pos[x2,y2]
+   }
+
+   # check if moving the wrong color
+   color <- tolower(substr(piece, 1, 1))
+   if (sidetoplay != color)
+      return(FALSE)
+
+   # check if capturing own piece
+   targetcolor <- tolower(substr(target, 1, 1)) # if target is "", then this remains ""
+   if (sidetoplay == targetcolor)
+      return(FALSE)
+
+   # check if king move is legal
+   if (piece %in% c("WK","BK")) {
+      isrochade <- ""
+      rochade <- attr(pos,"rochade")
+      if (is.null(rochade))
+         rochade <- rep(TRUE, 4)
+      # TODO: determine that the king does not pass through or finish on a square that is attacked (could use
+      # .ischeck() where the coordinates that the king passes through or finishes on are treated as the pretend
+      # locations of the king; actually, finishing on a square that is attacked should already be covered; only
+      # checking that a square passed through is not attacked needs to be added)
+      if (flip) {
+         if (rochade[1] && identical(c(x1,y1), c(8,4)) && piece == "WK" && all(pos[1,6:7] == "") && identical(c(x2,y2), c(8,2)))
+            islegal <- TRUE
+         if (rochade[2] && identical(c(x1,y1), c(8,4)) && piece == "WK" && all(pos[1,2:4] == "") && identical(c(x2,y2), c(8,6)))
+            islegal <- TRUE
+         if (rochade[3] && identical(c(x1,y1), c(1,4)) && piece == "BK" && all(pos[8,6:7] == "") && identical(c(x2,y2), c(1,2)))
+            islegal <- TRUE
+         if (rochade[4] && identical(c(x1,y1), c(1,4)) && piece == "BK" && all(pos[8,2:4] == "") && identical(c(x2,y2), c(1,6)))
+            islegal <- TRUE
+      } else {
+         if (rochade[1] && identical(c(x1,y1), c(1,5)) && piece == "WK" && all(pos[1,6:7] == "") && identical(c(x2,y2), c(1,7)))
+            islegal <- TRUE
+         if (rochade[2] && identical(c(x1,y1), c(1,5)) && piece == "WK" && all(pos[1,2:4] == "") && identical(c(x2,y2), c(1,3)))
+            islegal <- TRUE
+         if (rochade[3] && identical(c(x1,y1), c(8,5)) && piece == "BK" && all(pos[8,6:7] == "") && identical(c(x2,y2), c(8,7)))
+            islegal <- TRUE
+         if (rochade[4] && identical(c(x1,y1), c(8,5)) && piece == "BK" && all(pos[8,2:4] == "") && identical(c(x2,y2), c(8,3)))
+            islegal <- TRUE
+      }
+      if (abs(x1 - x2) <= 1 && abs(y1 - y2) <= 1)
+         islegal <- TRUE
+   }
+
+   # check if bishop move is legal
+   if (piece %in% c("WB","BB")) {
+      if (abs(x1 - x2) == abs(y1 - y2)) {
+         islegal <- TRUE
+         if (flip) {
+            inbetween <- pos[cbind((9-x1):(9-x2), (9-y1):(9-y2))]
+         } else {
+            inbetween <- pos[cbind(x1:x2, y1:y2)]
+         }
+         inbetween <- inbetween[-c(1,length(inbetween))]
+         if (length(inbetween) > 0 && any(inbetween != ""))
+            islegal <- FALSE
+      }
+   }
+
+   # check if rook move is legal
+   if (piece %in% c("WR","BR")) {
+      if (x1 == x2 || y1 == y2) {
+         islegal <- TRUE
+         if (flip) {
+            if (x1 == x2) {
+               inbetween <- pos[cbind(9-x1, (9-y1):(9-y2))]
+            } else {
+               inbetween <- pos[cbind((9-x1):(9-x2), 9-y1)]
+            }
+         } else {
+            if (x1 == x2) {
+               inbetween <- pos[cbind(x1, y1:y2)]
+            } else {
+               inbetween <- pos[cbind(x1:x2, y1)]
+            }
+         }
+         inbetween <- inbetween[-c(1,length(inbetween))]
+         if (length(inbetween) > 0 && any(inbetween != ""))
+            islegal <- FALSE
+      }
+   }
+
+   # check if queen move is legal
+   if (piece %in% c("WQ","BQ")) {
+      if ((x1 == x2 || y1 == y2) || abs(x1 - x2) == abs(y1 - y2)) {
+         islegal <- TRUE
+         if (flip) {
+            if ((x1 == x2 || y1 == y2)) {
+               if (x1 == x2) {
+                  inbetween <- pos[cbind(9-x1, (9-y1):(9-y2))]
+               } else {
+                  inbetween <- pos[cbind((9-x1):(9-x2), 9-y1)]
+               }
+            } else {
+               inbetween <- pos[cbind((9-x1):(9-x2), (9-y1):(9-y2))]
+            }
+         } else {
+            if ((x1 == x2 || y1 == y2)) {
+               if (x1 == x2) {
+                  inbetween <- pos[cbind(x1, y1:y2)]
+               } else {
+                  inbetween <- pos[cbind(x1:x2, y1)]
+               }
+            } else {
+               inbetween <- pos[cbind(x1:x2, y1:y2)]
+            }
+         }
+         inbetween <- inbetween[-c(1,length(inbetween))]
+         if (length(inbetween) > 0 && any(inbetween != ""))
+            islegal <- FALSE
+      }
+   }
+
+   if (piece %in% c("WN","BN")) {
+      kmove <- c(abs(x1 - x2), abs(y1 - y2))
+      if (identical(kmove, c(1,2)) || identical(kmove, c(2,1)))
+         islegal <- TRUE
+   }
+
+   # check if white pawn move is legal
+   if (piece == "WP") {
+      if (flip) {
+         if (y1 == y2 && (x1 - x2 == 1 || (x1 - x2 == 2 && x1 == 7 && pos[3,9-y1] == ""))) # regular pawn move
+            islegal <- TRUE
+         if (abs(y1 - y2) == 1 && x1 - x2 == 1 && target != "") # pawn capture
+            islegal <- TRUE
+         if (abs(y1 - y2) == 1 && x1 - x2 == 1 && x1 == 4 && pos[9-x1,9-y2] == "BP" && identical(attr(pos, "ispp"), "b") && identical(attr(pos, "y1"), y2)) # en passant
+            islegal <- TRUE
+      } else {
+         if (y1 == y2 && (x2 - x1 == 1 || (x2 - x1 == 2 && x1 == 2 && pos[3,y1] == ""))) # regular pawn move
+            islegal <- TRUE
+         if (abs(y1 - y2) == 1 && x2 - x1 == 1 && target != "") # pawn capture
+            islegal <- TRUE
+         if (abs(y1 - y2) == 1 && x2 - x1 == 1 && x1 == 5 && pos[x1,y2] == "BP" && identical(attr(pos, "ispp"), "b") && identical(attr(pos, "y1"), y2)) # en passant
+            islegal <- TRUE
+      }
+   }
+
+   # check if black pawn move is legal
+   if (piece == "BP") {
+      if (flip) {
+         if (y1 == y2 && (x2 - x1 == 1 || (x2 - x1 == 2 && x1 == 2 && pos[6,9-y1] == ""))) # regular pawn move
+            islegal <- TRUE
+         if (abs(y1 - y2) == 1 && x2 - x1 == 1 && target != "") # pawn capture
+            islegal <- TRUE
+         if (abs(y1 - y2) == 1 && x2 - x1 == 1 && x1 == 5 && pos[9-x1,9-y2] == "WP" && identical(attr(pos, "ispp"), "w") && identical(attr(pos, "y1"), y2)) # en passant
+            islegal <- TRUE
+      } else {
+         if (y1 == y2 && (x1 - x2 == 1 || (x1 - x2 == 2 && x1 == 7 && pos[6,y1] == ""))) # regular pawn move
+            islegal <- TRUE
+         if (abs(y1 - y2) == 1 && x1 - x2 == 1 && target != "") # pawn capture
+            islegal <- TRUE
+         if (abs(y1 - y2) == 1 && x1 - x2 == 1 && x1 == 4 && pos[x1,y2] == "WP" && identical(attr(pos, "ispp"), "w") && identical(attr(pos, "y1"), y2)) # en passant
+            islegal <- TRUE
+      }
+   }
+
+   return(islegal)
+
+}
+
+.ischeck <- function(pos) {
+
+   wcheck <- FALSE
+   bcheck <- FALSE
+
+   knightoffsets <- matrix(c(-2,-1, -2,1, -1,-2, -1,2, 1,-2, 1,2, 2,-1, 2,1), ncol=2, byrow=TRUE)
+   kingoffsets   <- matrix(c(-1,-1, -1,0, -1,1, 0,-1, 0,1, 1,-1, 1,0, 1,1), ncol=2, byrow=TRUE)
+
+   #########################################################################
+
+   kpos <- c(which(pos == "WK", arr.ind=TRUE))
+
+   if (!wcheck) {
+      coords <- cbind(kpos[1]+1, c(kpos[2]-1,kpos[2]+1))
+      coords <- coords[coords[,1] >= 1 & coords[,1] <= 8 & coords[,2] >= 1 & coords[,2] <= 8,,drop=FALSE]
+      if (any(pos[coords] == "BP"))
+         wcheck <- TRUE
+   }
+
+   if (!wcheck) {
+      coords <- sweep(kingoffsets, 2, kpos, "+")
+      coords <- coords[coords[,1] >= 1 & coords[,1] <= 8 & coords[,2] >= 1 & coords[,2] <= 8,,drop=FALSE]
+      if (any(pos[coords] == "BK"))
+         wcheck <- TRUE
+   }
+
+   if (!wcheck) {
+      coords <- sweep(knightoffsets, 2, kpos, "+")
+      coords <- coords[coords[,1] >= 1 & coords[,1] <= 8 & coords[,2] >= 1 & coords[,2] <= 8,,drop=FALSE]
+      if (any(pos[coords] == "BN"))
+         wcheck <- TRUE
+   }
+
+   if (!wcheck) {
+      directions <- list(c(-1,-1), c(-1,1), c(1,-1), c(1,1))
+      for (dir in directions) {
+         r <- kpos[1] + dir[1]
+         c <- kpos[2] + dir[2]
+         while (r >= 1 && r <= 8 && c >= 1 && c <= 8) {
+            piece <- pos[r,c]
+            if (piece != "") {
+               if (piece == "BB") {
+                  wcheck <- TRUE
+                  break
+               } else {
+                  break
+               }
+            }
+            r <- r + dir[1]
+            c <- c + dir[2]
+         }
+      }
+   }
+
+   if (!wcheck) {
+      directions <- list(c(-1,0), c(1,0), c(0,-1), c(0,1))
+      for (dir in directions) {
+         r <- kpos[1] + dir[1]
+         c <- kpos[2] + dir[2]
+         while (r >= 1 && r <= 8 && c >= 1 && c <= 8) {
+            piece <- pos[r,c]
+            if (piece != "") {
+               if (piece == "BR") {
+                  wcheck <- TRUE
+                  break
+               } else {
+                  break
+               }
+            }
+            r <- r + dir[1]
+            c <- c + dir[2]
+         }
+      }
+   }
+
+   if (!wcheck) {
+      directions <- list(c(-1,0), c(1,0), c(0,-1), c(0,1), c(-1,-1), c(-1,1), c(1,-1), c(1,1))
+      for (dir in directions) {
+         r <- kpos[1] + dir[1]
+         c <- kpos[2] + dir[2]
+         while (r >= 1 && r <= 8 && c >= 1 && c <= 8) {
+            piece <- pos[r,c]
+            if (piece != "") {
+               if (piece == "BQ") {
+                  wcheck <- TRUE
+                  break
+               } else {
+                  break
+               }
+            }
+            r <- r + dir[1]
+            c <- c + dir[2]
+         }
+      }
+   }
+
+   #########################################################################
+
+   kpos <- c(which(pos == "BK", arr.ind=TRUE))
+
+   if (!bcheck) {
+      coords <- cbind(kpos[1]-1, c(kpos[2]-1,kpos[2]+1))
+      coords <- coords[coords[,1] >= 1 & coords[,1] <= 8 & coords[,2] >= 1 & coords[,2] <= 8,,drop=FALSE]
+      if (any(pos[coords] == "WP"))
+         bcheck <- TRUE
+   }
+
+   if (!bcheck) {
+      coords <- sweep(kingoffsets, 2, kpos, "+")
+      coords <- coords[coords[,1] >= 1 & coords[,1] <= 8 & coords[,2] >= 1 & coords[,2] <= 8,,drop=FALSE]
+      if (any(pos[coords] == "WK"))
+         bcheck <- TRUE
+   }
+
+   if (!bcheck) {
+      coords <- sweep(knightoffsets, 2, kpos, "+")
+      coords <- coords[coords[,1] >= 1 & coords[,1] <= 8 & coords[,2] >= 1 & coords[,2] <= 8,,drop=FALSE]
+      if (any(pos[coords] == "WN"))
+         bcheck <- TRUE
+   }
+
+   if (!bcheck) {
+      directions <- list(c(-1,-1), c(-1,1), c(1,-1), c(1,1))
+      for (dir in directions) {
+         r <- kpos[1] + dir[1]
+         c <- kpos[2] + dir[2]
+         while (r >= 1 && r <= 8 && c >= 1 && c <= 8) {
+            piece <- pos[r,c]
+            if (piece != "") {
+               if (piece == "WB") {
+                  bcheck <- TRUE
+                  break
+               } else {
+                  break
+               }
+            }
+            r <- r + dir[1]
+            c <- c + dir[2]
+         }
+      }
+   }
+
+   if (!bcheck) {
+      directions <- list(c(-1,0), c(1,0), c(0,-1), c(0,1))
+      for (dir in directions) {
+         r <- kpos[1] + dir[1]
+         c <- kpos[2] + dir[2]
+         while (r >= 1 && r <= 8 && c >= 1 && c <= 8) {
+            piece <- pos[r,c]
+            if (piece != "") {
+               if (piece == "WR") {
+                  bcheck <- TRUE
+                  break
+               } else {
+                  break
+               }
+            }
+            r <- r + dir[1]
+            c <- c + dir[2]
+         }
+      }
+   }
+
+   if (!bcheck) {
+      directions <- list(c(-1,0), c(1,0), c(0,-1), c(0,1), c(-1,-1), c(-1,1), c(1,-1), c(1,1))
+      for (dir in directions) {
+         r <- kpos[1] + dir[1]
+         c <- kpos[2] + dir[2]
+         while (r >= 1 && r <= 8 && c >= 1 && c <= 8) {
+            piece <- pos[r,c]
+            if (piece != "") {
+               if (piece == "WQ") {
+                  bcheck <- TRUE
+                  break
+               } else {
+                  break
+               }
+            }
+            r <- r + dir[1]
+            c <- c + dir[2]
+         }
+      }
+   }
+
+   #########################################################################
+
+   return(c(wcheck, bcheck))
+
+}

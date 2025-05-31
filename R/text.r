@@ -648,14 +648,14 @@
 
    if (x == "nomove") {
       return(switch(lang,
-                    de = "Stockfish hat keinen Zug angezeigt.\n",
-                         "Stockfish did not return a move.\n"
+                    de = "Stockfish hat keinen Zug vorgeschlagen.\n",
+                         "Stockfish did not suggest a move.\n"
    ))}
 
    if (x == "nobestmove") {
       return(switch(lang,
-                    de = "Kann den besten Zug nicht anzeigen.\n",
-                         "Cannot show best move."
+                    de = "Kann den besten Zug nicht anzeigen (vielleicht ist es Matt?).\n",
+                         "Cannot show best move (maybe it is mate?)."
    ))}
 
    if (x == "sfdeepeval") {
