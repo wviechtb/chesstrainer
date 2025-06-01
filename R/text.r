@@ -654,8 +654,8 @@
 
    if (x == "nobestmove") {
       return(switch(lang,
-                    de = "Kann den besten Zug nicht anzeigen (vielleicht ist es Matt?).\n",
-                         "Cannot show best move (maybe it is mate?)."
+                    de = "Kann den besten Zug nicht anzeigen (vielleicht ist es Matt/Patt?).\n",
+                         "Cannot show best move (maybe it is (stale)mate?)."
    ))}
 
    if (x == "sfdeepeval") {

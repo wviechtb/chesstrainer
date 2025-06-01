@@ -289,7 +289,7 @@ play <- function(lang="en", sfpath="", ...) {
    seqno <- 1
    filename <- ""
    lastseq  <- ""
-   bestmove <- ""
+   bestmove <- list("")
    useflip  <- TRUE
    replast  <- FALSE
    oldmode  <- ifelse(mode == "play", "add", mode)
@@ -733,15 +733,15 @@ play <- function(lang="en", sfpath="", ...) {
 
                if (domove) {
 
-                  tmp <- .parsesfmove(bestmove[1], pos, flip, NA, rename=FALSE)
-
-                  if (length(tmp$x1) == 0L) {
+                  if (!nzchar(bestmove[[1]][1])) {
                      .texttop(.text("nomove"))
                      .waitforclick()
                      run.rnd <- FALSE
                      input <- FALSE
                      next
                   }
+
+                  tmp <- .parsebestmove(bestmove[[1]][1], pos=pos, flip=flip, evalval=NA, i=i, sidetoplay=sidetoplay, rename=FALSE)
 
                   sub$moves <- rbind(sub$moves, data.frame(x1=tmp$x1, y1=tmp$y1, x2=tmp$x2, y2=tmp$y2, show=FALSE, move=tmp$txt, eval=evalval[1], comment="", circles="", arrows="", fen=fen))
                   pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE, volume=volume, verbose=verbose)
@@ -1103,7 +1103,6 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (identical(click, ">")) {
                bookmark <- .bookmarks(seqdir, seqdirpos, texttop, lwd)
-               #bookmark <- .bookmarks.old(seqdir, seqdirpos, texttop, switch1, switch2)
                if (bookmark != "") {
                   selected <- grepl(bookmark, files.all)
                   selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected]
@@ -1495,19 +1494,19 @@ play <- function(lang="en", sfpath="", ...) {
                      sfproc   <- res.sf$sfproc
                      sfrun    <- res.sf$sfrun
                   }
-                  if (any(bestmove != "")) {
+                  if (bestmove[[1]][1] != "") {
                      nmoves <- length(bestmove)
-                     bestmovetxt <- c()
-                     evalvals <- c()
+                     bestmovetxt <- rep(NA_character_, nmoves)
+                     evalvals <- rep(NA_real_, nmoves)
                      for (j in 1:nmoves) {
-                        if (bestmove[j] == "")
+                        if (bestmove[[j]][1] == "")
                            next
-                        bestmovetxt <- c(bestmovetxt, .parsesfmove(bestmove[j], pos, flip, evalval[j])$txt)
-                        evalvals <- c(evalvals, evalval[j])
-                        bestx1 <- as.numeric(substr(bestmove[j], 2, 2))
-                        besty1 <- which(letters[1:8] == substr(bestmove[j], 1, 1))
-                        bestx2 <- as.numeric(substr(bestmove[j], 4, 4))
-                        besty2 <- which(letters[1:8] == substr(bestmove[j], 3, 3))
+                        bestmovetxt[j] <- .parsebestmove(bestmove[[j]], pos=pos, flip=flip, evalval=evalval[j], i=i, sidetoplay=sidetoplay, rename=TRUE)$txt
+                        evalvals[j] <- evalval[j]
+                        bestx1 <- as.numeric(substr(bestmove[[j]][1], 2, 2))
+                        besty1 <- which(letters[1:8] == substr(bestmove[[j]][1], 1, 1))
+                        bestx2 <- as.numeric(substr(bestmove[[j]][1], 4, 4))
+                        besty2 <- which(letters[1:8] == substr(bestmove[[j]][1], 3, 3))
                         if (flip) {
                            bestx1 <- 9 - bestx1
                            besty1 <- 9 - besty1
@@ -1516,10 +1515,10 @@ play <- function(lang="en", sfpath="", ...) {
                         }
                         harrows <- rbind(harrows, c(bestx1, besty1, bestx2, besty2))
                      }
+                     evalvals <- evalvals[!is.na(evalvals)]
+                     bestmovetxt <- bestmovetxt[!is.na(bestmovetxt)]
                      .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
-                     if (nmoves > 1L)
-                        bestmovetxt <- paste0(seq_along(bestmovetxt), ": ", bestmovetxt)
-                     .texttop(paste0(bestmovetxt, collapse="\n"), pos=4, xpos=4.1)
+                     .texttop(paste0(bestmovetxt, collapse="\n"), left=TRUE)
                   } else {
                      .texttop(.text("nobestmove"), sleep=1)
                      .texttop(" ")

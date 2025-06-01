@@ -84,7 +84,7 @@
 
    sfout    <- NULL
    eval     <- rep(NA_real_, multipv)
-   bestmove <- rep("", multipv)
+   bestmove <- as.list(rep("", multipv))
    alive    <- TRUE
 
    if (progbar)
@@ -102,7 +102,7 @@
       .sf.newgame(sfproc, sfrun)
       sfproc$write_input(paste0("setoption name MultiPV value ", multipv, "\n"))
       Sys.sleep(0.1)
-      sfproc$write_input(paste("position fen", fen, "\n"))
+      sfproc$write_input(paste0("position fen ", fen, "\n"))
       Sys.sleep(0.1)
       sfproc$write_input(paste0("go depth ", depth, "\n"))
 
@@ -150,14 +150,14 @@
 
    # check for mate
    if (any(grepl("info depth 0 score mate 0", sfout, fixed=TRUE)))
-      return(list(eval=ifelse(sidetoplay == "b", 99.9, -99.9), bestmove="", matetype="mate", sfproc=sfproc, sfrun=sfrun))
+      return(list(eval=ifelse(sidetoplay == "b", 99.9, -99.9), bestmove=bestmove, matetype="mate", sfproc=sfproc, sfrun=sfrun))
 
    # check for stalemate
    if (any(grepl("info depth 0 score cp 0", sfout, fixed=TRUE)) && any(grepl("bestmove (none)", sfout, fixed=TRUE)))
-      return(list(eval=0, bestmove="", matetype="stalemate", sfproc=sfproc, sfrun=sfrun))
+      return(list(eval=0, bestmove=bestmove, matetype="stalemate", sfproc=sfproc, sfrun=sfrun))
 
    # find positions in output of 'info depth <depth>' (there should be between 1 and 'multipv' such lines)
-   infodepthpos <- grep(paste("info depth", depth), sfout, fixed=TRUE)
+   infodepthpos <- grep(paste0("info depth ", depth), sfout, fixed=TRUE)
 
    if (length(infodepthpos) == 0L) # just in case
       return(list(eval=eval, bestmove=bestmove, matetype="none", sfproc=sfproc, sfrun=sfrun))
@@ -167,7 +167,7 @@
 
    for (i in 1:multipv) {
       # find the position of 'multipv <i> score'
-      pos <- grep(paste(" multipv", i, "score "), sfout, fixed=TRUE)
+      pos <- grep(paste0(" multipv ", i, " score "), sfout, fixed=TRUE)
       if (length(pos) == 0L)
          next
       if (length(pos) > 1L) # there really should only be one, but just in case
@@ -177,7 +177,7 @@
       mateinx <- grepl(" score mate ", sfoutpos, fixed=TRUE)
       # get the best move for the variation
       tmp <- strsplit(sfoutpos, " pv ", fixed=TRUE)[[1]][2]
-      bestmove[i] <- strsplit(tmp, " ", fixed=TRUE)[[1]][1]
+      bestmove[[i]] <- strsplit(tmp, " ", fixed=TRUE)[[1]]
       if (mateinx) {
          tmp <- strsplit(sfoutpos, " score mate ", fixed=TRUE)[[1]][2]
          matemoves <- as.numeric(strsplit(tmp, " ", fixed=TRUE)[[1]][1])
@@ -195,7 +195,7 @@
    if (verbose) {
       cat("\nFEN:  ", fen, "\n")
       cat("Eval: ", eval, "\n")
-      cat("Best: ", bestmove, "\n\n")
+      cat("Best: ", sapply(bestmove, head, 1), "\n\n")
    }
 
    return(list(eval=eval, bestmove=bestmove, matetype="none", sfproc=sfproc, sfrun=sfrun))

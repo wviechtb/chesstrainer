@@ -737,7 +737,7 @@
 
 }
 
-.texttop <- function(txt, sleep=0, pos=NULL, xpos=NULL) {
+.texttop <- function(txt, sleep=0, left=FALSE) {
 
    if (length(txt) == 0L)
       return()
@@ -748,24 +748,29 @@
    ytop    <- grconvertY(dev.size()[2], from="inches", to="user")-0.2
    xcenter <- (xleft + xright) / 2
 
-   if (!is.null(xpos))
-      xcenter <- xpos
-
    rect(xleft, ybottom-0.2, xright, ytop+0.2, col=.get("col.bg"), border=NA)
 
    if (!identical(txt, "")) {
       txt <- gsub("\\n", "\n", txt, fixed=TRUE)
       txt <- strsplit(txt, "\n", fixed=TRUE)[[1]]
-      max_line_width <- max(sapply(txt, strwidth))
+      max_line_width <- max(strwidth(txt))
       max_line_height <- strheight("A")
       total_text_height <- length(txt) * max_line_height
       cex <- min(.get("cex.top"), (xright-xleft) / max_line_width, (ytop-ybottom) / total_text_height)
+      maxwidth <- max(strwidth(txt, cex=cex))
+      if (maxwidth > 9.5)
+         cex <- cex * 0.95
       ypos <- seq(from = min(ytop,    (ytop - ybottom) / 2 + ybottom + (length(txt) - 1) * 1 * max_line_height * cex),
                   to   = max(ybottom, (ytop - ybottom) / 2 + ybottom - (length(txt) - 1) * 1 * max_line_height * cex),
                   length.out = length(txt))
+      if (left) {
+         maxwidth <- max(strwidth(txt, cex=cex))
+         margin <- max(0, (10 - maxwidth) / 2)
+         xcenter <- margin
+      }
       col.top <- .get("col.top")
       for (i in seq_along(txt)) {
-         text(x=xcenter, y=ypos[i], labels=txt[i], cex=cex, col=col.top, pos=pos)
+         text(x=xcenter, y=ypos[i], labels=txt[i], cex=cex, col=col.top, adj=c(ifelse(left,0,0.5),0.5))
       }
    }
 
@@ -1107,7 +1112,7 @@
       center  <- FALSE
       txt[1] <- gsub("\\l", "", txt[1], fixed=TRUE)
    }
-   max_line_width <- max(sapply(txt, strwidth))
+   max_line_width <- max(strwidth(txt))
    max_line_height <- strheight("A")
    total_text_height <- length(txt) * max_line_height
    cex <- min(.get("cex.top"), (xright-xleft) / max_line_width, (ytop-ybottom) / total_text_height)

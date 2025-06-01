@@ -142,104 +142,149 @@
 
 }
 
-.parsesfmove <- function(move, pos, flip, evalval, rename=TRUE) {
+.parsebestmove <- function(move, pos, flip, evalval, i, sidetoplay, rename) {
 
    lang <- .get("lang")
 
-   move <- strsplit(move, "")[[1]]
+   move <- strsplit(move, "")
 
-   if (flip) {
-      letters8 <- letters[8:1]
-      x1 <- as.numeric(which(move[2] == 8:1))
-      y1 <- as.numeric(which(move[1] == letters8))
-      x2 <- as.numeric(which(move[4] == 8:1))
-      y2 <- as.numeric(which(move[3] == letters8))
-      piece <- substr(pos[9-x1,9-y1], 2, 2)
-   } else {
-      letters8 <- letters[1:8]
-      x1 <- as.numeric(which(move[2] == 1:8))
-      y1 <- as.numeric(which(move[1] == letters8))
-      x2 <- as.numeric(which(move[4] == 1:18))
-      y2 <- as.numeric(which(move[3] == letters8))
-      piece <- substr(pos[x1,y1], 2, 2)
-   }
+   tmp <- pos
 
-   # check for rochade
+   moves <- length(move)
+   moves <- min(moves, 10)
 
-   rochade <- ""
+   for (j in 1:moves) {
 
-   if (flip) {
-      if (identical(c(x1,y1), c(9-1,9-5)) && pos[9-x1,9-y1] == "WK" && identical(c(x2,y2), c(9-1,9-7)))
-         rochade <- "0-0"
-      if (identical(c(x1,y1), c(9-1,9-5)) && pos[9-x1,9-y1] == "WK" && identical(c(x2,y2), c(9-1,9-3)))
-         rochade <- "0-0-0"
-      if (identical(c(x1,y1), c(9-8,9-5)) && pos[9-x1,9-y1] == "BK" && identical(c(x2,y2), c(9-8,9-7)))
-         rochade <- "0-0"
-      if (identical(c(x1,y1), c(9-8,9-5)) && pos[9-x1,9-y1] == "BK" && identical(c(x2,y2), c(9-8,9-3)))
-         rochade <- "0-0-0"
-   } else {
-      if (identical(c(x1,y1), c(1,5)) && pos[x1,y1] == "WK" && identical(c(x2,y2), c(1,7)))
-         rochade <- "0-0"
-      if (identical(c(x1,y1), c(1,5)) && pos[x1,y1] == "WK" && identical(c(x2,y2), c(1,3)))
-         rochade <- "0-0-0"
-      if (identical(c(x1,y1), c(8,5)) && pos[x1,y1] == "BK" && identical(c(x2,y2), c(8,7)))
-         rochade <- "0-0"
-      if (identical(c(x1,y1), c(8,5)) && pos[x1,y1] == "BK" && identical(c(x2,y2), c(8,3)))
-         rochade <- "0-0-0"
-   }
-
-   # check if a piece was captured (either the target square is not empty or a pawn moved diagonally, which covers en passant)
-
-   if (flip) {
-      iscapture <- pos[9-x2,9-y2] != "" || (piece == "P" && y1 != y2)
-   } else {
-      iscapture <- pos[x2,y2] != "" || (piece == "P" && y1 != y2)
-   }
-
-   # check for pawn promotion
-
-   if (length(move) == 5L) {
-      promotiontxt <- paste0("=", toupper(move[5]))
-   } else {
-      promotiontxt <- ""
-   }
-
-   # determine if the move results in a check
-
-   tmp <- .updateboard(pos, move=data.frame(x1, y1, x2, y2, NA, ifelse(promotiontxt=="", NA, promotiontxt)), flip=flip, autoprom=TRUE, volume=0, verbose=FALSE, draw=FALSE)
-   ischeck <- attr(tmp,"ischeck")
-
-   # construct the move text in long algebraic notation
-
-   if (identical(rochade, "")) {
-      txt <- paste0(piece, move[1], move[2], ifelse(iscapture, "x", "-"), move[3], move[4], promotiontxt, ifelse(any(ischeck), "+", ""), collapse="")
-   } else {
-      txt <- paste0(rochade, ifelse(any(ischeck), "+", ""))
-   }
-
-   # rename pieces for other languages
-
-   if (rename) {
-      if (lang == "de") {
-         txt <- sub("Q", "D", txt, fixed=TRUE)
-         txt <- sub("B", "L", txt, fixed=TRUE)
-         txt <- sub("N", "S", txt, fixed=TRUE)
-         txt <- sub("R", "T", txt, fixed=TRUE)
+      if (flip) {
+         letters8 <- letters[8:1]
+         x1 <- as.numeric(which(move[[j]][2] == 8:1))
+         y1 <- as.numeric(which(move[[j]][1] == letters8))
+         x2 <- as.numeric(which(move[[j]][4] == 8:1))
+         y2 <- as.numeric(which(move[[j]][3] == letters8))
+         piece <- substr(tmp[9-x1,9-y1], 2, 2)
+      } else {
+         letters8 <- letters[1:8]
+         x1 <- as.numeric(which(move[[j]][2] == 1:8))
+         y1 <- as.numeric(which(move[[j]][1] == letters8))
+         x2 <- as.numeric(which(move[[j]][4] == 1:18))
+         y2 <- as.numeric(which(move[[j]][3] == letters8))
+         piece <- substr(tmp[x1,y1], 2, 2)
       }
+
+      if (j == 1) {
+         bestx1 <- x1
+         besty1 <- y1
+         bestx2 <- x2
+         besty2 <- y2
+      }
+
+      # check for rochade
+
+      rochade <- ""
+
+      if (flip) {
+         if (identical(c(x1,y1), c(8,4)) && tmp[9-x1,9-y1] == "WK" && identical(c(x2,y2), c(8,2)))
+            rochade <- "0-0"
+         if (identical(c(x1,y1), c(8,4)) && tmp[9-x1,9-y1] == "WK" && identical(c(x2,y2), c(8,6)))
+            rochade <- "0-0-0"
+         if (identical(c(x1,y1), c(1,4)) && tmp[9-x1,9-y1] == "BK" && identical(c(x2,y2), c(1,2)))
+            rochade <- "0-0"
+         if (identical(c(x1,y1), c(1,4)) && tmp[9-x1,9-y1] == "BK" && identical(c(x2,y2), c(1,6)))
+            rochade <- "0-0-0"
+      } else {
+         if (identical(c(x1,y1), c(1,5)) && tmp[x1,y1] == "WK" && identical(c(x2,y2), c(1,7)))
+            rochade <- "0-0"
+         if (identical(c(x1,y1), c(1,5)) && tmp[x1,y1] == "WK" && identical(c(x2,y2), c(1,3)))
+            rochade <- "0-0-0"
+         if (identical(c(x1,y1), c(8,5)) && tmp[x1,y1] == "BK" && identical(c(x2,y2), c(8,7)))
+            rochade <- "0-0"
+         if (identical(c(x1,y1), c(8,5)) && tmp[x1,y1] == "BK" && identical(c(x2,y2), c(8,3)))
+            rochade <- "0-0-0"
+      }
+
+      # check if a piece was captured (either the target square is not empty or a pawn moved diagonally, which also covers en passant)
+
+      if (flip) {
+         iscapture <- tmp[9-x2,9-y2] != "" || (piece == "P" && y1 != y2)
+      } else {
+         iscapture <- tmp[x2,y2] != "" || (piece == "P" && y1 != y2)
+      }
+
+      # check for pawn promotion
+
+      if (length(move[[j]]) == 5L) {
+         promotiontxt <- paste0("=", toupper(move[[j]][5]))
+      } else {
+         promotiontxt <- ""
+      }
+
+      # determine if the move results in a check
+
+      tmp.next <- .updateboard(tmp, move=data.frame(x1, y1, x2, y2, NA, ifelse(promotiontxt=="", NA, promotiontxt)), flip=flip, autoprom=TRUE, volume=0, verbose=FALSE, draw=FALSE)
+      ischeck <- any(attr(tmp.next,"ischeck"))
+
+      # construct the move text in long algebraic notation
+
+      if (identical(rochade, "")) {
+         txt.move <- paste0(piece, move[[j]][1], move[[j]][2], ifelse(iscapture, "x", "-"), move[[j]][3], move[[j]][4], promotiontxt, ifelse(ischeck, "+", ""), collapse="")
+      } else {
+         txt.move <- paste0(rochade, ifelse(ischeck, "+", ""))
+      }
+
+      # rename pieces for other languages
+
+      if (rename) {
+         #if (lang == "de") {
+         #   txt.move <- sub("Q", "D", txt.move, fixed=TRUE)
+         #   txt.move <- sub("B", "L", txt.move, fixed=TRUE)
+         #   txt.move <- sub("N", "S", txt.move, fixed=TRUE)
+         #   txt.move <- sub("R", "T", txt.move, fixed=TRUE)
+         #}
+         txt.move <- sub("K", "\U0000265A", txt.move, fixed=TRUE)
+         txt.move <- sub("Q", "\U0000265B", txt.move, fixed=TRUE)
+         txt.move <- sub("R", "\U0000265C", txt.move, fixed=TRUE)
+         txt.move <- sub("B", "\U0000265D", txt.move, fixed=TRUE)
+         txt.move <- sub("N", "\U0000265E", txt.move, fixed=TRUE)
+      }
+
+      # remove P for pawns
+
+      txt.move <- sub("P", "", txt.move, fixed=TRUE)
+
+      # construct text
+
+      movenum <- (i+j) %/% 2
+
+      if (j == 1) {
+         if (sidetoplay=="w") {
+            txt.move <- paste0(movenum, ". ", txt.move, collapse="")
+         } else {
+            txt.move <- paste0(movenum, "... ", txt.move, collapse="")
+         }
+      } else {
+         if (.is.even(i+j)) {
+            txt.move <- paste0(" ", movenum, ". ", txt.move, collapse="")
+         } else {
+            txt.move <- txt.move
+         }
+      }
+
+      if (is.na(evalval)) {
+         txt.eval <- ""
+      } else {
+         txt.eval <- paste0(formatC(evalval, format="f", digits=2, flag="+"), " ", collapse="")
+      }
+
+      if (j == 1)
+         txt <- txt.eval
+
+      txt <- paste0(txt, " ", txt.move, collapse=" ")
+
+      tmp <- tmp.next
+
    }
 
-   # remove P for pawns
-
-   txt <- sub("P", "", txt, fixed=TRUE)
-
-   # add evaluation
-
-   if (!is.na(evalval)) {
-      evalval <- formatC(evalval, format="f", digits=2, flag="+")
-      txt <- paste0(txt, " (", evalval, ")", collapse="")
-   }
-
-   out <- list(txt=txt, x1=x1, y1=y1, x2=x2, y2=y2)
+   out <- list(txt=txt, x1=bestx1, y1=besty1, x2=bestx2, y2=besty2)
 
    return(out)
 
@@ -267,7 +312,7 @@
    cat("totalmoves:   ", totalmoves, "\n")
    cat("show:         ", show, "\n")
    cat("comment:      ", comment, "\n")
-   cat("bestmove:     ", bestmove, "\n")
+   cat("bestmove:     ", sapply(bestmove, head, 1), "\n")
    cat("evalval:      ", evalval, "\n")
    cat("texttop:      ", texttop, "\n")
    cat("scoreadd:     ", scoreadd, "\n")

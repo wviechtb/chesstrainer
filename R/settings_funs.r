@@ -175,8 +175,8 @@
 
    rect(1.2, 1.2, 8.8, 8.8, col=.get("col.bg"), border=.get("col.help.border"), lwd=lwd+3)
 
-   maxsw <- max(sapply(txt, strwidth, family=.get("font.mono")))
-   maxsh <- max(sapply(txt, strheight, family=.get("font.mono"))) * length(txt)
+   maxsw <- max(strwidth(txt, family=.get("font.mono")))
+   maxsh <- strheight("A", family=.get("font.mono")) * length(txt)
    cex <- min(1.5, (8.5 - 1.5) / max(maxsw, maxsh) * 0.9)
 
    selmodes <- c("score_random", "score_highest", "played_random", "played_lowest", "days_random", "days_oldest", "sequential")
@@ -240,12 +240,13 @@
 
    rect(1.2, 1.2, 8.8, 8.8, col=.get("col.bg"), border=.get("col.help.border"), lwd=lwd+3)
 
-   maxsw <- max(sapply(txt, strwidth, family=.get("font.mono")))
-   maxsh <- max(sapply(txt, strheight, family=.get("font.mono"))) * length(txt)
+   font.mono <- .get("font.mono")
+   maxsw <- max(strwidth(txt, family=font.mono))
+   maxsh <- strheight("A", family=font.mono) * length(txt)
    cex <- min(1.5, (8.5 - 1.5) / max(maxsw, maxsh) * 0.9)
 
    text(1+0.5, seq(8.5, 1.5, length.out=length(txt)), txt, pos=4, cex=cex,
-        family=.get("font.mono"), font=ifelse(grepl(":", txt), 2, 1), col=.get("col.help"))
+        family=font.mono, font=ifelse(grepl(":", txt), 2, 1), col=.get("col.help"))
 
    .waitforclick()
 

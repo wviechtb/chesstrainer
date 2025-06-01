@@ -241,12 +241,13 @@
 
    rect(2.2, 2.2, 9.8, 9.8, col=.get("col.bg"), border=.get("col.help.border"), lwd=lwd+3)
 
-   maxsw <- max(sapply(txt, strwidth, family=.get("font.mono")))
-   maxsh <- max(sapply(txt, strheight, family=.get("font.mono"))) * length(txt)
+   font.mono <- .get("font.mono")
+   maxsw <- max(strwidth(txt, family=font.mono))
+   maxsh <- strheight("A", family=font.mono) * length(txt)
    cex <- min(1.5, (8.5 - 1.5) / max(maxsw, maxsh) * 0.8)
 
    text(2+0.5, seq(8, 4, length.out=length(txt)), txt, pos=4, cex=cex,
-        family=.get("font.mono"), font=ifelse(grepl(":", txt), 2, 1), col=.get("col.help"))
+        family=font.mono, font=ifelse(grepl(":", txt), 2, 1), col=.get("col.help"))
 
    .waitforclick()
 
