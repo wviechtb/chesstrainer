@@ -1564,6 +1564,7 @@ play <- function(lang="en", sfpath="", ...) {
                }
                if (mode %in% c("add","play")) {
                   if (i > 1) {
+                     .rmcheck(pos, flip=flip)
                      oldeval <- sub$moves$eval[i-1]
                      posold <- pos
                      if (is.null(sub$pos)) {
@@ -1589,6 +1590,7 @@ play <- function(lang="en", sfpath="", ...) {
                         evalvals <- c()
                      }
                      .redrawpos(pos, posold, flip=flip)
+                     .drawcheck(pos, flip=flip)
                      .draweval(sub$moves$eval[i-1], oldeval, flip=flip, eval=eval, evalsteps=evalsteps)
                      .texttop(" ")
                      .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
@@ -1730,7 +1732,12 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (mode == "test" && identical(click, "Right")) {
                if (i > nrow(sub$moves)) {
-                  .texttop(.text("waslastmove"))
+                  .texttop(.text("waslastmove"), sleep=0.75)
+                  if (is.null(sub$commentend)) {
+                     .texttop(.texttop(sub$moves$comment[i-1]))
+                  } else {
+                     .texttop(sub$commentend)
+                  }
                   next
                }
                if (nrow(circles) >= 1L || nrow(arrows) >= 1L) {
@@ -1764,6 +1771,7 @@ play <- function(lang="en", sfpath="", ...) {
             if (mode == "test" && identical(click, "Left")) {
 
                if (i > 1) {
+                  .rmcheck(pos, flip=flip)
                   posold <- pos
                   if (is.null(sub$pos)) {
                      pos <- start.pos
@@ -1785,6 +1793,7 @@ play <- function(lang="en", sfpath="", ...) {
                      arrows  <- matrix(nrow=0, ncol=4)
                   }
                   .redrawpos(pos, posold, flip=flip)
+                  .drawcheck(pos, flip=flip)
                   .draweval(sub$moves$eval[i-1], sub$moves$eval[i], flip=flip, eval=eval, evalsteps=evalsteps)
                   .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
                   if (timed) {
@@ -2547,6 +2556,8 @@ play <- function(lang="en", sfpath="", ...) {
 
                }
 
+               playsound(system.file("sounds", "complete.ogg", package="chesstrainer"), volume=volume)
+
                if (is.null(sub$commentend)) {
                   if (mistake) {
                      .texttop(.text("nextseq"))
@@ -2558,8 +2569,6 @@ play <- function(lang="en", sfpath="", ...) {
                   if (!wait)
                      .waitforclick()
                }
-
-               playsound(system.file("sounds", "complete.ogg", package="chesstrainer"), volume=volume)
 
                lastseq <- seqname
 
@@ -2692,14 +2701,22 @@ play <- function(lang="en", sfpath="", ...) {
                      }
 
                      if (identical(click, "F9")) {
+                        eval(expr=switch1)
                         fen <- .genfen(pos, flip, ifelse(sidetoplay == "w", "b", "w"), i+1)
+                        cat(fen, "\n")
+                        eval(expr=switch2)
                         fen <- paste0("https://lichess.org/analysis/standard/", gsub(" ", "_", fen, fixed=TRUE))
                         browseURL(fen)
                      }
 
                      if (identical(click, "ctrl-C")) {
-                        fen <- .genfen(pos, flip, sidetoplay, i)
+                        eval(expr=switch1)
+                        fen <- .genfen(pos, flip, ifelse(sidetoplay == "w", "b", "w"), i+1)
+                        cat(fen, "\n")
+                        eval(expr=switch2)
                         clipr::write_clip(fen, object_type="character")
+                        .texttop(.text("copyfen"), sleep=0.75)
+                        .texttop(texttop)
                      }
 
                      if (identical(click, "g")) {

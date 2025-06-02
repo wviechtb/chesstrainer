@@ -113,6 +113,7 @@
    .drawboard(pos, flip)
    .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
    .texttop(texttop)
+   .drawcheck(pos, flip=flip)
    if (mode == "test" && timed) {
       .drawtimer(movestoplay, movesplayed, timetotal, timepermove)
    } else {
@@ -178,6 +179,9 @@
    if (is.null(rochade))
       rochade <- rep(TRUE, 4)
 
+   if (draw)
+      .rmcheck(pos, flip=flip)
+
    # determine which piece is being moved
 
    if (flip) {
@@ -185,7 +189,6 @@
    } else {
       piece <- pos[x1,y1]
    }
-
 
    # check for a two-square move of a pawn from its original position (since this may enable en passant)
 
@@ -532,6 +535,9 @@
    attr(pos,"rochade") <- rochade
    attr(pos,"ischeck") <- ischeck
 
+   if (draw)
+      .drawcheck(pos, flip=flip)
+
    if (pawnmove || iscapture) {
       attr(pos,"moves50") <- 0
    } else {
@@ -638,6 +644,79 @@
    if (nrow(circles) == 0L)
       return()
    apply(circles, 1, function(x) .drawcircle(x[1], x[2], lwd=lwd))
+}
+
+.drawcheck <- function(pos, flip) {
+
+   ischeck <- attr(pos, "ischeck")
+
+   if (sum(ischeck) == 0L)
+      return()
+
+   color <- c("w","b")[ischeck]
+   piece <- paste0(toupper(color), "K", collapse="")
+
+   xy <- c(which(pos==piece, arr.ind=TRUE))
+
+   if (flip)
+      xy <- 9-xy
+
+   n <- 64
+   radius <- 0.5
+   x.cent <- xy[2] + 0.5
+   y.cent <- xy[1] + 0.5
+
+   xs <- seq(0, 1, length.out=n)
+
+   z <- outer(xs, xs, function(x,y) {
+      dx <- x - 0.5
+      dy <- y - 0.5
+      dist <- sqrt(dx^2 + dy^2)
+      alpha <- ifelse(dist <= 0.5, 1 - (dist / 0.5), 0)
+      return(alpha)
+   })
+
+   z <- z * 1.5
+   z[z > 1] <- 1
+
+   img <- array(0, dim=c(n,n,4))
+   img[,,1] <- 1
+   img[,,4] <- z
+
+   xl <- x.cent - radius
+   xr <- x.cent + radius
+   yb <- y.cent - radius
+   yt <- y.cent + radius
+
+   rasterImage(img, xl, yb, xr, yt)
+
+   .drawpiece(xy[1], xy[2], piece)
+
+   return()
+
+}
+
+.rmcheck <- function(pos, flip) {
+
+   ischeck <- attr(pos, "ischeck")
+
+   if (sum(ischeck) == 0L)
+      return()
+
+   color <- c("w","b")[ischeck]
+   piece <- paste0(toupper(color), "K", collapse="")
+
+   xy <- c(which(pos==piece, arr.ind=TRUE))
+
+   if (flip)
+      xy <- 9-xy
+
+   x <- xy[1]
+   y <- xy[2]
+
+   .drawsquare(x, y, col=ifelse(.is.even(x+y), .get("col.square.d"), .get("col.square.l")))
+   .drawpiece(x, y, piece)
+
 }
 
 .drawarrow <- function(y1, x1, y2, x2, lwd, col=.get("col.annot")) {

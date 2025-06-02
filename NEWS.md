@@ -1,4 +1,4 @@
-# chesstrainer 0.9-62 (2025-06-01)
+# chesstrainer 0.9-63 (2025-06-02)
 
 - can play en passant
 - can promote pawns
@@ -28,6 +28,7 @@
 - added a 'timed' mode
 - can add, select, and manage bookmarks
 - checks now whether a move is legal
+- show visually when a king is in check
 
 # chesstrainer 0.1-0 (2024-12-17)
 

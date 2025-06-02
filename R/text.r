@@ -804,8 +804,8 @@
 
    if (x == "selbookmark") {
       return(switch(lang,
-                    de = paste0("Lesezeichen ausw\U000000E4hlen: ", arg),
-                         paste0("Select bookmark: ", arg)
+                    de = paste0("Lesezeichen ausw\U000000E4hlen (<F1> f\U000000FCr Hilfe): ", arg),
+                         paste0("Select bookmark (<F1> for help): ", arg)
    ))}
 
    if (x == "bookmarktoremove") {

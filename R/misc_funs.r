@@ -272,7 +272,7 @@
       if (is.na(evalval)) {
          txt.eval <- ""
       } else {
-         txt.eval <- paste0(formatC(evalval, format="f", digits=2, flag="+"), " ", collapse="")
+         txt.eval <- paste0(formatC(evalval, format="f", digits=ifelse(abs(evalval) >= 99.9, 1, 2), flag="+"), " ", collapse="")
       }
 
       if (j == 1)
