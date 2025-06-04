@@ -60,6 +60,7 @@
    colnames(pos) <- LETTERS[1:8]
    rownames(pos) <- 1:8
    attr(pos,"rochade") <- rep(TRUE,4)
+   attr(pos,"ischeck") <- c(FALSE, FALSE)
    attr(pos,"moves50") <- 0
    assign("pos", pos, envir=.chesstrainer)
 

@@ -29,7 +29,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chesstrainer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-63</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-64</span>
       </span>
     </div>
 
@@ -79,7 +79,7 @@
     </div>
 
     <div class="section level2">
-<h2 class="page-header" data-toc-text="0.9-63" id="chesstrainer-09-63-2025-06-02">chesstrainer 0.9-63 (2025-06-02)<a class="anchor" aria-label="anchor" href="#chesstrainer-09-63-2025-06-02"></a></h2>
+<h2 class="page-header" data-toc-text="0.9-64" id="chesstrainer-09-64-2025-06-04">chesstrainer 0.9-64 (2025-06-04)<a class="anchor" aria-label="anchor" href="#chesstrainer-09-64-2025-06-04"></a></h2>
 <ul><li>can play en passant</li>
 <li>can promote pawns</li>
 <li>help opens up in the plot, not in the console</li>
@@ -90,11 +90,11 @@
 <li>various settings (including the colors and text sizes) are saved across sessions and can be adjusted when the trainer is running</li>
 <li>moves in long algebraic notation are added to the sequence files</li>
 <li>added <code>&lt;?&gt;</code> key to find all sequences that start with the same moves entered so far</li>
-<li>the <code>&lt;t&gt;</code> key is used for taking back moves (in add mode) or a score adjustment (in play mode)</li>
+<li>the <code>&lt;t&gt;</code> key is used for taking back moves (in add mode) or a score adjustment (in test mode)</li>
 <li>added a board editor (which can be opened in add mode with the <code>&lt;b&gt;</code> key)</li>
 <li>sequences can contain position evaluations, which (if not missing) are shown as an evaluation bar (can be toggled on/off with <code>&lt;v&gt;</code>)</li>
 <li>can use Stockfish in the background to automatically obtain position evaluations when adding sequences</li>
-<li>the <code>&lt;u&gt;</code> key is used to recalculate (update) the position evaluations during play mode</li>
+<li>the <code>&lt;u&gt;</code> key is used to recalculate (update) the position evaluations during test mode</li>
 <li>trainer keeps track of when a sequence was last played and allows selection based on how long ago sequences were played</li>
 <li>progress over time in stored for each player in the sequence files and can be displayed with the <code>&lt;g&gt;</code> key</li>
 <li>the <code>&lt;A&gt;</code> key can be used like the <code>&lt;a&gt;</code> key but continues from the currently shown position</li>
@@ -103,7 +103,7 @@
 <li>
 <code>&lt;F10&gt;</code> shows histograms / scatterplot of the sequence statistics</li>
 <li>simplified the arguments of the <code><a href="../reference/play.html">play()</a></code> function</li>
-<li>sequences now also save drawn circles and arrows during add mode and replay them during play mode</li>
+<li>sequences now also save drawn circles and arrows during add mode and replay them during test mode</li>
 <li>sequences now also save the FEN for each move; can use this to select sequences</li>
 <li>sequences can have a start and/or end comment now</li>
 <li>can now add, remove, and select sequence directories with <code>&lt;F8&gt;</code>
@@ -113,6 +113,7 @@
 <li>can add, select, and manage bookmarks</li>
 <li>checks now whether a move is legal</li>
 <li>show visually when a king is in check</li>
+<li>the <code>&lt;g&gt;</code> key shows an evaluation plot in play mode</li>
 </ul></div>
     <div class="section level2">
 <h2 class="page-header" data-toc-text="0.1-0" id="chesstrainer-01-0-2024-12-17">chesstrainer 0.1-0 (2024-12-17)<a class="anchor" aria-label="anchor" href="#chesstrainer-01-0-2024-12-17"></a></h2>

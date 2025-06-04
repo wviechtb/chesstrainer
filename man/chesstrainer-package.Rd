@@ -133,7 +133,7 @@
 }
 \section{Play Mode}{
 
-   If Stockfish is running, you can switch into \sQuote{play} mode at any time with \verb{<\>} or \verb{<#>}. This is especially useful at the end of a sequence, to continue playing further moves against the computer from the end position of a sequence (e.g., to practice holding an advantage gained during an opening sequence). In this mode, the computer chooses by default the best move according to a search depth of 10 half-moves, but this can be adjusted via \verb{<F7>}.
+   If Stockfish is running, you can switch into \sQuote{play} mode at any time with \verb{<\>} or \verb{<#>}. This is especially useful at the end of a sequence, to continue playing further moves against the computer from the end position of a sequence (e.g., to practice holding an advantage gained during an opening sequence). In this mode, the computer chooses by default the best move according to a search depth of 10 half-moves, but this can be adjusted via \verb{<F7>}. Using the \verb{<g>} key in \sQuote{play} mode shows a graph of the position evaluations for the moves played so far.
 
    The \verb{<\>} or \verb{<#>} key when in \sQuote{play} mode always takes you to \sQuote{add} mode. On the other hand, \verb{<space>} takes you back to the mode that was active before \sQuote{play} mode was chosen.
 

@@ -976,6 +976,18 @@
                          "Incorrect castling specification.\n"
    ))}
 
+   if (x == "evalgraph-x") {
+      return(switch(lang,
+                    de = "Zug",
+                         "Move"
+   ))}
+
+   if (x == "evalgraph-y") {
+      return(switch(lang,
+                    de = "Bewertung",
+                         "Evaluation"
+   ))}
+
 }
 
 .confirm <- function(x) {

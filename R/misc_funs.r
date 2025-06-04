@@ -142,7 +142,7 @@
 
 }
 
-.parsebestmove <- function(move, pos, flip, evalval, i, sidetoplay, rename) {
+.parsebestmove <- function(move, pos, flip, evalval, i, sidetoplay, rename, returnline) {
 
    lang <- .get("lang")
 
@@ -152,6 +152,9 @@
 
    moves <- length(move)
    moves <- min(moves, 10)
+
+   if (!returnline)
+      moves <- 1
 
    for (j in 1:moves) {
 
@@ -253,34 +256,42 @@
 
       # construct text
 
-      movenum <- (i+j) %/% 2
+      if (returnline) {
 
-      if (j == 1) {
-         if (sidetoplay=="w") {
-            txt.move <- paste0(movenum, ". ", txt.move, collapse="")
+         movenum <- (i+j) %/% 2
+
+         if (j == 1) {
+            if (sidetoplay=="w") {
+               txt.move <- paste0(movenum, ". ", txt.move, collapse="")
+            } else {
+               txt.move <- paste0(movenum, "... ", txt.move, collapse="")
+            }
          } else {
-            txt.move <- paste0(movenum, "... ", txt.move, collapse="")
+            if (.is.even(i+j)) {
+               txt.move <- paste0(" ", movenum, ". ", txt.move, collapse="")
+            } else {
+               txt.move <- txt.move
+            }
          }
-      } else {
-         if (.is.even(i+j)) {
-            txt.move <- paste0(" ", movenum, ". ", txt.move, collapse="")
+
+         if (is.na(evalval)) {
+            txt.eval <- ""
          } else {
-            txt.move <- txt.move
+            txt.eval <- paste0(formatC(evalval, format="f", digits=ifelse(abs(evalval) >= 99.9, 1, 2), flag="+"), " ", collapse="")
          }
-      }
 
-      if (is.na(evalval)) {
-         txt.eval <- ""
+         if (j == 1)
+            txt <- txt.eval
+
+         txt <- paste0(txt, " ", txt.move, collapse=" ")
+
+         tmp <- tmp.next
+
       } else {
-         txt.eval <- paste0(formatC(evalval, format="f", digits=ifelse(abs(evalval) >= 99.9, 1, 2), flag="+"), " ", collapse="")
+
+         txt <- txt.move
+
       }
-
-      if (j == 1)
-         txt <- txt.eval
-
-      txt <- paste0(txt, " ", txt.move, collapse=" ")
-
-      tmp <- tmp.next
 
    }
 
@@ -529,6 +540,9 @@
 
    x <- xy[1]
    y <- xy[2]
+
+   if (is.null(x) || is.null(y) || is.na(x) || is.na(y))
+      return(isattacked)
 
    attackcolor <- toupper(attackcolor)
 

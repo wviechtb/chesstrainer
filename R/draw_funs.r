@@ -628,7 +628,7 @@
    rect(y+offset, x+offset, y+1-offset, x+1-offset, lwd=lwd+2, border=ifelse(.is.even(x+y), .get("col.square.d"), .get("col.square.l")), ljoin=1)
 
 .boardeditor.rmrect <- function(x, y, offset=0.028, lwd) {
-   if (is.na(x) || is.na(y))
+   if (is.null(x) || is.null(y) || is.na(x) || is.na(y))
       return()
    if (x <= 1 || x >= 10 || y <= 1 || y >= 10) {
       rect(y+offset, x+offset, y+1-offset, x+1-offset, lwd=lwd+2, border=.get("col.bg"), ljoin=1)
@@ -650,8 +650,10 @@
 
    ischeck <- attr(pos, "ischeck")
 
-   if (sum(ischeck) == 0L)
+   if (sum(ischeck) == 0L) {
+      assign("checkpos", c(NA,NA), envir=.chesstrainer)
       return()
+   }
 
    color <- c("w","b")[ischeck]
    piece <- paste0(toupper(color), "K", collapse="")
@@ -692,6 +694,8 @@
 
    .drawpiece(xy[1], xy[2], piece)
 
+   assign("checkpos", xy, envir=.chesstrainer)
+
    return()
 
 }
@@ -699,6 +703,8 @@
 .rmcheck <- function(pos, flip) {
 
    ischeck <- attr(pos, "ischeck")
+
+   assign("checkpos", c(NA,NA), envir=.chesstrainer)
 
    if (sum(ischeck) == 0L)
       return()
@@ -716,6 +722,8 @@
 
    .drawsquare(x, y, col=ifelse(.is.even(x+y), .get("col.square.d"), .get("col.square.l")))
    .drawpiece(x, y, piece)
+
+   return()
 
 }
 
@@ -813,6 +821,24 @@
    }
 
    .redrawpos(pos, oldpos, flip=flip)
+
+   ischeck <- attr(pos, "ischeck")
+
+   if (any(ischeck)) {
+
+      checkpos <- as.numeric(.get("checkpos"))
+
+      if (flip)
+         checkpos <- 9-checkpos
+
+      xpos <- which(oldpos == "x", arr.ind=TRUE)
+
+      if (any(apply(xpos, 1, function(x) isTRUE(x[1] == checkpos[1] && x[2] == checkpos[2])))) {
+         .rmcheck(pos, flip=flip)
+         .drawcheck(pos, flip=flip)
+      }
+
+   }
 
 }
 

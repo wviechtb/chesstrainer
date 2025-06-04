@@ -383,8 +383,8 @@ play <- function(lang="en", sfpath="", ...) {
                   "ctrl-[", "\033", "a", "G", "R", "ctrl-C", "ctrl-S",
                   "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F12")
    keys.add  <- c("f", "z", "c", "H", "0", "s")
-   keys.test <- c("o", "r", "g", "A", "ctrl-D", "Right", "Left", "u")
-   keys.play <- c("H")
+   keys.test <- c("o", "r", "g", "A", "ctrl-D", "Right", "Left", "u", "1")
+   keys.play <- c("H", "g")
    keys.add  <- c(keys, keys.add)
    keys.test <- c(keys, keys.test)
    keys.play <- c(keys, keys.play)
@@ -425,6 +425,7 @@ play <- function(lang="en", sfpath="", ...) {
       drawarrows   <- TRUE
       showstartcom <- TRUE
       matetype     <- "none"
+      assign("checkpos", c(NA,NA), envir=.chesstrainer)
 
       circles <- matrix(nrow=0, ncol=2) # to store circles
       arrows  <- matrix(nrow=0, ncol=4) # to store arrows
@@ -741,7 +742,7 @@ play <- function(lang="en", sfpath="", ...) {
                      next
                   }
 
-                  tmp <- .parsebestmove(bestmove[[1]][1], pos=pos, flip=flip, evalval=NA, i=i, sidetoplay=sidetoplay, rename=FALSE)
+                  tmp <- .parsebestmove(bestmove[[1]][1], pos=pos, flip=flip, evalval=NA, i=i, sidetoplay=sidetoplay, rename=FALSE, returnline=FALSE)
 
                   sub$moves <- rbind(sub$moves, data.frame(x1=tmp$x1, y1=tmp$y1, x2=tmp$x2, y2=tmp$y2, show=FALSE, move=tmp$txt, eval=evalval[1], comment="", circles="", arrows="", fen=fen))
                   pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE, volume=volume, verbose=verbose)
@@ -964,25 +965,25 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # e to edit the comments using prompts (only in add or test mode)
+            # e to edit the comments using prompts
 
-            if (mode %in% c("add","test") && identical(click, "e")) {
+            if (identical(click, "e")) {
                eval(expr=switch1)
-               sub <- .editcomments(sub, seqdir[seqdirpos], seqname, mode) # note: saves after edit only in test mode
+               sub <- .editcomments(sub, seqdir[seqdirpos], seqname, mode) # note: directly saves after edit in test mode
                eval(expr=switch2)
                next
             }
 
-            # E to edit a sequence using edit() (only in add or test mode)
+            # E to edit a sequence using edit()
 
-            if (mode %in% c("add","test") && identical(click, "E")) {
+            if (identical(click, "E")) {
                sub$moves <- edit(sub$moves)
                sub$moves$comment[is.na(sub$moves$comment)] <- ""
                if (!is.null(sub$moves$circles))
                   sub$moves$circles[is.na(sub$moves$circles)] <- ""
                if (!is.null(sub$moves$arrows))
                sub$moves$arrows[is.na(sub$moves$arrows)] <- ""
-               if (mode == "test") # note: saves after edit only in test mode
+               if (mode == "test") # note: save after edit in test mode
                   saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
                next
             }
@@ -1013,6 +1014,19 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
+            # g to show the evaluation graph (only in play mode)
+
+            if (mode == "play" && identical(click, "g")) {
+               if (i == 1)
+                  next
+               .evalgraph(sub$moves, lwd=lwd)
+               .redrawpos(pos, flip=flip)
+               .drawcircles(circles, lwd=lwd)
+               .drawarrows(arrows, lwd=lwd)
+               .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
+               next
+            }
+
             # r to repeat the last played sequence (only in test mode)
 
             if (mode == "test" && identical(click, "r")) {
@@ -1024,6 +1038,16 @@ play <- function(lang="en", sfpath="", ...) {
                .texttop(.text("replast"), sleep=0.75)
                replast <- TRUE
                filename <- lastseq
+               run.rnd <- FALSE
+               input <- FALSE
+               next
+            }
+
+            # 1 to restart sequence (only in test mode)
+
+            if (mode == "test" && identical(click, "1")) {
+               replast <- TRUE
+               filename <- seqname
                run.rnd <- FALSE
                input <- FALSE
                next
@@ -1501,7 +1525,7 @@ play <- function(lang="en", sfpath="", ...) {
                      for (j in 1:nmoves) {
                         if (bestmove[[j]][1] == "")
                            next
-                        bestmovetxt[j] <- .parsebestmove(bestmove[[j]], pos=pos, flip=flip, evalval=evalval[j], i=i, sidetoplay=sidetoplay, rename=TRUE)$txt
+                        bestmovetxt[j] <- .parsebestmove(bestmove[[j]], pos=pos, flip=flip, evalval=evalval[j], i=i, sidetoplay=sidetoplay, rename=TRUE, returnline=TRUE)$txt
                         evalvals[j] <- evalval[j]
                         bestx1 <- as.numeric(substr(bestmove[[j]][1], 2, 2))
                         besty1 <- which(letters[1:8] == substr(bestmove[[j]][1], 1, 1))
@@ -1769,7 +1793,6 @@ play <- function(lang="en", sfpath="", ...) {
             # left arrow to go back one move (only in test mode)
 
             if (mode == "test" && identical(click, "Left")) {
-
                if (i > 1) {
                   .rmcheck(pos, flip=flip)
                   posold <- pos
@@ -1805,7 +1828,6 @@ play <- function(lang="en", sfpath="", ...) {
                givehint1 <- FALSE
                givehint2 <- FALSE
                next
-
             }
 
             # Escape to update the board
@@ -2366,6 +2388,9 @@ play <- function(lang="en", sfpath="", ...) {
                      .drawsquare(click1.x, click1.y)
                      .drawpiece(click1.x, click1.y, ifelse(flip, pos[9-click1.x,9-click1.y], pos[click1.x,click1.y]))
                      circles <- circles[!hascircle,,drop=FALSE]
+                     checkpos <- as.numeric(.get("checkpos"))
+                     if (identical(checkpos, c(click1.x, click1.y)))
+                        .drawcheck(pos, flip=flip)
                   } else {
                      .drawcircle(click1.x, click1.y, lwd=lwd)
                      circles <- rbind(circles, c(click1.x, click1.y))
@@ -2717,6 +2742,13 @@ play <- function(lang="en", sfpath="", ...) {
                         clipr::write_clip(fen, object_type="character")
                         .texttop(.text("copyfen"), sleep=0.75)
                         .texttop(texttop)
+                     }
+
+                     if (identical(click, "ctrl-S")) {
+                        eval(expr=switch1)
+                        print(seqname)
+                        clipr::write_clip(seqname, object_type="character")
+                        eval(expr=switch2)
                      }
 
                      if (identical(click, "g")) {
