@@ -582,6 +582,13 @@ play <- function(lang="en", sfpath="", ...) {
 
          }
 
+         if (is.null(sel) || sel == 0) {
+            # just in case ('attempt to select less than one element in get1index'
+            # error did occur before, although not sure how this could arise)
+            #print(probvals.selected)
+            sel <- 1
+         }
+
          sub <- dat[[sel]]
          seqname <- files[sel]
          seqnum  <- which(seqname == files.all)
@@ -1562,7 +1569,8 @@ play <- function(lang="en", sfpath="", ...) {
                   cat(.text("setnewscore", newscore))
                   score <- newscore
                   .textbot(mode, score=score, onlyscore=TRUE)
-                  saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
+                  #sub$player[[player]]$score[length(sub$player[[player]]$score)] <- score
+                  #saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
                }
                eval(expr=switch2)
                next
@@ -2703,6 +2711,7 @@ play <- function(lang="en", sfpath="", ...) {
                            score <- newscore
                            .textbot(mode, score=score, onlyscore=TRUE)
                            sub$player[[player]]$score[length(sub$player[[player]]$score)] <- score
+                           saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
                         }
                         eval(expr=switch2)
                      }
