@@ -14,7 +14,10 @@
    col.square.d    <- .get("col.square.d")
    col.help.border <- .get("col.help.border")
 
-   par(mfrow=c(2,2), pty="m")
+   #par(mfrow=c(3,2), pty="m")
+
+   layout(matrix(c(1,2,3,4,5,5), nrow=3, byrow=TRUE))
+   par(pty="m")
 
    #########################################################################
 
@@ -45,7 +48,20 @@
 
    #########################################################################
 
+   # histogram of 'rmssd'
+   if (length(c(na.omit(rmssd))) >= 2L) {
+      hist(rmssd, breaks="FD", las=1, col.axis=col.top, col.lab=col.top, col.main=col.fg,
+           xlab=.text("rmssd"), col=col.square.d, border=col.square.l, main=paste0("Histogram: ", .text("rmssd")))
+   } else {
+      plot(NA, xlim=c(0,1), ylim=c(0,1), xlab="", ylab="", xaxt="n", yaxt="n", bty="n")
+   }
+   #box(which="figure", col=col.help.border, lwd=lwd)
+
+   #########################################################################
+
    # scatterplot of 'played' versus 'scores'
+
+   par(mar=c(5.4,10.4,5.4,10.4))
 
    plot(NA, las=1, col.axis=col.top, col.lab=col.top, col=col.square.l, col.main=col.fg,
         bty="l", main=paste0(.text("played"), " vs. ", .text("score")), xlab=.text("played"), ylab=.text("score"),
@@ -66,9 +82,23 @@
    #legend("topright", lty=c("dotted","solid"), lwd=c(1,1), col=col.top, legend=.text("plotlegend"), bg=col.bg, box.col=col.square.l)
    #box(which="figure", col=col.help.border, lwd=lwd)
 
+   par(mar=rep(5.2,4))
+
    #########################################################################
 
-   par(mfrow=c(1,1), pty="s")
+   # scatterplot of 'played' versus 'rmssd'
+
+   #plot(NA, las=1, col.axis=col.top, col.lab=col.top, col=col.square.l, col.main=col.fg,
+   #     bty="l", main=paste0(.text("played"), " vs. ", .text("rmssd")), xlab=.text("played"), ylab=.text("rmssd"),
+   #     xlim=c(0,max(played, na.rm=TRUE)), ylim=c(0,max(rmssd, na.rm=TRUE)))
+   #pt.cex <- max(0.1, 1 - 1/10 * log10(n)) # adjust point size based on n
+   #points(jitter(played, amount=0.5), jitter(rmssd, amount=0.5), pch=21, col=col.square.l, bg=col.square.d, cex=pt.cex)
+
+   #########################################################################
+
+   #par(mfrow=c(1,1), pty="s")
+   layout(1)
+   par(pty="s")
 
    box(which="figure", col=col.help.border, lwd=lwd+3)
 

@@ -162,7 +162,7 @@
 
    With \verb{<F9>}, the FEN of the current position is printed and the position is opened on the \url{https://lichess.org} website for analysis. With \verb{Ctrl-<c>}, the FEN is printed and copied to the clipboard (this makes use of the \code{\link[clipr]{write_clip}} function from the \pkg{clipr} package). With \verb{Ctrl-<s>}, the current sequence name is printed and copied to the clipboard.
 
-   With \verb{<F10>}, you can obtain histograms of the scores of the (selected) sequences, how many times they have been played, how long ago they were played, and a scatterplot of the number of times they have been played versus their scores. In the scatterplot, the dotted line indicates the best possible performance (i.e., never making a mistake when playing the sequence over and over) and the solid line the actual performance (as estimated based on a regression model; only shown when there are 5 or more points).
+   With \verb{<F10>}, you can obtain histograms of the scores of the (selected) sequences, how many times they have been played, how long ago they were played, their RMSSD values, and a scatterplot of the number of times they have been played versus their scores. In the scatterplot, the dotted line indicates the best possible performance (i.e., never making a mistake when playing the sequence over and over) and the solid line the actual performance (as estimated based on a regression model; only shown when there are 5 or more points).
 
 }
 \section{Resetting and Cleaning Up}{
