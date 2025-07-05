@@ -11,6 +11,19 @@
 
 .is.even <- function(x) x %% 2 == 0
 
+.rmssd <- function(x, len) {
+   if (!is.infinite(len)) {
+      n <- length(x)
+      x <- x[max(1,(n-len+1)):n]
+   }
+   if (length(x) <= 1L) {
+      val <- NA_real_
+   } else {
+      val <- sqrt(mean(diff(x)^2))
+   }
+   return(val)
+}
+
 .get <- function(x)
    unname(get(x, envir=.chesstrainer))
 

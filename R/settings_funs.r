@@ -97,12 +97,12 @@
 
 }
 
-.miscsettings <- function(multiplier, adjustwrong, adjusthint, evalsteps, timepermove) {
+.miscsettings <- function(multiplier, adjustwrong, adjusthint, evalsteps, timepermove, rmssdlength) {
 
    cat(.text("currentsettings"))
 
-   tab <- data.frame(setting = c("multiplier", "adjustwrong", "adjusthint", "evalsteps", "timepermove"),
-                     val     = c(multiplier, adjustwrong, adjusthint, evalsteps, timepermove))
+   tab <- data.frame(setting = c("multiplier", "adjustwrong", "adjusthint", "evalsteps", "timepermove", "rmssdlength"),
+                     val     = c(multiplier, adjustwrong, adjusthint, evalsteps, timepermove, rmssdlength))
    names(tab) <- c("", "")
    print(tab, right=FALSE, print.gap=3)
 
@@ -112,7 +112,7 @@
       resp <- readline(prompt=.text("settingwhich"))
       if (identical(resp, ""))
          break
-      if (grepl("^[1-5]+$", resp)) {
+      if (grepl("^[1-6]+$", resp)) {
          setno <- round(as.numeric(resp))
          if (setno < 1 || setno > nrow(tab))
             next
@@ -127,6 +127,8 @@
          if (setno %in% c(2,3,5))
             val[val < 0] <- 0
          if (setno == 4)
+            val[val < 2] <- 2
+         if (setno == 6)
             val[val < 2] <- 2
          tab[setno,2] <- val
       }
@@ -154,7 +156,9 @@
       "4 - based on the play frequency, lowest frequency",
       "5 - based on the date, at random",
       "6 - based on the date, oldest date",
-      "7 - sequential")
+      "7 - based on the RMSSD, at random",
+      "8 - based on the RMSSD, highest value",
+      "9 - sequential")
 
    }
 
@@ -169,7 +173,9 @@
       "4 - basierend auf der Spielh\U000000E4ufigkeit, niedrigste H\U000000E4ufigkeit",
       "5 - basierend auf dem Datum, zuf\U000000E4llig",
       "6 - basierend auf dem Datum, \U000000E4ltestes Datum",
-      "7 - sequenziell")
+      "7 - basierend auf der RMSSD, zuf\U000000E4llig",
+      "8 - basierend auf der RMSSD, h\U000000F6chster Wert",
+      "9 - sequenziell")
 
    }
 
@@ -179,9 +185,9 @@
    maxsh <- strheight("A", family=.get("font.mono")) * length(txt)
    cex <- min(1.5, (8.5 - 1.5) / max(maxsw, maxsh) * 0.9)
 
-   selmodes <- c("score_random", "score_highest", "played_random", "played_lowest", "days_random", "days_oldest", "sequential")
+   selmodes <- c("score_random", "score_highest", "played_random", "played_lowest", "days_random", "days_oldest", "rmssd_random", "rmssd_highest", "sequential")
 
-   text(1+0.5, seq(7.5, 4.5, length.out=length(txt)), txt, pos=4, cex=cex,
+   text(1+0.5, seq(7.5, 3.5, length.out=length(txt)), txt, pos=4, cex=cex,
         family=.get("font.mono"), font=ifelse(c("","",selmodes)==selmode, 2, 1), col=.get("col.help"))
 
    input <- TRUE

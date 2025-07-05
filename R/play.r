@@ -25,6 +25,7 @@ play <- function(lang="en", sfpath="", ...) {
    timed       <- ifelse(is.null(ddd[["timed"]]),       FALSE,          ddd[["timed"]])
    timepermove <- ifelse(is.null(ddd[["timepermove"]]), 5,              ddd[["timepermove"]])
    expval      <- ifelse(is.null(ddd[["expval"]]),      2,              ddd[["expval"]])
+   rmssdlength <- ifelse(is.null(ddd[["rmssdlength"]]), 10,             ddd[["rmssdlength"]])
    multiplier  <- ifelse(is.null(ddd[["multiplier"]]),  0.8,            ddd[["multiplier"]])
    adjustwrong <- ifelse(is.null(ddd[["adjustwrong"]]), 40,             ddd[["adjustwrong"]])
    adjusthint  <- ifelse(is.null(ddd[["adjusthint"]]),  20,             ddd[["adjusthint"]])
@@ -70,6 +71,7 @@ play <- function(lang="en", sfpath="", ...) {
 
    seqdirpos <- round(seqdirpos)
    expval[expval < 0] <- 0
+   rmssdlength[rmssdlength < 2] <- 2
    multiplier[multiplier < 0] <- 0
    multiplier[multiplier > 1] <- 1
    adjustwrong[adjustwrong < 0] <- 0
@@ -107,7 +109,7 @@ play <- function(lang="en", sfpath="", ...) {
       if (!success)
          stop(.text("dircreateerror"), call.=FALSE)
       settings <- list(lang=lang, player=player, mode=mode, seqdir=seqdir, seqdirpos=seqdirpos,
-                       selmode=selmode, timed=timed, timepermove=timepermove, expval=expval, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint,
+                       selmode=selmode, timed=timed, timepermove=timepermove, expval=expval, rmssdlength=rmssdlength, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint,
                        eval=eval, evalsteps=evalsteps, wait=wait, sleep=sleep, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash)
@@ -138,6 +140,8 @@ play <- function(lang="en", sfpath="", ...) {
             timepermove <- settings[["timepermove"]]
          if (is.null(mc[["expval"]]))
             expval <- settings[["expval"]]
+         if (is.null(mc[["rmssdlength"]]))
+            rmssdlength <- settings[["rmssdlength"]]
          if (is.null(mc[["multiplier"]]))
             multiplier <- settings[["multiplier"]]
          if (is.null(mc[["adjustwrong"]]))
@@ -185,7 +189,7 @@ play <- function(lang="en", sfpath="", ...) {
       }
       sfpath <- suppressWarnings(normalizePath(sfpath))
       settings <- list(lang=lang, player=player, mode=mode, seqdir=seqdir, seqdirpos=seqdirpos,
-                       selmode=selmode, timed=timed, timepermove=timepermove, expval=expval, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint,
+                       selmode=selmode, timed=timed, timepermove=timepermove, expval=expval, rmssdlength=rmssdlength, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint,
                        eval=eval, evalsteps=evalsteps, wait=wait, sleep=sleep, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash)
@@ -466,6 +470,9 @@ play <- function(lang="en", sfpath="", ...) {
       date.all[is.na(date.all) | .is.null(date.all)] <- NA_real_
       date.all <- unlist(date.all)
       dayslp.all <- as.numeric(Sys.time() - as.POSIXct(date.all), units="days")
+      rmssd.all <- lapply(dat.all, function(x) .rmssd(x$player[[player]]$score, rmssdlength))
+      rmssd.all[is.na(rmssd.all) | .is.null(rmssd.all)] <- NA_real_
+      rmssd.all <- unlist(rmssd.all)
 
       # apply selection to sequences
 
@@ -500,6 +507,9 @@ play <- function(lang="en", sfpath="", ...) {
       date.selected[is.na(date.selected) | .is.null(date.selected)] <- NA_real_
       date.selected <- unlist(date.selected)
       dayslp.selected <- as.numeric(Sys.time() - as.POSIXct(date.selected), units="days")
+      rmssd.selected <- lapply(dat, function(x) .rmssd(x$player[[player]]$score, rmssdlength))
+      rmssd.selected[is.na(rmssd.selected) | .is.null(rmssd.selected)] <- NA_real_
+      rmssd.selected <- unlist(rmssd.selected)
 
       if (all(scores.selected == 0)) # in case all sequences have a score of 0
          scores.selected <- rep(1, length(scores.selected))
@@ -542,6 +552,19 @@ play <- function(lang="en", sfpath="", ...) {
          } else {
             probvals.selected[which(dayslp.selected == max(dayslp.selected[scores.selected != 0]))[1]] <- 100
          }
+      }
+
+      if (selmode == "rmssd_random") {
+         probvals.selected <- rmssd.selected / max(rmssd.selected)
+         probvals.selected[is.na(probvals.selected)] <- 0 # if NA, set prob to 0
+         probvals.selected <- rmssd.selected^expval
+         probvals.selected[scores.selected == 0] <- 0 # in case of 0^0
+         probvals.selected <- 100 * probvals.selected / sum(probvals.selected)
+      }
+
+      if (selmode == "rmssd_highest") {
+         probvals.selected <- rep(0, k)
+         probvals.selected[which(rmssd.selected == max(rmssd.selected[scores.selected != 0]))[1]] <- 100
       }
 
       if (selmode == "sequential" && length(scores.selected) >= 1L) {
@@ -1082,10 +1105,10 @@ play <- function(lang="en", sfpath="", ...) {
                      bars <- round(5 * (probvals.selected - min(probvals.selected)) / (max(probvals.selected) - min(probvals.selected)))
                   }
                   bars <- sapply(bars, function(x) paste0(rep("*", x), collapse=""))
-                  tab <- data.frame(files, played.selected, formatC(dayslp.selected, format="f", digits=1), scores.selected, formatC(probvals.selected, format="f", digits=1), bars)
+                  tab <- data.frame(files, played.selected, formatC(dayslp.selected, format="f", digits=1), scores.selected, formatC(rmssd.selected, format="f", digits=1), formatC(probvals.selected, format="f", digits=1), bars)
                   tab$bars <- format(tab$bars, justify="left")
-                  names(tab) <- c("Name", .text("played"), .text("days"), .text("score"), .text("prob"), "")
-                  tab$Name <- substr(tab$Name, 1, nchar(tab$Name)-4)
+                  names(tab) <- c("Name", .text("played"), .text("days"), .text("score"), .text("rmssd"), .text("prob"), "")
+                  tab$Name <- substr(tab$Name, 1, nchar(tab$Name)-4) # remove .rds from name
                   tab$Name <- format(tab$Name, justify="left")
                   names(tab)[1] <- ""
                   if (!is.null(selected))
@@ -1338,6 +1361,29 @@ play <- function(lang="en", sfpath="", ...) {
                if (!is.na(tmp$cutoff)) {
                   cat(.text("selseqdays", list(tmp$sign, tmp$cutoff)))
                   selected <- eval(parse(text = paste("dayslp.all", tmp$sign, tmp$cutoff)))
+                  selected[is.na(selected)] <- FALSE
+                  selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected]
+                  if (length(selected) == 0L) {
+                     cat(.text("noseqsfound"))
+                     selected <- NULL
+                  } else {
+                     cat(.text("numseqfound", length(selected)))
+                     run.rnd <- FALSE
+                     input <- FALSE
+                     mode <- oldmode <- "add"
+                     seqno <- 1
+                  }
+                  eval(expr=switch2)
+                  next
+               }
+
+               # 'rmssd >/</>=/<= value' entered
+
+               tmp <- strcapture(.text("strcaprmssd"), searchterm, data.frame(text=character(), sign=character(), cutoff=numeric()))
+
+               if (!is.na(tmp$cutoff)) {
+                  cat(.text("selseqrmssd", list(tmp$sign, tmp$cutoff)))
+                  selected <- eval(parse(text = paste("rmssd.all", tmp$sign, tmp$cutoff)))
                   selected[is.na(selected)] <- FALSE
                   selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected]
                   if (length(selected) == 0L) {
@@ -2109,7 +2155,7 @@ play <- function(lang="en", sfpath="", ...) {
             # F3 to print the settings
 
             if (identical(click, "F3")) {
-               tab <- data.frame(lang, player, mode, seqdir=seqdir[seqdirpos], selmode, timed, timepermove, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, wait, sleep, lwd, volume, showgraph, repmistake, cex.top, cex.bot, cex.eval, sfpath, depth1, depth2, depth3, multipv1, multipv2, threads, hash)
+               tab <- data.frame(lang, player, mode, seqdir=seqdir[seqdirpos], selmode, timed, timepermove, expval, rmssdlength, multiplier, adjustwrong, adjusthint, eval, evalsteps, wait, sleep, lwd, volume, showgraph, repmistake, cex.top, cex.bot, cex.eval, sfpath, depth1, depth2, depth3, multipv1, multipv2, threads, hash)
                .showsettings(tab, lwd)
                #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .redrawpos(pos, flip=flip)
@@ -2161,18 +2207,20 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (identical(click, "F6")) {
                eval(expr=switch1)
-               tmp <- .miscsettings(multiplier, adjustwrong, adjusthint, evalsteps, timepermove)
+               tmp <- .miscsettings(multiplier, adjustwrong, adjusthint, evalsteps, timepermove, rmssdlength)
                eval(expr=switch2)
                multiplier  <- tmp$multiplier
                adjustwrong <- tmp$adjustwrong
                adjusthint  <- tmp$adjusthint
                evalsteps   <- tmp$evalsteps
                timepermove <- tmp$timepermove
+               rmssdlength <- tmp$rmssdlength
                settings$multiplier  <- multiplier
                settings$adjustwrong <- adjustwrong
                settings$adjusthint  <- adjusthint
                settings$evalsteps   <- evalsteps
                settings$timepermove <- timepermove
+               settings$rmssdlength <- rmssdlength
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
@@ -2245,7 +2293,7 @@ play <- function(lang="en", sfpath="", ...) {
             # F10 to show histograms / scatterplot
 
             if (identical(click, "F10")) {
-               .distributions(scores.selected, played.selected, dayslp.selected, lwd, multiplier)
+               .distributions(scores.selected, played.selected, dayslp.selected, rmssd.selected, lwd, multiplier)
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                .drawcircles(circles, lwd=lwd)
@@ -2643,8 +2691,14 @@ play <- function(lang="en", sfpath="", ...) {
 
                      click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=function(key) return(key))
 
-                     if (is.numeric(click))
+                     if (is.numeric(click)) {
+                        if (identical(click[3], 2)) {
+                           .texttop(.text("replast"), sleep=0.75)
+                           replast <- TRUE
+                           filename <- seqname
+                        }
                         break
+                     }
 
                      if (identical(click, "n")) {
                         dobreak <- TRUE

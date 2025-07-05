@@ -27,12 +27,12 @@
 
    The trainer uses the score to choose the next sequence. Sequences with higher scores have a higher chance to be presented. The probability of playing a particular sequence is computed with \eqn{p_i = s_i^e / \sum s_i^e}, where \eqn{s_i} is the score of the \eqn{i}th sequence and \eqn{e} is the \sQuote{exponent value}. This is set to 2 by default and enhances the probability that sequences with higher scores are more likely to be played. The exponent value can be adjusted with the \verb{<^>} (or \verb{<6>}) key. Setting the exponent value to 0 makes all sequences equally likely to be played. Setting it to a large value (e.g., 100) almost guarantees that the sequence with the highest score is played next. The score for the current sequence can also be set manually with the \verb{<o>} key. Setting the score to 0 means that the sequence has a zero probability of being presented.
 
-   After completing a sequence, the current score for the sequence is saved (together with the number of times that the sequence has been played and when it was last played) to the sequence file. This way, your progress in learning the sequence is saved permanently across sessions. Note that this information is player specific. Using the \verb{<g>} key, a progress graph for the current sequence can be shown (if the sequence has been played before). Using the \verb{<G>} key, you can toggle whether the progress graph will be automatically shown at the end of each completed sequence.
+   After completing a sequence, the current score for the sequence is saved (together with the number of times that the sequence has been played and when it was last played) to the sequence file. This way, your progress in learning the sequence is saved permanently across sessions. Note that this information is player specific. Using the \verb{<g>} key, a progress graph (showing the sequence scores over time) for the current sequence can be shown (if the sequence has been played before). Using the \verb{<G>} key, you can toggle whether the progress graph will be automatically shown at the end of each completed sequence.
 
 }
 \section{Managing and Selecting Sequences}{
 
-   Using the \verb{<l>} key, you can list all sequences, together with their current score, the number of times they have been played (the play frequency), the last time they have been played (in days; \code{NA} if a sequence has not been played before), and the current play probability (with 0 to 5 asterisks next to it based on the probability). In \sQuote{test} mode, you can use the \verb{Ctrl-<d>} key to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.
+   Using the \verb{<l>} key, you can list all sequences, together with their current score, the number of times they have been played (the play frequency), the last time they have been played (in days; \code{NA} if a sequence has not been played before), the root mean square successive difference (RMSSD) of the sequence (a measure of the variability of the scores for a sequence over time; sequences with high RMSSD values show large jumps in their scores over time and are apparently difficult to remember), and the current play probability (with 0 to 5 asterisks next to it based on the probability). In \sQuote{test} mode, you can use the \verb{Ctrl-<d>} key to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.
 
    Using the \verb{</>} key (or \verb{<,>} which is useful for a German keyboard layout), you can select a subset of the sequences in various ways:
 
@@ -43,11 +43,12 @@
    \item by entering something like \verb{score > 80} to select sequences with a score above a certain threshold,
    \item by entering something like \verb{played < 1} to select sequences that have been played less than a certain number of times,
    \item by entering something like \verb{days > 2} to select sequences that have been played more than a certain number of days ago,
+   \item by entering something like \verb{rmssd > 20} to select sequences with a RMSSD value above a certain threshold,
    \item by entering a \href{https://en.wikipedia.org/wiki/Forsyth-Edwards_Notation}{FEN} to select all sequences that contain a position matching the FEN,
-   \item by entering \verb{c: } followed by a (case insensitive) text string to select all sequences where a comment contains the text string.
+   \item by entering \verb{c:} followed by a (case insensitive) text string to select all sequences where a comment contains the text string.
    }
 
-   The keywords \verb{score}, \verb{played}, and \verb{days} can be abbreviated to \verb{s}, \verb{p} , and \verb{d} (so \verb{s > 80}, \verb{p < 1}, and \verb{d > 2} would also work). Other comparators such as \verb{>=}, \verb{<}, and \verb{>=} can also be used (e.g., \verb{s <= 10}).
+   The keywords \verb{score}, \verb{played}, \verb{days}, and \verb{rmssd} can be abbreviated to \verb{s}, \verb{p}, \verb{d}, and \verb{r} (so \verb{s > 80}, \verb{p < 1}, \verb{d > 2}, and \verb{r > 20} would also work). Other comparators such as \verb{>=}, \verb{<}, and \verb{>=} can also be used (e.g., \verb{s <= 10}).
 
    Hitting \verb{<enter>} at the prompt (i.e., not entering any search string) keeps the current selection. Entering \verb{*} at the prompt selects all sequences. The \verb{<*>} (or \verb{<8>}) key also select all sequences without using \verb{</>} first.
 
@@ -59,7 +60,8 @@
    \item selection based on the play frequency where the sequence with the lowest frequency is played next,
    \item selection based on the date at random where sequences that have last been played longer ago have a higher play probability,
    \item selection based on the date where the oldest sequence is played next,
-   \item sequential, where the sequences are played in order.
+   \item selection based on the RMSSD value at random where sequences with higher values have a higher play probability,
+   \item selection based on the RMSSD value where the sequence with the highest value is played next.
    }
 
    The exponent value affects selection modes 1, 3, and 5. Setting the exponent value to a very large value makes mode 1 essentially the same as mode 2 (and similarly, mode 3 like mode 4 and mode 5 like mode 6). For modes 2, 4, and 6, if the highest score, lowest play frequency, or oldest date is the same for multiple sequences, the alphabetically first one is played next. For modes 5 and 6, sequences that have never been played before are given the highest priority. For all modes, sequences whose score was set to 0 are never played.
@@ -156,7 +158,7 @@
 
    The settings are stored across sessions and can be shown with \verb{<F3>}. With \verb{<F4>}, you can adjust the colors. With \verb{<F5>}, you can adjust the size of the text at the top, the text at the bottom, and the size of the evaluation value in the evaluation bar (if it is shown).
 
-   With \verb{<F6>}, you can adjust some miscellaneous settings, namely the multiplier for the score when completing a sequence without any mistakes (0.8 by default), the score penalty when making a wrong move (40 by default), the score penalty per hint (20 by default), the number of animation steps for the evaluation bar (10 by default), and the time per move for the timed mode (5 seconds by default).
+   With \verb{<F6>}, you can adjust some miscellaneous settings, namely the multiplier for the score when completing a sequence without any mistakes (0.8 by default), the score penalty when making a wrong move (40 by default), the score penalty per hint (20 by default), the number of animation steps for the evaluation bar (10 by default), the time per move for the timed mode (5 seconds by default), and the number of the most recent scores used in the calculation of the RMSSD (10 by default).
 
    With \verb{<F9>}, the FEN of the current position is printed and the position is opened on the \url{https://lichess.org} website for analysis. With \verb{Ctrl-<c>}, the FEN is printed and copied to the clipboard (this makes use of the \code{\link[clipr]{write_clip}} function from the \pkg{clipr} package). With \verb{Ctrl-<s>}, the current sequence name is printed and copied to the clipboard.
 

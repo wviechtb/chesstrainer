@@ -1,4 +1,4 @@
-.distributions <- function(scores, played, dayslp, lwd, multiplier) {
+.distributions <- function(scores, played, dayslp, rmssd, lwd, multiplier) {
 
    n <- length(scores)
 
