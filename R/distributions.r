@@ -61,7 +61,7 @@
 
    # scatterplot of 'played' versus 'scores'
 
-   par(mar=c(5.4,10.4,5.4,10.4))
+   par(mar=c(5.4,12.4,5.4,12.4))
 
    plot(NA, las=1, col.axis=col.top, col.lab=col.top, col=col.square.l, col.main=col.fg,
         bty="l", main=paste0(.text("played"), " vs. ", .text("score")), xlab=.text("played"), ylab=.text("score"),

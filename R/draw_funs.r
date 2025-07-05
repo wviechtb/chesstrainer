@@ -924,6 +924,8 @@
                         played_lowest = "play frequency, lowest next",
                         days_random   = "date, at random",
                         days_oldest   = "date, oldest next",
+                        rmssd_random  = "RMSSD, at random",
+                        rmssd_highest = "RMSSD, highest next",
                         sequential    = "sequential",
                         default       = "default")
 
@@ -986,6 +988,8 @@
                         played_lowest = "Spielh\U000000E4ufigkeit, niedrigste",
                         days_random   = "Datum, zuf\U000000E4llig",
                         days_oldest   = "Datum, \U000000E4ltestes",
+                        rmssd_random  = "RMSSD, zuf\U000000E4llig",
+                        rmssd_highest = "RMSSD, h\U000000F6chster",
                         sequential    = "sequenziell",
                         default       = "default")
 

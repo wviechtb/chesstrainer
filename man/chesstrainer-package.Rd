@@ -158,7 +158,7 @@
 
    The settings are stored across sessions and can be shown with \verb{<F3>}. With \verb{<F4>}, you can adjust the colors. With \verb{<F5>}, you can adjust the size of the text at the top, the text at the bottom, and the size of the evaluation value in the evaluation bar (if it is shown).
 
-   With \verb{<F6>}, you can adjust some miscellaneous settings, namely the multiplier for the score when completing a sequence without any mistakes (0.8 by default), the score penalty when making a wrong move (40 by default), the score penalty per hint (20 by default), the number of animation steps for the evaluation bar (10 by default), the time per move for the timed mode (5 seconds by default), and the number of the most recent scores used in the calculation of the RMSSD (10 by default).
+   With \verb{<F6>}, you can adjust some miscellaneous settings, namely the multiplier for the score when completing a sequence without any mistakes (0.8 by default), the score penalty when making a wrong move (40 by default), the score penalty per hint (20 by default), the number of animation steps for the evaluation bar (10 by default), the time per move for the timed mode (5 seconds by default), and the number of the most recent scores used in the calculation of the RMSSD (6 by default).
 
    With \verb{<F9>}, the FEN of the current position is printed and the position is opened on the \url{https://lichess.org} website for analysis. With \verb{Ctrl-<c>}, the FEN is printed and copied to the clipboard (this makes use of the \code{\link[clipr]{write_clip}} function from the \pkg{clipr} package). With \verb{Ctrl-<s>}, the current sequence name is printed and copied to the clipboard.
 

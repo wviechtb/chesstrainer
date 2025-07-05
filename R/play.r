@@ -25,7 +25,7 @@ play <- function(lang="en", sfpath="", ...) {
    timed       <- ifelse(is.null(ddd[["timed"]]),       FALSE,          ddd[["timed"]])
    timepermove <- ifelse(is.null(ddd[["timepermove"]]), 5,              ddd[["timepermove"]])
    expval      <- ifelse(is.null(ddd[["expval"]]),      2,              ddd[["expval"]])
-   rmssdlength <- ifelse(is.null(ddd[["rmssdlength"]]), 10,             ddd[["rmssdlength"]])
+   rmssdlength <- ifelse(is.null(ddd[["rmssdlength"]]), 6,              ddd[["rmssdlength"]])
    multiplier  <- ifelse(is.null(ddd[["multiplier"]]),  0.8,            ddd[["multiplier"]])
    adjustwrong <- ifelse(is.null(ddd[["adjustwrong"]]), 40,             ddd[["adjustwrong"]])
    adjusthint  <- ifelse(is.null(ddd[["adjusthint"]]),  20,             ddd[["adjusthint"]])
