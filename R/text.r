@@ -1064,10 +1064,22 @@
                          "play time (minutes)"
    ))}
 
+   if (x == "historyseqsplayed") {
+      return(switch(lang,
+                    de = "Anzahl der Sequenzen",
+                         "number of sequences"
+   ))}
+
    if (x == "totalplaytime") {
       return(switch(lang,
                     de = paste0("Gesamte Spielzeit: ", arg),
                          paste0("total play time: ", arg)
+   ))}
+
+   if (x == "totalseqsplayed") {
+      return(switch(lang,
+                    de = paste0("Gesamte Anzahl der Sequenzen: ", arg),
+                         paste0("total number of sequences: ", arg)
    ))}
 
 }

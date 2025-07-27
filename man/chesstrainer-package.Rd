@@ -116,7 +116,7 @@
 
    With \verb{<F2>}, a leaderboard (based on the lowest average score) and player statistics are shown (i.e., the average score, the standard deviation of the scores, the minimum and maximum score, and the total number of sequences played). The statistics are based on the currently selected sequences (or all sequences if no selection has been applied). Also, sequences whose score was manually set to 0 are not included in these statistics.
 
-   For each player, the trainer also keeps track of each session including the play time. With \verb{<F12>}, you can obtain a plot of your session history, showing the play time (in minutes) for each session. The total play time across all sessions is also shown.
+   For each player, the trainer also keeps track of each session including the play time. With \verb{<F12>}, you can obtain a plot of your session history, showing the play time (in minutes) for each session. The total play time across all sessions is also shown. With the left and right cursor keys, you can switch to a view of the number of sequences played during each session.
 
 }
 \section{Playing Sounds}{

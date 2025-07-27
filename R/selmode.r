@@ -73,7 +73,7 @@
 
       } else {
 
-         if (identical(resp, "\r") || identical(resp, "q") || identical(resp, "\033"))
+         if (identical(resp, "\r") || identical(resp, "q") || identical(resp, "\033") || identical(resp, "ctrl-["))
             break
 
          if (is.element(resp, 1:length(selmodes))) {

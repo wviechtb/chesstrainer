@@ -959,10 +959,6 @@ play <- function(lang="en", sfpath="", ...) {
                useflip <- FALSE
                run.rnd <- FALSE
                input <- FALSE
-               if (mode == "test") {
-                  session.seqsplayed[session.length] <- session.seqsplayed[session.length] - 1
-                  session.mean.scores[[session.length]] <- session.mean.scores[[session.length]][-length(session.mean.scores[[session.length]])]
-               }
                next
             }
 

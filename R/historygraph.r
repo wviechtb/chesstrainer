@@ -23,7 +23,10 @@
    # collapse sessions that were played on the same day
    days  <- as.Date(dat$date.start, format="%Y-%m-%d")
    agg   <- aggregate(dat[c("playtime", "seqsplayed")], by=list(day=days), FUN=sum)
-   total <- sum(agg$playtime)
+
+   # compute totals
+   total.playtime  <- sum(agg$playtime)
+   total.seqsplayed <- sum(agg$seqsplayed)
 
    # round playtime
    agg$playtime <- round(agg$playtime / 60, 1)
@@ -33,17 +36,51 @@
 
    rect(1+0.2, 1+0.2, 9-0.2, 9-0.2, col=col.bg, border=col.help.border, lwd=lwd+3)
 
-   par(new=TRUE, mar=rep(11,4))
+   plot.playtime <- function() {
+      rect(1+0.4, 1+0.4, 9-0.4, 9-0.4, col=col.bg, border=NA)
+      par(new=TRUE, mar=rep(11,4))
+      plot(agg$day, agg$playtime, type="h", lwd=plotlwd, col=col.square.l, ylim=c(0, max(agg$playtime)),
+           xlab=.text("days", FALSE), ylab=.text("historyplaytime"), bty="l", las=1,
+           col.axis=col.top, col.lab=col.top, col.main=col.fg)
+      par(mar=rep(5.2,4), usr=c(1,9,1,9))
+      .texttop(.text("totalplaytime", .totaltime(total.playtime)))
+      return("playtime")
+   }
 
-   plot(agg$day, agg$playtime, type="h", lwd=plotlwd, col=col.square.l,
-        ylim=c(0, max(agg$playtime)),
-        xlab=.text("days", FALSE), ylab=.text("historyplaytime"), bty="l", las=1, col.axis=col.top, col.lab=col.top, col.main=col.fg)
+   plot.seqsplayed <- function() {
+      rect(1+0.4, 1+0.4, 9-0.4, 9-0.4, col=col.bg, border=NA)
+      par(new=TRUE, mar=rep(11,4))
+      plot(agg$day, agg$seqsplayed, type="h", lwd=plotlwd, col=col.square.l, ylim=c(0, max(agg$seqsplayed)),
+           xlab=.text("days", FALSE), ylab=.text("historyseqsplayed"), bty="l", las=1,
+           col.axis=col.top, col.lab=col.top, col.main=col.fg)
+      par(mar=rep(5.2,4), usr=c(1,9,1,9))
+      .texttop(.text("totalseqsplayed", total.seqsplayed))
+      return("seqsplayed")
+   }
 
-   par(new=FALSE, mar=rep(5.2,4), usr=c(1,9,1,9))
+   whichplot <- plot.playtime()
 
-   .texttop(.text("totalplaytime", .totaltime(total)))
+   while (TRUE) {
 
-   .waitforclick()
+      resp <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=function(key) return(key))
+
+      if (identical(resp, "\r") || identical(resp, "q") || identical(resp, "\033") || identical(resp, "ctrl-["))
+         break
+
+      if (identical(resp, "Right") || identical(resp, "Left")) {
+         if (whichplot == "playtime") {
+            whichplot <- plot.seqsplayed()
+            next
+         }
+         if (whichplot == "seqsplayed") {
+            whichplot <- plot.playtime()
+            next
+         }
+      }
+
+   }
+
+   par(new=FALSE)
 
    #.erase(1, 1, 9, 9)
 
