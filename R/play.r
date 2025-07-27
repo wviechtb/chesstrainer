@@ -33,6 +33,7 @@ play <- function(lang="en", sfpath="", ...) {
    evalsteps   <- ifelse(is.null(ddd[["evalsteps"]]),   5,              ddd[["evalsteps"]])
    wait        <- ifelse(is.null(ddd[["wait"]]),        TRUE,           isTRUE(ddd[["wait"]]))
    sleep       <- ifelse(is.null(ddd[["sleep"]]),       0.5,            ddd[["sleep"]])
+   idletime    <- ifelse(is.null(ddd[["idletime"]]),    120,            ddd[["idletime"]])
    lwd         <- ifelse(is.null(ddd[["lwd"]]),         2,              ddd[["lwd"]])
    volume      <- ifelse(is.null(ddd[["volume"]]),      50,             ddd[["volume"]])
    showgraph   <- ifelse(is.null(ddd[["showgraph"]]),   FALSE,          ddd[["showgraph"]])
@@ -80,6 +81,7 @@ play <- function(lang="en", sfpath="", ...) {
    evalsteps[evalsteps < 2] <- 2
    evalsteps <- round(evalsteps)
    sleep[sleep < 0] <- 0
+   idletime[idletime < 1] <- 1
    lwd[lwd < 1] <- 1
    volume[volume < 0] <- 0
    volume[volume > 100] <- 100
@@ -118,7 +120,7 @@ play <- function(lang="en", sfpath="", ...) {
          stop(.text("dircreateerror"), call.=FALSE)
       settings <- list(lang=lang, player=player, mode=mode, seqdir=seqdir, seqdirpos=seqdirpos,
                        selmode=selmode, timed=timed, timepermove=timepermove, expval=expval, rmssdlength=rmssdlength, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint,
-                       eval=eval, evalsteps=evalsteps, wait=wait, sleep=sleep, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
+                       eval=eval, evalsteps=evalsteps, wait=wait, sleep=sleep, idletime=idletime, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
@@ -164,6 +166,8 @@ play <- function(lang="en", sfpath="", ...) {
             wait <- settings[["wait"]]
          if (is.null(mc[["sleep"]]))
             sleep <- settings[["sleep"]]
+         if (is.null(mc[["idletime"]]))
+            idletime <- settings[["idletime"]]
          if (is.null(mc[["lwd"]]))
             lwd <- settings[["lwd"]]
          if (is.null(mc[["volume"]]))
@@ -198,7 +202,7 @@ play <- function(lang="en", sfpath="", ...) {
       sfpath <- suppressWarnings(normalizePath(sfpath))
       settings <- list(lang=lang, player=player, mode=mode, seqdir=seqdir, seqdirpos=seqdirpos,
                        selmode=selmode, timed=timed, timepermove=timepermove, expval=expval, rmssdlength=rmssdlength, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint,
-                       eval=eval, evalsteps=evalsteps, wait=wait, sleep=sleep, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
+                       eval=eval, evalsteps=evalsteps, wait=wait, sleep=sleep, idletime=idletime, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
@@ -853,7 +857,7 @@ play <- function(lang="en", sfpath="", ...) {
 
             idle.time <- proc.time()[[3]] - timestart
 
-            if (idle.time > 120)
+            if (idle.time > idletime)
                session.time.start <- session.time.start + idle.time
 
             #if (mode == "test") {
@@ -2251,7 +2255,7 @@ play <- function(lang="en", sfpath="", ...) {
             # F3 to print the settings
 
             if (identical(click, "F3")) {
-               tab <- data.frame(lang, player, mode, seqdir=seqdir[seqdirpos], selmode, timed, timepermove, expval, rmssdlength, multiplier, adjustwrong, adjusthint, eval, evalsteps, wait, sleep, lwd, volume, showgraph, repmistake, cex.top, cex.bot, cex.eval, sfpath, depth1, depth2, depth3, multipv1, multipv2, threads, hash)
+               tab <- data.frame(lang, player, mode, seqdir=seqdir[seqdirpos], selmode, timed, timepermove, expval, rmssdlength, multiplier, adjustwrong, adjusthint, eval, evalsteps, wait, sleep, idletime, lwd, volume, showgraph, repmistake, cex.top, cex.bot, cex.eval, sfpath, depth1, depth2, depth3, multipv1, multipv2, threads, hash)
                .showsettings(tab, lwd)
                #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .redrawpos(pos, flip=flip)
@@ -2303,7 +2307,7 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (identical(click, "F6")) {
                eval(expr=switch1)
-               tmp <- .miscsettings(multiplier, adjustwrong, adjusthint, evalsteps, timepermove, rmssdlength)
+               tmp <- .miscsettings(multiplier, adjustwrong, adjusthint, evalsteps, timepermove, rmssdlength, idletime)
                eval(expr=switch2)
                multiplier  <- tmp$multiplier
                adjustwrong <- tmp$adjustwrong
@@ -2311,12 +2315,14 @@ play <- function(lang="en", sfpath="", ...) {
                evalsteps   <- tmp$evalsteps
                timepermove <- tmp$timepermove
                rmssdlength <- tmp$rmssdlength
+               idletime    <- tmp$idletime
                settings$multiplier  <- multiplier
                settings$adjustwrong <- adjustwrong
                settings$adjusthint  <- adjusthint
                settings$evalsteps   <- evalsteps
                settings$timepermove <- timepermove
                settings$rmssdlength <- rmssdlength
+               settings$idletime    <- idletime
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
