@@ -202,7 +202,7 @@
 
 }
 
-.sfsettings <- function(sfproc, sfrun, sfpath, depth1, depth2, depth3, multipv1, multipv2, threads, hash) {
+.sfsettings <- function(sfproc, sfrun, sfpath, depth1, depth2, depth3, multipv1, multipv2, threads, hash, hintdepth) {
 
    while (TRUE) {
 
@@ -213,6 +213,7 @@
       cat(.text("multipvs",  multipv1, multipv2))
       cat(.text("threads",   threads))
       cat(.text("hash",      hash))
+      cat(.text("hintdepth", hintdepth))
 
       cat("\n")
       cat(.text("sfoptions"))
@@ -223,7 +224,7 @@
          break
       if (grepl("^[1-9]$", resp)) {
          resp <- round(as.numeric(resp))
-         if (resp < 1 || resp > 7)
+         if (resp < 1 || resp > 8)
             next
          if (identical(resp, 1)) {
             # (re)start Stockfish
@@ -269,7 +270,7 @@
             }
          }
          if (identical(resp, 4)) {
-            # set depth1/depth2 parameter
+            # set depth1/depth2
             cat("\n")
             newdepth <- readline(prompt=.text("depthenter"))
             if (identical(newdepth, "")) {
@@ -294,7 +295,7 @@
             }
          }
          if (identical(resp, 5)) {
-            # set multipv1/multipv2 parameter
+            # set multipv1/multipv2
             cat("\n")
             newmultipv <- readline(prompt=.text("multipventer"))
             if (identical(newmultipv, "")) {
@@ -317,7 +318,7 @@
             }
          }
          if (identical(resp, 6)) {
-            # set threads parameter
+            # set threads
             cat("\n")
             newthreads <- readline(prompt=.text("threadsenter"))
             if (identical(newthreads, "")) {
@@ -336,7 +337,7 @@
             }
          }
          if (identical(resp, 7)) {
-            # set hash parameter
+            # set hash
             cat("\n")
             newhash <- readline(prompt=.text("hashenter"))
             if (identical(newhash, "")) {
@@ -354,9 +355,28 @@
                }
             }
          }
+         if (identical(resp, 8)) {
+            # set hintdepth
+            cat("\n")
+            newhintdepth <- readline(prompt=.text("hintdepthenter"))
+            if (identical(newhintdepth, "")) {
+               next
+            } else {
+               if (grepl("^[0-9]+$", newhintdepth)) {
+                  newhintdepth <- round(as.numeric(newhintdepth))
+                  newhintdepth <- max(2, newhintdepth)
+                  hintdepth <- newhintdepth
+                  cat(.text("hintdepthsuccess"))
+                  .sf.setoptions(sfproc, threads, hash)
+               } else {
+                  cat(.text("hintdepthsetfail"))
+                  next
+               }
+            }
+         }
       }
    }
 
-   return(list(sfproc=sfproc, sfrun=sfrun, sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash))
+   return(list(sfproc=sfproc, sfrun=sfrun, sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth))
 
 }

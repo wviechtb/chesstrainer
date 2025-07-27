@@ -186,7 +186,7 @@
 
 }
 
-.parsebestmove <- function(move, pos, flip, evalval, i, sidetoplay, rename, returnline) {
+.parsebestmove <- function(move, pos, flip, evalval, i, sidetoplay, rename, returnline, hintdepth) {
 
    lang <- .get("lang")
 
@@ -195,7 +195,7 @@
    tmp <- pos
 
    moves <- length(move)
-   moves <- min(moves, 10)
+   moves <- min(moves, hintdepth)
 
    if (!returnline)
       moves <- 1

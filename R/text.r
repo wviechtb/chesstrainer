@@ -572,10 +572,16 @@
                          paste0("Hash size:                           ", arg, "\n")
    ))}
 
+   if (x == "hintdepth") {
+      return(switch(lang,
+                    de = paste0("Hinweistiefe:                             ", arg, "\n"),
+                         paste0("Hint depth:                               ", arg, "\n")
+   ))}
+
    if (x == "sfoptions") {
       return(switch(lang,
-                    de = "1 - Stockfisch (neu) starten\n2 - Stockfisch beenden\n3 - Pfad f\U000000FCr Stockfish \U000000E4ndern\n4 - Berechnungstiefen \U000000E4ndern\n5 - Anzahl der Zugvarianten \U000000E4ndern\n6 - Anzahl der Threads \U000000E4ndern\n7 - Hashgr\U000000F6\U000000DFe \U000000E4ndern",
-                         "1 - (Re)start Stockfisch\n2 - Quit Stockfisch\n3 - Change path for Stockfish\n4 - Change calculation depths\n5 - Change number of principal variations\n6 - Change number of threads\n7 - Change hash size"
+                    de = "1 - Stockfisch (neu) starten\n2 - Stockfisch beenden\n3 - Pfad f\U000000FCr Stockfish \U000000E4ndern\n4 - Berechnungstiefen \U000000E4ndern\n5 - Anzahl der Zugvarianten \U000000E4ndern\n6 - Anzahl der Threads \U000000E4ndern\n7 - Hashgr\U000000F6\U000000DFe \U000000E4ndern\n8 - Hinweistiefe \U000000E4ndern",
+                         "1 - (Re)start Stockfisch\n2 - Quit Stockfisch\n3 - Change path for Stockfish\n4 - Change calculation depths\n5 - Change number of principal variations\n6 - Change number of threads\n7 - Change hash size\n8 - Change hint depth"
    ))}
 
    if (x == "sfoptionwhich") {
@@ -674,6 +680,25 @@
                          "New hash size could not be set.\n"
    ))}
 
+
+   if (x == "hintdepthenter") {
+      return(switch(lang,
+                    de = "Hinweistiefe: ",
+                         "Hint depth: "
+   ))}
+
+   if (x == "hintdepthsetsuccess") {
+      return(switch(lang,
+                    de = "Neue Hinweistiefe wurde erfolgreich gesetzt.\n",
+                         "New hint depth was set successfully.\n"
+   ))}
+
+   if (x == "hintdepthsetfail") {
+      return(switch(lang,
+                    de = "Neue Hinweistiefe konnte nicht gesetzt werden.\n",
+                         "New hint depth could not be set.\n"
+   ))}
+
    if (x == "sfsegfault") {
       return(switch(lang,
                     de = "Stockfish ist abgest\U000000FCrzt ('segmentation fault').\n",
@@ -742,8 +767,8 @@
 
    if (x == "explsettings") {
       return(switch(lang,
-                    de = c("Sprache", "Spielername", "Modus", "Aktuelles Sequenzverzeichnis", "Selektionsmodus f\U000000FCr Sequenzen", "Zeitgesteuerter Modus", "Zeit pro Zug im zeitgesteuerten Modus (in Sekunden)", "Exponentenwert", "RMSSD L\U000000E4nge", "Multiplikator f\U000000FCr abgeschlossene Sequenzen", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Bewertungsleiste anzeigen", "Animationsschritte f\U000000FCr die Bewertungsleiste", "Warten zwischen Sequenzen", "Zeit zwischen den Z\U000000FCgen (in Sekunden)", "Leerlaufzeit (in Sekunden)", "Linienbreite", "Lautst\U000000E4rke (in %)", "Fortschrittsdiagramm nach Sequenzen anzeigen", "Sequenzen nach Fehler wiederholen", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Stockfish Pfad", "Berechnungstiefe (schnell)", "Berechnungstiefe (tief)", "Berechnungstiefe (spielen)", "Anzahl der besten Zugvarianten (schnell)", "Anzahl der besten Zugvarianten (tief)", "Anzahl der Threads f\U000000FCr Stockfish", "Hashgr\U000000F6\U000000DFe f\U000000FCr Stockfish"),
-                         c("Language", "Player name", "Mode", "Current sequence directory", "Selection mode for sequences", "Timed mode", "Time per move in timed mode (in seconds)", "Exponent value", "RMSSD Length", "Multiplier for completed sequences", "Score penalty for wrong moves", "Score penalty per hint", "Show evaluation bar", "Animation steps for the evaluation bar", "Wait between sequences", "Time between moves (in seconds)", "Idle time (in seconds)", "Line width", "Sound volume (in %)", "Show progress graph after sequences", "Repeat sequences after mistake", "Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Stockfish path", "Calculation depth (fast)", "Calculation depth (deep)", "Calculation depth (play)", "Number of principal variations (fast)", "Number of principal variations (deep)", "Number of threads for Stockfish", "Hash size for Stockfish")
+                    de = c("Sprache", "Spielername", "Modus", "Aktuelles Sequenzverzeichnis", "Selektionsmodus f\U000000FCr Sequenzen", "Zeitgesteuerter Modus", "Zeit pro Zug im zeitgesteuerten Modus (in Sekunden)", "Exponentenwert", "RMSSD L\U000000E4nge", "Multiplikator f\U000000FCr abgeschlossene Sequenzen", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Bewertungsleiste anzeigen", "Animationsschritte f\U000000FCr die Bewertungsleiste", "Warten zwischen Sequenzen", "Zeit zwischen den Z\U000000FCgen (in Sekunden)", "Leerlaufzeit (in Sekunden)", "Linienbreite", "Lautst\U000000E4rke (in %)", "Fortschrittsdiagramm nach Sequenzen anzeigen", "Sequenzen nach Fehler wiederholen", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Stockfish Pfad", "Berechnungstiefe (schnell)", "Berechnungstiefe (tief)", "Berechnungstiefe (spielen)", "Anzahl der besten Zugvarianten (schnell)", "Anzahl der besten Zugvarianten (tief)", "Anzahl der Threads f\U000000FCr Stockfish", "Hashgr\U000000F6\U000000DFe f\U000000FCr Stockfish", "Hinweistiefe"),
+                         c("Language", "Player name", "Mode", "Current sequence directory", "Selection mode for sequences", "Timed mode", "Time per move in timed mode (in seconds)", "Exponent value", "RMSSD Length", "Multiplier for completed sequences", "Score penalty for wrong moves", "Score penalty per hint", "Show evaluation bar", "Animation steps for the evaluation bar", "Wait between sequences", "Time between moves (in seconds)", "Idle time (in seconds)", "Line width", "Sound volume (in %)", "Show progress graph after sequences", "Repeat sequences after mistake", "Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Stockfish path", "Calculation depth (fast)", "Calculation depth (deep)", "Calculation depth (play)", "Number of principal variations (fast)", "Number of principal variations (deep)", "Number of threads for Stockfish", "Hash size for Stockfish", "Hint depth")
    ))}
 
    if (x == "comment") {

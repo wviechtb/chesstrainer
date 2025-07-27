@@ -48,6 +48,7 @@ play <- function(lang="en", sfpath="", ...) {
    multipv2    <- ifelse(is.null(ddd[["multipv2"]]),    1,              ddd[["multipv2"]])
    threads     <- ifelse(is.null(ddd[["threads"]]),     1,              ddd[["threads"]])
    hash        <- ifelse(is.null(ddd[["hash"]]),        256,            ddd[["hash"]])
+   hintdepth   <- ifelse(is.null(ddd[["hintdepth"]]),   10,             ddd[["hintdepth"]])
    quitanim    <- ifelse(is.null(ddd[["quitanim"]]),    TRUE,           ddd[["quitanim"]])
    inhibit     <- ifelse(is.null(ddd[["inhibit"]]),     FALSE,          ddd[["inhibit"]])
 
@@ -101,6 +102,8 @@ play <- function(lang="en", sfpath="", ...) {
    multipv2 <- round(multipv2)
    hash[hash < 16] <- 16
    hash <- round(hash)
+   hintdepth[hintdepth < 2] <- 2
+   hintdepth <- round(hintdepth)
 
    verbose <- isTRUE(ddd$verbose)
 
@@ -122,7 +125,7 @@ play <- function(lang="en", sfpath="", ...) {
                        selmode=selmode, timed=timed, timepermove=timepermove, expval=expval, rmssdlength=rmssdlength, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint,
                        eval=eval, evalsteps=evalsteps, wait=wait, sleep=sleep, idletime=idletime, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval,
-                       sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash)
+                       sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       cols <- sapply(cols.all, function(x) .get(x))
       saveRDS(cols, file=file.path(configdir, "colors.rds"))
@@ -198,13 +201,15 @@ play <- function(lang="en", sfpath="", ...) {
             threads <- settings[["threads"]]
          if (is.null(mc[["hash"]]))
             hash <- settings[["hash"]]
+         if (is.null(mc[["hintdepth"]]))
+            hintdepth <- settings[["hintdepth"]]
       }
       sfpath <- suppressWarnings(normalizePath(sfpath))
       settings <- list(lang=lang, player=player, mode=mode, seqdir=seqdir, seqdirpos=seqdirpos,
                        selmode=selmode, timed=timed, timepermove=timepermove, expval=expval, rmssdlength=rmssdlength, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint,
                        eval=eval, evalsteps=evalsteps, wait=wait, sleep=sleep, idletime=idletime, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval,
-                       sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash)
+                       sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       if (file.exists(file.path(configdir, "colors.rds"))) {
          cols <- readRDS(file.path(configdir, "colors.rds"))
@@ -803,7 +808,7 @@ play <- function(lang="en", sfpath="", ...) {
                      next
                   }
 
-                  tmp <- .parsebestmove(bestmove[[1]][1], pos=pos, flip=flip, evalval=NA, i=i, sidetoplay=sidetoplay, rename=FALSE, returnline=FALSE)
+                  tmp <- .parsebestmove(bestmove[[1]][1], pos=pos, flip=flip, evalval=NA, i=i, sidetoplay=sidetoplay, rename=FALSE, returnline=FALSE, hintdepth=1)
 
                   sub$moves <- rbind(sub$moves, data.frame(x1=tmp$x1, y1=tmp$y1, x2=tmp$x2, y2=tmp$y2, show=FALSE, move=tmp$txt, eval=evalval[1], comment="", circles="", arrows="", fen=fen))
                   pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE, volume=volume, verbose=verbose)
@@ -1677,7 +1682,7 @@ play <- function(lang="en", sfpath="", ...) {
                      for (j in 1:nmoves) {
                         if (bestmove[[j]][1] == "")
                            next
-                        bestmovetxt[j] <- .parsebestmove(bestmove[[j]], pos=pos, flip=flip, evalval=evalval[j], i=i, sidetoplay=sidetoplay, rename=TRUE, returnline=TRUE)$txt
+                        bestmovetxt[j] <- .parsebestmove(bestmove[[j]], pos=pos, flip=flip, evalval=evalval[j], i=i, sidetoplay=sidetoplay, rename=TRUE, returnline=TRUE, hintdepth=hintdepth)$txt
                         evalvals[j] <- evalval[j]
                         bestx1 <- as.numeric(substr(bestmove[[j]][1], 2, 2))
                         besty1 <- which(letters[1:8] == substr(bestmove[[j]][1], 1, 1))
@@ -2255,7 +2260,7 @@ play <- function(lang="en", sfpath="", ...) {
             # F3 to print the settings
 
             if (identical(click, "F3")) {
-               tab <- data.frame(lang, player, mode, seqdir=seqdir[seqdirpos], selmode, timed, timepermove, expval, rmssdlength, multiplier, adjustwrong, adjusthint, eval, evalsteps, wait, sleep, idletime, lwd, volume, showgraph, repmistake, cex.top, cex.bot, cex.eval, sfpath, depth1, depth2, depth3, multipv1, multipv2, threads, hash)
+               tab <- data.frame(lang, player, mode, seqdir=seqdir[seqdirpos], selmode, timed, timepermove, expval, rmssdlength, multiplier, adjustwrong, adjusthint, eval, evalsteps, wait, sleep, idletime, lwd, volume, showgraph, repmistake, cex.top, cex.bot, cex.eval, sfpath, depth1, depth2, depth3, multipv1, multipv2, threads, hash, hintdepth)
                .showsettings(tab, lwd)
                #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .redrawpos(pos, flip=flip)
@@ -2331,26 +2336,28 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (identical(click, "F7")) {
                eval(expr=switch1)
-               tmp <- .sfsettings(sfproc, sfrun, sfpath, depth1, depth2, depth3, multipv1, multipv2, threads, hash)
+               tmp <- .sfsettings(sfproc, sfrun, sfpath, depth1, depth2, depth3, multipv1, multipv2, threads, hash, hintdepth)
                eval(expr=switch2)
-               sfproc   <- tmp$sfproc
-               sfrun    <- tmp$sfrun
-               sfpath   <- tmp$sfpath
-               depth1   <- tmp$depth1
-               depth2   <- tmp$depth2
-               depth3   <- tmp$depth3
-               multipv1 <- tmp$multipv1
-               multipv2 <- tmp$multipv2
-               threads  <- tmp$threads
-               hash     <- tmp$hash
-               settings$sfpath   <- sfpath
-               settings$depth1   <- depth1
-               settings$depth2   <- depth2
-               settings$depth3   <- depth3
-               settings$multipv1 <- multipv1
-               settings$multipv2 <- multipv2
-               settings$threads  <- threads
-               settings$hash     <- hash
+               sfproc    <- tmp$sfproc
+               sfrun     <- tmp$sfrun
+               sfpath    <- tmp$sfpath
+               depth1    <- tmp$depth1
+               depth2    <- tmp$depth2
+               depth3    <- tmp$depth3
+               multipv1  <- tmp$multipv1
+               multipv2  <- tmp$multipv2
+               threads   <- tmp$threads
+               hash      <- tmp$hash
+               hintdepth <- tmp$hintdepth
+               settings$sfpath    <- sfpath
+               settings$depth1    <- depth1
+               settings$depth2    <- depth2
+               settings$depth3    <- depth3
+               settings$multipv1  <- multipv1
+               settings$multipv2  <- multipv2
+               settings$threads   <- threads
+               settings$hash      <- hash
+               settings$hintdepth <- hintdepth
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
