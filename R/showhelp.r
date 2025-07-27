@@ -10,7 +10,7 @@
       txt <- c(
       "General shortcuts:",
       "<space>  - switch mode (test/add)",
-      "\\        - switch to play mode",
+      "\\ or #  - switch to play mode",
       "p        - select a player",
       "Ctrl-r   - remove a player",
       "n        - start a new sequence",
@@ -35,7 +35,7 @@
       "F4-F7    - settings for colors, text, miscellanea, and Stockfish",
       "F8       - add, remove, and select sequence directories",
       "F9       - open the current position on lichess.org",
-      "F10      - show histograms/scatterplot of the sequence statistics",
+      "F10-F12  - show histograms/scatterplot, session info, session history",
       "Ctrl-c   - copy the FEN of the current position to the clipboard",
       "q        - quit the trainer",
       "",
@@ -68,7 +68,7 @@
       txt <- c(
       "Allgemeine Tastenk\U000000FCrzel:",
       "<space>  - Modus wechseln (Test/Hinzuf\U000000FCgen)",
-      "\\        - in den Spielmodus wechseln",
+      "\\ oder # - in den Spielmodus wechseln",
       "p        - Spieler ausw\U000000E4hlen",
       "Strg-r   - Spieler l\U000000F6schen",
       "n        - neue Sequenz starten",
@@ -76,7 +76,7 @@
       "/ und .  - Sequenzen ausw\U000000E4hlen / zuletzt gespeicherte ausw\U000000E4hlen",
       "* oder 8 - alle Sequenzen ausw\U000000E4hlen",
       "? und '  - alle Sequenzen mit gleichen Z\U000000FCgen / gleicher Position finden",
-      "< und >  - Lesezeichen f\U000000FCr Sequenz setzen / Lesezeichen ausw\U000000E4hlen und bearbeiten",
+      "< und >  - Lesezeichen setzen / Lesezeichen ausw\U000000E4hlen und bearbeiten",
       "m        - Sequenzauswahlmodus w\U000000E4hlen",
       "-+       - Zeit zwischen den Z\U000000FCgen verringern/erh\U000000F6hen",
       "w        - Warten nach abgeschlossenen Sequenzen an/aus",
@@ -93,7 +93,7 @@
       "F4-F7    - Einstellungen f\U000000FCr Farben, Text, Sonstiges, und Stockfish",
       "F8       - Sequenzverzeichnisse hinzuf\U000000FCgen, entfernen und ausw\U000000E4hlen",
       "F9       - die aktuelle Position auf lichess.org \U000000F6ffnen",
-      "F10      - Histogramme/Streudiagramm der Sequenzstatistiken anzeigen",
+      "F10-F12  - Histogramme/Streudiagramm, Sitzungsinfos, Sitzungsverlauf anzeigen",
       "Strg-c   - FEN der aktuellen Position in die Zwischenablage kopieren",
       "q        - Trainer beenden",
       "",
@@ -126,7 +126,7 @@
    font.mono <- .get("font.mono")
    maxsw <- max(strwidth(txt, family=font.mono))
    maxsh <- strheight("A", family=font.mono) * length(txt)
-   cex <- min(1.5, (8.5 - 1.5) / max(maxsw, maxsh) * 0.9)
+   cex <- min(1.5, (8.5 - 1.5) / max(maxsw, maxsh) * 0.85)
 
    text(1+0.5, seq(8.5, 1.5, length.out=length(txt)), txt, pos=4, cex=cex,
         family=font.mono, font=ifelse(grepl(":", txt), 2, 1), col=.get("col.help"))

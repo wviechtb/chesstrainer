@@ -126,10 +126,14 @@
          }
          if (setno %in% c(2,3,5))
             val[val < 0] <- 0
-         if (setno == 4)
+         if (setno == 4) {
             val[val < 2] <- 2
-         if (setno == 6)
+            val <- round(val)
+         }
+         if (setno == 6) {
             val[val < 2] <- 2
+            val <- round(val)
+         }
          tab[setno,2] <- val
       }
    }
@@ -138,79 +142,6 @@
    names(out) <- tab[[1]]
 
    return(out)
-
-}
-
-.selmodesetting <- function(selmode, lwd) {
-
-   lang <- .get("lang")
-
-   if (lang == "en") {
-
-      txt <- c(
-      "Choose a selection mode:",
-      "",
-      "1 - based on the score, at random",
-      "2 - based on the score, highest score",
-      "3 - based on the play frequency, at random",
-      "4 - based on the play frequency, lowest frequency",
-      "5 - based on the date, at random",
-      "6 - based on the date, oldest date",
-      "7 - based on the RMSSD, at random",
-      "8 - based on the RMSSD, highest value",
-      "9 - sequential")
-
-   }
-
-   if (lang == "de") {
-
-      txt <- c(
-      "Selektionsmodus w\U000000E4hlen:",
-      "",
-      "1 - basierend auf dem Punktewert, zuf\U000000E4llig",
-      "2 - basierend auf dem Punktewert, h\U000000F6chster Punktewert",
-      "3 - basierend auf der Spielh\U000000E4ufigkeit, zuf\U000000E4llig",
-      "4 - basierend auf der Spielh\U000000E4ufigkeit, niedrigste H\U000000E4ufigkeit",
-      "5 - basierend auf dem Datum, zuf\U000000E4llig",
-      "6 - basierend auf dem Datum, \U000000E4ltestes Datum",
-      "7 - basierend auf der RMSSD, zuf\U000000E4llig",
-      "8 - basierend auf der RMSSD, h\U000000F6chster Wert",
-      "9 - sequenziell")
-
-   }
-
-   rect(1.2, 1.2, 8.8, 8.8, col=.get("col.bg"), border=.get("col.help.border"), lwd=lwd+3)
-
-   maxsw <- max(strwidth(txt, family=.get("font.mono")))
-   maxsh <- strheight("A", family=.get("font.mono")) * length(txt)
-   cex <- min(1.5, (8.5 - 1.5) / max(maxsw, maxsh) * 0.9)
-
-   selmodes <- c("score_random", "score_highest", "played_random", "played_lowest", "days_random", "days_oldest", "rmssd_random", "rmssd_highest", "sequential")
-
-   text(1+0.5, seq(7.5, 3.5, length.out=length(txt)), txt, pos=4, cex=cex,
-        family=.get("font.mono"), font=ifelse(c("","",selmodes)==selmode, 2, 1), col=.get("col.help"))
-
-   input <- TRUE
-
-   while (input) {
-
-      resp <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=function(key) return(key))
-
-      if (identical(resp, "\r") || identical(resp, "q") || identical(resp, "\033"))
-         input <- FALSE
-
-      for (j in 1:length(selmodes)) {
-         if (identical(resp, as.character(j))) {
-            selmode <- selmodes[j]
-            input <- FALSE
-         }
-      }
-
-   }
-
-   #.erase(1, 1, 9, 9)
-
-   return(selmode)
 
 }
 

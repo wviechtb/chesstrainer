@@ -22,20 +22,26 @@
 
    if (x == "createconfigdir") {
       return(switch(lang,
-                    de = paste0("Erstelle Standardverzeichnis f\U000000FCr Einstellungen: ", arg, "\n"),
-                         paste0("Creating default directory for settings: ", arg, "\n")
-   ))}
-
-   if (x == "loadsettings") {
-      return(switch(lang,
-                    de = "Lade Einstellungen ...\n",
-                         "Loading settings ...\n"
+                    de = paste0("Erstelle Verzeichnis f\U000000FCr Einstellungen: ", arg, "\n"),
+                         paste0("Creating directory for settings: ", arg, "\n")
    ))}
 
    if (x == "createseqdir") {
       return(switch(lang,
                     de = paste0("Erstelle Standardverzeichnis f\U000000FCr Sequenzen: ", arg, "\n"),
                          paste0("Creating default directory for sequences: ", arg, "\n")
+   ))}
+
+   if (x == "createsessionsdir") {
+      return(switch(lang,
+                    de = paste0("Erstelle Verzeichnis f\U000000FCr Session Infos: ", arg, "\n"),
+                         paste0("Creating directory for session infos: ", arg, "\n")
+   ))}
+
+   if (x == "loadsettings") {
+      return(switch(lang,
+                    de = "Lade Einstellungen ...\n",
+                         "Loading settings ...\n"
    ))}
 
    if (x == "dircreateerror") {
@@ -160,8 +166,26 @@
 
    if (x == "days") {
       return(switch(lang,
-                    de = "Tage",
-                         "Days"
+                    de = paste0("Tag", ifelse(arg, "e", "")),
+                         paste0("day", ifelse(arg, "s", ""))
+   ))}
+
+   if (x == "hours") {
+      return(switch(lang,
+                    de = paste0("Stunde", ifelse(arg, "n", "")),
+                         paste0("hour", ifelse(arg, "s", ""))
+   ))}
+
+   if (x == "minutes") {
+      return(switch(lang,
+                    de = paste0("Minute", ifelse(arg, "n", "")),
+                         paste0("minute", ifelse(arg, "s", ""))
+   ))}
+
+   if (x == "seconds") {
+      return(switch(lang,
+                    de = paste0("Sekunde", ifelse(arg, "n", "")),
+                         paste0("second", ifelse(arg, "s", ""))
    ))}
 
    if (x == "score") {
@@ -202,8 +226,8 @@
 
    if (x == "seqsearch") {
       return(switch(lang,
-                    de = "Sequenzsuche (Text, Nummer1-Nummer2, Nummer, Punkte > Wert, Gespielt < Wert, Tage > Wert, FEN, K: Text, *):\n",
-                         "Sequence search (string, number1-number2, number, score > value, played < value, days > value, FEN, c: string, *):\n"
+                    de = "Sequenzsuche (Text, Nummer1-Nummer2, Nummer, Punkte > Wert, Gespielt < Wert, Tage > Wert, RMSSD > Wert, FEN, K: Text, *):\n",
+                         "Sequence search (string, number1-number2, number, score > value, played < value, days > value, rmssd > value, FEN, c: string, *):\n"
    ))}
 
    if (x == "allseqselected") {
@@ -1002,6 +1026,48 @@
       return(switch(lang,
                     de = "Bewertung",
                          "Evaluation"
+   ))}
+
+   if (x == "toofewscores") {
+      return(switch(lang,
+                    de = "Diagramme k\U000000F6nnen nicht angezeigt werden (zu wenige Sequenzen).",
+                         "Cannot show graphs (too few sequences)."
+   ))}
+
+   if (x == "toofewseqsplayed") {
+      return(switch(lang,
+                    de = "Das Diagramm kann nicht angezeigt werden (zu wenige Sequenzen gespielt).",
+                         "Cannot show graph (too few sequences played)."
+   ))}
+
+   if (x == "meanscore") {
+      return(switch(lang,
+                    de = "Durchschnittliche Punktzahl",
+                         "Average Score"
+   ))}
+
+   if (x == "nosessionhistory") {
+      return(switch(lang,
+                    de = "Kein Sitzungsverlauf f\U000000FCr den aktuellen Spieler verf\U000000FCgbar.",
+                         "No session history available for the current player."
+   ))}
+
+   if (x == "playtime") {
+      return(switch(lang,
+                    de = paste0("Spielzeit: ", arg),
+                         paste0("play time: ", arg)
+   ))}
+
+   if (x == "historyplaytime") {
+      return(switch(lang,
+                    de = "Spielzeit (Minuten)",
+                         "play time (minutes)"
+   ))}
+
+   if (x == "totalplaytime") {
+      return(switch(lang,
+                    de = paste0("Gesamte Spielzeit: ", arg),
+                         paste0("total play time: ", arg)
    ))}
 
 }

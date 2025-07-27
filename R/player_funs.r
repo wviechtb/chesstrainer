@@ -3,7 +3,7 @@
    files <- list.files(seqdir, full.names=TRUE, pattern=".rds$")
    dat <- lapply(files, readRDS)
 
-   players <- unique(unlist(lapply(dat, function(x) names(x$player))))
+   players <- sort(unique(unlist(lapply(dat, function(x) names(x$player)))))
    nplayers <- length(players)
 
    if (nplayers == 0L) {
@@ -60,5 +60,10 @@
          }
       }
    }
+
+   player.file <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "sessions", paste0(player, ".rds"))
+
+   if (file.exists(player.file))
+      file.remove(player.file)
 
 }

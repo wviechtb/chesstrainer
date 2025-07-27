@@ -4,7 +4,7 @@
 
    par(new=TRUE, mar=rep(11,4))
 
-   plot(NA, xlim=range(x$played), ylim=c(0,100), xlab="", ylab="Score",
+   plot(NA, xlim=range(x$played), ylim=c(0,100), xlab="", ylab=.text("score"),
         bty="l", las=1, col.axis=.get("col.top"), col.lab=.get("col.top"), xaxt="n")
    axis(side=1, at=x$played, col.axis=.get("col.top"))
 

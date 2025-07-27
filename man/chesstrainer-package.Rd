@@ -29,10 +29,12 @@
 
    After completing a sequence, the current score for the sequence is saved (together with the number of times that the sequence has been played and when it was last played) to the sequence file. This way, your progress in learning the sequence is saved permanently across sessions. Note that this information is player specific. Using the \verb{<g>} key, a progress graph (showing the sequence scores over time) for the current sequence can be shown (if the sequence has been played before). Using the \verb{<G>} key, you can toggle whether the progress graph will be automatically shown at the end of each completed sequence.
 
+   With \verb{<F11>}, you can obtain a plot of the average score of all sequences in the current sequence directory as a function of each completed sequence during the current session (the horizontal dotted line corresponds to the average score at the beginning of the session). This is useful to check whether progress is being made in learning all of the sequences.
+
 }
 \section{Managing and Selecting Sequences}{
 
-   Using the \verb{<l>} key, you can list all sequences, together with their current score, the number of times they have been played (the play frequency), the last time they have been played (in days; \code{NA} if a sequence has not been played before), the root mean square successive difference (RMSSD) of the sequence (a measure of the variability of the scores for a sequence over time; sequences with high RMSSD values show large jumps in their scores over time and are apparently difficult to remember), and the current play probability (with 0 to 5 asterisks next to it based on the probability). In \sQuote{test} mode, you can use the \verb{Ctrl-<d>} key to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.
+   Using the \verb{<l>} key, you can list all sequences, together with their current score, the number of times they have been played (the play frequency), the last time they have been played (in days; \code{NA} if a sequence has not been played before), the root mean square successive difference (RMSSD) of the sequence (a measure of the variability of the scores for a sequence over time; sequences with high RMSSD values show large fluctuations in their scores over time and are apparently difficult to remember), and the current play probability (with 0 to 5 asterisks next to it based on the probability). In \sQuote{test} mode, you can use the \verb{Ctrl-<d>} key to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.
 
    Using the \verb{</>} key (or \verb{<,>} which is useful for a German keyboard layout), you can select a subset of the sequences in various ways:
 
@@ -54,17 +56,17 @@
 
    In \sQuote{test} mode, sequences are played by default at random based on the score as described above. However, you can toggle into a different selection mode with the \verb{<m>} key. The options are:
    \enumerate{
-   \item selection based on the score at random where sequences with higher scores have a higher play probability (the default),
+   \item selection based on the score where sequences with higher scores have a higher play probability (the default),
    \item selection based on the score where the sequence with the highest score is played next,
-   \item selection based on the play frequency at random where sequences with lower play frequencies have a higher play probability,
-   \item selection based on the play frequency where the sequence with the lowest frequency is played next,
-   \item selection based on the date at random where sequences that have last been played longer ago have a higher play probability,
-   \item selection based on the date where the oldest sequence is played next,
-   \item selection based on the RMSSD value at random where sequences with higher values have a higher play probability,
+   \item selection based on the play frequency where sequences with lower play frequencies have a higher play probability,
+   \item selection based on the play frequency where the sequence with the lowest play frequency is played next,
+   \item selection based on the date where sequences that have last been played longer ago have a higher play probability,
+   \item selection based on the last play date where the oldest sequence is played next,
+   \item selection based on the RMSSD value where sequences with higher values have a higher play probability,
    \item selection based on the RMSSD value where the sequence with the highest value is played next.
    }
 
-   The exponent value affects selection modes 1, 3, and 5. Setting the exponent value to a very large value makes mode 1 essentially the same as mode 2 (and similarly, mode 3 like mode 4 and mode 5 like mode 6). For modes 2, 4, and 6, if the highest score, lowest play frequency, or oldest date is the same for multiple sequences, the alphabetically first one is played next. For modes 5 and 6, sequences that have never been played before are given the highest priority. For all modes, sequences whose score was set to 0 are never played.
+   The exponent value affects selection modes 1, 3, 5, and 7. Setting the exponent value to a very large value makes mode 1 essentially the same as mode 2 (and similarly, mode 3 like mode 4, mode 5 like mode 6, and mode 7 like mode 8). For modes 2, 4, 6, and 8, if the highest score, lowest play frequency, oldest play date, or highest RMSSD value is the same for multiple sequences, the alphabetically first one is played next. For modes 5 and 6, sequences that have never been played before are given the highest priority. For all modes, sequences whose score was set to 0 are never played.
 
    In \sQuote{test} mode, the \verb{<r>} key repeats the last played sequence. With the \verb{<R>} key, you can toggle on/off whether a sequence will be automatically repeated if a mistake was made while playing the sequence.
 
@@ -94,9 +96,9 @@
 
    With the \verb{<.>} key, you can select the last saved sequence (if one was saved before in the current session). This is useful for checking the sequence in \sQuote{test} mode and/or creating multiple branching lines from the ending position of this sequence. Similarly, in \sQuote{test} mode, the \verb{<a>} key will create a copy of the current sequence, which can then be extended with additional moves (and saved as a new sequence). The \verb{<A>} key does the same thing, but only plays the moves to the currently shown position.
 
-   In \sQuote{add} or \sQuote{test} mode, you can bookmark a sequence with the \verb{<<>} key. In \sQuote{add} mode, the last saved sequence is bookmarked. In \sQuote{test} mode, the currently played sequence is bookmarked. With the \verb{<>>} key, you can select and manage bookmarks (use \verb{<F1>} while  managing the bookmarks to obtain help). This is useful for creating multiple branching lines from the ending position of certain sequences.
+   In \sQuote{add} or \sQuote{test} mode, you can bookmark a sequence with the \verb{<<>} key. In \sQuote{add} mode, the last saved sequence is bookmarked. In \sQuote{test} mode, the currently played sequence is bookmarked. With the \verb{<>>} key, you can select and manage bookmarks (use \verb{<F1>} while managing the bookmarks to obtain help). This is useful for creating multiple branching lines from the ending position of certain sequences.
 
-   Sequences are saved to and selected from the current sequence directory. You can add, remove, and select sequence directories with the \verb{<F8>} key. Removing a sequence directory simply removes it from being shown in the list of sequence directories (i.e., it does not delete the directory). Bookmarks are specific to each sequence directory.
+   Sequences are saved to and selected from the current sequence directory. You can add, remove, and select sequence directories with the \verb{<F8>} key. Removing a sequence directory simply removes it from being shown in the list of sequence directories (i.e., it does not delete the directory). Bookmarks are specific to each sequence directory. Also, selecting a sequence directory switches to the selection mode that was active when it was last selected.
 
    Note that sequences are quite personalized, since they involve going into a particular line that one deems most appropriate (and hence wants to remember). Others may disagree and prefer a different line. Therefore, you should create sequences that you want to train yourself on, so you will be able to play them quickly from memory in actual games.
 
@@ -113,6 +115,8 @@
    The current player can be deleted with the \verb{Ctrl-<r>} key. Since this deletes all progress information for this player from the sequence files, you will receive a prompt to confirm this.
 
    With \verb{<F2>}, a leaderboard (based on the lowest average score) and player statistics are shown (i.e., the average score, the standard deviation of the scores, the minimum and maximum score, and the total number of sequences played). The statistics are based on the currently selected sequences (or all sequences if no selection has been applied). Also, sequences whose score was manually set to 0 are not included in these statistics.
+
+   For each player, the trainer also keeps track of each session including the play time. With \verb{<F12>}, you can obtain a plot of your session history, showing the play time (in minutes) for each session. The total play time across all sessions is also shown.
 
 }
 \section{Playing Sounds}{
@@ -172,22 +176,22 @@
 \preformatted{file.remove(file.path(tools::R_user_dir(package="chesstrainer", which="config"), "settings.rds"))
 file.remove(file.path(tools::R_user_dir(package="chesstrainer", which="config"), "colors.rds"))}
 
-   This may be useful in case these files were corrupted with nonsensical settings. The files will be recreated (with default values) when restarting the trainer. If you would like to remove both of these files (if they exist) and the directory where these files are stored, you can use:
+   This may be useful in case these files were corrupted with nonsensical settings. The files will be recreated (with default values) when restarting the trainer. If you would like to remove both of these files and the directory where these files are stored, you can use:
 
 \preformatted{unlink(tools::R_user_dir(package="chesstrainer", which="config"), recursive=TRUE)}
 
-   If you would like to remove all files stored in the default directory where sequences are stored, you can use:
+   If you would like to remove the default directory where sequences are stored (and all files therein), you can use:
 
-\preformatted{file.remove(list.files(tools::R_user_dir(package="chesstrainer", which="data"), full.names=TRUE))}
+\preformatted{unlink(file.path(tools::R_user_dir(package="chesstrainer", which="data"), "sequences"), recursive=TRUE)}
 
-   To remove the corresponding folder (including all files therein), you can use:
+   If you would like to remove the directory where the session history of all players is stored (and all files therein), you can use:
 
-\preformatted{unlink(tools::R_user_dir(package="chesstrainer", which="data"), recursive=TRUE)}
+\preformatted{unlink(file.path(tools::R_user_dir(package="chesstrainer", which="data"), "sessions"), recursive=TRUE)}
 
 }
 \section{Backing Up Sequences}{
 
-   It is advisable to regularly make a backup of the sequences you have created. The directory where sequences are stored can be found with the command: \code{tools::R_user_dir(package="chesstrainer", which="data").}
+   It is advisable to regularly make a backup of the sequences you have created. The default directory where sequences are stored can be found with the command: \code{file.path(tools::R_user_dir(package="chesstrainer", which="data"), "sequences").}
 
 }
 \section{License Info}{

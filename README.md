@@ -21,13 +21,14 @@ The purpose of the `chesstrainer` package is to create sequences of moves (lines
 - board editor for setting up advanced starting positions or chess puzzles
 - the trainer can be used with multiple players (performance is tracked separately for each player)
 - when [Stockfish](https://stockfishchess.org) is installed:
-  - automaticallly obtain and show position evaluations for each move in a sequence
+  - automatically obtain and show position evaluations for each move in a sequence
   - show the best move(s) for a given position
   - play mode to play against Stockfish
 - adjust colors, text sizes, and various other settings
 - manage multiple sequence directories
 - toggle the language (English or German)
 - plays move and capture sounds
+- keeps track of session history
 
 ## Installation
 

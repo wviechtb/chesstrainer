@@ -2,9 +2,6 @@
 
    n <- length(scores)
 
-   if (n == 1L)
-      return()
-
    par(xpd=FALSE)
 
    col.top         <- .get("col.top")
@@ -40,7 +37,7 @@
    # histogram of 'days'
    if (length(c(na.omit(dayslp))) >= 2L) {
       hist(dayslp, breaks="FD", las=1, col.axis=col.top, col.lab=col.top, col.main=col.fg,
-           xlab=.text("days"), col=col.square.d, border=col.square.l, main=paste0("Histogram: ", .text("days")))
+           xlab=.text("days", TRUE), col=col.square.d, border=col.square.l, main=paste0("Histogram: ", .text("days", TRUE)))
    } else {
       plot(NA, xlim=c(0,1), ylim=c(0,1), xlab="", ylab="", xaxt="n", yaxt="n", bty="n")
    }
@@ -61,7 +58,7 @@
 
    # scatterplot of 'played' versus 'scores'
 
-   par(mar=c(5.4,12.4,5.4,12.4))
+   par(mar=c(5.4,15.4,5.4,15.4))
 
    plot(NA, las=1, col.axis=col.top, col.lab=col.top, col=col.square.l, col.main=col.fg,
         bty="l", main=paste0(.text("played"), " vs. ", .text("score")), xlab=.text("played"), ylab=.text("score"),

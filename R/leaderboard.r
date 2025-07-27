@@ -20,8 +20,8 @@
       rownames(tmp.scores) <- files
       tmp.scores[tmp.scores == 0] <- NA_real_
 
-      mean.scores <- round(apply(tmp.scores, 2, mean, na.rm=TRUE))
-      sd.scores   <- round(apply(tmp.scores, 2, sd, na.rm=TRUE))
+      mean.scores <- round(apply(tmp.scores, 2, mean, na.rm=TRUE), digits=1)
+      sd.scores   <- round(apply(tmp.scores, 2, sd, na.rm=TRUE), digits=1)
       min.scores  <- apply(tmp.scores, 2, min, na.rm=TRUE)
       max.scores  <- apply(tmp.scores, 2, max, na.rm=TRUE)
 

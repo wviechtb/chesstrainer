@@ -11,15 +11,22 @@
 
 .is.even <- function(x) x %% 2 == 0
 
-.rmssd <- function(x, len) {
+.rmssd <- function(x, len, multiplier) {
    if (!is.infinite(len)) {
       n <- length(x)
       x <- x[max(1,(n-len+1)):n]
    }
-   if (length(x) <= 1L) {
+   n <- length(x)
+   if (n <= 1L) {
       val <- NA_real_
    } else {
-      val <- sqrt(mean(diff(x)^2))
+      xopt <- c(x[1], rep(NA_real_, n-1))
+      for (i in 2:n) {
+         xopt[i] <- round(xopt[i-1] * multiplier)
+      }
+      xdiff <- x - xopt
+      #val <- sd(xdiff)
+      val <- sqrt(mean(diff(xdiff)^2))
    }
    return(val)
 }
@@ -33,6 +40,30 @@
       return(logical(0))
 
    return(sapply(x, is.null))
+
+}
+
+.totaltime <- function(x) {
+
+   days <- x %/% (24 * 3600)
+   x <- x %% (24 * 3600)
+
+   hours <- x %/% 3600
+   x <- x %% 3600
+
+   minutes <- x %/% 60
+   seconds <- x %% 60
+
+   total <- paste0(minutes, " ", .text("minutes", minutes == 0 || minutes > 1), ", ",
+                  seconds, " ", .text("seconds", seconds == 0 || seconds > 1))
+
+   if (hours > 0)
+      total <- paste0(paste0(hours, " ", .text("hours", hours == 0 || hours > 1)), ", ", total)
+
+   if (days > 0)
+      total <- paste0(paste0(days, " ", .text("days", days == 0 || days > 1)), ", ", total)
+
+   return(total)
 
 }
 

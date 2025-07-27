@@ -72,6 +72,7 @@ play <- function(lang="en", sfpath="", ...) {
    seqdirpos <- round(seqdirpos)
    expval[expval < 0] <- 0
    rmssdlength[rmssdlength < 2] <- 2
+   rmssdlength <- round(rmssdlength)
    multiplier[multiplier < 0] <- 0
    multiplier[multiplier > 1] <- 1
    adjustwrong[adjustwrong < 0] <- 0
@@ -82,15 +83,22 @@ play <- function(lang="en", sfpath="", ...) {
    lwd[lwd < 1] <- 1
    volume[volume < 0] <- 0
    volume[volume > 100] <- 100
+   volume <- round(volume)
    cex.top[cex.top < 0.1] <- 0.1
    cex.bot[cex.bot < 0.1] <- 0.1
    cex.eval[cex.eval < 0.1] <- 0.1
    depth1[depth1 < 1] <- 1
    depth2[depth2 < 1] <- 1
    depth3[depth3 < 1] <- 1
+   depth1 <- round(depth1)
+   depth2 <- round(depth2)
+   depth3 <- round(depth3)
    multipv1[multipv1 < 1] <- 1
    multipv2[multipv2 < 1] <- 1
+   multipv1 <- round(multipv1)
+   multipv2 <- round(multipv2)
    hash[hash < 16] <- 16
+   hash <- round(hash)
 
    verbose <- isTRUE(ddd$verbose)
 
@@ -238,7 +246,7 @@ play <- function(lang="en", sfpath="", ...) {
 
    if (identical(seqdir, "")) {
 
-      seqdir <- tools::R_user_dir(package="chesstrainer", which="data")
+      seqdir <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "sequences")
 
       if (!dir.exists(seqdir)) {
          cat(.text("createseqdir", seqdir))
@@ -256,6 +264,15 @@ play <- function(lang="en", sfpath="", ...) {
 
    }
 
+   # create sessions directory if it doesn't already exist
+
+   sessionsdir <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "sessions")
+
+   if (!dir.exists(sessionsdir)) {
+      cat(.text("createsessionsdir", sessionsdir))
+      dir.create(sessionsdir, recursive=TRUE)
+   }
+
    # TODO: what to do with this?
    #if (file.access(seqdir, mode=4L) != 0L)
    #   stop(.text("noreadaccess"), call.=FALSE)
@@ -264,13 +281,9 @@ play <- function(lang="en", sfpath="", ...) {
 
    cat(.text("useseqdir", seqdir[seqdirpos]))
 
-   # .sequential file in sequence directory overrides selmode setting
+   # load selmode from .selmode file in sequence directory (if it exist; otherwise create it)
 
-   if (file.exists(file.path(seqdir[seqdirpos], ".sequential")) && selmode != "sequential") {
-      cat(.text("sequential"))
-      cat("\n")
-      selmode <- "sequential"
-   }
+   selmode <- .loadselmode(seqdir, seqdirpos, selmode)
 
    # start Stockfish
 
@@ -297,6 +310,14 @@ play <- function(lang="en", sfpath="", ...) {
    useflip  <- TRUE
    replast  <- FALSE
    oldmode  <- ifelse(mode == "play", "add", mode)
+
+   # session variables
+
+   session.seqsplayed <- 0
+   session.mean.scores <- list(NULL)
+   session.length <- 1
+   session.date.start <- Sys.time()
+   session.time.start <- proc.time()[[3]]
 
    # save par() if a device is already open
 
@@ -381,11 +402,13 @@ play <- function(lang="en", sfpath="", ...) {
       return(1)
    }
 
+   # define keys
+
    keys      <- c("q", " ", "n", "p", "e", "E", "-", "=", "+", "m", "\\", "#",
                   "l", "/", "|", "*", "8", "?", "'", ",", ".", "<", ">",
                   "b", "w", "t", "h", "ctrl-R", "^", "6", "[", "]", "i", "(", ")", "v", "x",
-                  "ctrl-[", "\033", "a", "G", "R", "ctrl-C", "ctrl-S",
-                  "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F12")
+                  "ctrl-[", "\033", "a", "G", "R", "ctrl-C", "ctrl-S", "ctrl-V",
+                  "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12")
    keys.add  <- c("f", "z", "c", "H", "0", "s")
    keys.test <- c("o", "r", "g", "A", "ctrl-D", "Right", "Left", "u", "1")
    keys.play <- c("H", "g")
@@ -470,7 +493,7 @@ play <- function(lang="en", sfpath="", ...) {
       date.all[is.na(date.all) | .is.null(date.all)] <- NA_real_
       date.all <- unlist(date.all)
       dayslp.all <- as.numeric(Sys.time() - as.POSIXct(date.all), units="days")
-      rmssd.all <- lapply(dat.all, function(x) .rmssd(x$player[[player]]$score, rmssdlength))
+      rmssd.all <- lapply(dat.all, function(x) .rmssd(x$player[[player]]$score, rmssdlength, multiplier))
       rmssd.all[is.na(rmssd.all) | .is.null(rmssd.all)] <- NA_real_
       rmssd.all <- unlist(rmssd.all)
 
@@ -507,7 +530,7 @@ play <- function(lang="en", sfpath="", ...) {
       date.selected[is.na(date.selected) | .is.null(date.selected)] <- NA_real_
       date.selected <- unlist(date.selected)
       dayslp.selected <- as.numeric(Sys.time() - as.POSIXct(date.selected), units="days")
-      rmssd.selected <- lapply(dat, function(x) .rmssd(x$player[[player]]$score, rmssdlength))
+      rmssd.selected <- lapply(dat, function(x) .rmssd(x$player[[player]]$score, rmssdlength, multiplier))
       rmssd.selected[is.na(rmssd.selected) | .is.null(rmssd.selected)] <- NA_real_
       rmssd.selected <- unlist(rmssd.selected)
 
@@ -595,7 +618,11 @@ play <- function(lang="en", sfpath="", ...) {
 
          } else {
 
-            sel <- sample(seq_len(k), 1L, prob=probvals.selected)
+            if (all(is.na(probvals.selected))) {
+               sel <- sample(k, 1L)
+            } else {
+               sel <- sample(seq_len(k), 1L, prob=probvals.selected)
+            }
 
             if (selmode == "sequential") {
                seqno <- seqno + 1
@@ -824,6 +851,11 @@ play <- function(lang="en", sfpath="", ...) {
 
             click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
 
+            idle.time <- proc.time()[[3]] - timestart
+
+            if (idle.time > 120)
+               session.time.start <- session.time.start + idle.time
+
             #if (mode == "test") {
             #   if (seqname == "<lastsequence>.rds") {
             #      click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
@@ -846,6 +878,18 @@ play <- function(lang="en", sfpath="", ...) {
             # q to quit the trainer
 
             if (identical(click, "q")) {
+               session.date.end <- Sys.time()
+               session.time.end <- proc.time()[[3]]
+               session.playtime <- round(session.time.end - session.time.start)
+               if (session.playtime > 30) { # only save session if it was longer than 30 seconds
+                  dates <- data.frame(date.start=session.date.start, date.end=session.date.end, playtime=session.playtime, seqsplayed=sum(session.seqsplayed))
+                  player.file <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "sessions", paste0(player, ".rds"))
+                  if (file.exists(player.file)) {
+                     old.dates <- readRDS(player.file)
+                     dates <- rbind(old.dates, dates)
+                  }
+                  saveRDS(dates, file=player.file)
+               }
                run.all <- FALSE
                run.rnd <- FALSE
                input <- FALSE
@@ -873,6 +917,40 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
+            # \ (or #) to switch into play mode (or back to add mode)
+
+            if (identical(click, "\\") || identical(click, "#")) {
+               sub$moves <- sub$moves[seq_len(i-1),,drop=FALSE]
+               if (mode == "play") {
+                  mode <- "add"
+                  .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
+                  next
+               }
+               if (!sfrun) {
+                  .texttop(.text("noplaymode"), sleep=1)
+                  .texttop(texttop)
+                  next
+               }
+               mode <- "play"
+               timed <- FALSE
+               fen <- .genfen(pos, flip, sidetoplay, i)
+               res.sf <- .sf.eval(sfproc, sfrun, ifelse(flip, ifelse(sidetoplay=="b", depth1, depth3), ifelse(sidetoplay=="w", depth1, depth3)), multipv1, fen, sidetoplay, verbose)
+               evalval  <- res.sf$eval
+               bestmove <- res.sf$bestmove
+               matetype <- res.sf$matetype
+               sfproc   <- res.sf$sfproc
+               sfrun    <- res.sf$sfrun
+               .texttop(" ")
+               .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
+               if (nrow(circles) >= 1L || nrow(arrows) >= 1L || nrow(harrows) >= 1L) {
+                  .rmannot(pos, circles, rbind(arrows, harrows), flip)
+                  circles <- matrix(nrow=0, ncol=2)
+                  arrows  <- matrix(nrow=0, ncol=4)
+                  harrows <- matrix(nrow=0, ncol=4)
+               }
+               next
+            }
+
             # n to start a new sequence / round (from play mode, jumps back to oldmode)
 
             if (identical(click, "n")) {
@@ -881,6 +959,10 @@ play <- function(lang="en", sfpath="", ...) {
                useflip <- FALSE
                run.rnd <- FALSE
                input <- FALSE
+               if (mode == "test") {
+                  session.seqsplayed[session.length] <- session.seqsplayed[session.length] - 1
+                  session.mean.scores[[session.length]] <- session.mean.scores[[session.length]][-length(session.mean.scores[[session.length]])]
+               }
                next
             }
 
@@ -891,9 +973,26 @@ play <- function(lang="en", sfpath="", ...) {
                oldplayer <- player
                player <- .selectplayer(player, seqdir[seqdirpos])
                eval(expr=switch2)
-               settings$player <- player
-               saveRDS(settings, file=file.path(configdir, "settings.rds"))
                if (player != oldplayer) {
+                  settings$player <- player
+                  saveRDS(settings, file=file.path(configdir, "settings.rds"))
+                  session.date.end <- Sys.time()
+                  session.time.end <- proc.time()[[3]]
+                  session.playtime <- round(session.time.end - session.time.start)
+                  if (session.playtime > 30) { # only save session if it was longer than 30 seconds
+                     dates <- data.frame(date.start=session.date.start, date.end=session.date.end, playtime=session.playtime, seqsplayed=sum(session.seqsplayed))
+                     player.file <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "sessions", paste0(oldplayer, ".rds"))
+                     if (file.exists(player.file)) {
+                        old.dates <- readRDS(player.file)
+                        dates <- rbind(old.dates, dates)
+                     }
+                     saveRDS(dates, file=player.file)
+                  }
+                  session.seqsplayed <- 0
+                  session.mean.scores <- list(NULL)
+                  session.length <- 1
+                  session.date.start <- Sys.time()
+                  session.time.start <- proc.time()[[3]]
                   run.rnd <- FALSE
                   input <- FALSE
                }
@@ -1107,7 +1206,7 @@ play <- function(lang="en", sfpath="", ...) {
                   bars <- sapply(bars, function(x) paste0(rep("*", x), collapse=""))
                   tab <- data.frame(files, played.selected, formatC(dayslp.selected, format="f", digits=1), scores.selected, formatC(rmssd.selected, format="f", digits=1), formatC(probvals.selected, format="f", digits=1), bars)
                   tab$bars <- format(tab$bars, justify="left")
-                  names(tab) <- c("Name", .text("played"), .text("days"), .text("score"), .text("rmssd"), .text("prob"), "")
+                  names(tab) <- c("Name", .text("played"), .text("days", TRUE), .text("score"), .text("rmssd"), .text("prob"), "")
                   tab$Name <- substr(tab$Name, 1, nchar(tab$Name)-4) # remove .rds from name
                   tab$Name <- format(tab$Name, justify="left")
                   names(tab)[1] <- ""
@@ -1983,10 +2082,11 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (identical(click, "m")) {
                selmodeold <- selmode
-               selmode <- .selmodesetting(selmode, lwd)
+               selmode <- .selmode(selmode, lwd)
                if (selmodeold != selmode) {
                   settings$selmode <- selmode
                   saveRDS(settings, file=file.path(configdir, "settings.rds"))
+                  write.table(data.frame(selmode), file=file.path(seqdir[seqdirpos], ".selmode"), col.names=FALSE, row.names=FALSE, quote=FALSE)
                   seqno <- 1
                   run.rnd <- FALSE
                   input <- FALSE
@@ -2267,11 +2367,18 @@ play <- function(lang="en", sfpath="", ...) {
                settings$seqdirpos <- seqdirpos
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                if (!identical(seqdir, seqdirold) || !identical(seqdirpos, seqdirposold)) {
+                  selected <- NULL
                   seqno <- 1
-                  if (file.exists(file.path(seqdir[seqdirpos], ".sequential")) && selmode != "sequential") {
-                     .texttop(.text("sequential"), sleep=1.5)
-                     selmode <- "sequential"
-                  }
+                  filename <- ""
+                  lastseq  <- ""
+                  bestmove <- list("")
+                  useflip  <- TRUE
+                  replast  <- FALSE
+                  oldmode  <- ifelse(mode == "play", "add", mode)
+                  session.seqsplayed <- c(session.seqsplayed, 0)
+                  session.mean.scores <- c(session.mean.scores, list(NULL))
+                  session.length <- session.length + 1
+                  selmode <- .loadselmode(seqdir, seqdirpos, selmode, texttop=TRUE)
                   run.rnd <- FALSE
                   input <- FALSE
                }
@@ -2293,7 +2400,50 @@ play <- function(lang="en", sfpath="", ...) {
             # F10 to show histograms / scatterplot
 
             if (identical(click, "F10")) {
+               if (length(scores.selected) <= 1L) {
+                  .texttop(.text("toofewscores"), sleep=1.5)
+                  .texttop(texttop)
+                  next
+               }
                .distributions(scores.selected, played.selected, dayslp.selected, rmssd.selected, lwd, multiplier)
+               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+               .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
+               .drawcircles(circles, lwd=lwd)
+               .drawarrows(arrows, lwd=lwd)
+               .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
+               next
+            }
+
+            # F11 to show session info
+
+            if (identical(click, "F11")) {
+               if (sum(session.seqsplayed) <= 1) {
+                  .texttop(.text("toofewseqsplayed"), sleep=1.5)
+                  .texttop(texttop)
+                  next
+               }
+               session.playtime <- round(proc.time()[[3]] - session.time.start)
+               .sessiongraph(session.seqsplayed, session.mean.scores, session.playtime, lwd)
+               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+               .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
+               .drawcircles(circles, lwd=lwd)
+               .drawarrows(arrows, lwd=lwd)
+               .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
+               next
+            }
+
+            # F12 to show session history graph
+
+            if (identical(click, "F12")) {
+               player.file <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "sessions", paste0(player, ".rds"))
+               if (file.exists(player.file)) {
+                  session.playtime <- round(proc.time()[[3]] - session.time.start)
+                  .historygraph(player, session.date.start, session.playtime, sum(session.seqsplayed), lwd)
+               } else {
+                  .texttop(.text("nosessionhistory"), sleep=1.5)
+                  .texttop(texttop)
+                  next
+               }
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                .drawcircles(circles, lwd=lwd)
@@ -2327,9 +2477,9 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # F12 to toggle verbose mode on/off
+            # ctrl-v to toggle verbose mode on/off
 
-            if (identical(click, "F12")) {
+            if (identical(click, "ctrl-V")) {
                verbose <- !verbose
                if (verbose) {
                   eval(expr=switch1)
@@ -2374,40 +2524,6 @@ play <- function(lang="en", sfpath="", ...) {
                if (verbose)
                   print(pos)
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
-               next
-            }
-
-            # \ (or #) to switch into play mode (or back to add mode)
-
-            if (identical(click, "\\") || identical(click, "#")) {
-               sub$moves <- sub$moves[seq_len(i-1),,drop=FALSE]
-               if (mode == "play") {
-                  mode <- "add"
-                  .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
-                  next
-               }
-               if (!sfrun) {
-                  .texttop(.text("noplaymode"), sleep=1)
-                  .texttop(texttop)
-                  next
-               }
-               mode <- "play"
-               timed <- FALSE
-               fen <- .genfen(pos, flip, sidetoplay, i)
-               res.sf <- .sf.eval(sfproc, sfrun, ifelse(flip, ifelse(sidetoplay=="b", depth1, depth3), ifelse(sidetoplay=="w", depth1, depth3)), multipv1, fen, sidetoplay, verbose)
-               evalval  <- res.sf$eval
-               bestmove <- res.sf$bestmove
-               matetype <- res.sf$matetype
-               sfproc   <- res.sf$sfproc
-               sfrun    <- res.sf$sfrun
-               .texttop(" ")
-               .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
-               if (nrow(circles) >= 1L || nrow(arrows) >= 1L || nrow(harrows) >= 1L) {
-                  .rmannot(pos, circles, rbind(arrows, harrows), flip)
-                  circles <- matrix(nrow=0, ncol=2)
-                  arrows  <- matrix(nrow=0, ncol=4)
-                  harrows <- matrix(nrow=0, ncol=4)
-               }
                next
             }
 
@@ -2675,6 +2791,11 @@ play <- function(lang="en", sfpath="", ...) {
                   sub$player[[player]] <- rbind(sub$player[[player]], tmp)
                }
 
+               # increase session.seqsplayed and compute session.mean.scores
+
+               session.seqsplayed[session.length] <- session.seqsplayed[session.length] + 1
+               session.mean.scores[[session.length]] <- c(session.mean.scores[[session.length]], mean(scores.all, na.rm=TRUE))
+
                if (showgraph) {
                   .scoregraph(sub$player[[player]], lwd=lwd)
                   #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
@@ -2691,8 +2812,8 @@ play <- function(lang="en", sfpath="", ...) {
 
                      click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=function(key) return(key))
 
-                     if (is.numeric(click)) {
-                        if (identical(click[3], 2)) {
+                     if (is.numeric(click)) { # middle button repeats the sequence
+                        if (identical(click[3], 1)) {
                            .texttop(.text("replast"), sleep=0.75)
                            replast <- TRUE
                            filename <- seqname

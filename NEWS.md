@@ -1,4 +1,4 @@
-# chesstrainer 0.9-65 (2025-07-05)
+# chesstrainer 0.9-66 (2025-07-27)
 
 - can play en passant
 - can promote pawns
@@ -30,6 +30,8 @@
 - checks now whether a move is legal
 - show visually when a king is in check
 - the `<g>` key shows an evaluation plot in play mode
+- allow selection based on RMSSD
+- keep track of session history
 
 # chesstrainer 0.1-0 (2024-12-17)
 
