@@ -64,7 +64,7 @@
 
       resp <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=function(key) return(key))
 
-      if (identical(resp, "\r") || identical(resp, "q") || identical(resp, "\033") || identical(resp, "ctrl-["))
+      if (identical(resp, "\r") || identical(resp, "q") || identical(resp, "\033") || identical(resp, "ctrl-[") || identical(resp, "F12"))
          break
 
       if (identical(resp, "Right") || identical(resp, "Left")) {

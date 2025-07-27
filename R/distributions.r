@@ -47,7 +47,7 @@
 
    # histogram of 'rmssd'
    if (length(c(na.omit(rmssd))) >= 2L) {
-      hist(rmssd, breaks="FD", las=1, col.axis=col.top, col.lab=col.top, col.main=col.fg,
+      hist(rmssd, breaks=20, las=1, col.axis=col.top, col.lab=col.top, col.main=col.fg,
            xlab=.text("rmssd"), col=col.square.d, border=col.square.l, main=paste0("Histogram: ", .text("rmssd")))
    } else {
       plot(NA, xlim=c(0,1), ylim=c(0,1), xlab="", ylab="", xaxt="n", yaxt="n", bty="n")
