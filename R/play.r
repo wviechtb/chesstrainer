@@ -1067,10 +1067,18 @@ play <- function(lang="en", sfpath="", ...) {
                eval(expr=switch1)
                .texttop(.text("saveseq"))
                seqident <- sapply(dat.all, function(x) identical(sub$moves[1:5], x$moves[1:5]))
-               if (any(seqident)) {
+               if (any(seqident))
                   cat(.text("seqexists", files.all[which(seqident)[1]]))
-                  cat(.text("addmoves"))
-                  next
+               # if there are circles/arrows at the end of a sequence, save these to the sequence file (as symbolend)
+               circlesvar <- ""
+               arrowsvar  <- ""
+               if (nrow(circles) >= 1L)
+                  circlesvar <- paste0(apply(circles, 1, function(x) paste0("(",x[1],",",x[2],")")), collapse=";")
+               if (nrow(arrows) >= 1L)
+                  arrowsvar <- paste0(apply(arrows, 1, function(x) paste0("(",x[1],",",x[2],",",x[3],",",x[4],")")), collapse=";")
+               if (nrow(circles) >= 1L || nrow(arrows) >= 1L) {
+                  symbolend <- data.frame(circlesvar, arrowsvar)
+                  sub$symbolend <- symbolend
                }
                filename <- readline(prompt=.text("filename"))
                if (identical(filename, "")) {
@@ -2814,6 +2822,8 @@ play <- function(lang="en", sfpath="", ...) {
 
                playsound(system.file("sounds", "complete.ogg", package="chesstrainer"), volume=volume)
 
+               # show end comment (either default or commentend)
+
                if (is.null(sub$commentend)) {
                   if (mistake) {
                      .texttop(.text("nextseq"))
@@ -2824,6 +2834,15 @@ play <- function(lang="en", sfpath="", ...) {
                   .texttop(sub$commentend)
                   if (!wait)
                      .waitforclick()
+               }
+
+               # show symbolend if it is not NULL
+
+               if (!is.null(sub$symbolend)) {
+                  circles <- .parseannot(sub$symbolend$circles, cols=2)
+                  arrows  <- .parseannot(sub$symbolend$arrows, cols=4)
+                  .drawcircles(circles, lwd=lwd)
+                  .drawarrows(arrows, lwd=lwd)
                }
 
                lastseq <- seqname
@@ -2871,22 +2890,24 @@ play <- function(lang="en", sfpath="", ...) {
 
                      click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=function(key) return(key))
 
-                     if (is.numeric(click)) { # middle button repeats the sequence
-                        if (identical(click[3], 1)) {
-                           .texttop(.text("replast"), sleep=0.75)
-                           replast <- TRUE
-                           filename <- seqname
-                        }
+                     if (is.numeric(click) && identical(click[3], 0)) # left button goes to next sequence
+                        break
+
+                     if (is.numeric(click) && identical(click[3], 1)) { # middle button repeats the sequence
+                        .texttop(.text("replast"), sleep=0.75)
+                        replast <- TRUE
+                        filename <- seqname
                         break
                      }
 
-                     if (identical(click, "n")) {
+                     if (identical(click, "n")) { # n goes to next sequence without saving
                         dobreak <- TRUE
                         break
                      }
 
-                     if (identical(click, "a") || identical(click, "A")) {
+                     if (identical(click, "a") || identical(click, "A") || (is.numeric(click) && identical(click[3], 2))) { # a/A and right mouse button goes to add mode
                         saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
+                        .rmannot(pos, circles, rbind(arrows, harrows), flip)
                         oldmode <- "test"
                         mode <- "add"
                         sub$player <- NULL
@@ -2915,6 +2936,7 @@ play <- function(lang="en", sfpath="", ...) {
 
                      if (identical(click, "\\") || identical(click, "#")) {
                         saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
+                        .rmannot(pos, circles, rbind(arrows, harrows), flip)
                         sub$moves <- sub$moves[seq_len(i),,drop=FALSE]
                         oldmode <- "test"
                         mode <- "play"
@@ -2998,10 +3020,12 @@ play <- function(lang="en", sfpath="", ...) {
                         .scoregraph(sub$player[[player]], lwd=lwd)
                         #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                         .redrawpos(pos, flip=flip)
+                        .drawcircles(circles, lwd=lwd)
+                        .drawarrows(arrows, lwd=lwd)
                         #.draweval(sub$moves$eval[i], flip=flip, eval=eval, evalsteps=evalsteps)
                      }
 
-                     if (identical(click, "F12")) {
+                     if (identical(click, "ctrl-V")) {
                         eval(expr=switch1)
                         .printverbose(selected, seqno, filename, lastseq, flip, useflip, replast, oldmode, i, seqname, seqnum, score, played, totalmoves, show, comment, bestmove, evalval, texttop, scoreadd, sidetoplay, givehint1, givehint2, mistake, timetotal, movesplayed, movestoplay, drawcircles, drawarrows, showstartcom, pos)
                         eval(expr=switch2)

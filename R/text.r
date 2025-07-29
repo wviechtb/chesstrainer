@@ -130,14 +130,8 @@
 
    if (x == "seqexists") {
       return(switch(lang,
-                    de = paste0("Sequenz existiert bereits! (", arg, ")\n"),
-                         paste0("Sequence exists already! (", arg, ")\n")
-   ))}
-
-   if (x == "addmoves") {
-      return(switch(lang,
-                    de = "F\U000000FCge der Sequenz weitere Z\U000000FCge hinzu.",
-                         "Add more moves to the sequence."
+                    de = paste0("Sequenz mit den gleichen Z\U000000FCgen existiert bereits!\n(", arg, ")\n"),
+                         paste0("Sequence with the same moves exists already!\n(", arg, ")\n")
    ))}
 
    if (x == "filename") {
