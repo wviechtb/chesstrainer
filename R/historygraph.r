@@ -26,7 +26,7 @@
 
    # compute the week and month totals
    week  <- format(agg.day$day, "%Y-%W")
-   month <- format(agg.day$day, "%Y-%m")
+   month <- as.Date(paste0(format(agg.day$day, "%Y-%m"), "-01"))
    agg.week  <- aggregate(agg.day[c("playtime", "seqsplayed")], by=list(week=week), FUN=sum)
    agg.month <- aggregate(agg.day[c("playtime", "seqsplayed")], by=list(month=month), FUN=sum)
 
