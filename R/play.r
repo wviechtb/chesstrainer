@@ -1202,7 +1202,6 @@ play <- function(lang="en", sfpath="", ...) {
                }
 
                while (i <= nrow(sub$moves)) {
-
                   if (nrow(circles) >= 1L || nrow(arrows) >= 1L) {
                      .rmannot(pos, circles, arrows, flip)
                      circles <- matrix(nrow=0, ncol=2)

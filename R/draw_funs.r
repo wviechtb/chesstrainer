@@ -448,7 +448,8 @@
 
    if (flip) {
 
-      if (draw) .drawpiece(x2, y2, piece)
+      if (draw)
+         .drawpiece(x2, y2, piece)
 
       iscapture <- pos[9-x2,9-y2] != "" || isenpassant != ""
 
@@ -471,7 +472,8 @@
 
    } else {
 
-      if (draw) .drawpiece(x2, y2, piece)
+      if (draw)
+         .drawpiece(x2, y2, piece)
 
       iscapture <- pos[x2,y2] != "" || isenpassant != ""
 

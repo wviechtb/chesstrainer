@@ -21,60 +21,107 @@
    col.help.border <- .get("col.help.border")
 
    # collapse sessions that were played on the same day
-   days  <- as.Date(dat$date.start, format="%Y-%m-%d")
-   agg   <- aggregate(dat[c("playtime", "seqsplayed")], by=list(day=days), FUN=sum)
+   day <- as.Date(dat$date.start, format="%Y-%m-%d")
+   agg.day <- aggregate(dat[c("playtime", "seqsplayed")], by=list(day=day), FUN=sum)
+
+   # compute the week and month totals
+   week  <- format(agg.day$day, "%Y-%W")
+   month <- format(agg.day$day, "%Y-%m")
+   agg.week  <- aggregate(agg.day[c("playtime", "seqsplayed")], by=list(week=week), FUN=sum)
+   agg.month <- aggregate(agg.day[c("playtime", "seqsplayed")], by=list(month=month), FUN=sum)
+
+   # figure out start date of each week in agg.week
+   agg.week$year <- substr(agg.week$week, 1, 4)
+   agg.week$weeknum <- as.integer(substr(agg.week$week, 6, 7))
+   agg.week$week <- as.Date(paste0(agg.week$year, "-01-01")) + (agg.week$weeknum * 7) - as.integer(format(as.Date(paste0(agg.week$year, "-01-01")), "%u")) + 1
 
    # compute totals
-   total.playtime  <- sum(agg$playtime)
-   total.seqsplayed <- sum(agg$seqsplayed)
-
-   # round playtime
-   agg$playtime <- round(agg$playtime / 60, 1)
-
-   # make the line width a function of the number of lines
-   plotlwd <- max(0.2, 5 - 0.02*nrow(agg))
+   total.playtime  <- sum(agg.day$playtime)
+   total.seqsplayed <- sum(agg.day$seqsplayed)
 
    rect(1+0.2, 1+0.2, 9-0.2, 9-0.2, col=col.bg, border=col.help.border, lwd=lwd+3)
 
-   plot.playtime <- function() {
+   plot.playtime <- function(x) {
+      # make the line width a function of the number of lines
+      plotlwd <- max(0.2, 5 - 0.02*nrow(x))
+      x$playtime <- round(x$playtime / 60, 1)
       rect(1+0.4, 1+0.4, 9-0.4, 9-0.4, col=col.bg, border=NA)
       par(new=TRUE, mar=rep(11,4))
-      plot(agg$day, agg$playtime, type="h", lwd=plotlwd, col=col.square.l, ylim=c(0, max(agg$playtime)),
-           xlab=.text("days", FALSE), ylab=.text("historyplaytime"), bty="l", las=1,
+      plot(x[[1]], x$playtime, type="h", lwd=plotlwd, col=col.square.l, ylim=c(0, max(x$playtime)),
+           xlab=.text(timeframe, FALSE), ylab=.text("historyplaytime"), bty="l", las=1,
            col.axis=col.top, col.lab=col.top, col.main=col.fg)
       par(mar=rep(5.2,4), usr=c(1,9,1,9))
       .texttop(.text("totalplaytime", .totaltime(total.playtime)))
-      return("playtime")
    }
 
-   plot.seqsplayed <- function() {
+   plot.seqsplayed <- function(x) {
+      # make the line width a function of the number of lines
+      plotlwd <- max(0.2, 5 - 0.02*nrow(x))
       rect(1+0.4, 1+0.4, 9-0.4, 9-0.4, col=col.bg, border=NA)
       par(new=TRUE, mar=rep(11,4))
-      plot(agg$day, agg$seqsplayed, type="h", lwd=plotlwd, col=col.square.l, ylim=c(0, max(agg$seqsplayed)),
-           xlab=.text("days", FALSE), ylab=.text("historyseqsplayed"), bty="l", las=1,
+      plot(x[[1]], x$seqsplayed, type="h", lwd=plotlwd, col=col.square.l, ylim=c(0, max(x$seqsplayed)),
+           xlab=.text(timeframe, FALSE), ylab=.text("historyseqsplayed"), bty="l", las=1,
            col.axis=col.top, col.lab=col.top, col.main=col.fg)
       par(mar=rep(5.2,4), usr=c(1,9,1,9))
       .texttop(.text("totalseqsplayed", total.seqsplayed))
-      return("seqsplayed")
    }
 
-   whichplot <- plot.playtime()
+   # defaults
+   timeframe <- "day"
+   whichplot <- "playtime"
+   agg <- agg.day
 
    while (TRUE) {
+
+      if (whichplot == "playtime")
+         plot.playtime(agg)
+
+      if (whichplot == "seqsplayed")
+         plot.seqsplayed(agg)
 
       resp <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=function(key) return(key))
 
       if (identical(resp, "\r") || identical(resp, "q") || identical(resp, "\033") || identical(resp, "ctrl-[") || identical(resp, "F12"))
          break
 
-      if (identical(resp, "Right") || identical(resp, "Left")) {
+      if (identical(resp, "Down") || identical(resp, "Up")) {
          if (whichplot == "playtime") {
-            whichplot <- plot.seqsplayed()
+            whichplot <- "seqsplayed"
             next
          }
          if (whichplot == "seqsplayed") {
-            whichplot <- plot.playtime()
+            whichplot <- "playtime"
             next
+         }
+      }
+
+      if (identical(resp, "Right")) {
+         if (timeframe == "day" && nrow(agg.week) > 1L) {
+            timeframe <- "week"
+            agg <- agg.week
+         }
+         if (timeframe == "week" && nrow(agg.month) > 1L) {
+            timeframe <- "month"
+            agg <- agg.month
+         }
+         if (timeframe == "month" && nrow(agg.day) > 1L) {
+            timeframe <- "day"
+            agg <- agg.day
+         }
+      }
+
+      if (identical(resp, "Left")) {
+         if (timeframe == "day" && nrow(agg.month) > 1L) {
+            timeframe <- "month"
+            agg <- agg.month
+         }
+         if (timeframe == "week" && nrow(agg.day) > 1L) {
+            timeframe <- "day"
+            agg <- agg.day
+         }
+         if (timeframe == "month" && nrow(agg.week) > 1L) {
+            timeframe <- "week"
+            agg <- agg.week
          }
       }
 

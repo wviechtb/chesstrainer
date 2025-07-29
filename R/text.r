@@ -164,10 +164,22 @@
                          "Played"
    ))}
 
-   if (x == "days") {
+   if (x == "day") {
       return(switch(lang,
                     de = paste0("Tag", ifelse(arg, "e", "")),
                          paste0("day", ifelse(arg, "s", ""))
+   ))}
+
+   if (x == "week") {
+      return(switch(lang,
+                    de = paste0("Woche", ifelse(arg, "n", "")),
+                         paste0("week", ifelse(arg, "s", ""))
+   ))}
+
+   if (x == "month") {
+      return(switch(lang,
+                    de = paste0("Monat", ifelse(arg, "e", "")),
+                         paste0("month", ifelse(arg, "s", ""))
    ))}
 
    if (x == "hours") {
