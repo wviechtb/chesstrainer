@@ -844,7 +844,7 @@
 
 .texttop <- function(txt, sleep=0, left=FALSE) {
 
-   if (length(txt) == 0L)
+   if (length(txt) == 0L || is.na(txt))
       return()
 
    xleft   <- 0

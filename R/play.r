@@ -419,7 +419,7 @@ play <- function(lang="en", sfpath="", ...) {
                   "ctrl-[", "\033", "a", "G", "R", "ctrl-C", "ctrl-S", "ctrl-V",
                   "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12")
    keys.add  <- c("f", "z", "c", "H", "0", "s")
-   keys.test <- c("o", "r", "g", "A", "ctrl-D", "Right", "Left", "u", "1")
+   keys.test <- c("o", "r", "g", "A", "ctrl-D", "Right", "Left", "u", "1", "2")
    keys.play <- c("H", "g")
    keys.add  <- c(keys, keys.add)
    keys.test <- c(keys, keys.test)
@@ -1177,7 +1177,7 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # 1 to restart sequence (only in test mode)
+            # 1 to restart a sequence (only in test mode)
 
             if (mode == "test" && identical(click, "1")) {
                replast <- TRUE
@@ -1185,6 +1185,52 @@ play <- function(lang="en", sfpath="", ...) {
                run.rnd <- FALSE
                input <- FALSE
                next
+            }
+
+            # 2 to go to the end of a sequence (only in test mode)
+
+            if (mode == "test" && identical(click, "2")) {
+
+               if (i > nrow(sub$moves)) {
+                  .texttop(.text("waslastmove"), sleep=0.75)
+                  if (is.null(sub$commentend)) {
+                     .texttop(.texttop(sub$moves$comment[i-1]))
+                  } else {
+                     .texttop(sub$commentend)
+                  }
+                  next
+               }
+
+               while (i <= nrow(sub$moves)) {
+
+                  if (nrow(circles) >= 1L || nrow(arrows) >= 1L) {
+                     .rmannot(pos, circles, arrows, flip)
+                     circles <- matrix(nrow=0, ncol=2)
+                     arrows  <- matrix(nrow=0, ncol=4)
+                  }
+                  pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE, volume=volume, verbose=verbose)
+                  sub$moves$move[i] <- attr(pos,"move")
+                  .draweval(sub$moves$eval[i], sub$moves$eval[i-1], flip=flip, eval=eval, evalsteps=evalsteps)
+                  sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
+                  if (timed) {
+                     .drawtimer(movestoplay, movesplayed, timetotal, timepermove)
+                  } else {
+                     .drawsideindicator(sidetoplay, flip)
+                  }
+                  i <- i + 1
+                  .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
+                  if (identical(sub$moves$comment[i], "") && !identical(sub$moves$comment[i-1], "")) {
+                     texttop <- .texttop(sub$moves$comment[i-1])
+                  } else {
+                     texttop <- .texttop(sub$moves$comment[i])
+                  }
+               }
+
+               givehint1 <- FALSE
+               givehint2 <- FALSE
+
+               next
+
             }
 
             # R to toggle repeating a sequence if a mistake was made
@@ -2616,6 +2662,11 @@ play <- function(lang="en", sfpath="", ...) {
             next
          }
 
+         # if using <right> all the way to the end of a sequence, then i > nrow(sub$moves) which causes an error when trying to move a piece
+
+         if (mode == "test" && i > nrow(sub$moves))
+            next
+
          drawcircles  <- TRUE
          drawarrows   <- TRUE
          showstartcom <- TRUE
@@ -2703,7 +2754,7 @@ play <- function(lang="en", sfpath="", ...) {
 
             # if in test mode, check that the move is correct (and also check that a promotion is made correctly)
 
-            if (all(c(click1.x==sub$moves$x1[i], click1.y==sub$moves$y1[i], click2.x==sub$moves$x2[i], click2.y==sub$moves$y2[i]))) {
+            if (all(c(click1.x == sub$moves$x1[i], click1.y == sub$moves$y1[i], click2.x == sub$moves$x2[i], click2.y == sub$moves$y2[i]))) {
                tmp <- .updateboard(pos, move=data.frame(click1.x, click1.y, click2.x, click2.y, sub$moves[i,5:6]), flip=flip, autoprom=FALSE, volume=volume, verbose=verbose)
                if (!identical(tmp, "prommistake")) {
                   movesplayed <- movesplayed + 1
