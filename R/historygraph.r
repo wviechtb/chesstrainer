@@ -21,7 +21,7 @@
    col.help.border <- .get("col.help.border")
 
    # collapse sessions that were played on the same day
-   day <- as.Date(dat$date.start, format="%Y-%m-%d")
+   day <- as.Date(format(dat$date.start, format="%Y-%m-%d"))
    dat.day <- aggregate(dat[c("playtime", "seqsplayed")], by=list(day=day), FUN=sum)
 
    # compute the week and month totals
@@ -106,6 +106,11 @@
                agg <- dat.month
          }
          if (click[[3]] == 0) { # left mouse button to set first and second zoom point
+            # but if click is outside of the graph (or more precisely, the board), then exit
+            x <- grconvertX(click[[1]], from="ndc", to="user")
+            y <- grconvertY(click[[2]], from="ndc", to="user")
+            if (x < 1 || x > 9 || y < 1 || y > 9)
+               break
             par(mar=rep(11,4), usr=usr)
             x1 <- grconvertX(click[[1]], from="ndc", to="user")
             if (x1 < usr[1])
@@ -150,14 +155,17 @@
          if (timeframe == "day" && nrow(dat.week) > 1L) {
             timeframe <- "week"
             agg <- dat.week
+            next
          }
          if (timeframe == "week" && nrow(dat.month) > 1L) {
             timeframe <- "month"
             agg <- dat.month
+            next
          }
          if (timeframe == "month" && nrow(dat.day) > 1L) {
             timeframe <- "day"
             agg <- dat.day
+            next
          }
       }
 
@@ -165,14 +173,17 @@
          if (timeframe == "day" && nrow(dat.month) > 1L) {
             timeframe <- "month"
             agg <- dat.month
+            next
          }
          if (timeframe == "week" && nrow(dat.day) > 1L) {
             timeframe <- "day"
             agg <- dat.day
+            next
          }
          if (timeframe == "month" && nrow(dat.week) > 1L) {
             timeframe <- "week"
             agg <- dat.week
+            next
          }
       }
 
