@@ -22,22 +22,22 @@
 
    # collapse sessions that were played on the same day
    day <- as.Date(dat$date.start, format="%Y-%m-%d")
-   agg.day <- aggregate(dat[c("playtime", "seqsplayed")], by=list(day=day), FUN=sum)
+   dat.day <- aggregate(dat[c("playtime", "seqsplayed")], by=list(day=day), FUN=sum)
 
    # compute the week and month totals
-   week  <- format(agg.day$day, "%Y-%W")
-   month <- as.Date(paste0(format(agg.day$day, "%Y-%m"), "-01"))
-   agg.week  <- aggregate(agg.day[c("playtime", "seqsplayed")], by=list(week=week), FUN=sum)
-   agg.month <- aggregate(agg.day[c("playtime", "seqsplayed")], by=list(month=month), FUN=sum)
+   week  <- format(dat.day$day, "%Y-%W")
+   month <- as.Date(paste0(format(dat.day$day, "%Y-%m"), "-01"))
+   dat.week  <- aggregate(dat.day[c("playtime", "seqsplayed")], by=list(week=week), FUN=sum)
+   dat.month <- aggregate(dat.day[c("playtime", "seqsplayed")], by=list(month=month), FUN=sum)
 
-   # figure out start date of each week in agg.week
-   agg.week$year <- substr(agg.week$week, 1, 4)
-   agg.week$weeknum <- as.integer(substr(agg.week$week, 6, 7))
-   agg.week$week <- as.Date(paste0(agg.week$year, "-01-01")) + (agg.week$weeknum * 7) - as.integer(format(as.Date(paste0(agg.week$year, "-01-01")), "%u")) + 1
+   # figure out start date of each week in dat.week
+   dat.week$year <- substr(dat.week$week, 1, 4)
+   dat.week$weeknum <- as.integer(substr(dat.week$week, 6, 7))
+   dat.week$week <- as.Date(paste0(dat.week$year, "-01-01")) + (dat.week$weeknum * 7) - as.integer(format(as.Date(paste0(dat.week$year, "-01-01")), "%u")) + 1
 
    # compute totals
-   total.playtime  <- sum(agg.day$playtime)
-   total.seqsplayed <- sum(agg.day$seqsplayed)
+   total.playtime  <- sum(dat.day$playtime)
+   total.seqsplayed <- sum(dat.day$seqsplayed)
 
    rect(1+0.2, 1+0.2, 9-0.2, 9-0.2, col=col.bg, border=col.help.border, lwd=lwd+3)
 
@@ -69,7 +69,7 @@
    # defaults
    timeframe <- "day"
    whichplot <- "playtime"
-   agg <- agg.day
+   agg <- dat.day
 
    while (TRUE) {
 
@@ -96,32 +96,32 @@
       }
 
       if (identical(resp, "Right")) {
-         if (timeframe == "day" && nrow(agg.week) > 1L) {
+         if (timeframe == "day" && nrow(dat.week) > 1L) {
             timeframe <- "week"
-            agg <- agg.week
+            agg <- dat.week
          }
-         if (timeframe == "week" && nrow(agg.month) > 1L) {
+         if (timeframe == "week" && nrow(dat.month) > 1L) {
             timeframe <- "month"
-            agg <- agg.month
+            agg <- dat.month
          }
-         if (timeframe == "month" && nrow(agg.day) > 1L) {
+         if (timeframe == "month" && nrow(dat.day) > 1L) {
             timeframe <- "day"
-            agg <- agg.day
+            agg <- dat.day
          }
       }
 
       if (identical(resp, "Left")) {
-         if (timeframe == "day" && nrow(agg.month) > 1L) {
+         if (timeframe == "day" && nrow(dat.month) > 1L) {
             timeframe <- "month"
-            agg <- agg.month
+            agg <- dat.month
          }
-         if (timeframe == "week" && nrow(agg.day) > 1L) {
+         if (timeframe == "week" && nrow(dat.day) > 1L) {
             timeframe <- "day"
-            agg <- agg.day
+            agg <- dat.day
          }
-         if (timeframe == "month" && nrow(agg.week) > 1L) {
+         if (timeframe == "month" && nrow(dat.week) > 1L) {
             timeframe <- "week"
-            agg <- agg.week
+            agg <- dat.week
          }
       }
 

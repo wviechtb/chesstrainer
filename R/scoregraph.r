@@ -1,5 +1,8 @@
 .scoregraph <- function(x, lwd) {
 
+   if (x$played[1] == 1)
+      x <- rbind(data.frame(date=NA, played=0, score=100), x)
+
    rect(1+0.2, 1+0.2, 9-0.2, 9-0.2, col=.get("col.bg"), border=.get("col.help.border"), lwd=lwd+3)
 
    par(new=TRUE, mar=rep(11,4))

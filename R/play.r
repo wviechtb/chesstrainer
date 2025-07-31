@@ -2843,6 +2843,8 @@ play <- function(lang="en", sfpath="", ...) {
                   arrows  <- .parseannot(sub$symbolend$arrows, cols=4)
                   .drawcircles(circles, lwd=lwd)
                   .drawarrows(arrows, lwd=lwd)
+                  if (!wait)
+                     .waitforclick()
                }
 
                lastseq <- seqname
