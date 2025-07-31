@@ -56,29 +56,29 @@
 
    while (TRUE) {
 
-      resp <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=function(key) return(key))
+      click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=function(key) return(key))
 
-      if (is.numeric(resp)) {
+      if (is.numeric(click)) {
 
-         x <- grconvertX(resp[[1]], from="ndc", to="user")
-         y <- grconvertX(resp[[2]], from="ndc", to="user")
+         x <- grconvertX(click[[1]], from="ndc", to="user")
+         y <- grconvertX(click[[2]], from="ndc", to="user")
 
          if (x >= 1.5 && x <= 8) {
-            resp <- which(y < ypos.modes + dist & y > ypos.modes - dist)
-            if (length(resp) == 1L) {
-               selmode <- selmodes[resp]
+            click <- which(y < ypos.modes + dist & y > ypos.modes - dist)
+            if (length(click) == 1L) {
+               selmode <- selmodes[click]
                break
             }
          }
 
       } else {
 
-         if (identical(resp, "\r") || identical(resp, "q") || identical(resp, "\033") || identical(resp, "ctrl-["))
+         if (identical(click, "\r") || identical(click, "q") || identical(click, "\033") || identical(click, "ctrl-["))
             break
 
-         if (is.element(resp, 1:length(selmodes))) {
-            resp <- as.numeric(resp)
-            selmode <- selmodes[resp]
+         if (is.element(click, 1:length(selmodes))) {
+            click <- as.numeric(click)
+            selmode <- selmodes[click]
             break
          }
 
@@ -89,7 +89,7 @@
    if (selmodes[oldmode] != selmode) {
       rect(1.5, ypos.modes[oldmode]-dist, 8, ypos.modes[oldmode]+dist, col=.get("col.bg"), border=NA)
       text(1+0.5, ypos.modes[oldmode], txt[oldmode+2], pos=4, cex=cex, family=.get("font.mono"), col=.get("col.help"))
-      text(1+0.5, ypos.modes[resp], txt[resp+2], pos=4, cex=cex, family=.get("font.mono"), font=2, col=.get("col.help"))
+      text(1+0.5, ypos.modes[click], txt[click+2], pos=4, cex=cex, family=.get("font.mono"), font=2, col=.get("col.help"))
       Sys.sleep(1)
    }
 

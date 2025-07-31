@@ -1,5 +1,5 @@
 .waitforclick <- function()
-   getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button, x, y) return(""), onKeybd=function(key) return(""))
+   getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button,x,y) return(""), onKeybd=function(key) return(""))
 
 .print <- function(x) {
    n <- length(x)
