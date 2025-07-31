@@ -108,12 +108,25 @@
          if (click[[3]] == 0) { # left mouse button to set first and second zoom point
             par(mar=rep(11,4), usr=usr)
             x1 <- grconvertX(click[[1]], from="ndc", to="user")
+            if (x1 < usr[1])
+               x1 <- usr[1]
+            if (x1 > usr[2])
+               x1 <- usr[2]
+            segments(x1, 0, x1, usr[4], lty="dotted", col=col.top)
             par(mar=rep(5.2,4), usr=c(1,9,1,9))
             click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=function(key) return(key))
             if (!is.numeric(click))
                next
             par(mar=rep(11,4), usr=usr)
             x2 <- grconvertX(click[[1]], from="ndc", to="user")
+            if (x2 < usr[1])
+               x2 <- usr[1]
+            if (x2 > usr[2])
+               x2 <- usr[2]
+            segments(x2, 0, x2, usr[4], lty="dotted", col=col.top)
+            segments(x1, 0, x2, 0, lty="dotted", col=col.top)
+            segments(x1, usr[4], x2, usr[4], lty="dotted", col=col.top)
+            Sys.sleep(0.5)
             par(mar=rep(5.2,4), usr=c(1,9,1,9))
             sel <- agg[[1]] >= min(x1,x2) & agg[[1]] <= max(x1,x2)
             if (sum(sel) == 0L)
