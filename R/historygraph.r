@@ -37,6 +37,8 @@
 
    rect(1+0.2, 1+0.2, 9-0.2, 9-0.2, col=col.bg, border=col.help.border, lwd=lwd+3)
 
+   usr <- NULL
+
    plot.playtime <- function(x) {
       # make the line width a function of the number of lines
       plotlwd <- max(0.2, 5 - 0.02*nrow(x))
@@ -107,9 +109,9 @@
          }
          if (click[[3]] == 0) { # left mouse button to set first and second zoom point
             # but if click is outside of the graph (or more precisely, the board), then exit
-            x <- grconvertX(click[[1]], from="ndc", to="user")
-            y <- grconvertY(click[[2]], from="ndc", to="user")
-            if (x < 1 || x > 9 || y < 1 || y > 9)
+            x1 <- grconvertX(click[[1]], from="ndc", to="user")
+            y1 <- grconvertY(click[[2]], from="ndc", to="user")
+            if (x1 < 1 || x1 > 9 || y1 < 1 || y1 > 9)
                break
             par(mar=rep(11,4), usr=usr)
             x1 <- grconvertX(click[[1]], from="ndc", to="user")
@@ -136,7 +138,7 @@
             sel <- agg[[1]] >= min(x1,x2) & agg[[1]] <= max(x1,x2)
             if (sum(sel) == 0L)
                next
-            agg <- agg[agg[[1]] >= min(x1,x2) & agg[[1]] <= max(x1,x2),]
+            agg <- agg[sel,]
          }
       }
 

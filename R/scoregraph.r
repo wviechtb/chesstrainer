@@ -1,26 +1,94 @@
-.scoregraph <- function(x, lwd) {
+.scoregraph <- function(dat, lwd) {
 
-   if (x$played[1] == 1)
-      x <- rbind(data.frame(date=NA, played=0, score=100), x)
+   if (dat$played[1] == 1)
+      dat <- rbind(data.frame(date=NA, played=0, score=100), dat)
 
-   rect(1+0.2, 1+0.2, 9-0.2, 9-0.2, col=.get("col.bg"), border=.get("col.help.border"), lwd=lwd+3)
+   x <- dat
 
-   par(new=TRUE, mar=rep(11,4))
+   col.top         <- .get("col.top")
+   col.fg          <- .get("col.fg")
+   col.bg          <- .get("col.bg")
+   col.square.l    <- .get("col.square.l")
+   col.square.d    <- .get("col.square.d")
+   col.help.border <- .get("col.help.border")
 
-   plot(NA, xlim=range(x$played), ylim=c(0,100), xlab="", ylab=.text("score"),
-        bty="l", las=1, col.axis=.get("col.top"), col.lab=.get("col.top"), xaxt="n")
-   axis(side=1, at=x$played, col.axis=.get("col.top"))
+   rect(1+0.2, 1+0.2, 9-0.2, 9-0.2, col=col.bg, border=col.help.border, lwd=lwd+3)
+
+   usr <- NULL
+
+   plot.scores <- function(x) {
+      rect(1+0.4, 1+0.4, 9-0.4, 9-0.4, col=col.bg, border=NA)
+      par(new=TRUE, mar=rep(11,4))
+      if (nrow(x) == 1L) {
+         xlim <- c(x$played-1, x$played+1)
+      } else {
+         xlim <- range(x$played)
+      }
+      plot(NA, xlim=xlim, ylim=c(0,100), xlab="", ylab=.text("score"),
+           bty="l", las=1, col.axis=col.top, col.lab=col.top, xaxt="n")
+      axis(side=1, at=x$played, col.axis=col.top)
+      points(x$played, x$score, type="o", pch=21, lwd=2, col=col.square.l, bg=col.square.d)
+      usr <<- par()$usr
+      par(mar=rep(5.2,4), usr=c(1,9,1,9))
+   }
+
+   while (TRUE) {
+
+      plot.scores(x)
+
+      click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=function(key) return(key))
+
+      if (identical(click, "\r") || identical(click, "q") || identical(click, "\033") || identical(click, "ctrl-[") || identical(click, "F12"))
+         break
+
+      if (is.numeric(click) && click[[3]] %in% c(0,2)) {
+         if (click[[3]] == 2) # right mouse button resets zoom
+            x <- dat
+         if (click[[3]] == 0) { # left mouse button to set first and second zoom point
+            # but if click is outside of the graph (or more precisely, the board), then exit
+            x1 <- grconvertX(click[[1]], from="ndc", to="user")
+            y1 <- grconvertY(click[[2]], from="ndc", to="user")
+            if (x1 < 1 || x1 > 9 || y1 < 1 || y1 > 9)
+               break
+            par(mar=rep(11,4), usr=usr)
+            x1 <- grconvertX(click[[1]], from="ndc", to="user")
+            if (x1 < usr[1])
+               x1 <- usr[1]
+            if (x1 > usr[2])
+               x1 <- usr[2]
+            segments(x1, 0, x1, usr[4], lty="dotted", col=col.top)
+            par(mar=rep(5.2,4), usr=c(1,9,1,9))
+            click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=function(key) return(key))
+            if (!is.numeric(click))
+               next
+            par(mar=rep(11,4), usr=usr)
+            x2 <- grconvertX(click[[1]], from="ndc", to="user")
+            if (x2 < usr[1])
+               x2 <- usr[1]
+            if (x2 > usr[2])
+               x2 <- usr[2]
+            segments(x2, 0, x2, usr[4], lty="dotted", col=col.top)
+            segments(x1, 0, x2, 0, lty="dotted", col=col.top)
+            segments(x1, usr[4], x2, usr[4], lty="dotted", col=col.top)
+            Sys.sleep(0.5)
+            par(mar=rep(5.2,4), usr=c(1,9,1,9))
+            sel <- dat$played >= min(x1,x2) & dat$played <= max(x1,x2)
+            if (sum(sel) == 0L)
+               next
+            x <- dat[sel,]
+         }
+      }
+
+   }
 
    #xpos <- axTicks(side=1)
    #segments(xpos, par("usr")[3], xpos, par("usr")[4], lty="dotted", col=.get("col.fg"))
    #ypos <- axTicks(side=2)
    #segments(par("usr")[1], ypos, par("usr")[2], ypos, lty="dotted", col=.get("col.fg"))
 
-   points(x$played, x$score, type="o", pch=21, lwd=2, col=.get("col.square.l"), bg=.get("col.square.d"))
+   par(new=FALSE)
 
-   par(new=FALSE, mar=rep(5.2,4))
-
-   .waitforclick()
+   #.waitforclick()
 
    #.erase(1, 1, 9, 9)
 

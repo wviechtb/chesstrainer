@@ -420,7 +420,7 @@ play <- function(lang="en", sfpath="", ...) {
                   "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12")
    keys.add  <- c("f", "z", "c", "H", "0", "s")
    keys.test <- c("o", "r", "g", "A", "ctrl-D", "Right", "Left", "u", "1", "2")
-   keys.play <- c("H", "g")
+   keys.play <- c("H", "g", "A")
    keys.add  <- c(keys, keys.add)
    keys.test <- c(keys, keys.test)
    keys.play <- c(keys, keys.play)
@@ -926,7 +926,10 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # \ (or #) to switch into play mode (or back to add mode)
+            # \ (or #) to switch into play mode (or back to add mode; can also do this with a/A)
+
+            if (mode == "play" && (identical(click, "a") || identical(click, "A")))
+               click <- "\\"
 
             if (identical(click, "\\") || identical(click, "#")) {
                sub$moves <- sub$moves[seq_len(i-1),,drop=FALSE]
@@ -3083,12 +3086,43 @@ play <- function(lang="en", sfpath="", ...) {
             comment <- ""
 
             if (mode == "play" && !identical(matetype, "none")) {
+
                playsound(system.file("sounds", "complete.ogg", package="chesstrainer"), volume=volume)
                .texttop(.text(matetype))
-               .waitforclick()
+
+               donext <- FALSE
+
+               while (TRUE) {
+
+                  click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=function(key) return(key))
+
+                  if (is.numeric(click) && identical(click[3], 0))
+                     break
+
+                  if (identical(click, "g")) {
+                     .evalgraph(sub$moves, lwd=lwd)
+                     .redrawpos(pos, flip=flip)
+                  }
+
+                  if (identical(click, "\\") || identical(click, "#") || identical(click, "a") || identical(click, "A") || (is.numeric(click) && identical(click[3], 2))) {
+                     sub$moves <- sub$moves[seq_len(i-1),,drop=FALSE]
+                     mode <- "add"
+                     .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
+                     .texttop(" ")
+                     donext <- TRUE
+                     break
+                  }
+
+               }
+
+               if (donext)
+                  next
+
+               #.waitforclick()
                run.rnd <- FALSE
                input <- FALSE
                next
+
             }
 
          }
