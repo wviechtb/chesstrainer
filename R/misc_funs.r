@@ -1,6 +1,15 @@
 .waitforclick <- function()
    getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button,x,y) return(""), onKeybd=function(key) return(""))
 
+.mousedownfun <- function(button,x,y) {
+   if (length(button) == 0L)
+      button <- 3
+   return(c(x,y,button))
+}
+
+.keyfun <- function(key)
+   return(key)
+
 .print <- function(x) {
    n <- length(x)
    for (i in 1:n) {

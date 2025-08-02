@@ -39,6 +39,16 @@
 
    usr <- NULL
 
+   xaxis <- function(x) {
+      if (timeframe == "day")
+         labs <- paste0(format(x, format="%b"), "\n", format(x, format="%d"))
+      if (timeframe == "week")
+         labs <- paste0(format(x, format="%b"), "\n", format(x, format="%d"))
+      if (timeframe == "month")
+         labs <- paste0(format(x, format="%b"), "\n", format(x, format="%Y"))
+      axis(side=1, at=x, labels=labs, col.axis=col.top, padj=0.5)
+   }
+
    plot.playtime <- function(x) {
       # make the line width a function of the number of lines
       plotlwd <- max(0.2, 5 - 0.02*nrow(x))
@@ -54,7 +64,8 @@
       plot(x[[1]], x$playtime, type="h", lwd=plotlwd, col=col.square.l,
            xlim=xlim, ylim=c(0, max(x$playtime)), bty="l", las=1,
            xlab=.text(timeframe, FALSE), ylab=.text("historyplaytime"),
-           col.axis=col.top, col.lab=col.top, col.main=col.fg)
+           col.axis=col.top, col.lab=col.top, col.main=col.fg, xaxt="n")
+      xaxis(x[[1]])
       usr <<- par()$usr
       par(mar=rep(5.2,4), usr=c(1,9,1,9))
       .texttop(.text("totalplaytime", .totaltime(total.playtime)))
@@ -74,7 +85,8 @@
       plot(x[[1]], x$seqsplayed, type="h", lwd=plotlwd, col=col.square.l,
            xlim=xlim, ylim=c(0, max(x$seqsplayed)), bty="l", las=1,
            xlab=.text(timeframe, FALSE), ylab=.text("historyseqsplayed"),
-           col.axis=col.top, col.lab=col.top, col.main=col.fg)
+           col.axis=col.top, col.lab=col.top, col.main=col.fg, xaxt="n")
+      xaxis(x[[1]])
       usr <<- par()$usr
       par(mar=rep(5.2,4), usr=c(1,9,1,9))
       .texttop(.text("totalseqsplayed", total.seqsplayed))
@@ -93,7 +105,7 @@
       if (whichplot == "seqsplayed")
          plot.seqsplayed(agg)
 
-      click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=function(key) return(key))
+      click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.mousedownfun, onKeybd=.keyfun)
 
       if (identical(click, "\r") || identical(click, "q") || identical(click, "\033") || identical(click, "ctrl-[") || identical(click, "F12"))
          break
@@ -121,7 +133,7 @@
                x1 <- usr[2]
             segments(x1, 0, x1, usr[4], lty="dotted", col=col.top)
             par(mar=rep(5.2,4), usr=c(1,9,1,9))
-            click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=function(key) return(key))
+            click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.mousedownfun, onKeybd=.keyfun)
             if (!is.numeric(click))
                next
             par(mar=rep(11,4), usr=usr)
@@ -153,7 +165,7 @@
          }
       }
 
-      if (identical(click, "Right")) {
+      if (identical(click, "Right") || (is.numeric(click) && click[[3]] == 3)) {
          if (timeframe == "day" && nrow(dat.week) > 1L) {
             timeframe <- "week"
             agg <- dat.week

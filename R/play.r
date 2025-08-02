@@ -599,7 +599,7 @@ play <- function(lang="en", sfpath="", ...) {
          probvals.selected[which(rmssd.selected == max(rmssd.selected[scores.selected != 0]))[1]] <- 100
       }
 
-      if (selmode == "sequential" && length(scores.selected) >= 1L) {
+      if (selmode == "sequential" && length(scores.selected) >= 1L && !replast) {
          while (scores.selected[seqno] == 0) {
             seqno <- seqno + 1
          }
@@ -858,7 +858,7 @@ play <- function(lang="en", sfpath="", ...) {
 
             timestart <- proc.time()[[3]]
 
-            click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
+            click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=.keyfun)
 
             idle.time <- proc.time()[[3]] - timestart
 
@@ -867,12 +867,12 @@ play <- function(lang="en", sfpath="", ...) {
 
             #if (mode == "test") {
             #   if (seqname == "<lastsequence>.rds") {
-            #      click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
+            #      click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=.keyfun)
             #   } else {
             #      click <- "u"
             #   }
             #} else {
-            #   click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=function(key) return(key))
+            #   click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=.keyfun)
             #}
 
             if (mode == "add" && is.character(click) && !is.element(click, keys.add))
@@ -2896,7 +2896,7 @@ play <- function(lang="en", sfpath="", ...) {
 
                   while (TRUE) {
 
-                     click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=function(key) return(key))
+                     click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=.keyfun)
 
                      if (is.numeric(click) && identical(click[3], 0)) # left button goes to next sequence
                         break
@@ -3097,7 +3097,7 @@ play <- function(lang="en", sfpath="", ...) {
 
                while (TRUE) {
 
-                  click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=function(key) return(key))
+                  click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=.keyfun)
 
                   if (is.numeric(click) && identical(click[3], 0))
                      break

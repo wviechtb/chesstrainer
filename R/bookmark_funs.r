@@ -63,7 +63,7 @@
       if (keymode=="p" && whichnum==2)
          text(1+0.5, 2, .text("bookmarknewpos", ifelse(num==0, "", num)), pos=4, cex=cex, family=.get("font.mono"), font=1, col=.get("col.help"))
 
-      key <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=function(key) return(key))
+      key <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=.keyfun)
 
       # Escape or q to exit
 
@@ -155,7 +155,7 @@
       if (identical(key, "a")) {
          rect(1.4, 1.5, 8.7, 2.4, col=.get("col.bg"), border=NA)
          text(1+0.5, 2, .text("rlydelallbookmarks"), pos=4, cex=cex, family=.get("font.mono"), font=1, col=.get("col.help"))
-         answer <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=function(key) return(key))
+         answer <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=.keyfun)
          if (.confirm(answer)) {
             bookmarks <- c()
             break

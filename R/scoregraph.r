@@ -36,7 +36,7 @@
 
       plot.scores(x)
 
-      click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=function(key) return(key))
+      click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.mousedownfun, onKeybd=.keyfun)
 
       if (identical(click, "\r") || identical(click, "q") || identical(click, "\033") || identical(click, "ctrl-[") || identical(click, "F12"))
          break
@@ -58,7 +58,7 @@
                x1 <- usr[2]
             segments(x1, 0, x1, usr[4], lty="dotted", col=col.top)
             par(mar=rep(5.2,4), usr=c(1,9,1,9))
-            click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=function(key) return(key))
+            click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.mousedownfun, onKeybd=.keyfun)
             if (!is.numeric(click))
                next
             par(mar=rep(11,4), usr=usr)
