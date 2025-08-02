@@ -415,12 +415,12 @@ play <- function(lang="en", sfpath="", ...) {
 
    keys      <- c("q", " ", "n", "p", "e", "E", "-", "=", "+", "m", "\\", "#",
                   "l", "/", "|", "*", "8", "?", "'", ",", ".", "<", ">",
-                  "b", "w", "t", "h", "ctrl-R", "^", "6", "[", "]", "i", "(", ")", "v", "x",
-                  "ctrl-[", "\033", "a", "G", "R", "ctrl-C", "ctrl-S", "ctrl-V",
+                  "b", "w", "t", "Left", "h", "ctrl-R", "^", "6", "[", "]", "i", "(", ")", "v", "x",
+                  "ctrl-[", "\033", "a", "g", "G", "R", "ctrl-C", "ctrl-S", "ctrl-V",
                   "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12")
    keys.add  <- c("f", "z", "c", "H", "0", "s")
-   keys.test <- c("o", "r", "g", "A", "ctrl-D", "Right", "Left", "u", "1", "2")
-   keys.play <- c("H", "g", "A")
+   keys.test <- c("o", "r", "A", "ctrl-D", "Right", "u", "1", "2")
+   keys.play <- c("H", "A")
    keys.add  <- c(keys, keys.add)
    keys.test <- c(keys, keys.test)
    keys.play <- c(keys, keys.play)
@@ -1159,10 +1159,10 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # g to show the evaluation graph (only in play mode)
+            # g to show the evaluation graph (only in add add and play mode)
 
-            if (mode == "play" && identical(click, "g")) {
-               if (i == 1)
+            if (mode %in% c("add","play") && identical(click, "g")) {
+               if (i == 1 || any(is.na(sub$moves$eval)))
                   next
                .evalgraph(sub$moves, lwd=lwd)
                .redrawpos(pos, flip=flip)
@@ -1782,7 +1782,10 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # t to take back a score increase (in test mode) or take back a move (in add or play mode)
+            # t to take back a score increase (in test mode) or take back a move (in add or play mode; can also use left arrow)
+
+            if (mode %in% c("add","play") && identical(click, "Left"))
+               click <- "t"
 
             if (identical(click, "t")) {
                if (mode == "test") {
@@ -2535,7 +2538,7 @@ play <- function(lang="en", sfpath="", ...) {
             if (identical(click, "ctrl-S")) {
                if (seqname != "") {
                   eval(expr=switch1)
-                  print(seqname)
+                  cat(seqnum, " ", seqname, "\n")
                   clipr::write_clip(seqname, object_type="character")
                   eval(expr=switch2)
                }
@@ -3016,7 +3019,7 @@ play <- function(lang="en", sfpath="", ...) {
 
                      if (identical(click, "ctrl-S")) {
                         eval(expr=switch1)
-                        print(seqname)
+                        cat(seqnum, " ", seqname, "\n")
                         clipr::write_clip(seqname, object_type="character")
                         eval(expr=switch2)
                      }
