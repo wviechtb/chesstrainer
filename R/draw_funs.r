@@ -108,10 +108,10 @@
 
 }
 
-.redrawall <- function(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove) {
+.redrawall <- function(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove) {
 
    .drawboard(pos, flip)
-   .textbot(mode, show, player, seqname, seqnum, score, played, dayslp, i, totalmoves, selmode)
+   .textbot(mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, selmode)
    .texttop(texttop)
    .drawcheck(pos, flip=flip)
    if (mode == "test" && timed) {
@@ -888,7 +888,7 @@
 
 }
 
-.textbot <- function(mode, show, player, seqname, seqnum, score, played, dayslp=NA, i, totalmoves, selmode="default", onlyshow=FALSE, onlyi=FALSE, onlyscore=FALSE) {
+.textbot <- function(mode, show, player, seqname, seqnum, score, played, dayslp=NA, rmssd=NA, i, totalmoves, selmode="default", onlyshow=FALSE, onlyi=FALSE, onlyscore=FALSE) {
 
    lang   <- .get("lang")
    cex    <- .get("cex.bot")
@@ -905,6 +905,12 @@
       dayslp <- ""
    } else {
       dayslp <- formatC(dayslp, format="f", digits=0)
+   }
+
+   if (is.na(rmssd)) {
+      rmssd <- ""
+   } else {
+      rmssd <- formatC(rmssd, format="f", digits=0)
    }
 
    if (lang == "en") {
@@ -952,8 +958,9 @@
             text(0.00, 0.30, paste0("Name:   ", "(", seqnum, ") ", seqname), pos=4, cex=cex, family=font, col=col)
             text(0.00, 0.15, paste0("Player: ", player), pos=4, cex=cex, family=font, col=col)
             text(0.00, 0.00, paste0("Move:   ", i-1, " / ", totalmoves), pos=4, cex=cex, family=font, col=col)
-            text(9.00, 0.30, paste0("Played: ", played), pos=4, cex=cex, family=font, col=col)
-            text(9.00, 0.15, paste0("Days:   ", dayslp), pos=4, cex=cex, family=font, col=col)
+            text(9.00, 0.45, paste0("Played: ", played), pos=4, cex=cex, family=font, col=col)
+            text(9.00, 0.30, paste0("Days:   ", dayslp), pos=4, cex=cex, family=font, col=col)
+            text(9.00, 0.15, paste0("RMSSD:  ", rmssd), pos=4, cex=cex, family=font, col=col)
             text(9.00, 0.00, paste0("Score:  ", score), pos=4, cex=cex, family=font, col=col)
          }
       }
@@ -1017,8 +1024,9 @@
             text(0.00, 0.30, paste0("Name:    ", "(", seqnum, ") ", seqname), pos=4, cex=cex, family=font, col=col)
             text(0.00, 0.15, paste0("Spieler: ", player), pos=4, cex=cex, family=font, col=col)
             text(0.00, 0.00, paste0("Zug:     ", i-1, " / ", totalmoves), pos=4, cex=cex, family=font, col=col)
-            text(9.00, 0.30, paste0("Gespielt: ", played), pos=4, cex=cex, family=font, col=col)
-            text(9.00, 0.15, paste0("Tage:     ", dayslp), pos=4, cex=cex, family=font, col=col)
+            text(9.00, 0.45, paste0("Gespielt: ", played), pos=4, cex=cex, family=font, col=col)
+            text(9.00, 0.30, paste0("Tage:     ", dayslp), pos=4, cex=cex, family=font, col=col)
+            text(9.00, 0.15, paste0("RMSSD:    ", rmssd), pos=4, cex=cex, family=font, col=col)
             text(9.00, 0.00, paste0("Punkte:   ", score), pos=4, cex=cex, family=font, col=col)
          }
       }

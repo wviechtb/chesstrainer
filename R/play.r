@@ -441,6 +441,7 @@ play <- function(lang="en", sfpath="", ...) {
       score      <- 100
       played     <- 0
       dayslp     <- NA
+      rmssd      <- NA
       totalmoves <- 0
       show       <- TRUE
       comment    <- ""
@@ -666,6 +667,10 @@ play <- function(lang="en", sfpath="", ...) {
             dayslp <- NA
          dayslp <- as.numeric(Sys.time() - as.POSIXct(dayslp), units="days")
 
+         rmssd <- .rmssd(sub$player[[player]]$score, rmssdlength, multiplier)
+         if (is.null(rmssd) || is.na(rmssd))
+            rmssd <- NA
+
          totalmoves <- nrow(sub$moves)
          flip <- sub$flip
 
@@ -692,7 +697,7 @@ play <- function(lang="en", sfpath="", ...) {
       # draw board and add info at the bottom
 
       .drawboard(pos, flip=flip, inhibit=inhibit)
-      .textbot(mode, show, player, seqname, seqnum, score, played, dayslp, i, totalmoves, selmode)
+      .textbot(mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, selmode)
 
       # check for getGraphicsEvent() capabilities of the current plotting device
 
@@ -712,7 +717,7 @@ play <- function(lang="en", sfpath="", ...) {
             # show the start comment if there one at move 1 (and showstartcom is TRUE)
             if (i == 1 && !is.null(sub$commentstart) && showstartcom) {
                .startcomment(sub$commentstart, lwd=lwd)
-               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
             }
 
             if (nrow(sub$moves) == 0L) {
@@ -766,7 +771,7 @@ play <- function(lang="en", sfpath="", ...) {
             }
 
             show <- FALSE
-            #.textbot(mode, show, player, seqname, seqnum, score, played, dayslp, i, totalmoves, selmode)
+            #.textbot(mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, selmode)
 
          }
 
@@ -941,7 +946,7 @@ play <- function(lang="en", sfpath="", ...) {
                sub$moves <- sub$moves[seq_len(i-1),,drop=FALSE]
                if (mode == "play") {
                   mode <- "add"
-                  .textbot(mode, show, player, seqname, seqnum, score, played, dayslp, i, totalmoves, selmode)
+                  .textbot(mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, selmode)
                   next
                }
                if (!sfrun) {
@@ -959,7 +964,7 @@ play <- function(lang="en", sfpath="", ...) {
                sfproc   <- res.sf$sfproc
                sfrun    <- res.sf$sfrun
                .texttop(" ")
-               .textbot(mode, show, player, seqname, seqnum, score, played, dayslp, i, totalmoves, selmode)
+               .textbot(mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, selmode)
                if (nrow(circles) >= 1L || nrow(arrows) >= 1L || nrow(harrows) >= 1L) {
                   .rmannot(pos, circles, rbind(arrows, harrows), flip)
                   circles <- matrix(nrow=0, ncol=2)
@@ -1038,7 +1043,7 @@ play <- function(lang="en", sfpath="", ...) {
                }
                flip <- !flip
                sub$flip <- flip
-               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                circles <- matrix(nrow=0, ncol=2)
                arrows  <- matrix(nrow=0, ncol=4)
@@ -1144,7 +1149,7 @@ play <- function(lang="en", sfpath="", ...) {
             if (mode == "test" && identical(click, "g")) {
                if (!is.null(sub$player[[player]]$score)) {
                   .scoregraph(sub$player[[player]], lwd=lwd)
-                  #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+                  #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                   .redrawpos(pos, flip=flip)
                   #.draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                   .drawcircles(circles, lwd=lwd)
@@ -1331,7 +1336,7 @@ play <- function(lang="en", sfpath="", ...) {
                   mode <- oldmode <- "add"
                   seqno <- 1
                } else {
-                  #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+                  #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                   .redrawpos(pos, flip=flip)
                   #.draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                   .drawcircles(circles, lwd=lwd)
@@ -1899,7 +1904,7 @@ play <- function(lang="en", sfpath="", ...) {
                      evalvals <- c()
                   }
 
-                  .textbot(mode, show, player, seqname, seqnum, score, played, dayslp, i, totalmoves, selmode)
+                  .textbot(mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, selmode)
 
                } else {
 
@@ -1917,7 +1922,7 @@ play <- function(lang="en", sfpath="", ...) {
                   }
 
                   .drawboard(pos, flip=flip, inhibit=inhibit)
-                  .textbot(mode, show, player, seqname, seqnum, score, played, dayslp, i=1, totalmoves, selmode)
+                  .textbot(mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i=1, totalmoves, selmode)
                   circles <- matrix(nrow=0, ncol=2)
                   arrows  <- matrix(nrow=0, ncol=4)
                   harrows <- matrix(nrow=0, ncol=4)
@@ -2056,7 +2061,7 @@ play <- function(lang="en", sfpath="", ...) {
             # Escape to update the board
 
             if (identical(click, "\033") || identical(click, "ctrl-[")) {
-               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                circles <- matrix(nrow=0, ncol=2)
                arrows  <- matrix(nrow=0, ncol=4)
@@ -2140,7 +2145,7 @@ play <- function(lang="en", sfpath="", ...) {
                }
                assign("lang", lang, envir=.chesstrainer)
                .texttop(.text("lang"))
-               .textbot(mode, show, player, seqname, seqnum, score, played, dayslp, i, totalmoves, selmode)
+               .textbot(mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, selmode)
                Sys.sleep(0.75)
                .texttop(texttop)
                settings$lang <- lang
@@ -2161,8 +2166,8 @@ play <- function(lang="en", sfpath="", ...) {
                   run.rnd <- FALSE
                   input <- FALSE
                } else {
-                  #.textbot(mode, show, player, seqname, seqnum, score, played, dayslp, i, totalmoves, selmode)
-                  #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+                  #.textbot(mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, selmode)
+                  #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                   .redrawpos(pos, flip=flip)
                   #.draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                   .drawcircles(circles, lwd=lwd)
@@ -2236,7 +2241,7 @@ play <- function(lang="en", sfpath="", ...) {
                   }
 
                   .drawboard(pos, flip=flip, inhibit=inhibit)
-                  .textbot(mode, show, player, seqname, seqnum, score, played, dayslp, i, totalmoves, selmode)
+                  .textbot(mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, selmode)
                   circles <- matrix(nrow=0, ncol=2)
                   arrows  <- matrix(nrow=0, ncol=4)
                   sidetoplay <- sidetoplaystart
@@ -2300,7 +2305,7 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (identical(click, "F1")) {
                .showhelp(lwd=lwd)
-               #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+               #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .redrawpos(pos, flip=flip)
                #.draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                .drawcircles(circles, lwd=lwd)
@@ -2313,7 +2318,7 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (identical(click, "F2")) {
                .leaderboard(seqdir[seqdirpos], files, lwd)
-               #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+               #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .redrawpos(pos, flip=flip)
                #.draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                .drawcircles(circles, lwd=lwd)
@@ -2327,7 +2332,7 @@ play <- function(lang="en", sfpath="", ...) {
             if (identical(click, "F3")) {
                tab <- data.frame(lang, player, mode, seqdir=seqdir[seqdirpos], selmode, timed, timepermove, expval, rmssdlength, multiplier, adjustwrong, adjusthint, eval, evalsteps, wait, sleep, idletime, lwd, volume, showgraph, repmistake, cex.top, cex.bot, cex.eval, sfpath, depth1, depth2, depth3, multipv1, multipv2, threads, hash, hintdepth)
                .showsettings(tab, lwd)
-               #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+               #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .redrawpos(pos, flip=flip)
                #.draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                .drawcircles(circles, lwd=lwd)
@@ -2340,9 +2345,9 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (identical(click, "F4")) {
                eval(expr=switch1)
-               .colorsettings(cols.all, pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, i, totalmoves, texttop, lwd, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+               .colorsettings(cols.all, pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, lwd, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                eval(expr=switch2)
-               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                .drawcircles(circles, lwd=lwd)
                .drawarrows(arrows, lwd=lwd)
@@ -2356,9 +2361,9 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (identical(click, "F5")) {
                eval(expr=switch1)
-               .cexsettings(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, i, totalmoves, texttop, lwd, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+               .cexsettings(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, lwd, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                eval(expr=switch2)
-               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                .drawcircles(circles, lwd=lwd)
                .drawarrows(arrows, lwd=lwd)
@@ -2480,7 +2485,7 @@ play <- function(lang="en", sfpath="", ...) {
                   next
                }
                .distributions(scores.selected, played.selected, dayslp.selected, rmssd.selected, lwd, multiplier)
-               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                .drawcircles(circles, lwd=lwd)
                .drawarrows(arrows, lwd=lwd)
@@ -2498,7 +2503,7 @@ play <- function(lang="en", sfpath="", ...) {
                }
                session.playtime <- round(proc.time()[[3]] - session.time.start)
                .sessiongraph(session.seqsplayed, session.mean.scores, session.playtime, lwd)
-               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                .drawcircles(circles, lwd=lwd)
                .drawarrows(arrows, lwd=lwd)
@@ -2518,7 +2523,7 @@ play <- function(lang="en", sfpath="", ...) {
                   .texttop(texttop)
                   next
                }
-               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                .drawcircles(circles, lwd=lwd)
                .drawarrows(arrows, lwd=lwd)
@@ -2597,7 +2602,7 @@ play <- function(lang="en", sfpath="", ...) {
                sub$pos <- pos
                if (verbose)
                   print(pos)
-               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                next
             }
 
@@ -2873,7 +2878,7 @@ play <- function(lang="en", sfpath="", ...) {
 
                played <- played + 1
 
-               .textbot(mode, show, player, seqname, seqnum, score, played, dayslp=0, i+1, totalmoves, selmode)
+               .textbot(mode, show, player, seqname, seqnum, score, played, dayslp=0, rmssd, i+1, totalmoves, selmode)
 
                tmp <- data.frame(date=as.numeric(Sys.time()), played=played, score=score)
 
@@ -2890,7 +2895,7 @@ play <- function(lang="en", sfpath="", ...) {
 
                if (showgraph) {
                   .scoregraph(sub$player[[player]], lwd=lwd)
-                  #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+                  #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                   .redrawpos(pos, flip=flip)
                   #.draweval(sub$moves$eval[i], flip=flip, eval=eval, evalsteps=evalsteps)
                }
@@ -2927,7 +2932,7 @@ play <- function(lang="en", sfpath="", ...) {
                         sub$player <- NULL
                         show <- FALSE
                         .texttop(" ")
-                        .textbot(mode, show, player, seqname, seqnum, score, played, dayslp, i, totalmoves, selmode)
+                        .textbot(mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, selmode)
                         sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                         .drawsideindicator(sidetoplay, flip)
                         fen <- .genfen(pos, flip, sidetoplay, i)
@@ -2966,7 +2971,7 @@ play <- function(lang="en", sfpath="", ...) {
                         matetype <- res.sf$matetype
                         sfproc   <- res.sf$sfproc
                         sfrun    <- res.sf$sfrun
-                        .textbot(mode, show, player, seqname, seqnum, score, played, dayslp, i, totalmoves, selmode)
+                        .textbot(mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, selmode)
                         donext <- TRUE
                         break
                      }
@@ -3032,7 +3037,7 @@ play <- function(lang="en", sfpath="", ...) {
 
                      if (identical(click, "g")) {
                         .scoregraph(sub$player[[player]], lwd=lwd)
-                        #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+                        #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                         .redrawpos(pos, flip=flip)
                         .drawcircles(circles, lwd=lwd)
                         .drawarrows(arrows, lwd=lwd)
@@ -3116,7 +3121,7 @@ play <- function(lang="en", sfpath="", ...) {
                   if (identical(click, "\\") || identical(click, "#") || identical(click, "a") || identical(click, "A") || (is.numeric(click) && identical(click[3], 2))) {
                      sub$moves <- sub$moves[seq_len(i-1),,drop=FALSE]
                      mode <- "add"
-                     .textbot(mode, show, player, seqname, seqnum, score, played, dayslp, i, totalmoves, selmode)
+                     .textbot(mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, selmode)
                      .texttop(" ")
                      donext <- TRUE
                      break
