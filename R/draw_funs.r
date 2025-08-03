@@ -108,10 +108,10 @@
 
 }
 
-.redrawall <- function(pos, flip, mode, show, player, seqname, seqnum, score, played, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove) {
+.redrawall <- function(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove) {
 
    .drawboard(pos, flip)
-   .textbot(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode)
+   .textbot(mode, show, player, seqname, seqnum, score, played, dayslp, i, totalmoves, selmode)
    .texttop(texttop)
    .drawcheck(pos, flip=flip)
    if (mode == "test" && timed) {
@@ -888,7 +888,7 @@
 
 }
 
-.textbot <- function(mode, show, player, seqname, seqnum, score, played, i, totalmoves, selmode="default", onlyshow=FALSE, onlyi=FALSE, onlyscore=FALSE) {
+.textbot <- function(mode, show, player, seqname, seqnum, score, played, dayslp=NA, i, totalmoves, selmode="default", onlyshow=FALSE, onlyi=FALSE, onlyscore=FALSE) {
 
    lang   <- .get("lang")
    cex    <- .get("cex.bot")
@@ -901,21 +901,27 @@
    if (redraw)
       rect(-2, -1, 12, 0.6, col=col.bg, border=NA)
 
+   if (is.na(dayslp)) {
+      dayslp <- ""
+   } else {
+      dayslp <- formatC(dayslp, format="f", digits=0)
+   }
+
    if (lang == "en") {
 
       if (mode == "add") {
          if (onlyshow) {
-            text(0, 0.30, paste0("      ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
-            text(0, 0.30, paste0("Show: ", ifelse(show, "Yes", "No")), pos=4, cex=cex, family=font, col=col)
+            text(0.00, 0.30, paste0("      ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
+            text(0.00, 0.30, paste0("Show: ", ifelse(show, "Yes", "No")), pos=4, cex=cex, family=font, col=col)
          }
          if (onlyi) {
-            text(0, 0.15, paste0("      ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
-            text(0, 0.15, paste0("      ", i), pos=4, cex=cex, family=font, col=col)
+            text(0.00, 0.15, paste0("      ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
+            text(0.00, 0.15, paste0("      ", i), pos=4, cex=cex, family=font, col=col)
          }
          if (redraw) {
-            text(0, 0.45, paste0("Mode: ", "Add"), pos=4, cex=cex, family=font, col=col)
-            text(0, 0.30, paste0("Show: ", ifelse(show, "Yes", "No")), pos=4, cex=cex, family=font, col=col)
-            text(0, 0.15, paste0("Move: ", i), pos=4, cex=cex, family=font, col=col)
+            text(0.00, 0.45, paste0("Mode: ", "Add"), pos=4, cex=cex, family=font, col=col)
+            text(0.00, 0.30, paste0("Show: ", ifelse(show, "Yes", "No")), pos=4, cex=cex, family=font, col=col)
+            text(0.00, 0.15, paste0("Move: ", i), pos=4, cex=cex, family=font, col=col)
          }
       }
 
@@ -933,33 +939,34 @@
 
       if (mode == "test") {
          if (onlyi) {
-            text(0, 0.00, paste0("        ", paste0(rep("\U00002588",9), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
-            text(0, 0.00, paste0("        ", i-1, " / ", totalmoves), pos=4, cex=cex, family=font, col=col)
+            text(0.00, 0.00, paste0("        ", paste0(rep("\U00002588",9), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
+            text(0.00, 0.00, paste0("        ", i-1, " / ", totalmoves), pos=4, cex=cex, family=font, col=col)
          }
          if (onlyscore) {
-            text(9, 0.00, paste0("        ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
-            text(9, 0.00, paste0("Score:  ", score), pos=4, cex=cex, family=font, col=col)
+            text(9.00, 0.00, paste0("        ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
+            text(9.00, 0.00, paste0("Score:  ", score), pos=4, cex=cex, family=font, col=col)
          }
          if (redraw) {
             seqname <- substr(seqname, 1, nchar(seqname)-4)
-            text(0, 0.45, paste0("Mode:   ", "Test (selection: ", selmode, ")"), pos=4, cex=cex, family=font, col=col)
-            text(0, 0.30, paste0("Name:   ", "(", seqnum, ") ", seqname), pos=4, cex=cex, family=font, col=col)
-            text(0, 0.15, paste0("Player: ", player), pos=4, cex=cex, family=font, col=col)
-            text(0, 0.00, paste0("Move:   ", i-1, " / ", totalmoves), pos=4, cex=cex, family=font, col=col)
-            text(9, 0.15, paste0("Played: ", played), pos=4, cex=cex, family=font, col=col)
-            text(9, 0.00, paste0("Score:  ", score), pos=4, cex=cex, family=font, col=col)
+            text(0.00, 0.45, paste0("Mode:   ", "Test (selection: ", selmode, ")"), pos=4, cex=cex, family=font, col=col)
+            text(0.00, 0.30, paste0("Name:   ", "(", seqnum, ") ", seqname), pos=4, cex=cex, family=font, col=col)
+            text(0.00, 0.15, paste0("Player: ", player), pos=4, cex=cex, family=font, col=col)
+            text(0.00, 0.00, paste0("Move:   ", i-1, " / ", totalmoves), pos=4, cex=cex, family=font, col=col)
+            text(9.00, 0.30, paste0("Played: ", played), pos=4, cex=cex, family=font, col=col)
+            text(9.00, 0.15, paste0("Days:   ", dayslp), pos=4, cex=cex, family=font, col=col)
+            text(9.00, 0.00, paste0("Score:  ", score), pos=4, cex=cex, family=font, col=col)
          }
       }
 
       if (mode == "play") {
          if (onlyi) {
-            text(0, 0.15, paste0("        ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
-            text(0, 0.15, paste0("        ", i), pos=4, cex=cex, family=font, col=col)
+            text(0.00, 0.15, paste0("        ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
+            text(0.00, 0.15, paste0("        ", i), pos=4, cex=cex, family=font, col=col)
          }
          if (redraw) {
-            text(0, 0.45, paste0("Mode:   ", "Play"), pos=4, cex=cex, family=font, col=col)
-            text(0, 0.30, paste0("Player: ", player), pos=4, cex=cex, family=font, col=col)
-            text(0, 0.15, paste0("Move:   ", i), pos=4, cex=cex, family=font, col=col)
+            text(0.00, 0.45, paste0("Mode:   ", "Play"), pos=4, cex=cex, family=font, col=col)
+            text(0.00, 0.30, paste0("Player: ", player), pos=4, cex=cex, family=font, col=col)
+            text(0.00, 0.15, paste0("Move:   ", i), pos=4, cex=cex, family=font, col=col)
          }
       }
 
@@ -969,17 +976,17 @@
 
       if (mode == "add") {
          if (onlyshow) {
-            text(0, 0.30, paste0("        ", paste0(rep("\U00002588",4), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
-            text(0, 0.30, paste0("        ", ifelse(show, "Ja", "Nein")), pos=4, cex=cex, family=font, col=col)
+            text(0.00, 0.30, paste0("        ", paste0(rep("\U00002588",4), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
+            text(0.00, 0.30, paste0("        ", ifelse(show, "Ja", "Nein")), pos=4, cex=cex, family=font, col=col)
          }
          if (onlyi) {
-            text(0, 0.15, paste0("        ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
-            text(0, 0.15, paste0("        ", i), pos=4, cex=cex, family=font, col=col)
+            text(0.00, 0.15, paste0("        ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
+            text(0.00, 0.15, paste0("        ", i), pos=4, cex=cex, family=font, col=col)
          }
          if (redraw) {
-            text(0, 0.45, paste0("Modus:  ", "Hinzuf\U000000FCgen"), pos=4, cex=cex, family=font, col=col)
-            text(0, 0.30, paste0("Zeigen: ", ifelse(show, "Ja", "Nein")), pos=4, cex=cex, family=font, col=col)
-            text(0, 0.15, paste0("Zug:    ", i), pos=4, cex=cex, family=font, col=col)
+            text(0.00, 0.45, paste0("Modus:  ", "Hinzuf\U000000FCgen"), pos=4, cex=cex, family=font, col=col)
+            text(0.00, 0.30, paste0("Zeigen: ", ifelse(show, "Ja", "Nein")), pos=4, cex=cex, family=font, col=col)
+            text(0.00, 0.15, paste0("Zug:    ", i), pos=4, cex=cex, family=font, col=col)
          }
       }
 
@@ -997,33 +1004,34 @@
 
       if (mode == "test") {
          if (onlyi) {
-            text(0, 0.00, paste0("         ", paste0(rep("\U00002588",9), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
-            text(0, 0.00, paste0("         ", i-1, " / ", totalmoves), pos=4, cex=cex, family=font, col=col)
+            text(0.00, 0.00, paste0("         ", paste0(rep("\U00002588",9), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
+            text(0.00, 0.00, paste0("         ", i-1, " / ", totalmoves), pos=4, cex=cex, family=font, col=col)
          }
          if (onlyscore) {
-            text(9, 0.00, paste0("          ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
-            text(9, 0.00, paste0("          ", score), pos=4, cex=cex, family=font, col=col)
+            text(9.00, 0.00, paste0("          ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
+            text(9.00, 0.00, paste0("          ", score), pos=4, cex=cex, family=font, col=col)
          }
          if (redraw) {
             seqname <- substr(seqname, 1, nchar(seqname)-4)
-            text(0, 0.45, paste0("Modus:   ", "Test (Selektion: ", selmode, ")"), pos=4, cex=cex, family=font, col=col)
-            text(0, 0.30, paste0("Name:    ", "(", seqnum, ") ", seqname), pos=4, cex=cex, family=font, col=col)
-            text(0, 0.15, paste0("Spieler: ", player), pos=4, cex=cex, family=font, col=col)
-            text(0, 0.00, paste0("Zug:     ", i-1, " / ", totalmoves), pos=4, cex=cex, family=font, col=col)
-            text(9, 0.15, paste0("Gespielt: ", played), pos=4, cex=cex, family=font, col=col)
-            text(9, 0.00, paste0("Punkte:   ", score), pos=4, cex=cex, family=font, col=col)
+            text(0.00, 0.45, paste0("Modus:   ", "Test (Selektion: ", selmode, ")"), pos=4, cex=cex, family=font, col=col)
+            text(0.00, 0.30, paste0("Name:    ", "(", seqnum, ") ", seqname), pos=4, cex=cex, family=font, col=col)
+            text(0.00, 0.15, paste0("Spieler: ", player), pos=4, cex=cex, family=font, col=col)
+            text(0.00, 0.00, paste0("Zug:     ", i-1, " / ", totalmoves), pos=4, cex=cex, family=font, col=col)
+            text(9.00, 0.30, paste0("Gespielt: ", played), pos=4, cex=cex, family=font, col=col)
+            text(9.00, 0.15, paste0("Tage:     ", dayslp), pos=4, cex=cex, family=font, col=col)
+            text(9.00, 0.00, paste0("Punkte:   ", score), pos=4, cex=cex, family=font, col=col)
          }
       }
 
       if (mode == "play") {
          if (onlyi) {
-            text(0, 0.15, paste0("         ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
-            text(0, 0.15, paste0("         ", i), pos=4, cex=cex, family=font, col=col)
+            text(0.00, 0.15, paste0("         ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
+            text(0.00, 0.15, paste0("         ", i), pos=4, cex=cex, family=font, col=col)
          }
          if (redraw) {
-            text(0, 0.45, paste0("Modus:   ", "Spielen"), pos=4, cex=cex, family=font, col=col)
-            text(0, 0.30, paste0("Spieler: ", player), pos=4, cex=cex, family=font, col=col)
-            text(0, 0.15, paste0("Zug:     ", i), pos=4, cex=cex, family=font, col=col)
+            text(0.00, 0.45, paste0("Modus:   ", "Spielen"), pos=4, cex=cex, family=font, col=col)
+            text(0.00, 0.30, paste0("Spieler: ", player), pos=4, cex=cex, family=font, col=col)
+            text(0.00, 0.15, paste0("Zug:     ", i), pos=4, cex=cex, family=font, col=col)
          }
       }
 

@@ -63,14 +63,14 @@
    minutes <- x %/% 60
    seconds <- x %% 60
 
-   total <- paste0(minutes, " ", .text("minutes", minutes == 0 || minutes > 1), ", ",
-                  seconds, " ", .text("seconds", seconds == 0 || seconds > 1))
+   total <- paste0(minutes, " ", .text("minute", minutes == 0 || minutes > 1), ", ",
+                  seconds, " ", .text("second", seconds == 0 || seconds > 1))
 
    if (hours > 0)
-      total <- paste0(paste0(hours, " ", .text("hours", hours == 0 || hours > 1)), ", ", total)
+      total <- paste0(paste0(hours, " ", .text("hour", hours == 0 || hours > 1)), ", ", total)
 
    if (days > 0)
-      total <- paste0(paste0(days, " ", .text("days", days == 0 || days > 1)), ", ", total)
+      total <- paste0(paste0(days, " ", .text("day", days == 0 || days > 1)), ", ", total)
 
    return(total)
 

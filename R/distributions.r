@@ -37,7 +37,7 @@
    # histogram of 'days'
    if (length(c(na.omit(dayslp))) >= 2L) {
       hist(dayslp, breaks="FD", las=1, col.axis=col.top, col.lab=col.top, col.main=col.fg,
-           xlab=.text("days", TRUE), col=col.square.d, border=col.square.l, main=paste0("Histogram: ", .text("days", TRUE)))
+           xlab=.text("day", TRUE), col=col.square.d, border=col.square.l, main=paste0("Histogram: ", .text("day", TRUE)))
    } else {
       plot(NA, xlim=c(0,1), ylim=c(0,1), xlab="", ylab="", xaxt="n", yaxt="n", bty="n")
    }

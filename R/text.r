@@ -176,19 +176,19 @@
                          paste0("month", ifelse(arg, "s", ""))
    ))}
 
-   if (x == "hours") {
+   if (x == "hour") {
       return(switch(lang,
                     de = paste0("Stunde", ifelse(arg, "n", "")),
                          paste0("hour", ifelse(arg, "s", ""))
    ))}
 
-   if (x == "minutes") {
+   if (x == "minute") {
       return(switch(lang,
                     de = paste0("Minute", ifelse(arg, "n", "")),
                          paste0("minute", ifelse(arg, "s", ""))
    ))}
 
-   if (x == "seconds") {
+   if (x == "second") {
       return(switch(lang,
                     de = paste0("Sekunde", ifelse(arg, "n", "")),
                          paste0("second", ifelse(arg, "s", ""))

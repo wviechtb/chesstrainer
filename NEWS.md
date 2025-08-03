@@ -1,4 +1,4 @@
-# chesstrainer 0.9-78 (2025-08-02)
+# chesstrainer 0.9-79 (2025-08-03)
 
 - can play en passant
 - can promote pawns

@@ -96,6 +96,7 @@
    timeframe <- "day"
    whichplot <- "playtime"
    agg <- dat.day
+   zoom <- 1
 
    while (TRUE) {
 
@@ -111,13 +112,18 @@
          break
 
       if (is.numeric(click) && click[[3]] %in% c(0,2)) {
-         if (click[[3]] == 2) { # right mouse button resets zoom
-            if (timeframe == "day")
-               agg <- dat.day
-            if (timeframe == "week")
-               agg <- dat.week
-            if (timeframe == "month")
-               agg <- dat.month
+         if (click[[3]] == 2) { # right mouse button resets zoom or exits if zoomed out
+            if (zoom == 1) {
+               break
+            } else {
+               if (timeframe == "day")
+                  agg <- dat.day
+               if (timeframe == "week")
+                  agg <- dat.week
+               if (timeframe == "month")
+                  agg <- dat.month
+               zoom <- zoom - 1
+            }
          }
          if (click[[3]] == 0) { # left mouse button to set first and second zoom point
             # but if click is outside of the graph (or more precisely, the board), then exit
@@ -150,6 +156,7 @@
             sel <- agg[[1]] >= min(x1,x2) & agg[[1]] <= max(x1,x2)
             if (sum(sel) == 0L)
                next
+            zoom <- zoom + 1
             agg <- agg[sel,]
          }
       }
