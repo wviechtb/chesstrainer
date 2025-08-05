@@ -25,7 +25,6 @@ play <- function(lang="en", sfpath="", ...) {
    timed       <- ifelse(is.null(ddd[["timed"]]),       FALSE,          ddd[["timed"]])
    timepermove <- ifelse(is.null(ddd[["timepermove"]]), 5,              ddd[["timepermove"]])
    expval      <- ifelse(is.null(ddd[["expval"]]),      2,              ddd[["expval"]])
-   rmssdlength <- ifelse(is.null(ddd[["rmssdlength"]]), 6,              ddd[["rmssdlength"]])
    multiplier  <- ifelse(is.null(ddd[["multiplier"]]),  0.8,            ddd[["multiplier"]])
    adjustwrong <- ifelse(is.null(ddd[["adjustwrong"]]), 40,             ddd[["adjustwrong"]])
    adjusthint  <- ifelse(is.null(ddd[["adjusthint"]]),  20,             ddd[["adjusthint"]])
@@ -49,6 +48,8 @@ play <- function(lang="en", sfpath="", ...) {
    threads     <- ifelse(is.null(ddd[["threads"]]),     1,              ddd[["threads"]])
    hash        <- ifelse(is.null(ddd[["hash"]]),        256,            ddd[["hash"]])
    hintdepth   <- ifelse(is.null(ddd[["hintdepth"]]),   10,             ddd[["hintdepth"]])
+   difffun     <- ifelse(is.null(ddd[["difffun"]]),     1,              ddd[["difffun"]])
+   difflen     <- ifelse(is.null(ddd[["difflen"]]),     20,             ddd[["difflen"]])
    quitanim    <- ifelse(is.null(ddd[["quitanim"]]),    TRUE,           ddd[["quitanim"]])
    inhibit     <- ifelse(is.null(ddd[["inhibit"]]),     FALSE,          ddd[["inhibit"]])
 
@@ -73,8 +74,6 @@ play <- function(lang="en", sfpath="", ...) {
 
    seqdirpos <- round(seqdirpos)
    expval[expval < 0] <- 0
-   rmssdlength[rmssdlength < 2] <- 2
-   rmssdlength <- round(rmssdlength)
    multiplier[multiplier < 0] <- 0
    multiplier[multiplier > 1] <- 1
    adjustwrong[adjustwrong < 0] <- 0
@@ -104,6 +103,8 @@ play <- function(lang="en", sfpath="", ...) {
    hash <- round(hash)
    hintdepth[hintdepth < 2] <- 2
    hintdepth <- round(hintdepth)
+   difflen[difflen < 2] <- 2
+   difflen <- round(difflen)
 
    verbose <- isTRUE(ddd$verbose)
 
@@ -122,10 +123,10 @@ play <- function(lang="en", sfpath="", ...) {
       if (!success)
          stop(.text("dircreateerror"), call.=FALSE)
       settings <- list(lang=lang, player=player, mode=mode, seqdir=seqdir, seqdirpos=seqdirpos,
-                       selmode=selmode, timed=timed, timepermove=timepermove, expval=expval, rmssdlength=rmssdlength, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint,
+                       selmode=selmode, timed=timed, timepermove=timepermove, expval=expval, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint,
                        eval=eval, evalsteps=evalsteps, wait=wait, sleep=sleep, idletime=idletime, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval,
-                       sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth)
+                       sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, difffun=difffun, difflen=difflen)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       cols <- sapply(cols.all, function(x) .get(x))
       saveRDS(cols, file=file.path(configdir, "colors.rds"))
@@ -153,8 +154,6 @@ play <- function(lang="en", sfpath="", ...) {
             timepermove <- settings[["timepermove"]]
          if (is.null(mc[["expval"]]))
             expval <- settings[["expval"]]
-         if (is.null(mc[["rmssdlength"]]))
-            rmssdlength <- settings[["rmssdlength"]]
          if (is.null(mc[["multiplier"]]))
             multiplier <- settings[["multiplier"]]
          if (is.null(mc[["adjustwrong"]]))
@@ -203,13 +202,17 @@ play <- function(lang="en", sfpath="", ...) {
             hash <- settings[["hash"]]
          if (is.null(mc[["hintdepth"]]))
             hintdepth <- settings[["hintdepth"]]
+         if (is.null(mc[["difffun"]]))
+            difffun <- settings[["difffun"]]
+         if (is.null(mc[["difflen"]]))
+            difflen <- settings[["difflen"]]
       }
       sfpath <- suppressWarnings(normalizePath(sfpath))
       settings <- list(lang=lang, player=player, mode=mode, seqdir=seqdir, seqdirpos=seqdirpos,
-                       selmode=selmode, timed=timed, timepermove=timepermove, expval=expval, rmssdlength=rmssdlength, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint,
+                       selmode=selmode, timed=timed, timepermove=timepermove, expval=expval, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint,
                        eval=eval, evalsteps=evalsteps, wait=wait, sleep=sleep, idletime=idletime, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval,
-                       sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth)
+                       sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, difffun=difffun, difflen=difflen)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       if (file.exists(file.path(configdir, "colors.rds"))) {
          cols <- readRDS(file.path(configdir, "colors.rds"))
@@ -319,6 +322,7 @@ play <- function(lang="en", sfpath="", ...) {
    useflip  <- TRUE
    replast  <- FALSE
    oldmode  <- ifelse(mode == "play", "add", mode)
+   .difffun <- eval(parse(text=paste0(".difffun", difffun)))
 
    # session variables
 
@@ -413,7 +417,7 @@ play <- function(lang="en", sfpath="", ...) {
 
    # define keys
 
-   keys      <- c("q", " ", "n", "p", "e", "E", "-", "=", "+", "m", "\\", "#",
+   keys      <- c("q", " ", "n", "p", "e", "E", "-", "=", "+", "m", "d", "\\", "#",
                   "l", "/", "|", "*", "8", "?", "'", ",", ".", "<", ">",
                   "b", "w", "t", "Left", "h", "ctrl-R", "^", "6", "[", "]", "i", "(", ")", "v", "x",
                   "ctrl-[", "\033", "a", "g", "G", "R", "ctrl-C", "ctrl-S", "ctrl-V",
@@ -440,8 +444,8 @@ play <- function(lang="en", sfpath="", ...) {
       seqnum     <- NA_integer_
       score      <- 100
       played     <- 0
-      dayslp     <- NA
-      rmssd      <- NA
+      age        <- NA
+      difficulty <- NA
       totalmoves <- 0
       show       <- TRUE
       comment    <- ""
@@ -503,10 +507,10 @@ play <- function(lang="en", sfpath="", ...) {
       date.all <- lapply(dat.all, function(x) tail(x$player[[player]]$date, 1))
       date.all[is.na(date.all) | .is.null(date.all)] <- NA_real_
       date.all <- unlist(date.all)
-      dayslp.all <- as.numeric(Sys.time() - as.POSIXct(date.all), units="days")
-      rmssd.all <- lapply(dat.all, function(x) .rmssd(x$player[[player]]$score, rmssdlength, multiplier))
-      rmssd.all[is.na(rmssd.all) | .is.null(rmssd.all)] <- NA_real_
-      rmssd.all <- unlist(rmssd.all)
+      age.all <- as.numeric(Sys.time() - as.POSIXct(date.all), units="days")
+      difficulty.all <- lapply(dat.all, function(x) .difffun(x$player[[player]]$score, difflen, multiplier))
+      difficulty.all[is.na(difficulty.all) | .is.null(difficulty.all)] <- NA_real_
+      difficulty.all <- unlist(difficulty.all)
 
       # apply selection to sequences
 
@@ -540,10 +544,10 @@ play <- function(lang="en", sfpath="", ...) {
       date.selected <- lapply(dat, function(x) tail(x$player[[player]]$date, 1))
       date.selected[is.na(date.selected) | .is.null(date.selected)] <- NA_real_
       date.selected <- unlist(date.selected)
-      dayslp.selected <- as.numeric(Sys.time() - as.POSIXct(date.selected), units="days")
-      rmssd.selected <- lapply(dat, function(x) .rmssd(x$player[[player]]$score, rmssdlength, multiplier))
-      rmssd.selected[is.na(rmssd.selected) | .is.null(rmssd.selected)] <- NA_real_
-      rmssd.selected <- unlist(rmssd.selected)
+      age.selected <- as.numeric(Sys.time() - as.POSIXct(date.selected), units="days")
+      difficulty.selected <- lapply(dat, function(x) .difffun(x$player[[player]]$score, difflen, multiplier))
+      difficulty.selected[is.na(difficulty.selected) | .is.null(difficulty.selected)] <- NA_real_
+      difficulty.selected <- unlist(difficulty.selected)
 
       if (all(scores.selected == 0)) # in case all sequences have a score of 0
          scores.selected <- rep(1, length(scores.selected))
@@ -571,34 +575,34 @@ play <- function(lang="en", sfpath="", ...) {
          probvals.selected[which(played.selected == min(played.selected[scores.selected != 0]))[1]] <- 100
       }
 
-      if (selmode == "days_random") {
-         probvals.selected <- dayslp.selected / max(dayslp.selected)
+      if (selmode == "age_random") {
+         probvals.selected <- age.selected / max(age.selected)
          probvals.selected[is.na(probvals.selected)] <- 1 # if NA, set prob to 1
          probvals.selected <- probvals.selected^expval
          probvals.selected[scores.selected == 0] <- 0 # in case of 0^0
          probvals.selected <- 100 * probvals.selected / sum(probvals.selected)
       }
 
-      if (selmode == "days_oldest") {
+      if (selmode == "age_oldest") {
          probvals.selected <- rep(0, k)
-         if (any(is.na(dayslp.selected))) {
-            probvals.selected[which(is.na(dayslp.selected))[1]] <- 100
+         if (any(is.na(age.selected))) {
+            probvals.selected[which(is.na(age.selected))[1]] <- 100
          } else {
-            probvals.selected[which(dayslp.selected == max(dayslp.selected[scores.selected != 0]))[1]] <- 100
+            probvals.selected[which(age.selected == max(age.selected[scores.selected != 0]))[1]] <- 100
          }
       }
 
-      if (selmode == "rmssd_random") {
-         probvals.selected <- rmssd.selected / max(rmssd.selected)
+      if (selmode == "diff_random") {
+         probvals.selected <- difficulty.selected / max(difficulty.selected)
          probvals.selected[is.na(probvals.selected)] <- 0 # if NA, set prob to 0
-         probvals.selected <- rmssd.selected^expval
+         probvals.selected <- difficulty.selected^expval
          probvals.selected[scores.selected == 0] <- 0 # in case of 0^0
          probvals.selected <- 100 * probvals.selected / sum(probvals.selected)
       }
 
-      if (selmode == "rmssd_highest") {
+      if (selmode == "diff_highest") {
          probvals.selected <- rep(0, k)
-         probvals.selected[which(rmssd.selected == max(rmssd.selected[scores.selected != 0]))[1]] <- 100
+         probvals.selected[which(difficulty.selected == max(difficulty.selected[scores.selected != 0]))[1]] <- 100
       }
 
       if (selmode == "sequential" && length(scores.selected) >= 1L && !replast) {
@@ -662,14 +666,14 @@ play <- function(lang="en", sfpath="", ...) {
          if (is.null(played) || is.na(played))
             played <- 0
 
-         dayslp <- tail(sub$player[[player]]$date, 1)
-         if (is.null(dayslp))
-            dayslp <- NA
-         dayslp <- as.numeric(Sys.time() - as.POSIXct(dayslp), units="days")
+         age <- tail(sub$player[[player]]$date, 1)
+         if (is.null(age))
+            age <- NA
+         age <- as.numeric(Sys.time() - as.POSIXct(age), units="days")
 
-         rmssd <- .rmssd(sub$player[[player]]$score, rmssdlength, multiplier)
-         if (is.null(rmssd) || is.na(rmssd))
-            rmssd <- NA
+         difficulty <- .difffun(sub$player[[player]]$score, difflen, multiplier)
+         if (is.null(difficulty) || is.na(difficulty))
+            difficulty <- NA
 
          totalmoves <- nrow(sub$moves)
          flip <- sub$flip
@@ -697,7 +701,7 @@ play <- function(lang="en", sfpath="", ...) {
       # draw board and add info at the bottom
 
       .drawboard(pos, flip=flip, inhibit=inhibit)
-      .textbot(mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, selmode)
+      .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
 
       # check for getGraphicsEvent() capabilities of the current plotting device
 
@@ -717,7 +721,7 @@ play <- function(lang="en", sfpath="", ...) {
             # show the start comment if there one at move 1 (and showstartcom is TRUE)
             if (i == 1 && !is.null(sub$commentstart) && showstartcom) {
                .startcomment(sub$commentstart, lwd=lwd)
-               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
             }
 
             if (nrow(sub$moves) == 0L) {
@@ -771,7 +775,7 @@ play <- function(lang="en", sfpath="", ...) {
             }
 
             show <- FALSE
-            #.textbot(mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, selmode)
+            #.textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
 
          }
 
@@ -946,7 +950,7 @@ play <- function(lang="en", sfpath="", ...) {
                sub$moves <- sub$moves[seq_len(i-1),,drop=FALSE]
                if (mode == "play") {
                   mode <- "add"
-                  .textbot(mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, selmode)
+                  .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
                   next
                }
                if (!sfrun) {
@@ -964,7 +968,7 @@ play <- function(lang="en", sfpath="", ...) {
                sfproc   <- res.sf$sfproc
                sfrun    <- res.sf$sfrun
                .texttop(" ")
-               .textbot(mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, selmode)
+               .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
                if (nrow(circles) >= 1L || nrow(arrows) >= 1L || nrow(harrows) >= 1L) {
                   .rmannot(pos, circles, rbind(arrows, harrows), flip)
                   circles <- matrix(nrow=0, ncol=2)
@@ -1043,7 +1047,7 @@ play <- function(lang="en", sfpath="", ...) {
                }
                flip <- !flip
                sub$flip <- flip
-               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                circles <- matrix(nrow=0, ncol=2)
                arrows  <- matrix(nrow=0, ncol=4)
@@ -1149,7 +1153,7 @@ play <- function(lang="en", sfpath="", ...) {
             if (mode == "test" && identical(click, "g")) {
                if (!is.null(sub$player[[player]]$score)) {
                   .scoregraph(sub$player[[player]], lwd=lwd)
-                  #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+                  #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                   .redrawpos(pos, flip=flip)
                   #.draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                   .drawcircles(circles, lwd=lwd)
@@ -1163,7 +1167,7 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (identical(click, "G")) {
                showgraph <- !showgraph
-               .texttop(.text("showgraph", showgraph), sleep=1)
+               .texttop(.text("showgraph", showgraph), sleep=1.5)
                .texttop(texttop)
                settings$showgraph <- showgraph
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
@@ -1276,9 +1280,9 @@ play <- function(lang="en", sfpath="", ...) {
                      bars <- round(5 * (probvals.selected - min(probvals.selected)) / (max(probvals.selected) - min(probvals.selected)))
                   }
                   bars <- sapply(bars, function(x) paste0(rep("*", x), collapse=""))
-                  tab <- data.frame(files, played.selected, formatC(dayslp.selected, format="f", digits=1), scores.selected, formatC(rmssd.selected, format="f", digits=1), formatC(probvals.selected, format="f", digits=1), bars)
+                  tab <- data.frame(files, played.selected, formatC(age.selected, format="f", digits=1), scores.selected, formatC(difficulty.selected, format="f", digits=1), formatC(probvals.selected, format="f", digits=1), bars)
                   tab$bars <- format(tab$bars, justify="left")
-                  names(tab) <- c("Name", .text("played"), .text("day", TRUE), .text("score"), .text("rmssd"), .text("prob"), "")
+                  names(tab) <- c("Name", .text("played"), .text("age"), .text("score"), .text("diff"), .text("prob"), "")
                   tab$Name <- substr(tab$Name, 1, nchar(tab$Name)-4) # remove .rds from name
                   tab$Name <- format(tab$Name, justify="left")
                   names(tab)[1] <- ""
@@ -1336,7 +1340,7 @@ play <- function(lang="en", sfpath="", ...) {
                   mode <- oldmode <- "add"
                   seqno <- 1
                } else {
-                  #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+                  #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                   .redrawpos(pos, flip=flip)
                   #.draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                   .drawcircles(circles, lwd=lwd)
@@ -1525,13 +1529,13 @@ play <- function(lang="en", sfpath="", ...) {
                   next
                }
 
-               # 'days >/</>=/<= value' entered
+               # 'age >/</>=/<= value' entered
 
-               tmp <- strcapture(.text("strcapdays"), searchterm, data.frame(text=character(), sign=character(), cutoff=numeric()))
+               tmp <- strcapture(.text("strcapage"), searchterm, data.frame(text=character(), sign=character(), cutoff=numeric()))
 
                if (!is.na(tmp$cutoff)) {
-                  cat(.text("selseqdays", list(tmp$sign, tmp$cutoff)))
-                  selected <- eval(parse(text = paste("dayslp.all", tmp$sign, tmp$cutoff)))
+                  cat(.text("selseqage", list(tmp$sign, tmp$cutoff)))
+                  selected <- eval(parse(text = paste("age.all", tmp$sign, tmp$cutoff)))
                   selected[is.na(selected)] <- FALSE
                   selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected]
                   if (length(selected) == 0L) {
@@ -1548,13 +1552,13 @@ play <- function(lang="en", sfpath="", ...) {
                   next
                }
 
-               # 'rmssd >/</>=/<= value' entered
+               # 'difficulty >/</>=/<= value' entered
 
-               tmp <- strcapture(.text("strcaprmssd"), searchterm, data.frame(text=character(), sign=character(), cutoff=numeric()))
+               tmp <- strcapture(.text("strcapdiff"), searchterm, data.frame(text=character(), sign=character(), cutoff=numeric()))
 
                if (!is.na(tmp$cutoff)) {
-                  cat(.text("selseqrmssd", list(tmp$sign, tmp$cutoff)))
-                  selected <- eval(parse(text = paste("rmssd.all", tmp$sign, tmp$cutoff)))
+                  cat(.text("selseqdiff", list(tmp$sign, tmp$cutoff)))
+                  selected <- eval(parse(text = paste("difficulty.all", tmp$sign, tmp$cutoff)))
                   selected[is.na(selected)] <- FALSE
                   selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected]
                   if (length(selected) == 0L) {
@@ -1904,7 +1908,7 @@ play <- function(lang="en", sfpath="", ...) {
                      evalvals <- c()
                   }
 
-                  .textbot(mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, selmode)
+                  .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
 
                } else {
 
@@ -1922,7 +1926,7 @@ play <- function(lang="en", sfpath="", ...) {
                   }
 
                   .drawboard(pos, flip=flip, inhibit=inhibit)
-                  .textbot(mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i=1, totalmoves, selmode)
+                  .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i=1, totalmoves, selmode)
                   circles <- matrix(nrow=0, ncol=2)
                   arrows  <- matrix(nrow=0, ncol=4)
                   harrows <- matrix(nrow=0, ncol=4)
@@ -2061,7 +2065,7 @@ play <- function(lang="en", sfpath="", ...) {
             # Escape to update the board
 
             if (identical(click, "\033") || identical(click, "ctrl-[")) {
-               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                circles <- matrix(nrow=0, ncol=2)
                arrows  <- matrix(nrow=0, ncol=4)
@@ -2145,7 +2149,7 @@ play <- function(lang="en", sfpath="", ...) {
                }
                assign("lang", lang, envir=.chesstrainer)
                .texttop(.text("lang"))
-               .textbot(mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, selmode)
+               .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
                Sys.sleep(0.75)
                .texttop(texttop)
                settings$lang <- lang
@@ -2166,14 +2170,45 @@ play <- function(lang="en", sfpath="", ...) {
                   run.rnd <- FALSE
                   input <- FALSE
                } else {
-                  #.textbot(mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, selmode)
-                  #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+                  #.textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
+                  #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                   .redrawpos(pos, flip=flip)
                   #.draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                   .drawcircles(circles, lwd=lwd)
                   .drawarrows(arrows, lwd=lwd)
                   .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
                }
+               next
+            }
+
+            # d to choose a difficulty calculation method
+
+            if (identical(click, "d")) {
+               difffunold <- difffun
+               difflenold <- difflen
+               tmp <- .diffset(difffun, difflen, lwd)
+               difffun <- tmp$difffun
+               difflen <- tmp$difflen
+               if (difffunold != difffun || difflenold != difflen) {
+                  .difffun <- eval(parse(text=paste0(".difffun", difffun)))
+                  difficulty.all <- lapply(dat.all, function(x) .difffun(x$player[[player]]$score, difflen, multiplier))
+                  difficulty.all[is.na(difficulty.all) | .is.null(difficulty.all)] <- NA_real_
+                  difficulty.all <- unlist(difficulty.all)
+                  difficulty.selected <- lapply(dat, function(x) .difffun(x$player[[player]]$score, difflen, multiplier))
+                  difficulty.selected[is.na(difficulty.selected) | .is.null(difficulty.selected)] <- NA_real_
+                  difficulty.selected <- unlist(difficulty.selected)
+                  difficulty <- .difffun(sub$player[[player]]$score, difflen, multiplier)
+                  if (is.null(difficulty) || is.na(difficulty))
+                     difficulty <- NA
+                  .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
+                  settings$difffun <- difffun
+                  settings$difflen <- difflen
+                  saveRDS(settings, file=file.path(configdir, "settings.rds"))
+               }
+               .redrawpos(pos, flip=flip)
+               .drawcircles(circles, lwd=lwd)
+               .drawarrows(arrows, lwd=lwd)
+               .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
                next
             }
 
@@ -2241,7 +2276,7 @@ play <- function(lang="en", sfpath="", ...) {
                   }
 
                   .drawboard(pos, flip=flip, inhibit=inhibit)
-                  .textbot(mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, selmode)
+                  .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
                   circles <- matrix(nrow=0, ncol=2)
                   arrows  <- matrix(nrow=0, ncol=4)
                   sidetoplay <- sidetoplaystart
@@ -2305,7 +2340,7 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (identical(click, "F1")) {
                .showhelp(lwd=lwd)
-               #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+               #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .redrawpos(pos, flip=flip)
                #.draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                .drawcircles(circles, lwd=lwd)
@@ -2318,7 +2353,7 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (identical(click, "F2")) {
                .leaderboard(seqdir[seqdirpos], files, lwd)
-               #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+               #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .redrawpos(pos, flip=flip)
                #.draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                .drawcircles(circles, lwd=lwd)
@@ -2330,9 +2365,9 @@ play <- function(lang="en", sfpath="", ...) {
             # F3 to print the settings
 
             if (identical(click, "F3")) {
-               tab <- data.frame(lang, player, mode, seqdir=seqdir[seqdirpos], selmode, timed, timepermove, expval, rmssdlength, multiplier, adjustwrong, adjusthint, eval, evalsteps, wait, sleep, idletime, lwd, volume, showgraph, repmistake, cex.top, cex.bot, cex.eval, sfpath, depth1, depth2, depth3, multipv1, multipv2, threads, hash, hintdepth)
+               tab <- data.frame(lang, player, mode, seqdir=seqdir[seqdirpos], selmode, timed, timepermove, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, wait, sleep, idletime, lwd, volume, showgraph, repmistake, cex.top, cex.bot, cex.eval, sfpath, depth1, depth2, depth3, multipv1, multipv2, threads, hash, hintdepth, difffun, difflen)
                .showsettings(tab, lwd)
-               #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+               #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .redrawpos(pos, flip=flip)
                #.draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                .drawcircles(circles, lwd=lwd)
@@ -2345,9 +2380,9 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (identical(click, "F4")) {
                eval(expr=switch1)
-               .colorsettings(cols.all, pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, lwd, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+               .colorsettings(cols.all, pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, lwd, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                eval(expr=switch2)
-               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                .drawcircles(circles, lwd=lwd)
                .drawarrows(arrows, lwd=lwd)
@@ -2361,9 +2396,9 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (identical(click, "F5")) {
                eval(expr=switch1)
-               .cexsettings(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, lwd, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+               .cexsettings(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, lwd, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                eval(expr=switch2)
-               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                .drawcircles(circles, lwd=lwd)
                .drawarrows(arrows, lwd=lwd)
@@ -2382,21 +2417,19 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (identical(click, "F6")) {
                eval(expr=switch1)
-               tmp <- .miscsettings(multiplier, adjustwrong, adjusthint, evalsteps, timepermove, rmssdlength, idletime)
+               tmp <- .miscsettings(multiplier, adjustwrong, adjusthint, evalsteps, timepermove, idletime)
                eval(expr=switch2)
                multiplier  <- tmp$multiplier
                adjustwrong <- tmp$adjustwrong
                adjusthint  <- tmp$adjusthint
                evalsteps   <- tmp$evalsteps
                timepermove <- tmp$timepermove
-               rmssdlength <- tmp$rmssdlength
                idletime    <- tmp$idletime
                settings$multiplier  <- multiplier
                settings$adjustwrong <- adjustwrong
                settings$adjusthint  <- adjusthint
                settings$evalsteps   <- evalsteps
                settings$timepermove <- timepermove
-               settings$rmssdlength <- rmssdlength
                settings$idletime    <- idletime
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
@@ -2484,8 +2517,8 @@ play <- function(lang="en", sfpath="", ...) {
                   .texttop(texttop)
                   next
                }
-               .distributions(scores.selected, played.selected, dayslp.selected, rmssd.selected, lwd, multiplier)
-               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+               .distributions(scores.selected, played.selected, age.selected, difficulty.selected, lwd, multiplier)
+               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                .drawcircles(circles, lwd=lwd)
                .drawarrows(arrows, lwd=lwd)
@@ -2503,7 +2536,7 @@ play <- function(lang="en", sfpath="", ...) {
                }
                session.playtime <- round(proc.time()[[3]] - session.time.start)
                .sessiongraph(session.seqsplayed, session.mean.scores, session.playtime, lwd)
-               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                .drawcircles(circles, lwd=lwd)
                .drawarrows(arrows, lwd=lwd)
@@ -2523,7 +2556,7 @@ play <- function(lang="en", sfpath="", ...) {
                   .texttop(texttop)
                   next
                }
-               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
                .drawcircles(circles, lwd=lwd)
                .drawarrows(arrows, lwd=lwd)
@@ -2602,7 +2635,7 @@ play <- function(lang="en", sfpath="", ...) {
                sub$pos <- pos
                if (verbose)
                   print(pos)
-               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+               .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                next
             }
 
@@ -2878,8 +2911,6 @@ play <- function(lang="en", sfpath="", ...) {
 
                played <- played + 1
 
-               .textbot(mode, show, player, seqname, seqnum, score, played, dayslp=0, rmssd, i+1, totalmoves, selmode)
-
                tmp <- data.frame(date=as.numeric(Sys.time()), played=played, score=score)
 
                if (is.null(sub$player[[player]])) {
@@ -2888,6 +2919,10 @@ play <- function(lang="en", sfpath="", ...) {
                   sub$player[[player]] <- rbind(sub$player[[player]], tmp)
                }
 
+               difficulty <- .difffun(sub$player[[player]]$score, difflen, multiplier)
+
+               .textbot(mode, show, player, seqname, seqnum, score, played, age=0, difficulty, i+1, totalmoves, selmode)
+
                # increase session.seqsplayed and compute session.mean.scores
 
                session.seqsplayed[session.length] <- session.seqsplayed[session.length] + 1
@@ -2895,7 +2930,7 @@ play <- function(lang="en", sfpath="", ...) {
 
                if (showgraph) {
                   .scoregraph(sub$player[[player]], lwd=lwd)
-                  #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+                  #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                   .redrawpos(pos, flip=flip)
                   #.draweval(sub$moves$eval[i], flip=flip, eval=eval, evalsteps=evalsteps)
                }
@@ -2907,7 +2942,13 @@ play <- function(lang="en", sfpath="", ...) {
 
                   while (TRUE) {
 
+                     if (!eval)
+                        .draweval(sub$moves$eval[i], flip=flip, eval=TRUE, evalsteps=evalsteps)
+
                      click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=.keyfun)
+
+                     if (!eval)
+                        .draweval(clear=TRUE)
 
                      if (is.numeric(click) && identical(click[3], 0)) # left button goes to next sequence
                         break
@@ -2932,7 +2973,7 @@ play <- function(lang="en", sfpath="", ...) {
                         sub$player <- NULL
                         show <- FALSE
                         .texttop(" ")
-                        .textbot(mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, selmode)
+                        .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
                         sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                         .drawsideindicator(sidetoplay, flip)
                         fen <- .genfen(pos, flip, sidetoplay, i)
@@ -2971,7 +3012,7 @@ play <- function(lang="en", sfpath="", ...) {
                         matetype <- res.sf$matetype
                         sfproc   <- res.sf$sfproc
                         sfrun    <- res.sf$sfrun
-                        .textbot(mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, selmode)
+                        .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
                         donext <- TRUE
                         break
                      }
@@ -3037,7 +3078,7 @@ play <- function(lang="en", sfpath="", ...) {
 
                      if (identical(click, "g")) {
                         .scoregraph(sub$player[[player]], lwd=lwd)
-                        #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+                        #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                         .redrawpos(pos, flip=flip)
                         .drawcircles(circles, lwd=lwd)
                         .drawarrows(arrows, lwd=lwd)
@@ -3121,7 +3162,7 @@ play <- function(lang="en", sfpath="", ...) {
                   if (identical(click, "\\") || identical(click, "#") || identical(click, "a") || identical(click, "A") || (is.numeric(click) && identical(click[3], 2))) {
                      sub$moves <- sub$moves[seq_len(i-1),,drop=FALSE]
                      mode <- "add"
-                     .textbot(mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, selmode)
+                     .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
                      .texttop(" ")
                      donext <- TRUE
                      break

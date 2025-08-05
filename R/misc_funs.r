@@ -20,26 +20,6 @@
 
 .is.even <- function(x) x %% 2 == 0
 
-.rmssd <- function(x, len, multiplier) {
-   if (!is.infinite(len)) {
-      n <- length(x)
-      x <- x[max(1,(n-len+1)):n]
-   }
-   n <- length(x)
-   if (n <= 1L) {
-      val <- NA_real_
-   } else {
-      xopt <- c(x[1], rep(NA_real_, n-1))
-      for (i in 2:n) {
-         xopt[i] <- round(xopt[i-1] * multiplier)
-      }
-      xdiff <- x - xopt
-      #val <- sd(xdiff)
-      val <- sqrt(mean(diff(xdiff)^2))
-   }
-   return(val)
-}
-
 .get <- function(x)
    unname(get(x, envir=.chesstrainer))
 

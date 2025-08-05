@@ -108,10 +108,10 @@
 
 }
 
-.redrawall <- function(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove) {
+.redrawall <- function(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove) {
 
    .drawboard(pos, flip)
-   .textbot(mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, selmode)
+   .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
    .texttop(texttop)
    .drawcheck(pos, flip=flip)
    if (mode == "test" && timed) {
@@ -888,7 +888,7 @@
 
 }
 
-.textbot <- function(mode, show, player, seqname, seqnum, score, played, dayslp=NA, rmssd=NA, i, totalmoves, selmode="default", onlyshow=FALSE, onlyi=FALSE, onlyscore=FALSE) {
+.textbot <- function(mode, show, player, seqname, seqnum, score, played, age=NA, difficulty=NA, i, totalmoves, selmode="default", onlyshow=FALSE, onlyi=FALSE, onlyscore=FALSE) {
 
    lang   <- .get("lang")
    cex    <- .get("cex.bot")
@@ -901,16 +901,16 @@
    if (redraw)
       rect(-2, -1, 12, 0.6, col=col.bg, border=NA)
 
-   if (is.na(dayslp)) {
-      dayslp <- ""
+   if (is.na(age)) {
+      age <- ""
    } else {
-      dayslp <- formatC(dayslp, format="f", digits=0)
+      age <- formatC(age, format="f", digits=0)
    }
 
-   if (is.na(rmssd)) {
-      rmssd <- ""
+   if (is.na(difficulty)) {
+      difficulty <- ""
    } else {
-      rmssd <- formatC(rmssd, format="f", digits=0)
+      difficulty <- formatC(difficulty, format="f", digits=0)
    }
 
    if (lang == "en") {
@@ -936,10 +936,10 @@
                         score_highest = "score, highest next",
                         played_random = "play frequency, at random",
                         played_lowest = "play frequency, lowest next",
-                        days_random   = "date, at random",
-                        days_oldest   = "date, oldest next",
-                        rmssd_random  = "RMSSD, at random",
-                        rmssd_highest = "RMSSD, highest next",
+                        age_random    = "age, at random",
+                        age_oldest    = "age, oldest next",
+                        diff_random   = "difficulty, at random",
+                        diff_highest  = "difficulty, highest next",
                         sequential    = "sequential",
                         default       = "default")
 
@@ -959,8 +959,8 @@
             text(0.00, 0.15, paste0("Player: ", player), pos=4, cex=cex, family=font, col=col)
             text(0.00, 0.00, paste0("Move:   ", i-1, " / ", totalmoves), pos=4, cex=cex, family=font, col=col)
             text(9.00, 0.45, paste0("Played: ", played), pos=4, cex=cex, family=font, col=col)
-            text(9.00, 0.30, paste0("Days:   ", dayslp), pos=4, cex=cex, family=font, col=col)
-            text(9.00, 0.15, paste0("RMSSD:  ", rmssd), pos=4, cex=cex, family=font, col=col)
+            text(9.00, 0.30, paste0("Age:    ", age), pos=4, cex=cex, family=font, col=col)
+            text(9.00, 0.15, paste0("Diff:   ", difficulty), pos=4, cex=cex, family=font, col=col)
             text(9.00, 0.00, paste0("Score:  ", score), pos=4, cex=cex, family=font, col=col)
          }
       }
@@ -1002,10 +1002,10 @@
                         score_highest = "Punktewert, h\U000000F6chster",
                         played_random = "Spielh\U000000E4ufigkeit, zuf\U000000E4llig",
                         played_lowest = "Spielh\U000000E4ufigkeit, niedrigste",
-                        days_random   = "Datum, zuf\U000000E4llig",
-                        days_oldest   = "Datum, \U000000E4ltestes",
-                        rmssd_random  = "RMSSD, zuf\U000000E4llig",
-                        rmssd_highest = "RMSSD, h\U000000F6chster",
+                        age_random    = "Alter, zuf\U000000E4llig",
+                        age_oldest    = "Alter, \U000000E4ltestes",
+                        diff_random   = "Schwierigkeit, zuf\U000000E4llig",
+                        diff_highest  = "Schwierigkeit, h\U000000F6chster",
                         sequential    = "sequenziell",
                         default       = "default")
 
@@ -1025,8 +1025,8 @@
             text(0.00, 0.15, paste0("Spieler: ", player), pos=4, cex=cex, family=font, col=col)
             text(0.00, 0.00, paste0("Zug:     ", i-1, " / ", totalmoves), pos=4, cex=cex, family=font, col=col)
             text(9.00, 0.45, paste0("Gespielt: ", played), pos=4, cex=cex, family=font, col=col)
-            text(9.00, 0.30, paste0("Tage:     ", dayslp), pos=4, cex=cex, family=font, col=col)
-            text(9.00, 0.15, paste0("RMSSD:    ", rmssd), pos=4, cex=cex, family=font, col=col)
+            text(9.00, 0.30, paste0("Alter:    ", age), pos=4, cex=cex, family=font, col=col)
+            text(9.00, 0.15, paste0("Schwier:  ", difficulty), pos=4, cex=cex, family=font, col=col)
             text(9.00, 0.00, paste0("Punkte:   ", score), pos=4, cex=cex, family=font, col=col)
          }
       }

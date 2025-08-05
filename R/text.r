@@ -158,6 +158,12 @@
                          "Played"
    ))}
 
+   if (x == "age") {
+      return(switch(lang,
+                    de = "Alter",
+                         "age"
+   ))}
+
    if (x == "day") {
       return(switch(lang,
                     de = paste0("Tag", ifelse(arg, "e", "")),
@@ -200,10 +206,17 @@
                          "Score"
    ))}
 
-   if (x == "rmssd") {
+   if (x == "diff") {
       return(switch(lang,
-                    de = "RMSSD",
-                         "RMSSD"
+                    de = "Schw",
+                         "Diff"
+   ))}
+
+
+   if (x == "difficulty") {
+      return(switch(lang,
+                    de = "Schwierigkeit",
+                         "Difficulty"
    ))}
 
    if (x == "prob") {
@@ -232,8 +245,8 @@
 
    if (x == "seqsearch") {
       return(switch(lang,
-                    de = "Sequenzsuche (Text, Nummer1-Nummer2, Nummer, Punkte > Wert, Gespielt < Wert, Tage > Wert, RMSSD > Wert, FEN, K: Text, *):\n",
-                         "Sequence search (string, number1-number2, number, score > value, played < value, days > value, rmssd > value, FEN, c: string, *):\n"
+                    de = "Sequenzsuche (Text, Nummer1-Nummer2, Nummer, Punkte > Wert, Gespielt < Wert, Alter > Wert, Schwierigkeit > Wert, FEN, K: Text, *):\n",
+                         "Sequence search (string, number1-number2, number, score > value, played < value, age > value, difficulty > value, FEN, c: string, *):\n"
    ))}
 
    if (x == "allseqselected") {
@@ -296,28 +309,28 @@
                          paste0("\nSearching for sequences that were played ", arg[[1]], " ", arg[[2]], " times.\n")
    ))}
 
-   if (x == "strcapdays") {
+   if (x == "strcapage") {
       return(switch(lang,
-                    de = "^[T|t](age)?\\s*(>|<|>=|<=)\\s*(\\d+\\.?\\d*)$",
-                         "^[D|d](ays)?\\s*(>|<|>=|<=)\\s*(\\d+\\.?\\d*)$"
+                    de = "^[A|a](lter)?\\s*(>|<|>=|<=)\\s*(\\d+\\.?\\d*)$",
+                         "^[A|a](ge)?\\s*(>|<|>=|<=)\\s*(\\d+\\.?\\d*)$"
    ))}
 
-   if (x == "selseqdays") {
+   if (x == "selseqage") {
       return(switch(lang,
                     de = paste0("Suche nach Sequenzen die vor ", arg[[1]], " als ", arg[[2]], " Tagen gespielt wurden.\n"),
                          paste0("Searching for sequences that were played ", arg[[1]], " than ", arg[[2]], " days ago.\n")
    ))}
 
-   if (x == "strcaprmssd") {
+   if (x == "strcapdiff") {
       return(switch(lang,
-                    de = "^[R|r](mssd)?\\s*(>|<|>=|<=)\\s*(\\d+\\.?\\d*)$",
-                         "^[R|r](mssd)?\\s*(>|<|>=|<=)\\s*(\\d+\\.?\\d*)$"
+                    de = "^[S|s](chwierigkeit)?\\s*(>|<|>=|<=)\\s*(\\d+\\.?\\d*)$",
+                         "^[D|d](ifficulty)?\\s*(>|<|>=|<=)\\s*(\\d+\\.?\\d*)$"
    ))}
 
-   if (x == "selseqrmssd") {
+   if (x == "selseqdiff") {
       return(switch(lang,
-                    de = paste0("\nSuche nach Sequenzen mit RMSSD ", arg[[1]], " ", arg[[2]], ".\n"),
-                         paste0("\nSearching for sequences with RMSSD ", arg[[1]], " ", arg[[2]], ".\n")
+                    de = paste0("\nSuche nach Sequenzen mit Schwierigkeit ", arg[[1]], " ", arg[[2]], ".\n"),
+                         paste0("\nSearching for sequences with difficulty ", arg[[1]], " ", arg[[2]], ".\n")
    ))}
 
    if (x == "seqsearchterm") {
@@ -773,8 +786,8 @@
 
    if (x == "explsettings") {
       return(switch(lang,
-                    de = c("Sprache", "Spielername", "Modus", "Aktuelles Sequenzverzeichnis", "Selektionsmodus f\U000000FCr Sequenzen", "Zeitgesteuerter Modus", "Zeit pro Zug im zeitgesteuerten Modus (in Sekunden)", "Exponentenwert", "RMSSD L\U000000E4nge", "Multiplikator f\U000000FCr abgeschlossene Sequenzen", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Bewertungsleiste anzeigen", "Animationsschritte f\U000000FCr die Bewertungsleiste", "Warten zwischen Sequenzen", "Zeit zwischen den Z\U000000FCgen (in Sekunden)", "Leerlaufzeit (in Sekunden)", "Linienbreite", "Lautst\U000000E4rke (in %)", "Fortschrittsdiagramm nach Sequenzen anzeigen", "Sequenzen nach Fehler wiederholen", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Stockfish Pfad", "Berechnungstiefe (schnell)", "Berechnungstiefe (tief)", "Berechnungstiefe (spielen)", "Anzahl der besten Zugvarianten (schnell)", "Anzahl der besten Zugvarianten (tief)", "Anzahl der Threads f\U000000FCr Stockfish", "Hashgr\U000000F6\U000000DFe f\U000000FCr Stockfish", "Hinweistiefe"),
-                         c("Language", "Player name", "Mode", "Current sequence directory", "Selection mode for sequences", "Timed mode", "Time per move in timed mode (in seconds)", "Exponent value", "RMSSD Length", "Multiplier for completed sequences", "Score penalty for wrong moves", "Score penalty per hint", "Show evaluation bar", "Animation steps for the evaluation bar", "Wait between sequences", "Time between moves (in seconds)", "Idle time (in seconds)", "Line width", "Sound volume (in %)", "Show progress graph after sequences", "Repeat sequences after mistake", "Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Stockfish path", "Calculation depth (fast)", "Calculation depth (deep)", "Calculation depth (play)", "Number of principal variations (fast)", "Number of principal variations (deep)", "Number of threads for Stockfish", "Hash size for Stockfish", "Hint depth")
+                    de = c("Sprache", "Spielername", "Modus", "Aktuelles Sequenzverzeichnis", "Selektionsmodus f\U000000FCr Sequenzen", "Zeitgesteuerter Modus", "Zeit pro Zug im zeitgesteuerten Modus (in Sekunden)", "Exponentenwert", "Multiplikator f\U000000FCr abgeschlossene Sequenzen", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Bewertungsleiste anzeigen", "Animationsschritte f\U000000FCr die Bewertungsleiste", "Warten zwischen Sequenzen", "Zeit zwischen den Z\U000000FCgen (in Sekunden)", "Leerlaufzeit (in Sekunden)", "Linienbreite", "Lautst\U000000E4rke (in %)", "Fortschrittsdiagramm nach Sequenzen anzeigen", "Sequenzen nach Fehler wiederholen", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Stockfish Pfad", "Berechnungstiefe (schnell)", "Berechnungstiefe (tief)", "Berechnungstiefe (spielen)", "Anzahl der besten Zugvarianten (schnell)", "Anzahl der besten Zugvarianten (tief)", "Anzahl der Threads f\U000000FCr Stockfish", "Hashgr\U000000F6\U000000DFe f\U000000FCr Stockfish", "Hinweistiefe", "Schwierigkeitsberechnung (Methode)", "Schwierigkeitsberechnung (L\U000000E4nge)"),
+                         c("Language", "Player name", "Mode", "Current sequence directory", "Selection mode for sequences", "Timed mode", "Time per move in timed mode (in seconds)", "Exponent value", "Multiplier for completed sequences", "Score penalty for wrong moves", "Score penalty per hint", "Show evaluation bar", "Animation steps for the evaluation bar", "Wait between sequences", "Time between moves (in seconds)", "Idle time (in seconds)", "Line width", "Sound volume (in %)", "Show progress graph after sequences", "Repeat sequences after mistake", "Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Stockfish path", "Calculation depth (fast)", "Calculation depth (deep)", "Calculation depth (play)", "Number of principal variations (fast)", "Number of principal variations (deep)", "Number of threads for Stockfish", "Hash size for Stockfish", "Hint depth", "Difficulty Calculation (Method)", "Difficulty Calculation (Length)")
    ))}
 
    if (x == "comment") {
@@ -1111,6 +1124,18 @@
       return(switch(lang,
                     de = paste0("Gesamte Anzahl der Sequenzen: ", arg),
                          paste0("total number of sequences: ", arg)
+   ))}
+
+   if (x == "difflencur") {
+      return(switch(lang,
+                    de = "Aktueller Wert f\U000000FCr n: ",
+                         "Current value for n: "
+   ))}
+
+   if (x == "difflennew") {
+      return(switch(lang,
+                    de = "Neuer Wert f\U000000FCr n: ",
+                         "New value for n: "
    ))}
 
 }

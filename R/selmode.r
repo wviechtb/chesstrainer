@@ -11,10 +11,10 @@
       "2 - based on the score, highest score",
       "3 - based on the play frequency, at random",
       "4 - based on the play frequency, lowest frequency",
-      "5 - based on the date, at random",
-      "6 - based on the date, oldest date",
-      "7 - based on the RMSSD, at random",
-      "8 - based on the RMSSD, highest value",
+      "5 - based on the age, at random",
+      "6 - based on the age, oldest date",
+      "7 - based on the difficulty, at random",
+      "8 - based on the difficulty, highest value",
       "9 - sequential")
 
    }
@@ -28,10 +28,10 @@
       "2 - basierend auf dem Punktewert, h\U000000F6chster Punktewert",
       "3 - basierend auf der Spielh\U000000E4ufigkeit, zuf\U000000E4llig",
       "4 - basierend auf der Spielh\U000000E4ufigkeit, niedrigste H\U000000E4ufigkeit",
-      "5 - basierend auf dem Datum, zuf\U000000E4llig",
-      "6 - basierend auf dem Datum, \U000000E4ltestes Datum",
-      "7 - basierend auf der RMSSD, zuf\U000000E4llig",
-      "8 - basierend auf der RMSSD, h\U000000F6chster Wert",
+      "5 - basierend auf dem Alter, zuf\U000000E4llig",
+      "6 - basierend auf dem Alter, \U000000E4ltestes Datum",
+      "7 - basierend auf der Schwierigkeit, zuf\U000000E4llig",
+      "8 - basierend auf der Schwierigkeit, h\U000000F6chster Wert",
       "9 - sequenziell")
 
    }
@@ -42,7 +42,7 @@
    maxsh <- strheight("A", family=.get("font.mono")) * length(txt)
    cex <- min(1.5, (8.5 - 1.5) / max(maxsw, maxsh) * 0.9)
 
-   selmodes <- c("score_random", "score_highest", "played_random", "played_lowest", "days_random", "days_oldest", "rmssd_random", "rmssd_highest", "sequential")
+   selmodes <- c("score_random", "score_highest", "played_random", "played_lowest", "age_random", "age_oldest", "diff_random", "diff_highest", "sequential")
 
    oldmode <- which(selmode == selmodes)
 
@@ -51,8 +51,8 @@
    text(1+0.5, ypos, txt, pos=4, cex=cex,
         family=.get("font.mono"), font=ifelse(c("","",selmodes)==selmode, 2, 1), col=.get("col.help"))
 
-   ypos.modes <- ypos[-c(1:2)]
-   dist <- (ypos.modes[1] - ypos.modes[2]) / 2
+   ypos <- ypos[-c(1:2)]
+   dist <- (ypos[1] - ypos[2]) / 2
 
    while (TRUE) {
 
@@ -64,7 +64,7 @@
          y <- grconvertX(click[[2]], from="ndc", to="user")
 
          if (x >= 1.5 && x <= 8) {
-            click <- which(y < ypos.modes + dist & y > ypos.modes - dist)
+            click <- which(y < ypos + dist & y > ypos - dist)
             if (length(click) == 1L) {
                selmode <- selmodes[click]
                break
@@ -73,7 +73,7 @@
 
       } else {
 
-         if (identical(click, "\r") || identical(click, "q") || identical(click, "\033") || identical(click, "ctrl-["))
+         if (identical(click, "\r") || identical(click, "ctrl-J") || identical(click, "q") || identical(click, "\033") || identical(click, "ctrl-["))
             break
 
          if (is.element(click, 1:length(selmodes))) {
@@ -87,9 +87,9 @@
    }
 
    if (selmodes[oldmode] != selmode) {
-      rect(1.5, ypos.modes[oldmode]-dist, 8, ypos.modes[oldmode]+dist, col=.get("col.bg"), border=NA)
-      text(1+0.5, ypos.modes[oldmode], txt[oldmode+2], pos=4, cex=cex, family=.get("font.mono"), col=.get("col.help"))
-      text(1+0.5, ypos.modes[click], txt[click+2], pos=4, cex=cex, family=.get("font.mono"), font=2, col=.get("col.help"))
+      rect(1.5, ypos[oldmode]-dist, 8, ypos[oldmode]+dist, col=.get("col.bg"), border=NA)
+      text(1+0.5, ypos[oldmode], txt[oldmode+2], pos=4, cex=cex, family=.get("font.mono"), col=.get("col.help"))
+      text(1+0.5, ypos[click], txt[click+2], pos=4, cex=cex, family=.get("font.mono"), font=2, col=.get("col.help"))
       Sys.sleep(1)
    }
 

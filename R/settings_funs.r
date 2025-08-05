@@ -1,4 +1,4 @@
-.colorsettings <- function(cols.all, pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, lwd, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove) {
+.colorsettings <- function(cols.all, pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, lwd, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove) {
 
    cat(.text("currentsettings"))
 
@@ -8,7 +8,7 @@
 
    cat("\n")
 
-   .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, timed=FALSE, movestoplay, movesplayed, timetotal, timepermove)
+   .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, timed=FALSE, movestoplay, movesplayed, timetotal, timepermove)
    .addrect(4, 5, col=.get("col.hint"), lwd=lwd)
    .addrect(4, 3, col=.get("col.wrong"), lwd=lwd)
    .addrect(4, 4, col=.get("col.rect"), lwd=lwd)
@@ -37,7 +37,7 @@
             next
          assign(tab[colno,1], col, envir=.chesstrainer)
          tab[colno,2] <- col
-         .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, timed=FALSE, movestoplay, movesplayed, timetotal, timepermove)
+         .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, timed=FALSE, movestoplay, movesplayed, timetotal, timepermove)
          .addrect(4, 5, col=.get("col.hint"), lwd=lwd)
          .addrect(4, 3, col=.get("col.wrong"), lwd=lwd)
          .addrect(4, 4, col=.get("col.rect"), lwd=lwd)
@@ -59,7 +59,7 @@
 
 }
 
-.cexsettings <- function(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop, lwd, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove) {
+.cexsettings <- function(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, lwd, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove) {
 
    cat(.text("currentsettings"))
 
@@ -70,7 +70,7 @@
 
    cat("\n")
 
-   .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+   .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
    .draweval(-0.2, flip)
 
    while (TRUE) {
@@ -88,7 +88,7 @@
          cex[cex < 0.1] <- 0.1
          assign(tab[cexno,1], cex, envir=.chesstrainer)
          tab[cexno,2] <- cex
-         .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, dayslp, rmssd, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
+         .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
          .draweval(-0.2, flip)
       }
    }
@@ -97,12 +97,12 @@
 
 }
 
-.miscsettings <- function(multiplier, adjustwrong, adjusthint, evalsteps, timepermove, rmssdlength, idletime) {
+.miscsettings <- function(multiplier, adjustwrong, adjusthint, evalsteps, timepermove, idletime) {
 
    cat(.text("currentsettings"))
 
-   tab <- data.frame(setting = c("multiplier", "adjustwrong", "adjusthint", "evalsteps", "timepermove", "rmssdlength", "idletime"),
-                     val     = c(multiplier, adjustwrong, adjusthint, evalsteps, timepermove, rmssdlength, idletime))
+   tab <- data.frame(setting = c("multiplier", "adjustwrong", "adjusthint", "evalsteps", "timepermove", "idletime"),
+                     val     = c(multiplier, adjustwrong, adjusthint, evalsteps, timepermove, idletime))
    names(tab) <- c("", "")
    print(tab, right=FALSE, print.gap=3)
 
@@ -112,7 +112,7 @@
       resp <- readline(prompt=.text("settingwhich"))
       if (identical(resp, ""))
          break
-      if (grepl("^[1-7]+$", resp)) {
+      if (grepl("^[1-6]+$", resp)) {
          setno <- round(as.numeric(resp))
          if (setno < 1 || setno > nrow(tab))
             next
@@ -120,6 +120,8 @@
          if (identical(val, ""))
             next
          val <- as.numeric(val)
+         if (is.na(val))
+            next
          if (setno == 1) {
             val[val < 0] <- 0
             val[val > 1] <- 1
@@ -131,10 +133,6 @@
             val <- round(val)
          }
          if (setno == 6) {
-            val[val < 2] <- 2
-            val <- round(val)
-         }
-         if (setno == 7) {
             val[val < 1] <- 1
             val <- round(val)
          }

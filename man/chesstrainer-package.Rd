@@ -16,18 +16,18 @@
 
    The trainer then starts in \sQuote{add} mode (see the \sQuote{Note} section below if you receive an error that the graphics device does not support event handling). For now, click on the window showing the chess board and hit \verb{<space>} (i.e., the space bar), which will switch to the \sQuote{test} mode. One of the existing sequences will then be chosen at random. The trainer may immediately prompt you to play a certain opening (via a comment at the top of the window), it may make some moves for you, or it may start at a later position during a game. Either way, you will then have to make the correct move based on the position. You do this by left-clicking and dragging the piece to be played from its current position to the desired target square. The trainer will then make the next move, after which you will then again have to make the correct move. This will continue until the end of the sequence. If you do not know what the correct move is, the \verb{<h>} key will provide a hint showing which piece to move. Hitting \verb{<h>} for a second time will show the target square. Once the sequence has ended, left-clicking starts a new sequence.
 
-   In test mode, information is shown at the bottom about the current mode, the player name, the name of the current sequence, the current move number and the total number of moves of the sequence, the number of times that the sequence has been played so far, how long ago the sequence was last played (in days), the RMSSD value of the sequence (see below), and the sequence score (see below).
+   In test mode, information is shown at the bottom about the current mode, the name of the current sequence, the player name, the current move number and the total number of moves of the sequence, the number of times that the sequence has been played so far, the age of the sequence (how many days ago the sequence was last played), the estimated difficulty of the sequence (see below), and the sequence score (see below).
 
    With \verb{<F1>}, you can receive an overview of all keyboard shortcuts. These will be explained in further detail below. You can quit the trainer with the \verb{<q>} key.
 
 }
 \section{The Sequence Score}{
 
-   The trainer keeps track of a score for each sequence. For a new sequence, the score starts out at 100. The score is multiplied by 0.8 after completing a sequence without any mistakes. When making a wrong move when playing a sequence, the score is increased by 40 points (up to a maximum of 100). You can use the \verb{<t>} key to take back the score adjustment (but you should only do this when making the wrong move accidentally). Receiving a hint increases the score by 20 points (40 points when asking for both the starting and the target square).
+   The trainer keeps track of a score for each sequence. For a new sequence, the score starts out at 100. The score is multiplied by 0.8 after completing a sequence without any mistakes. When making a wrong move when playing a sequence, the score is increased by 40 points (up to a maximum of 100). You can use the \verb{<t>} key to take back the score adjustment (but you should only do this when making the wrong move accidentally). Receiving a hint with the \verb{<h>} key increases the score by 20 points (40 points when asking for both the starting and the target square, so this is equivalent to making a mistake).
 
    The trainer uses the score to choose the next sequence. Sequences with higher scores have a higher chance to be presented. The probability of playing a particular sequence is computed with \eqn{p_i = s_i^e / \sum s_i^e}, where \eqn{s_i} is the score of the \eqn{i}th sequence and \eqn{e} is the \sQuote{exponent value}. This is set to 2 by default and enhances the probability that sequences with higher scores are more likely to be played. The exponent value can be adjusted with the \verb{<^>} (or \verb{<6>}) key. Setting the exponent value to 0 makes all sequences equally likely to be played. Setting it to a large value (e.g., 100) almost guarantees that the sequence with the highest score is played next. The score for the current sequence can also be set manually with the \verb{<o>} key. Setting the score to 0 means that the sequence has a zero probability of being presented.
 
-   After completing a sequence, the current score for the sequence is saved (together with the number of times that the sequence has been played and when it was last played) to the sequence file. This way, your progress in learning the sequence is saved permanently across sessions. Using the \verb{<g>} key, a progress graph (showing the sequence scores over time) for the current sequence can be shown (if the sequence has been played before). This is useful to check whether progress is being made in learning the sequence. You can zoom into the graph by left-clicking twice (once for the start and once for the end of the interval). This can be repeated to zoom in further. Clicking the right mouse button zooms all the way out. Clicking outside of the graph or right-clicking anywhere when zoomed out closes the graph.
+   After completing a sequence, the current score for the sequence is saved (together with the number of times that the sequence has been played and when it was last played) to the sequence file. This way, your progress in learning the sequence is saved permanently across sessions. Using the \verb{<g>} key, a progress graph (showing the sequence scores over consecutive plays) for the current sequence can be shown (if the sequence has been played before). This is useful to check whether progress is being made in learning the sequence. You can zoom into the graph by left-clicking twice (once for the start and once for the end of the interval). This can be repeated to zoom in further. Clicking the right mouse button zooms all the way out. Clicking outside of the graph or right-clicking anywhere when zoomed out closes the graph.
 
    Using the \verb{<G>} key, you can toggle whether the progress graph will be automatically shown at the end of each completed sequence.
 
@@ -36,7 +36,7 @@
 }
 \section{Managing and Selecting Sequences}{
 
-   Using the \verb{<l>} key, you can list all sequences, together with their current score, the number of times they have been played (the play frequency), the last time they have been played (in days; \code{NA} if a sequence has not been played before), the root mean square successive difference (RMSSD) of the sequence (a measure of the variability of the scores for a sequence over time; sequences with high RMSSD values show large fluctuations in their scores over time and are apparently difficult to remember), and the current play probability (with 0 to 5 asterisks next to it based on the probability). In \sQuote{test} mode, you can use the \verb{Ctrl-<d>} key to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.
+   Using the \verb{<l>} key, you can list all sequences, together with their current score, the number of times they have been played (the play frequency), their age (in days; \code{NA} if a sequence has not been played before), the estimated difficulty of the sequence, and the current play probability (with 0 to 5 asterisks next to it based on the probability). In \sQuote{test} mode, you can use the \verb{Ctrl-<d>} key to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.
 
    Using the \verb{</>} key (or \verb{<,>} which is useful for a German keyboard layout), you can select a subset of the sequences in various ways:
 
@@ -46,13 +46,13 @@
    \item by entering a sequence number range (e.g., \verb{2-5} to select sequences 2 to 5),
    \item by entering something like \verb{score > 80} to select sequences with a score above a certain threshold,
    \item by entering something like \verb{played < 1} to select sequences that have been played less than a certain number of times,
-   \item by entering something like \verb{days > 2} to select sequences that have been played more than a certain number of days ago,
-   \item by entering something like \verb{rmssd > 20} to select sequences with a RMSSD value above a certain threshold,
+   \item by entering something like \verb{age > 2} to select sequences that have been played more than a certain number of days ago,
+   \item by entering something like \verb{difficulty > 20} to select sequences with a difficulty above a certain threshold,
    \item by entering a \href{https://en.wikipedia.org/wiki/Forsyth-Edwards_Notation}{FEN} to select all sequences that contain a position matching the FEN,
    \item by entering \verb{c:} followed by a (case insensitive) text string to select all sequences where a comment contains the text string.
    }
 
-   The keywords \verb{score}, \verb{played}, \verb{days}, and \verb{rmssd} can be abbreviated to \verb{s}, \verb{p}, \verb{d}, and \verb{r} (so \verb{s > 80}, \verb{p < 1}, \verb{d > 2}, and \verb{r > 20} would also work). Other comparators such as \verb{>=}, \verb{<}, and \verb{>=} can also be used (e.g., \verb{s <= 10}).
+   The keywords \verb{score}, \verb{played}, \verb{age}, and \verb{difficulty} can be abbreviated to \verb{s}, \verb{p}, \verb{a}, and \verb{d} (so \verb{s > 80}, \verb{p < 1}, \verb{a > 2}, and \verb{d > 20} would also work). Other comparators such as \verb{>=}, \verb{<}, and \verb{>=} can also be used (e.g., \verb{s <= 10}).
 
    Hitting \verb{<enter>} at the prompt (i.e., not entering any search string) keeps the current selection. Entering \verb{*} at the prompt selects all sequences. The \verb{<*>} (or \verb{<8>}) key also selects all sequences without using \verb{</>} first.
 
@@ -62,13 +62,13 @@
    \item selection based on the score where the sequence with the highest score is played next,
    \item selection based on the play frequency where sequences with lower play frequencies have a higher play probability,
    \item selection based on the play frequency where the sequence with the lowest play frequency is played next,
-   \item selection based on the date where sequences that have last been played longer ago have a higher play probability,
-   \item selection based on the last play date where the oldest sequence is played next,
-   \item selection based on the RMSSD value where sequences with higher values have a higher play probability,
-   \item selection based on the RMSSD value where the sequence with the highest value is played next.
+   \item selection based on the age where sequences that were last played longer ago have a higher play probability,
+   \item selection based on the age where the sequence that was last played the longest ago is played next,
+   \item selection based on the difficulty where more difficult sequences have a higher play probability,
+   \item selection based on the difficulty where the sequence with the highest difficulty is played next.
    }
 
-   The exponent value affects selection modes 1, 3, 5, and 7. Setting the exponent value to a very large value makes mode 1 essentially the same as mode 2 (and similarly, mode 3 like mode 4, mode 5 like mode 6, and mode 7 like mode 8). For modes 2, 4, 6, and 8, if the highest score, lowest play frequency, oldest play date, or highest RMSSD value is the same for multiple sequences, the alphabetically first one is played next. For modes 5 and 6, sequences that have never been played before are given the highest priority. For all modes, sequences whose score was set to 0 are never played.
+   The exponent value affects selection modes 1, 3, 5, and 7. Setting the exponent value to a very large value makes mode 1 essentially the same as mode 2 (and similarly, mode 3 like mode 4, mode 5 like mode 6, and mode 7 like mode 8). For modes 2, 4, 6, and 8, if the highest score, lowest play frequency, highest age, or highest difficulty is the same for multiple sequences, the alphabetically first one is played next. For modes 5 and 6, sequences that have never been played before are given the highest priority. For all modes, sequences whose score was set to 0 are never played.
 
    In \sQuote{test} mode, the \verb{<r>} key repeats the last played sequence. At the end of a sequence, you can also use the middle mouse button to repeat the sequence. With the \verb{<R>} key, you can toggle on/off whether a sequence will be automatically repeated if a mistake was made while playing the sequence.
 
@@ -80,6 +80,11 @@
    During timed mode, the bar on the right indicates whether the current playing time is above (in green) or below (in red) the amount of time you should have spent on the moves so far (i.e., if every move took exactly the amount of time allowed by the \sQuote{time per move} setting).
 
    The \sQuote{time per move} value can be adjusted via the \verb{<F6>} key.
+
+}
+\section{Sequence Difficulty}{
+
+   After playing a sequence multiple times, the difficulty of the sequence can be estimated based on past performance. By default, this is computed as the average score increase (ASI) over the plays of the sequence. Using the \verb{<d>} key, one can choose a different method for estimating the difficulty, namely the percentage of plays where a score increase happened (PSI), the number of plays where a score increase happened (NSI), the average of the scores of the sequence (AVG), the standard deviation of the scores of the sequence (SD), or the root mean square successive difference (RMSSD). These different calculations methods reflect the difficulty of a sequence in various ways. Sequences with high values for the ASI, NSI, PSI, SD, and RMSSD tend to show larger fluctuations in their scores over time and are apparently difficult to remember. Sequences with high AVG values are also apparently difficult to remember. By default, only the 20 most recent scores are used in the calculation of these statistics. This can also be adjusted when using the the \verb{<d>} key.
 
 }
 \section{Adding New Sequences}{
@@ -159,16 +164,16 @@
    \item By default, there is a 0.5 second sleep time between moves played by the trainer. This can be decreased/increased with the \verb{<->} and \verb{<+>} keys.
    \item By default, the trainer waits for a mouse click at the end of a sequence before starting a new sequence. You can toggle this on/off with the \verb{<w>} key.
    \item With the \verb{<i>} key, the language of the trainer can be toggled between English and German (author note: I wrote this trainer in part for my chess playing kids, which is the reason why a German translation is available).
-   \item With the \verb{<v>} key, the evaluation bar can be toggled on/off (if no evaluations are available for a sequence, the bar is never shown).
+   \item With the \verb{<v>} key, the evaluation bar can be toggled on/off (if no evaluations are available for a sequence, the bar is never shown). Note that if the evaluation bar is turned off, it is still shown at the end of a sequence in \sQuote{test} mode.
    }
 
    The settings are stored across sessions and can be shown with \verb{<F3>}. With \verb{<F4>}, you can adjust the colors. With \verb{<F5>}, you can adjust the size of the text at the top, the text at the bottom, and the size of the evaluation value in the evaluation bar (if it is shown).
 
-   With \verb{<F6>}, you can adjust some miscellaneous settings, namely the multiplier for the score when completing a sequence without any mistakes (0.8 by default), the score penalty when making a wrong move (40 by default), the score penalty per hint (20 by default), the number of animation steps for the evaluation bar (10 by default), the time per move for the timed mode (5 seconds by default), the number of the most recent scores used in the calculation of the RMSSD (6 by default), and the idle time (120 seconds by default; time without any inputs longer than this value is not counted towards the play time for the session history).
+   With \verb{<F6>}, you can adjust some miscellaneous settings, namely the multiplier for the score when completing a sequence without any mistakes (0.8 by default), the score penalty when making a wrong move (40 by default), the score penalty per hint (20 by default), the number of animation steps for the evaluation bar (5 by default), the time per move for the timed mode (5 seconds by default), and the idle time (120 seconds by default; time without any inputs longer than this value is not counted towards the play time for the session history).
 
    With \verb{<F9>}, the FEN of the current position is printed and the position is opened on the \url{https://lichess.org} website for analysis. With \verb{Ctrl-<c>}, the FEN is printed and copied to the clipboard (this makes use of the \code{\link[clipr]{write_clip}} function from the \pkg{clipr} package). With \verb{Ctrl-<s>}, the current sequence name is printed and copied to the clipboard in \sQuote{test} mode.
 
-   With \verb{<F10>}, you can obtain histograms of the scores of the (selected) sequences, how many times they have been played, how long ago they were played, their RMSSD values, and a scatterplot of the number of times they have been played versus their scores. In the scatterplot, the dotted line indicates the best possible performance (i.e., never making a mistake when playing the sequence over and over) and the solid line the actual performance (as estimated based on a regression model; only shown when there are 5 or more points).
+   With \verb{<F10>}, you can obtain histograms of the scores of the (selected) sequences, how many times they have been played, how long ago they were played, their difficulty, and a scatterplot of the number of times they have been played versus their scores. In the scatterplot, the dotted line indicates the best possible performance (i.e., never making a mistake when playing the sequence over and over) and the solid line the actual performance (as estimated based on a regression model; only shown when there are 5 or more points).
 
 }
 \section{Resetting and Cleaning Up}{

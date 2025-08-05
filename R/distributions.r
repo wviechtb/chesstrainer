@@ -1,4 +1,4 @@
-.distributions <- function(scores, played, dayslp, rmssd, lwd, multiplier) {
+.distributions <- function(scores, played, age, difficulty, lwd, multiplier) {
 
    n <- length(scores)
 
@@ -20,7 +20,7 @@
 
    # histogram of 'scores'
 
-   hist(scores, breaks="FD", las=1, col.axis=col.top, col.lab=col.top, col.main=col.fg,
+   hist(scores, breaks=20, las=1, col.axis=col.top, col.lab=col.top, col.main=col.fg,
         xlab=.text("score"), col=col.square.d, border=col.square.l, main=paste0("Histogram: ", .text("score")), xlim=c(0,100))
    #box(which="figure", col=col.help.border, lwd=lwd)
 
@@ -28,16 +28,16 @@
 
    # histogram of 'played'
 
-   hist(played, breaks="FD", las=1, col.axis=col.top, col.lab=col.top, col.main=col.fg,
+   hist(played, breaks=20, las=1, col.axis=col.top, col.lab=col.top, col.main=col.fg,
         xlab=.text("played"), col=col.square.d, border=col.square.l, main=paste0("Histogram: ", .text("played")))
    #box(which="figure", col=col.help.border, lwd=lwd)
 
    #########################################################################
 
-   # histogram of 'days'
-   if (length(c(na.omit(dayslp))) >= 2L) {
-      hist(dayslp, breaks="FD", las=1, col.axis=col.top, col.lab=col.top, col.main=col.fg,
-           xlab=.text("day", TRUE), col=col.square.d, border=col.square.l, main=paste0("Histogram: ", .text("day", TRUE)))
+   # histogram of 'age'
+   if (length(c(na.omit(age))) >= 2L) {
+      hist(age, breaks=20, las=1, col.axis=col.top, col.lab=col.top, col.main=col.fg,
+           xlab=.text("day", TRUE), col=col.square.d, border=col.square.l, main=paste0("Histogram: ", .text("age")), xlim=c(0,max(age, na.rm=TRUE)))
    } else {
       plot(NA, xlim=c(0,1), ylim=c(0,1), xlab="", ylab="", xaxt="n", yaxt="n", bty="n")
    }
@@ -45,10 +45,10 @@
 
    #########################################################################
 
-   # histogram of 'rmssd'
-   if (length(c(na.omit(rmssd))) >= 2L) {
-      hist(rmssd, breaks=20, las=1, col.axis=col.top, col.lab=col.top, col.main=col.fg,
-           xlab=.text("rmssd"), col=col.square.d, border=col.square.l, main=paste0("Histogram: ", .text("rmssd")))
+   # histogram of 'difficulty'
+   if (length(c(na.omit(difficulty))) >= 2L) {
+      hist(difficulty, breaks=20, las=1, col.axis=col.top, col.lab=col.top, col.main=col.fg,
+           xlab=.text("difficulty"), col=col.square.d, border=col.square.l, main=paste0("Histogram: ", .text("difficulty")), xlim=c(0,max(difficulty, na.rm=TRUE)))
    } else {
       plot(NA, xlim=c(0,1), ylim=c(0,1), xlab="", ylab="", xaxt="n", yaxt="n", bty="n")
    }
@@ -83,13 +83,13 @@
 
    #########################################################################
 
-   # scatterplot of 'played' versus 'rmssd'
+   # scatterplot of 'played' versus 'difficulty'
 
    #plot(NA, las=1, col.axis=col.top, col.lab=col.top, col=col.square.l, col.main=col.fg,
-   #     bty="l", main=paste0(.text("played"), " vs. ", .text("rmssd")), xlab=.text("played"), ylab=.text("rmssd"),
-   #     xlim=c(0,max(played, na.rm=TRUE)), ylim=c(0,max(rmssd, na.rm=TRUE)))
+   #     bty="l", main=paste0(.text("played"), " vs. ", .text("difficulty")), xlab=.text("played"), ylab=.text("difficulty"),
+   #     xlim=c(0,max(played, na.rm=TRUE)), ylim=c(0,max(difficulty, na.rm=TRUE)))
    #pt.cex <- max(0.1, 1 - 1/10 * log10(n)) # adjust point size based on n
-   #points(jitter(played, amount=0.5), jitter(rmssd, amount=0.5), pch=21, col=col.square.l, bg=col.square.d, cex=pt.cex)
+   #points(jitter(played, amount=0.5), jitter(difficulty, amount=0.5), pch=21, col=col.square.l, bg=col.square.d, cex=pt.cex)
 
    #########################################################################
 
