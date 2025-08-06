@@ -44,8 +44,12 @@
          labs <- paste0(format(x, format="%b"), "\n", format(x, format="%d"))
       if (timeframe == "week")
          labs <- paste0(format(x, format="%b"), "\n", format(x, format="%d"))
-      if (timeframe == "month")
-         labs <- paste0(format(x, format="%b"), "\n", format(x, format="%Y"))
+      if (timeframe == "month") {
+         months <- format(x, format="%b")
+         years <- format(x, format="%Y")
+         years <- ifelse(duplicated(years), "", years)
+         labs <- paste0(months, "\n", years)
+      }
       axis(side=1, at=x, labels=labs, col.axis=col.top, padj=0.5)
    }
 

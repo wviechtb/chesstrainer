@@ -576,7 +576,7 @@ play <- function(lang="en", sfpath="", ...) {
       }
 
       if (selmode == "age_random") {
-         probvals.selected <- age.selected / max(age.selected)
+         probvals.selected <- age.selected / max(age.selected, na.rm=TRUE)
          probvals.selected[is.na(probvals.selected)] <- 1 # if NA, set prob to 1
          probvals.selected <- probvals.selected^expval
          probvals.selected[scores.selected == 0] <- 0 # in case of 0^0
@@ -593,16 +593,18 @@ play <- function(lang="en", sfpath="", ...) {
       }
 
       if (selmode == "diff_random") {
-         probvals.selected <- difficulty.selected / max(difficulty.selected)
-         probvals.selected[is.na(probvals.selected)] <- 0 # if NA, set prob to 0
+         probvals.selected <- difficulty.selected / max(difficulty.selected, na.rm=TRUE)
+         probvals.selected[is.na(probvals.selected)] <- 1 # if NA, set prob to 1
          probvals.selected <- difficulty.selected^expval
          probvals.selected[scores.selected == 0] <- 0 # in case of 0^0
          probvals.selected <- 100 * probvals.selected / sum(probvals.selected)
       }
 
       if (selmode == "diff_highest") {
+         tmp <- difficulty.selected
+         tmp[is.na(tmp)] <- 0
          probvals.selected <- rep(0, k)
-         probvals.selected[which(difficulty.selected == max(difficulty.selected[scores.selected != 0]))[1]] <- 100
+         probvals.selected[which(tmp == max(tmp[scores.selected != 0]))[1]] <- 100
       }
 
       if (selmode == "sequential" && length(scores.selected) >= 1L && !replast) {
