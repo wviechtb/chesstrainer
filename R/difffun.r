@@ -1,4 +1,4 @@
-.diffset <- function(difffun, difflen, lwd) {
+.diffset <- function(difffun, difflen, diffmin, lwd) {
 
    lang <- .get("lang")
 
@@ -18,10 +18,10 @@
       "4 - percentage of plays with a change in the score trend",
       "5 - average of the scores of the sequence",
       "6 - standard deviation of the scores of the sequence",
-      "7 - standard deviation of the scores changes of the sequence",
-      "8 - root mean square successive difference",
-      "9 - decay parameter from an exponential regression model",
-      "n - number of the most recent scores used in the calculation")
+      "7 - root mean square successive difference",
+      "8 - decay parameter from an exponential regression model",
+      "n - number of the most recent scores used in the calculation",
+      "m - minimum number of scores needed for the calculation")
 
    }
 
@@ -36,10 +36,10 @@
       "4 - Prozent der Spiele mit einer \U000000C4nderung im Punktestandtrend",
       "5 - Durchschnitt der Punkte der Sequenz",
       "6 - Standardabweichung der Punkte der Sequenz",
-      "7 - Standardabweichung der Punktever\U000000E4nderungen der Sequenz",
-      "8 - quadratischer Mittelwert der aufeinanderfolgenden Differenzen",
-      "9 - Verfallsparameter aus einem exponentiellen Regressionsmodell",
-      "n - Anzahl der letzten Ergebnisse, die f\U000000FCr die Berechnung verwendet werden")
+      "7 - Wurzel des Mittelwertes der Quadrate der aufeinanderfolgenden Differenzen",
+      "8 - Verfallsparameter aus einem exponentiellen Regressionsmodell",
+      "n - Anzahl der letzten Werte, die f\U000000FCr die Berechnung verwendet werden",
+      "m - Mindestanzahl der Werte f\U000000FCr die Berechnung")
 
    }
 
@@ -49,9 +49,10 @@
    maxsh <- strheight("A", family=font.mono) * length(txt)
    cex <- min(1.5, (8.5 - 1.5) / max(maxsw, maxsh) * 0.9)
 
-   opts <- c(1:9, "n")
+   opts <- c(1:9, "n", "m")
    difffunold <- difffun
    difflenold <- difflen
+   diffminold <- diffmin
 
    ypos <- seq(7.0, 4.0, length.out=length(txt))
 
@@ -62,60 +63,77 @@
    dist <- (ypos[1] - ypos[2]) / 2
 
    setlen <- FALSE
+   setmin <- FALSE
 
-   string.cur <- .text("difflencur")
-   string.new <- .text("difflennew")
+   string.len.cur <- .text("difflencur")
+   string.len.new <- .text("difflennew")
+   string.min.cur <- .text("diffmincur")
+   string.min.new <- .text("diffminnew")
 
-   sw.string.cur <- strwidth(string.cur, family=font.mono, cex=cex)
-   sw.string.new <- strwidth(string.new, family=font.mono, cex=cex)
+   sw.string <- max(strwidth(string.len.cur, family=font.mono, cex=cex), strwidth(string.min.cur, family=font.mono, cex=cex))
 
-   text(1+0.5,               tail(ypos, 1) - 4*dist, string.cur, pos=4, cex=cex, family=font.mono, col=col.help)
-   text(1+0.5+sw.string.cur, tail(ypos, 1) - 4*dist, difflen,    pos=4, cex=cex, family=font.mono, col=col.help)
+   text(1+0.5,           tail(ypos, 1) - 4*dist, string.len.cur, pos=4, cex=cex, family=font.mono, col=col.help)
+   text(1+0.5+sw.string, tail(ypos, 1) - 4*dist, difflen,    pos=4, cex=cex, family=font.mono, col=col.help)
+   text(1+0.5,           tail(ypos, 1) - 6*dist, string.min.cur, pos=4, cex=cex, family=font.mono, col=col.help)
+   text(1+0.5+sw.string, tail(ypos, 1) - 6*dist, diffmin,    pos=4, cex=cex, family=font.mono, col=col.help)
 
    while (TRUE) {
 
-      if (setlen) {
+      if (setlen || setmin) {
          val <- ""
          sw.val <- 0
-         text(1+0.5, tail(ypos, 1) - 6*dist, string.new, pos=4, cex=cex, family=font.mono, col=col.help)
+         text(1+0.5, tail(ypos, 1) - 8*dist, ifelse(setlen, string.len.new, string.min.new), pos=4, cex=cex, family=font.mono, col=col.help)
       }
 
-      while (setlen) {
+      while (setlen || setmin) {
 
          resp <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.mousedownfun, onKeybd=.keyfun)
 
          if (identical(resp, "\033") || identical(resp, "ctrl-[")) {
-            setlen <- FALSE
-            rect(1+0.2, tail(ypos, 1) - 5*dist, 8.5, tail(ypos, 1) - 7*dist, col=col.bg, border=NA)
+            setlen <- setmin <- FALSE
+            rect(1+0.2, tail(ypos, 1) - 7*dist, 8.5, tail(ypos, 1) - 9*dist, col=col.bg, border=NA)
             break
          }
 
          if (identical(resp, "\r") || identical(resp, "ctrl-J")) {
-            setlen <- FALSE
             val <- as.numeric(paste0(val, collapse=""))
-            if (is.na(val))
+            if (is.na(val)) {
+               setlen <- setmin <- FALSE
+               rect(1+0.2, tail(ypos, 1) - 7*dist, 8.5, tail(ypos, 1) - 9*dist, col=col.bg, border=NA)
                break
+            }
             val[val < 2] <- 2
-            difflen <- val
-            rect(1+0.2, tail(ypos, 1) - 3*dist, 8.5, tail(ypos, 1) - 7*dist, col=col.bg, border=NA)
-            text(1+0.5,               tail(ypos, 1) - 4*dist, string.cur, pos=4, cex=cex, family=font.mono, col=col.help)
-            text(1+0.5+sw.string.cur, tail(ypos, 1) - 4*dist, difflen,    pos=4, cex=cex, family=font.mono, col=col.help)
+            if (setlen)
+               difflen <- val
+            if (setmin)
+               diffmin <- val
+            setlen <- setmin <- FALSE
+            rect(1+0.2, tail(ypos, 1) - 3*dist, 8.5, tail(ypos, 1) - 9*dist, col=col.bg, border=NA)
+            text(1+0.5,           tail(ypos, 1) - 4*dist, string.len.cur, pos=4, cex=cex, family=font.mono, col=col.help)
+            text(1+0.5+sw.string, tail(ypos, 1) - 4*dist, difflen,        pos=4, cex=cex, family=font.mono, col=col.help)
+            text(1+0.5,           tail(ypos, 1) - 6*dist, string.min.cur, pos=4, cex=cex, family=font.mono, col=col.help)
+            text(1+0.5+sw.string, tail(ypos, 1) - 6*dist, diffmin,        pos=4, cex=cex, family=font.mono, col=col.help)
+            break
          }
 
          if (grepl("^[0-9i]+$", resp)) {
             if (identical(resp, "i")) {
+               if (setmin)
+                  next
                difflen <- Inf
                setlen <- FALSE
-               rect(1+0.2, tail(ypos, 1) - 3*dist, 8.5, tail(ypos, 1) - 7*dist, col=col.bg, border=NA)
-               text(1+0.5,               tail(ypos, 1) - 4*dist, string.cur, pos=4, cex=cex, family=font.mono, col=col.help)
-               text(1+0.5+sw.string.cur, tail(ypos, 1) - 4*dist, difflen,    pos=4, cex=cex, family=font.mono, col=col.help)
+               rect(1+0.2, tail(ypos, 1) - 3*dist, 8.5, tail(ypos, 1) - 9*dist, col=col.bg, border=NA)
+               text(1+0.5,           tail(ypos, 1) - 4*dist, string.len.cur, pos=4, cex=cex, family=font.mono, col=col.help)
+               text(1+0.5+sw.string, tail(ypos, 1) - 4*dist, difflen,        pos=4, cex=cex, family=font.mono, col=col.help)
+               text(1+0.5,           tail(ypos, 1) - 6*dist, string.min.cur, pos=4, cex=cex, family=font.mono, col=col.help)
+               text(1+0.5+sw.string, tail(ypos, 1) - 6*dist, diffmin,        pos=4, cex=cex, family=font.mono, col=col.help)
                break
             }
             if (nchar(val) > 10)
                next
             num <- resp
             val <- paste0(val, resp, collapse="")
-            text(1+0.5+sw.string.cur+sw.val, tail(ypos, 1) - 6*dist, num, pos=4, cex=cex, family=font.mono, col=col.help)
+            text(1+0.5+sw.string+sw.val, tail(ypos, 1) - 8*dist, num, pos=4, cex=cex, family=font.mono, col=col.help)
             sw.val <- strwidth(val, family=font.mono)
          }
 
@@ -125,10 +143,14 @@
             } else {
                val <- ""
             }
+            rect(1+0.2+sw.string, tail(ypos, 1) - 7*dist, 8.5, tail(ypos, 1) - 9*dist, col=col.bg, border=NA)
+            #if (setlen) {
+            #   text(1+0.5, tail(ypos, 1) - 8*dist, string.len.new, pos=4, cex=cex, family=font.mono, col=col.help)
+            #} else {
+            #   text(1+0.5, tail(ypos, 1) - 8*dist, string.min.new, pos=4, cex=cex, family=font.mono, col=col.help)
+            #}
+            text(1+0.5+sw.string, tail(ypos, 1) - 8*dist, val, pos=4, cex=cex, family=font.mono, col=col.help)
             sw.val <- strwidth(val, family=font.mono)
-            rect(1+0.2+sw.string.cur, tail(ypos, 1) - 5*dist, 8.5, tail(ypos, 1) - 7*dist, col=col.bg, border=NA)
-            text(1+0.5, tail(ypos, 1) - 6*dist, string.new, pos=4, cex=cex, family=font.mono, col=col.help)
-            text(1+0.5+sw.string.cur, tail(ypos, 1) - 6*dist, val, pos=4, cex=cex, family=font.mono, col=col.help)
          }
 
       }
@@ -147,6 +169,9 @@
                if (sel == "n") {
                   setlen <- TRUE
                   next
+               } else if (sel == "m") {
+                  setmin <- TRUE
+                  next
                } else {
                   difffun <- opts[click]
                   break
@@ -161,6 +186,9 @@
 
          if (identical(click, "n"))
             setlen <- TRUE
+
+         if (identical(click, "m"))
+            setmin <- TRUE
 
          if (is.element(click, 1:(length(opts)-1))) {
             click <- as.numeric(click)
@@ -181,57 +209,53 @@
 
    #.erase(1, 1, 9, 9)
 
-   return(list(difffun=as.numeric(difffun), difflen=difflen))
+   return(list(difffun=as.numeric(difffun), difflen=difflen, diffmin=diffmin))
 
 }
 
 ############################################################################
 
-.difffun1 <- function(x, len, multiplier) {
+.difffun1 <- function(x, len, minn, dbl100pen, multiplier) {
    x <- tail(x, len)
    n <- length(x)
-   if (n <= 1L) {
-      val <- 0
+   if (n < minn) {
+      val <- NA_real_
    } else {
-      xdiff <- diff(x)
-      xdiff[xdiff < 0] <- 0
-      val <- mean(xdiff, na.rm=TRUE)
+      val <- mean(.mistakediff(x, dbl100pen))
    }
    return(val)
 }
 
-.difffun2 <- function(x, len, multiplier) {
+.difffun2 <- function(x, len, minn, dbl100pen, multiplier) {
    x <- tail(x, len)
    n <- length(x)
-   if (n <= 1L) {
-      val <- 0
+   if (n < minn) {
+      val <- NA_real_
    } else {
-      xdiff <- diff(x)
-      val <- mean(xdiff >= 0, na.rm=TRUE) * 100
+      val <- mean(.mistakediff(x, dbl100pen) > 0) * 100
       # the ratio of number of no improvements versus number of improvements
-      # gives values that are just a monotonic transformation of this
-      #val <- sum(xdiff >= 0, na.rm=TRUE) / sum(xdiff < 0, na.rm=TRUE) * 10
+      # gives very similar values, so not used as another method
+      #val <- sum(.mistakediff(x, dbl100pen) > 0) / sum(.mistakediff(x, dbl100pen) <= 0) * 10
    }
    return(val)
 }
 
-.difffun3 <- function(x, len, multiplier) {
+.difffun3 <- function(x, len, minn, dbl100pen, multiplier) {
    x <- tail(x, len)
    n <- length(x)
-   if (n <= 1L) {
-      val <- 0
+   if (n < minn) {
+      val <- NA_real_
    } else {
-      xdiff <- diff(x)
-      val <- sum(xdiff >= 0, na.rm=TRUE)
+      val <- sum(.mistakediff(x, dbl100pen) > 0)
    }
    return(val)
 }
 
-.difffun4 <- function(x, len, multiplier) {
+.difffun4 <- function(x, len, minn, dbl100pen, multiplier) {
    x <- tail(x, len)
    n <- length(x)
-   if (n <= 1L) {
-      val <- 0
+   if (n < minn) {
+      val <- NA_real_
    } else {
       xdiff <- diff(x)
       val <- length(rle(xdiff < 0)$lengths) / length(xdiff) * 100
@@ -239,68 +263,59 @@
    return(val)
 }
 
-.difffun5 <- function(x, len, multiplier) {
+.difffun5 <- function(x, len, minn, dbl100pen, multiplier) {
    x <- tail(x, len)
    n <- length(x)
-   if (n <= 1L) {
-      val <- 0
-   } else {
-      val <- mean(x, na.rm=TRUE)
-   }
-   return(val)
-}
-
-.difffun6 <- function(x, len, multiplier) {
-   x <- tail(x, len)
-   n <- length(x)
-   if (n <= 1L) {
-      val <- 0
-   } else {
-      val <- sd(x, na.rm=TRUE)
-   }
-   return(val)
-}
-
-.difffun7 <- function(x, len, multiplier) {
-   x <- tail(x, len)
-   n <- length(x)
-   if (n <= 1L) {
-      val <- 0
-   } else {
-      xdiff <- diff(x)
-      val <- sd(xdiff, na.rm=TRUE)
-   }
-   return(val)
-}
-
-.difffun8 <- function(x, len, multiplier) {
-   x <- tail(x, len)
-   n <- length(x)
-   if (n <= 1L) {
+   if (n < minn) {
       val <- NA_real_
    } else {
-      val <- sqrt(mean(diff(x)^2, na.rm=TRUE))
+      val <- mean(x)
    }
    return(val)
 }
 
-.difffun9 <- function(x, len, multiplier) {
+.difffun6 <- function(x, len, minn, dbl100pen, multiplier) {
    x <- tail(x, len)
    n <- length(x)
-   if (n <= 2L) {
+   if (n < minn) {
+      val <- NA_real_
+   } else {
+      val <- sd(x)
+   }
+   return(val)
+}
+
+.difffun7 <- function(x, len, minn, dbl100pen, multiplier) {
+   x <- tail(x, len)
+   n <- length(x)
+   if (n < minn) {
+      val <- NA_real_
+   } else {
+      xdiff <- diff(x)
+      val <- sqrt(mean(xdiff^2))
+      #val <- sd(xdiff)
+   }
+   return(val)
+}
+
+.difffun8 <- function(x, len, minn, dbl100pen, multiplier) {
+   x <- tail(x, len)
+   n <- length(x)
+   if (n < minn) {
       val <- NA_real_
    } else {
       t <- 1:n
       res <- suppressWarnings(lm(log(x) ~ t))
-      val <- exp(coef(res)[2]) * 100
+      b1 <- exp(coef(res)[2])
+      val <- max(0, (b1 / multiplier - 1) * 100)
    }
    return(val)
 }
 
-.difffun10 <- function(x, len, multiplier) {
+.difffun9 <- function(x, len, minn, dbl100pen, multiplier) {
    x <- tail(x, len)
    n <- length(x)
-   if (n <= 1L) {
+   if (n < minn) {
       val <- NA_real_
    } else {
       xopt <- c(x[1], rep(NA_real_, n-1))

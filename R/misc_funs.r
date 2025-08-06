@@ -32,6 +32,23 @@
 
 }
 
+.mistakediff <- function(x, dbl100pen=20) {
+   x <- c(na.omit(x))
+   n <- length(x)
+   if (n <= 1L) {
+      xdiff <- 0
+   } else {
+      x1 <- x[1:(n-1)]
+      x2 <- x[2:n]
+      mistake <- x2 > x1
+      dbl100 <- x1 == 100 & x2 == 100
+      xdiff <- x2 - x1
+      xdiff[!mistake] <- 0
+      xdiff[dbl100] <- dbl100pen
+   }
+   return(xdiff)
+}
+
 .totaltime <- function(x) {
 
    days <- x %/% (24 * 3600)

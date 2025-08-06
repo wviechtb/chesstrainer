@@ -50,6 +50,7 @@ play <- function(lang="en", sfpath="", ...) {
    hintdepth   <- ifelse(is.null(ddd[["hintdepth"]]),   10,             ddd[["hintdepth"]])
    difffun     <- ifelse(is.null(ddd[["difffun"]]),     1,              ddd[["difffun"]])
    difflen     <- ifelse(is.null(ddd[["difflen"]]),     20,             ddd[["difflen"]])
+   diffmin     <- ifelse(is.null(ddd[["diffmin"]]),     5,              ddd[["diffmin"]])
    quitanim    <- ifelse(is.null(ddd[["quitanim"]]),    TRUE,           ddd[["quitanim"]])
    inhibit     <- ifelse(is.null(ddd[["inhibit"]]),     FALSE,          ddd[["inhibit"]])
 
@@ -105,6 +106,8 @@ play <- function(lang="en", sfpath="", ...) {
    hintdepth <- round(hintdepth)
    difflen[difflen < 2] <- 2
    difflen <- round(difflen)
+   diffmin[diffmin < 2] <- 2
+   diffmin <- round(diffmin)
 
    verbose <- isTRUE(ddd$verbose)
 
@@ -126,7 +129,7 @@ play <- function(lang="en", sfpath="", ...) {
                        selmode=selmode, timed=timed, timepermove=timepermove, expval=expval, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint,
                        eval=eval, evalsteps=evalsteps, wait=wait, sleep=sleep, idletime=idletime, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval,
-                       sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, difffun=difffun, difflen=difflen)
+                       sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, difffun=difffun, difflen=difflen, diffmin=diffmin)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       cols <- sapply(cols.all, function(x) .get(x))
       saveRDS(cols, file=file.path(configdir, "colors.rds"))
@@ -206,13 +209,15 @@ play <- function(lang="en", sfpath="", ...) {
             difffun <- settings[["difffun"]]
          if (is.null(mc[["difflen"]]))
             difflen <- settings[["difflen"]]
+         if (is.null(mc[["diffmin"]]))
+            diffmin <- settings[["diffmin"]]
       }
       sfpath <- suppressWarnings(normalizePath(sfpath))
       settings <- list(lang=lang, player=player, mode=mode, seqdir=seqdir, seqdirpos=seqdirpos,
                        selmode=selmode, timed=timed, timepermove=timepermove, expval=expval, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint,
                        eval=eval, evalsteps=evalsteps, wait=wait, sleep=sleep, idletime=idletime, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval,
-                       sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, difffun=difffun, difflen=difflen)
+                       sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, difffun=difffun, difflen=difflen, diffmin=diffmin)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       if (file.exists(file.path(configdir, "colors.rds"))) {
          cols <- readRDS(file.path(configdir, "colors.rds"))
@@ -508,7 +513,7 @@ play <- function(lang="en", sfpath="", ...) {
       date.all[is.na(date.all) | .is.null(date.all)] <- NA_real_
       date.all <- unlist(date.all)
       age.all <- as.numeric(Sys.time() - as.POSIXct(date.all), units="days")
-      difficulty.all <- lapply(dat.all, function(x) .difffun(x$player[[player]]$score, difflen, multiplier))
+      difficulty.all <- lapply(dat.all, function(x) .difffun(x$player[[player]]$score, difflen, diffmin, adjusthint, multiplier))
       difficulty.all[is.na(difficulty.all) | .is.null(difficulty.all)] <- NA_real_
       difficulty.all <- unlist(difficulty.all)
 
@@ -545,7 +550,7 @@ play <- function(lang="en", sfpath="", ...) {
       date.selected[is.na(date.selected) | .is.null(date.selected)] <- NA_real_
       date.selected <- unlist(date.selected)
       age.selected <- as.numeric(Sys.time() - as.POSIXct(date.selected), units="days")
-      difficulty.selected <- lapply(dat, function(x) .difffun(x$player[[player]]$score, difflen, multiplier))
+      difficulty.selected <- lapply(dat, function(x) .difffun(x$player[[player]]$score, difflen, diffmin, adjusthint, multiplier))
       difficulty.selected[is.na(difficulty.selected) | .is.null(difficulty.selected)] <- NA_real_
       difficulty.selected <- unlist(difficulty.selected)
 
@@ -673,7 +678,7 @@ play <- function(lang="en", sfpath="", ...) {
             age <- NA
          age <- as.numeric(Sys.time() - as.POSIXct(age), units="days")
 
-         difficulty <- .difffun(sub$player[[player]]$score, difflen, multiplier)
+         difficulty <- .difffun(sub$player[[player]]$score, difflen, diffmin, adjusthint, multiplier)
          if (is.null(difficulty) || is.na(difficulty))
             difficulty <- NA
 
@@ -2188,23 +2193,26 @@ play <- function(lang="en", sfpath="", ...) {
             if (identical(click, "d")) {
                difffunold <- difffun
                difflenold <- difflen
-               tmp <- .diffset(difffun, difflen, lwd)
+               diffminold <- diffmin
+               tmp <- .diffset(difffun, difflen, diffmin, lwd)
                difffun <- tmp$difffun
                difflen <- tmp$difflen
-               if (difffunold != difffun || difflenold != difflen) {
+               diffmin <- tmp$diffmin
+               if (difffunold != difffun || difflenold != difflen || diffminold != diffmin) {
                   .difffun <- eval(parse(text=paste0(".difffun", difffun)))
-                  difficulty.all <- lapply(dat.all, function(x) .difffun(x$player[[player]]$score, difflen, multiplier))
+                  difficulty.all <- lapply(dat.all, function(x) .difffun(x$player[[player]]$score, difflen, diffmin, adjusthint, multiplier))
                   difficulty.all[is.na(difficulty.all) | .is.null(difficulty.all)] <- NA_real_
                   difficulty.all <- unlist(difficulty.all)
-                  difficulty.selected <- lapply(dat, function(x) .difffun(x$player[[player]]$score, difflen, multiplier))
+                  difficulty.selected <- lapply(dat, function(x) .difffun(x$player[[player]]$score, difflen, diffmin, adjusthint, multiplier))
                   difficulty.selected[is.na(difficulty.selected) | .is.null(difficulty.selected)] <- NA_real_
                   difficulty.selected <- unlist(difficulty.selected)
-                  difficulty <- .difffun(sub$player[[player]]$score, difflen, multiplier)
+                  difficulty <- .difffun(sub$player[[player]]$score, difflen, diffmin, adjusthint, multiplier)
                   if (is.null(difficulty) || is.na(difficulty))
                      difficulty <- NA
                   .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
                   settings$difffun <- difffun
                   settings$difflen <- difflen
+                  settings$diffmin <- diffmin
                   saveRDS(settings, file=file.path(configdir, "settings.rds"))
                }
                .redrawpos(pos, flip=flip)
@@ -2367,7 +2375,7 @@ play <- function(lang="en", sfpath="", ...) {
             # F3 to print the settings
 
             if (identical(click, "F3")) {
-               tab <- data.frame(lang, player, mode, seqdir=seqdir[seqdirpos], selmode, timed, timepermove, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, wait, sleep, idletime, lwd, volume, showgraph, repmistake, cex.top, cex.bot, cex.eval, sfpath, depth1, depth2, depth3, multipv1, multipv2, threads, hash, hintdepth, difffun, difflen)
+               tab <- data.frame(lang, player, mode, seqdir=seqdir[seqdirpos], selmode, timed, timepermove, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, wait, sleep, idletime, lwd, volume, showgraph, repmistake, cex.top, cex.bot, cex.eval, sfpath, depth1, depth2, depth3, multipv1, multipv2, threads, hash, hintdepth, difffun, difflen, diffmin)
                .showsettings(tab, lwd)
                #.redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .redrawpos(pos, flip=flip)
@@ -2921,7 +2929,7 @@ play <- function(lang="en", sfpath="", ...) {
                   sub$player[[player]] <- rbind(sub$player[[player]], tmp)
                }
 
-               difficulty <- .difffun(sub$player[[player]]$score, difflen, multiplier)
+               difficulty <- .difffun(sub$player[[player]]$score, difflen, diffmin, adjusthint, multiplier)
 
                .textbot(mode, show, player, seqname, seqnum, score, played, age=0, difficulty, i+1, totalmoves, selmode)
 

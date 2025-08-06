@@ -94,12 +94,11 @@
    \item percentage of plays with a change in the score trend (PCT),
    \item average of the scores of the sequence (AVG),
    \item standard deviation of the scores of the sequence (SD),
-   \item standard deviation of the score changes of the sequence (SDC),
    \item root mean square successive difference (RMSSD),
-   \item decay parameter from an exponential regression model (ERM),
+   \item decay parameter from an exponential regression model (ERM).
    }
 
-   These different calculations methods reflect the difficulty of a sequence in various ways. Sequences with high values for the ASI, PNI, NNI, PCT, SD, SDC, and RMSSD tend to show larger fluctuations in their scores over time and are apparently difficult to remember. Sequences with high AVG values are also apparently difficult to remember. Sequences with high ERM values are deviating strongly from the optimal decrease in the score that should happen when never making mistakes while playing a sequence (the optimal decay parameter is 80, that is, 100 times the score multiplier of 0.8 when not making a mistake when playing a sequence). By default, only the 20 most recent scores are used in the calculation of these statistics. This can also be adjusted via the menu.
+   These different calculations methods reflect the difficulty of a sequence in various ways. Sequences with high values for the ASI, PNI, NNI, PCT, SD, and RMSSD tend to show larger fluctuations in their scores over time and are apparently difficult to remember. Sequences with high AVG values are also difficult. Sequences with high ERM values are deviating strongly from the optimal decrease in the score that should happen when never making mistakes while playing a sequence. By default, only the 20 most recent scores are used in the calculation of these statistics. Also, by default the difficulty is only computed when a sequence has been played at least 5 times. These values can also be adjusted via the menu.
 
 }
 \section{Adding New Sequences}{
