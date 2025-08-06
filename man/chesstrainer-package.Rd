@@ -57,6 +57,7 @@
    Hitting \verb{<enter>} at the prompt (i.e., not entering any search string) keeps the current selection. Entering \verb{*} at the prompt selects all sequences. The \verb{<*>} (or \verb{<8>}) key also selects all sequences without using \verb{</>} first.
 
    In \sQuote{test} mode, sequences are played by default at random based on the score as described above. However, you can toggle into a different selection mode with the \verb{<m>} key. The options are:
+
    \enumerate{
    \item selection based on the score where sequences with higher scores have a higher play probability (the default),
    \item selection based on the score where the sequence with the highest score is played next,
@@ -84,7 +85,21 @@
 }
 \section{Sequence Difficulty}{
 
-   After playing a sequence multiple times, the difficulty of the sequence can be estimated based on past performance. By default, this is computed as the average score increase (ASI) over the plays of the sequence. Using the \verb{<d>} key, one can choose a different method for estimating the difficulty, namely the percentage of plays where a score increase happened (PSI), the number of plays where a score increase happened (NSI), the average of the scores of the sequence (AVG), the standard deviation of the scores of the sequence (SD), or the root mean square successive difference (RMSSD). These different calculations methods reflect the difficulty of a sequence in various ways. Sequences with high values for the ASI, NSI, PSI, SD, and RMSSD tend to show larger fluctuations in their scores over time and are apparently difficult to remember. Sequences with high AVG values are also apparently difficult to remember. By default, only the 20 most recent scores are used in the calculation of these statistics. This can also be adjusted when using the the \verb{<d>} key.
+   After playing a sequence multiple times, the difficulty of the sequence can be estimated based on past performance. By default, this is computed as the average score increase (ASI) over the plays of the sequence. Using the \verb{<d>} key, one can bring up a menu to choose from a variety of different methods for estimating the difficulty, including:
+
+   \enumerate{
+   \item average score increase over the plays of the sequence (ASI),
+   \item percentage of plays where the score did not improve (PNI),
+   \item number of plays where the score did not improve (NNI),
+   \item percentage of plays with a change in the score trend (PCT),
+   \item average of the scores of the sequence (AVG),
+   \item standard deviation of the scores of the sequence (SD),
+   \item standard deviation of the score changes of the sequence (SDC),
+   \item root mean square successive difference (RMSSD),
+   \item decay parameter from an exponential regression model (ERM),
+   }
+
+   These different calculations methods reflect the difficulty of a sequence in various ways. Sequences with high values for the ASI, PNI, NNI, PCT, SD, SDC, and RMSSD tend to show larger fluctuations in their scores over time and are apparently difficult to remember. Sequences with high AVG values are also apparently difficult to remember. Sequences with high ERM values are deviating strongly from the optimal decrease in the score that should happen when never making mistakes while playing a sequence (the optimal decay parameter is 80, that is, 100 times the score multiplier of 0.8 when not making a mistake when playing a sequence). By default, only the 20 most recent scores are used in the calculation of these statistics. This can also be adjusted via the menu.
 
 }
 \section{Adding New Sequences}{

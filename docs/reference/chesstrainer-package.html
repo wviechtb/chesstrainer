@@ -31,7 +31,7 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chesstrainer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-81</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-82</span>
       </span>
     </div>
 
@@ -125,7 +125,8 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
 <li><p>by entering <code>c:</code> followed by a (case insensitive) text string to select all sequences where a comment contains the text string.</p></li>
 </ul><p>The keywords <code>score</code>, <code>played</code>, <code>age</code>, and <code>difficulty</code> can be abbreviated to <code>s</code>, <code>p</code>, <code>a</code>, and <code>d</code> (so <code>s &gt; 80</code>, <code>p &lt; 1</code>, <code>a &gt; 2</code>, and <code>d &gt; 20</code> would also work). Other comparators such as <code>&gt;=</code>, <code>&lt;</code>, and <code>&gt;=</code> can also be used (e.g., <code>s &lt;= 10</code>).</p>
 <p>Hitting <code>&lt;enter&gt;</code> at the prompt (i.e., not entering any search string) keeps the current selection. Entering <code>*</code> at the prompt selects all sequences. The <code>&lt;*&gt;</code> (or <code>&lt;8&gt;</code>) key also selects all sequences without using <code>&lt;/&gt;</code> first.</p>
-<p>In ‘test’ mode, sequences are played by default at random based on the score as described above. However, you can toggle into a different selection mode with the <code>&lt;m&gt;</code> key. The options are:</p><ol><li><p>selection based on the score where sequences with higher scores have a higher play probability (the default),</p></li>
+<p>In ‘test’ mode, sequences are played by default at random based on the score as described above. However, you can toggle into a different selection mode with the <code>&lt;m&gt;</code> key. The options are:</p>
+<p></p><ol><li><p>selection based on the score where sequences with higher scores have a higher play probability (the default),</p></li>
 <li><p>selection based on the score where the sequence with the highest score is played next,</p></li>
 <li><p>selection based on the play frequency where sequences with lower play frequencies have a higher play probability,</p></li>
 <li><p>selection based on the play frequency where the sequence with the lowest play frequency is played next,</p></li>
@@ -148,7 +149,17 @@ The purpose of the chesstrainer package is to create sequences of moves (lines),
     <h2>Sequence Difficulty</h2>
 
 
-<p>After playing a sequence multiple times, the difficulty of the sequence can be estimated based on past performance. By default, this is computed as the average score increase (ASI) over the plays of the sequence. Using the <code>&lt;d&gt;</code> key, one can choose a different method for estimating the difficulty, namely the percentage of plays where a score increase happened (PSI), the number of plays where a score increase happened (NSI), the average of the scores of the sequence (AVG), the standard deviation of the scores of the sequence (SD), or the root mean square successive difference (RMSSD). These different calculations methods reflect the difficulty of a sequence in various ways. Sequences with high values for the ASI, NSI, PSI, SD, and RMSSD tend to show larger fluctuations in their scores over time and are apparently difficult to remember. Sequences with high AVG values are also apparently difficult to remember. By default, only the 20 most recent scores are used in the calculation of these statistics. This can also be adjusted when using the the <code>&lt;d&gt;</code> key.</p>
+<p>After playing a sequence multiple times, the difficulty of the sequence can be estimated based on past performance. By default, this is computed as the average score increase (ASI) over the plays of the sequence. Using the <code>&lt;d&gt;</code> key, one can bring up a menu to choose from a variety of different methods for estimating the difficulty, including:</p>
+<p></p><ol><li><p>average score increase over the plays of the sequence (ASI),</p></li>
+<li><p>percentage of plays where the score did not improve (PNI),</p></li>
+<li><p>number of plays where the score did not improve (NNI),</p></li>
+<li><p>percentage of plays with a change in the score trend (PCT),</p></li>
+<li><p>average of the scores of the sequence (AVG),</p></li>
+<li><p>standard deviation of the scores of the sequence (SD),</p></li>
+<li><p>standard deviation of the score changes of the sequence (SDC),</p></li>
+<li><p>root mean square successive difference (RMSSD),</p></li>
+<li><p>decay parameter from an exponential regression model (ERM),</p></li>
+</ol><p>These different calculations methods reflect the difficulty of a sequence in various ways. Sequences with high values for the ASI, PNI, NNI, PCT, SD, SDC, and RMSSD tend to show larger fluctuations in their scores over time and are apparently difficult to remember. Sequences with high AVG values are also apparently difficult to remember. Sequences with high ERM values are deviating strongly from the optimal decrease in the score that should happen when never making mistakes while playing a sequence (the optimal decay parameter is 80, that is, 100 times the score multiplier of 0.8 when not making a mistake when playing a sequence). By default, only the 20 most recent scores are used in the calculation of these statistics. This can also be adjusted via the menu.</p>
     </div>
     <div id="adding-new-sequences">
     <h2>Adding New Sequences</h2>

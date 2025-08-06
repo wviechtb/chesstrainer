@@ -13,11 +13,14 @@
       "Choose a difficulty calculation method:",
       "",
       "1 - average score increase over the plays of the sequence",
-      "2 - percentage of plays where a score increase happened",
-      "3 - number of plays where a score increase happened",
-      "4 - average of the scores of the sequence",
-      "5 - standard deviation of the scores of the sequence",
-      "6 - root mean square successive difference",
+      "2 - percentage of plays where the score did not improve",
+      "3 - number of plays where the score did not improve",
+      "4 - percentage of plays with a change in the score trend",
+      "5 - average of the scores of the sequence",
+      "6 - standard deviation of the scores of the sequence",
+      "7 - standard deviation of the scores changes of the sequence",
+      "8 - root mean square successive difference",
+      "9 - decay parameter from an exponential regression model",
       "n - number of the most recent scores used in the calculation")
 
    }
@@ -28,11 +31,14 @@
       "W\U000000E4hle eine Methode zur Schwierigkeitsberechnung aus:",
       "",
       "1 - durchschnittliche Punktsteigerung \U000000FCber die Spiele der Sequenz",
-      "2 - Prozent der Spiele, in denen die Punktzahl gestiegen ist",
-      "3 - Anzahl der Spiele, in denen die Punktzahl gestiegen ist",
-      "4 - Durchschnitt der Punkte der Sequenz",
-      "5 - Standardabweichung der Punkte der Sequenz",
-      "6 - quadratischer Mittelwert der aufeinanderfolgenden Differenzen",
+      "2 - Prozent der Spiele, in denen sich die Punktzahl nicht verbessert hat",
+      "3 - Anzahl der Spiele, in denen sich die Punktzahl nicht verbessert hat",
+      "4 - Prozent der Spiele mit einer \U000000C4nderung im Punktestandtrend",
+      "5 - Durchschnitt der Punkte der Sequenz",
+      "6 - Standardabweichung der Punkte der Sequenz",
+      "7 - Standardabweichung der Punktever\U000000E4nderungen der Sequenz",
+      "8 - quadratischer Mittelwert der aufeinanderfolgenden Differenzen",
+      "9 - Verfallsparameter aus einem exponentiellen Regressionsmodell",
       "n - Anzahl der letzten Ergebnisse, die f\U000000FCr die Berechnung verwendet werden")
 
    }
@@ -43,7 +49,7 @@
    maxsh <- strheight("A", family=font.mono) * length(txt)
    cex <- min(1.5, (8.5 - 1.5) / max(maxsw, maxsh) * 0.9)
 
-   opts <- c(1:6, "n")
+   opts <- c(1:9, "n")
    difffunold <- difffun
    difflenold <- difflen
 
@@ -69,7 +75,7 @@
    while (TRUE) {
 
       if (setlen) {
-         val <- c()
+         val <- ""
          sw.val <- 0
          text(1+0.5, tail(ypos, 1) - 6*dist, string.new, pos=4, cex=cex, family=font.mono, col=col.help)
       }
@@ -105,10 +111,24 @@
                text(1+0.5+sw.string.cur, tail(ypos, 1) - 4*dist, difflen,    pos=4, cex=cex, family=font.mono, col=col.help)
                break
             }
+            if (nchar(val) > 10)
+               next
             num <- resp
             val <- paste0(val, resp, collapse="")
             text(1+0.5+sw.string.cur+sw.val, tail(ypos, 1) - 6*dist, num, pos=4, cex=cex, family=font.mono, col=col.help)
             sw.val <- strwidth(val, family=font.mono)
+         }
+
+         if (identical(resp, "\b") || identical(resp, "ctrl-H")) {
+            if (nchar(val) > 1L) {
+               val <- substr(val, 1, nchar(val)-1)
+            } else {
+               val <- ""
+            }
+            sw.val <- strwidth(val, family=font.mono)
+            rect(1+0.2+sw.string.cur, tail(ypos, 1) - 5*dist, 8.5, tail(ypos, 1) - 7*dist, col=col.bg, border=NA)
+            text(1+0.5, tail(ypos, 1) - 6*dist, string.new, pos=4, cex=cex, family=font.mono, col=col.help)
+            text(1+0.5+sw.string.cur, tail(ypos, 1) - 6*dist, val, pos=4, cex=cex, family=font.mono, col=col.help)
          }
 
       }
@@ -187,7 +207,10 @@
       val <- 0
    } else {
       xdiff <- diff(x)
-      val <- mean(xdiff > 0, na.rm=TRUE) * 100
+      val <- mean(xdiff >= 0, na.rm=TRUE) * 100
+      # the ratio of number of no improvements versus number of improvements
+      # gives values that are just a monotonic transformation of this
+      #val <- sum(xdiff >= 0, na.rm=TRUE) / sum(xdiff < 0, na.rm=TRUE) * 10
    }
    return(val)
 }
@@ -199,7 +222,7 @@
       val <- 0
    } else {
       xdiff <- diff(x)
-      val <- sum(xdiff > 0, na.rm=TRUE)
+      val <- sum(xdiff >= 0, na.rm=TRUE)
    }
    return(val)
 }
@@ -210,7 +233,8 @@
    if (n <= 1L) {
       val <- 0
    } else {
-      val <- mean(x, na.rm=TRUE)
+      xdiff <- diff(x)
+      val <- length(rle(xdiff < 0)$lengths) / length(xdiff) * 100
    }
    return(val)
 }
@@ -221,12 +245,35 @@
    if (n <= 1L) {
       val <- 0
    } else {
-      val <- sd(x, na.rm=TRUE)
+      val <- mean(x, na.rm=TRUE)
    }
    return(val)
 }
 
 .difffun6 <- function(x, len, multiplier) {
+   x <- tail(x, len)
+   n <- length(x)
+   if (n <= 1L) {
+      val <- 0
+   } else {
+      val <- sd(x, na.rm=TRUE)
+   }
+   return(val)
+}
+
+.difffun7 <- function(x, len, multiplier) {
+   x <- tail(x, len)
+   n <- length(x)
+   if (n <= 1L) {
+      val <- 0
+   } else {
+      xdiff <- diff(x)
+      val <- sd(xdiff, na.rm=TRUE)
+   }
+   return(val)
+}
+
+.difffun8 <- function(x, len, multiplier) {
    x <- tail(x, len)
    n <- length(x)
    if (n <= 1L) {
@@ -237,7 +284,20 @@
    return(val)
 }
 
-.difffun7 <- function(x, len, multiplier) {
+.difffun9 <- function(x, len, multiplier) {
+   x <- tail(x, len)
+   n <- length(x)
+   if (n <= 2L) {
+      val <- NA_real_
+   } else {
+      t <- 1:n
+      res <- suppressWarnings(lm(log(x) ~ t))
+      val <- exp(coef(res)[2]) * 100
+   }
+   return(val)
+}
+
+.difffun10 <- function(x, len, multiplier) {
    x <- tail(x, len)
    n <- length(x)
    if (n <= 1L) {

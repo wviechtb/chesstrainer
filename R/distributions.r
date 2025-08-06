@@ -35,6 +35,7 @@
    #########################################################################
 
    # histogram of 'age'
+
    if (length(c(na.omit(age))) >= 2L) {
       hist(age, breaks=20, las=1, col.axis=col.top, col.lab=col.top, col.main=col.fg,
            xlab=.text("day", TRUE), col=col.square.d, border=col.square.l, main=paste0("Histogram: ", .text("age")), xlim=c(0,max(age, na.rm=TRUE)))
@@ -46,6 +47,7 @@
    #########################################################################
 
    # histogram of 'difficulty'
+
    if (length(c(na.omit(difficulty))) >= 2L) {
       hist(difficulty, breaks=20, las=1, col.axis=col.top, col.lab=col.top, col.main=col.fg,
            xlab=.text("difficulty"), col=col.square.d, border=col.square.l, main=paste0("Histogram: ", .text("difficulty")), xlim=c(0,max(difficulty, na.rm=TRUE)))
