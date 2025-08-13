@@ -2,6 +2,11 @@
 
    lang <- .get("lang")
 
+   col.bg          <- .get("col.bg")
+   col.help        <- .get("col.help")
+   col.help.border <- .get("col.help.border")
+   font.mono       <- .get("font.mono")
+
    if (lang == "en") {
 
       txt <- c(
@@ -36,10 +41,10 @@
 
    }
 
-   rect(1.2, 1.2, 8.8, 8.8, col=.get("col.bg"), border=.get("col.help.border"), lwd=lwd+3)
+   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=lwd+3)
 
-   maxsw <- max(strwidth(txt, family=.get("font.mono")))
-   maxsh <- strheight("A", family=.get("font.mono")) * length(txt)
+   maxsw <- max(strwidth(txt, family=font.mono))
+   maxsh <- strheight("A", family=font.mono) * length(txt)
    cex <- min(1.5, (8.5 - 1.5) / max(maxsw, maxsh) * 0.9)
 
    selmodes <- c("score_random", "score_highest", "played_random", "played_lowest", "age_random", "age_oldest", "diff_random", "diff_highest", "sequential")
@@ -49,7 +54,7 @@
    ypos <- seq(7.5, 3.5, length.out=length(txt))
 
    text(1+0.5, ypos, txt, pos=4, cex=cex,
-        family=.get("font.mono"), font=ifelse(c("","",selmodes)==selmode, 2, 1), col=.get("col.help"))
+        family=font.mono, font=ifelse(c("","",selmodes)==selmode, 2, 1), col=col.help)
 
    ypos <- ypos[-c(1:2)]
    dist <- (ypos[1] - ypos[2]) / 2
@@ -87,9 +92,9 @@
    }
 
    if (selmodes[oldmode] != selmode) {
-      rect(1.5, ypos[oldmode]-dist, 8, ypos[oldmode]+dist, col=.get("col.bg"), border=NA)
-      text(1+0.5, ypos[oldmode], txt[oldmode+2], pos=4, cex=cex, family=.get("font.mono"), col=.get("col.help"))
-      text(1+0.5, ypos[click], txt[click+2], pos=4, cex=cex, family=.get("font.mono"), font=2, col=.get("col.help"))
+      rect(1.5, ypos[oldmode]-dist, 8, ypos[oldmode]+dist, col=col.bg, border=NA)
+      text(1+0.5, ypos[oldmode], txt[oldmode+2], pos=4, cex=cex, family=font.mono, col=col.help)
+      text(1+0.5, ypos[click], txt[click+2], pos=4, cex=cex, family=font.mono, font=2, col=col.help)
       Sys.sleep(1)
    }
 

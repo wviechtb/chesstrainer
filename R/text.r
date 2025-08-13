@@ -14,12 +14,6 @@
                          "The graphics device does not support event handling.\nTry running x11() and then play()."
    ))}
 
-   if (x == "modecheck") {
-      return(switch(lang,
-                    de = "Parameter 'mode' muss entweder 'add', 'test', oder 'play' sein.",
-                         "Argument 'mode' must be either 'add', 'test', or 'play'."
-   ))}
-
    if (x == "createconfigdir") {
       return(switch(lang,
                     de = paste0("Erstelle Verzeichnis f\U000000FCr Einstellungen: ", arg, "\n"),
@@ -381,16 +375,16 @@
                          paste0("Sound volume: ", arg)
    ))}
 
-   if (x == "newscore") {
+   if (x == "currentscore") {
       return(switch(lang,
-                    de = paste0("Neuer Punktestand (jetztiger Wert ist ", arg, "): "),
-                         paste0("New score (current value is ", arg, "): ")
+                    de = "Aktueller Punktesstand: ",
+                         "Current score: "
    ))}
 
-   if (x == "setnewscore") {
+   if (x == "newscore") {
       return(switch(lang,
-                    de = paste0("Setze den Punktestand auf ", arg, ".\n"),
-                         paste0("Setting the score to ", arg, ".\n")
+                    de = paste0("Neuer Punktestand: "),
+                         paste0("New score: ")
    ))}
 
    if (x == "setscoreback") {
@@ -417,16 +411,16 @@
                          "That was the last move!"
    ))}
 
-   if (x == "newexpval") {
+   if (x == "currentexpval") {
       return(switch(lang,
-                    de = paste0("Exponentenwert: (jetztiger Wert ist ", arg, "): "),
-                         paste0("Exponent value: (current value is ", arg, "): ")
+                    de = "Aktueller Exponentenwert: ",
+                         "Current exponent value: "
    ))}
 
-   if (x == "expvalinf") {
+   if (x == "newexpval") {
       return(switch(lang,
-                    de = "Der gew\U000000E4hlte Wert ist zu gro\U000000DF und f\U000000FChrt zu unendlichen Wahrscheinlichkeiten.\n",
-                         "Chosen value is too large and leads to infinite probabilities.\n"
+                    de = paste0("Neuer Exponentenwert: "),
+                         paste0("New exponent value: ")
    ))}
 
    if (x == "setnewexpval") {
@@ -1148,6 +1142,24 @@
       return(switch(lang,
                     de = "Neuer Wert f\U000000FCr m: ",
                          "New value for m: "
+   ))}
+
+   if (x == "selmodeswitch") {
+      return(switch(lang,
+                    de = paste0("Wechsele zum Selektionsmodus: ", arg),
+                         paste0("Switching to selection mode: ", arg)
+   ))}
+
+   if (x == "storegame") {
+      return(switch(lang,
+                    de = "Aktuelles Spiel als Hauptvariante sichern.",
+                         "Storing current game as the main variation."
+   ))}
+
+   if (x == "retstoregame") {
+      return(switch(lang,
+                    de = "Springe zur Hauptvariante zur\U000000FCck.",
+                         "Jumping back to the main variation."
    ))}
 
 }

@@ -1,4 +1,4 @@
-.scoregraph <- function(dat, lwd) {
+.progressgraph <- function(dat, lwd) {
 
    if (dat$played[1] == 1)
       dat <- rbind(data.frame(date=NA, played=0, score=100), dat)
@@ -68,6 +68,8 @@
             par(mar=rep(5.2,4), usr=c(1,9,1,9))
             click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.mousedownfun, onKeybd=.keyfun)
             if (!is.numeric(click))
+               next
+            if (click[[3]] == 2)
                next
             par(mar=rep(11,4), usr=usr)
             x2 <- grconvertX(click[[1]], from="ndc", to="user")

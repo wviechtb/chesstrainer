@@ -134,7 +134,7 @@
             num <- resp
             val <- paste0(val, resp, collapse="")
             text(1+0.5+sw.string+sw.val, tail(ypos, 1) - 8*dist, num, pos=4, cex=cex, family=font.mono, col=col.help)
-            sw.val <- strwidth(val, family=font.mono)
+            sw.val <- strwidth(val, family=font.mono, cex=cex)
          }
 
          if (identical(resp, "\b") || identical(resp, "ctrl-H")) {
@@ -150,7 +150,7 @@
             #   text(1+0.5, tail(ypos, 1) - 8*dist, string.min.new, pos=4, cex=cex, family=font.mono, col=col.help)
             #}
             text(1+0.5+sw.string, tail(ypos, 1) - 8*dist, val, pos=4, cex=cex, family=font.mono, col=col.help)
-            sw.val <- strwidth(val, family=font.mono)
+            sw.val <- strwidth(val, family=font.mono, cex=cex)
          }
 
       }

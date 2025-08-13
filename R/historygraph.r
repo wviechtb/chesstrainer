@@ -146,6 +146,8 @@
             click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.mousedownfun, onKeybd=.keyfun)
             if (!is.numeric(click))
                next
+            if (click[[3]] == 2)
+               next
             par(mar=rep(11,4), usr=usr)
             x2 <- grconvertX(click[[1]], from="ndc", to="user")
             if (x2 < usr[1])

@@ -427,6 +427,10 @@
       target <- pos[x2,y2]
    }
 
+   # can never capture a king
+   if (target %in% c("WK","BK"))
+      return(FALSE)
+
    # check if moving the wrong color
    color <- tolower(substr(piece, 1, 1))
    if (sidetoplay != color)

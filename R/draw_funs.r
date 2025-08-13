@@ -652,7 +652,7 @@
 
    ischeck <- attr(pos, "ischeck")
 
-   if (sum(ischeck) == 0L) {
+   if (sum(ischeck) == 0L || sum(ischeck) == 2L) {
       assign("checkpos", c(NA,NA), envir=.chesstrainer)
       return()
    }
@@ -708,7 +708,7 @@
 
    assign("checkpos", c(NA,NA), envir=.chesstrainer)
 
-   if (sum(ischeck) == 0L)
+   if (sum(ischeck) == 0L || sum(ischeck) == 2L)
       return()
 
    color <- c("w","b")[ischeck]
@@ -883,6 +883,9 @@
 
    Sys.sleep(sleep)
 
+   if (sleep > 0)
+      rect(xleft, ybottom-0.2, xright, ytop+0.2, col=.get("col.bg"), border=NA)
+
    txt <- paste(txt, collapse="\n")
    return(txt)
 
@@ -965,13 +968,13 @@
          }
       }
 
-      if (mode == "play") {
+      if (mode %in% c("play","analysis")) {
          if (onlyi) {
             text(0.00, 0.15, paste0("        ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
             text(0.00, 0.15, paste0("        ", i), pos=4, cex=cex, family=font, col=col)
          }
          if (redraw) {
-            text(0.00, 0.45, paste0("Mode:   ", "Play"), pos=4, cex=cex, family=font, col=col)
+            text(0.00, 0.45, paste0("Mode:   ", ifelse(mode == "play", "Play", "Analysis")), pos=4, cex=cex, family=font, col=col)
             text(0.00, 0.30, paste0("Player: ", player), pos=4, cex=cex, family=font, col=col)
             text(0.00, 0.15, paste0("Move:   ", i), pos=4, cex=cex, family=font, col=col)
          }
@@ -1031,13 +1034,13 @@
          }
       }
 
-      if (mode == "play") {
+      if (mode %in% c("play","analysis")) {
          if (onlyi) {
             text(0.00, 0.15, paste0("         ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
             text(0.00, 0.15, paste0("         ", i), pos=4, cex=cex, family=font, col=col)
          }
          if (redraw) {
-            text(0.00, 0.45, paste0("Modus:   ", "Spielen"), pos=4, cex=cex, family=font, col=col)
+            text(0.00, 0.45, paste0("Modus:   ", ifelse(mode == "play", "Spielen", "Analyse")), pos=4, cex=cex, family=font, col=col)
             text(0.00, 0.30, paste0("Spieler: ", player), pos=4, cex=cex, family=font, col=col)
             text(0.00, 0.15, paste0("Zug:     ", i), pos=4, cex=cex, family=font, col=col)
          }

@@ -189,6 +189,10 @@
 
    attr(pos,"rochade") <- rochade
 
+   ischeck <- c(.isattacked(pos, xy=c(which(pos=="WK", arr.ind=TRUE)), attackcolor="b"),
+                .isattacked(pos, xy=c(which(pos=="BK", arr.ind=TRUE)), attackcolor="w"))
+   attr(pos,"ischeck") <- ischeck
+
    return(list(pos=pos, flip=flip, sidetoplay=sidetoplay))
 
 }
