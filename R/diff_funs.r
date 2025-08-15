@@ -173,7 +173,7 @@
 
       } else {
 
-         if (identical(click, "\r") || identical(click, "ctrl-J") || identical(click, "q") || identical(click, "\033") || identical(click, "ctrl-["))
+         if (identical(click, "d") || identical(click, "\r") || identical(click, "ctrl-J") || identical(click, "q") || identical(click, "\033") || identical(click, "ctrl-["))
             break
 
          if (identical(click, "n"))

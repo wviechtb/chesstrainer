@@ -75,7 +75,7 @@
 
       } else {
 
-         if (identical(click, "\r") || identical(click, "ctrl-J") || identical(click, "q") || identical(click, "\033") || identical(click, "ctrl-["))
+         if (identical(click, "m") || identical(click, "\r") || identical(click, "ctrl-J") || identical(click, "q") || identical(click, "\033") || identical(click, "ctrl-["))
             break
 
          if (is.element(click, 1:length(selmodes))) {

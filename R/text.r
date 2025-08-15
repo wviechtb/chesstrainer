@@ -928,6 +928,12 @@
                          "All moves in the sequence are automatically shown.\nThere must be at least one move that has to be played."
    ))}
 
+   if (x == "lastmoveplayer") {
+      return(switch(lang,
+                    de = "Sequenzen m\U000000FCssen mit einem Zug des Spielers enden.",
+                         "Sequences must end with a move by the player."
+   ))}
+
    if (x == "seqdiroptionwhich") {
       return(switch(lang,
                     de = "Option (<Nummer>, 'h' (hinzuf\U000000FCgen), 'e' (entfernen), 'p' (Position ver\U000000E4ndern), oder <Enter> zum Verlassen): ",

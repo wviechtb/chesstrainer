@@ -776,7 +776,8 @@ play <- function(lang="en", sfpath="", ...) {
 
             while (isTRUE(sub$moves$show[i])) {
                if (nrow(circles) >= 1L || nrow(arrows) >= 1L) {
-                  Sys.sleep(sleep)
+                  .waitforclick()
+                  #Sys.sleep(sleep)
                   .rmannot(pos, circles, arrows, flip)
                   circles <- matrix(nrow=0, ncol=2)
                   arrows  <- matrix(nrow=0, ncol=4)
@@ -791,11 +792,13 @@ play <- function(lang="en", sfpath="", ...) {
                } else {
                   texttop <- .texttop(sub$moves$comment[i])
                }
+               .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
                circles <- .parseannot(sub$moves$circles[i], cols=2)
                arrows <- .parseannot(sub$moves$arrows[i], cols=4)
-               .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
-               .drawcircles(circles, lwd=lwd)
-               .drawarrows(arrows, lwd=lwd)
+               if (nrow(circles) >= 1L || nrow(arrows) >= 1L) {
+                  .drawcircles(circles, lwd=lwd)
+                  .drawarrows(arrows, lwd=lwd)
+               }
                Sys.sleep(sleep)
             }
 
@@ -850,7 +853,7 @@ play <- function(lang="en", sfpath="", ...) {
 
                   tmp <- .parsebestmove(bestmove[[1]][1], pos=pos, flip=flip, evalval=NA, i=i, sidetoplay=sidetoplay, rename=FALSE, returnline=FALSE, hintdepth=1)
 
-                  sub$moves <- rbind(sub$moves, data.frame(x1=tmp$x1, y1=tmp$y1, x2=tmp$x2, y2=tmp$y2, show=FALSE, move=tmp$txt, eval=evalval[1], comment="", circles="", arrows="", fen=fen))
+                  sub$moves <- rbind(sub$moves, data.frame(x1=tmp$x1, y1=tmp$y1, x2=tmp$x2, y2=tmp$y2, show=TRUE, move=tmp$txt, eval=evalval[1], comment="", circles="", arrows="", fen=fen))
                   pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE, volume=volume, verbose=verbose)
 
                   i <- i + 1
@@ -1036,6 +1039,7 @@ play <- function(lang="en", sfpath="", ...) {
             if (identical(click, "\\") || identical(click, "#")) {
                sub$moves <- sub$moves[seq_len(i-1),,drop=FALSE]
                if (mode == "play") {
+                  show <- FALSE
                   mode <- "analysis"
                   .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
                   next
@@ -1047,6 +1051,7 @@ play <- function(lang="en", sfpath="", ...) {
                }
                mode <- "play"
                timed <- FALSE
+               show <- FALSE
                fen <- .genfen(pos, flip, sidetoplay, i)
                res.sf <- .sf.eval(sfproc, sfrun, ifelse(flip, ifelse(sidetoplay=="b", depth1, depth3), ifelse(sidetoplay=="w", depth1, depth3)), multipv1, fen, sidetoplay, verbose)
                evalval  <- res.sf$eval
@@ -1891,6 +1896,10 @@ play <- function(lang="en", sfpath="", ...) {
             # s to save the sequence (only in add mode)
 
             if (mode == "add" && identical(click, "s")) {
+               if ((flip && sidetoplay == "b") || (!flip && sidetoplay == "w")) {
+                  .texttop(.text("lastmoveplayer"))
+                  next
+               }
                if (all(sub$moves$show)) {
                   .texttop(.text("allmovesshown"))
                   next
@@ -2206,14 +2215,21 @@ play <- function(lang="en", sfpath="", ...) {
             # > to select / manage bookmarks
 
             if (identical(click, ">")) {
-               bookmark <- .bookmarks(seqdir, seqdirpos, texttop, lwd)
-               if (bookmark != "") {
+               bookmark <- .bookmarks(seqdir, seqdirpos, texttop, lwd) # returns NA if bookmark screen was not draw
+               if (isTRUE(bookmark != "")) { # only TRUE if bookmark is neither NA or ""
                   selected <- grepl(bookmark, files.all)
                   selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected]
                   run.rnd <- FALSE
                   input <- FALSE
                   mode <- oldmode <- "add"
                   seqno <- 1
+               } else {
+                  if (bookmark == "") {
+                     .redrawpos(pos, flip=flip)
+                     .drawcircles(circles, lwd=lwd)
+                     .drawarrows(arrows, lwd=lwd)
+                     .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
+                  }
                }
                next
             }
@@ -2785,7 +2801,6 @@ play <- function(lang="en", sfpath="", ...) {
                   .texttop(texttop)
                   next
                }
-
                .distributions(scores.selected, played.selected, age.selected, difficulty.selected, lwd, multiplier)
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
@@ -3192,6 +3207,7 @@ play <- function(lang="en", sfpath="", ...) {
                         sub$moves <- sub$moves[seq_len(i),,drop=FALSE]
                         oldmode <- "test"
                         mode <- "play"
+                        show <- FALSE
                         timed <- FALSE
                         .texttop(" ")
                         sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
@@ -3322,10 +3338,28 @@ play <- function(lang="en", sfpath="", ...) {
             if (is.null(sub$moves$fen))
                sub$moves$fen <- ""
 
+            # if we are in analysis mode and make a move (i.e., we go into a new variation), then cut away the previous variation
+
             if (mode == "analysis")
                sub$moves <- sub$moves[seq_len(i-2),,drop=FALSE]
 
-            sub$moves <- rbind(sub$moves, data.frame(x1=click1.x, y1=click1.y, x2=click2.x, y2=click2.y, show=show, move=attr(pos,"move"), eval=evalval[1], comment=comment, circles=circlesvar, arrows=arrowsvar, fen=fen))
+            # determine the correct value for show for sub
+
+            if (mode == "add") {
+               if (flip) {
+                  showval <- ifelse(sidetoplay == "b", TRUE, show)
+               } else {
+                  showval <- ifelse(sidetoplay == "w", TRUE, show)
+               }
+            } else {
+               if (flip) {
+                  showval <- sidetoplay == "b"
+               } else {
+                  showval <- sidetoplay == "w"
+               }
+            }
+
+            sub$moves <- rbind(sub$moves, data.frame(x1=click1.x, y1=click1.y, x2=click2.x, y2=click2.y, show=showval, move=attr(pos,"move"), eval=evalval[1], comment=comment, circles=circlesvar, arrows=arrowsvar, fen=fen))
             comment <- ""
 
             if (mode %in% c("play","analysis") && !identical(matetype, "none")) {
@@ -3400,6 +3434,9 @@ play <- function(lang="en", sfpath="", ...) {
             }
             i <- i + 1
             sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
+
+            if (sub$moves$show[i])
+               Sys.sleep(sleep)
 
          }
 

@@ -9,7 +9,7 @@
    if (!file.exists(file.path(seqdir[seqdirpos], ".bookmarks"))) {
       .texttop(.text("nobookmarks"), sleep=1)
       .texttop(texttop)
-      return("")
+      return(NA)
    }
 
    # if .bookmarks is empty, read.table() generates an error so we exit again
@@ -20,7 +20,7 @@
       try(file.remove(file.path(seqdir[seqdirpos], ".bookmarks")), silent=TRUE)
       .texttop(.text("nobookmarks"), sleep=1)
       .texttop(texttop)
-      return("")
+      return(NA)
    }
 
    # remove duplicates and keep only the existing bookmarks
@@ -35,7 +35,7 @@
       try(file.remove(file.path(seqdir[seqdirpos], ".bookmarks")), silent=TRUE)
       .texttop(.text("nobookmarks"), sleep=1)
       .texttop(texttop)
-      return("")
+      return(NA)
    }
 
    bookmark <- ""
