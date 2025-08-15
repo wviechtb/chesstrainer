@@ -90,6 +90,7 @@
       "\U00002190 and \U00002192  - go back / forward one move",
       "1 or \U00002191   - jump to the start of the game",
       "2 or \U00002193   - jump to the end of the game",
+      "3, 4, 5  - jump to the 1st quarter, middle, 3rd quarter of the game",
       "0        - store the current game as the main variation",
       "9        - jump to the main variation")
 
@@ -176,6 +177,7 @@
       "\U00002190 und \U00002192  - einen Zug zur\U000000FCck / vorw\U000000E4rts gehen",
       "1 oder \U00002191 - zum Anfang der Partie springen",
       "2 oder \U00002193 - zum Ende der Partie springen",
+      "3, 4, 5  - zum 1. Viertel, zur Mitte, zum 3. Viertel der Partie springen",
       "0        - aktuelles Spiel als Hauptvariante sichern",
       "9        - zur Hauptvariante springen")
 

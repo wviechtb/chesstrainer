@@ -106,6 +106,8 @@
 
    }
 
+   .drawcheck(pos, flip=flip)
+
 }
 
 .redrawall <- function(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove) {
