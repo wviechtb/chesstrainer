@@ -203,6 +203,11 @@
 
    lang <- .get("lang")
 
+   col.bg          <- .get("col.bg")
+   col.help        <- .get("col.help")
+   col.help.border <- .get("col.help.border")
+   font.mono       <- .get("font.mono")
+
    if (lang == "en") {
 
       txt <- c(
@@ -217,9 +222,7 @@
       "n  - reset the board into the starting position",
       "c  - clear the board",
       "r  - enter castling availability",
-      "F1 - show this help",
-      "q  - quit the board editor"
-      )
+      "F1 - show this help")
 
    }
 
@@ -237,21 +240,16 @@
       "n  - Brett in die Ausgangsposition zur\U000000FCcksetzen",
       "c  - Brett leer r\U000000E4umen",
       "r  - Rochadem\U000000F6glichkeiten eingeben",
-      "F1 - diese Hilfe anzeigen",
-      "q  - Bretteditor beenden"
-      )
+      "F1 - diese Hilfe anzeigen")
 
    }
 
-   rect(2.2, 2.2, 9.8, 9.8, col=.get("col.bg"), border=.get("col.help.border"), lwd=lwd+3)
+   rect(2.2, 2.2, 9.8, 9.8, col=col.bg, border=col.help.border, lwd=lwd+3)
 
-   font.mono <- .get("font.mono")
-   maxsw <- max(strwidth(txt, family=font.mono))
-   maxsh <- strheight("A", family=font.mono) * length(txt)
-   cex <- min(1.5, (8.5 - 1.5) / max(maxsw, maxsh) * 0.8)
+   cex <- .findcex(txt, font=font.mono, x1=1.8, x2=8, y1=4, y2=8, mincex=1.1)
+   ypos <- seq(8, 4, length.out=length(txt))
 
-   text(2+0.5, seq(8, 4, length.out=length(txt)), txt, pos=4, cex=cex,
-        family=font.mono, font=ifelse(grepl(":", txt), 2, 1), col=.get("col.help"))
+   text(2.5, ypos, txt, pos=4, cex=cex, family=font.mono, font=ifelse(grepl(":", txt), 2, 1), col=col.help)
 
    .waitforclick()
 

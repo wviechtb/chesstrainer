@@ -152,8 +152,17 @@
    #.clearsideindicator()
    #.drawtimer(clear=TRUE)
 
+   lang <- .get("lang")
+
+   col.bg          <- .get("col.bg")
+   col.help        <- .get("col.help")
+   col.help.border <- .get("col.help.border")
+   font.mono <- .get("font.mono")
+
    seqdir <- tab$seqdir
    sfpath <- tab$sfpath
+
+   tab.save <- tab
 
    tab <- t(tab)
    tab <- cbind(tab, .text("explsettings"))
@@ -177,17 +186,30 @@
 
    txt <- c(txt, "", .text("seqdirsettings"), seqdir, "", .text("sfpathsettings"), sfpath)
 
-   rect(1.2, 1.2, 8.8, 8.8, col=.get("col.bg"), border=.get("col.help.border"), lwd=lwd+3)
+   cex <- .findcex(txt, font=font.mono, x1=1.5, x2=8.2, y1=1.5, y2=8.5)
 
-   font.mono <- .get("font.mono")
-   maxsw <- max(strwidth(txt, family=font.mono))
-   maxsh <- strheight("A", family=font.mono) * length(txt)
-   cex <- min(1.5, (8.5 - 1.5) / max(maxsw, maxsh) * 0.9)
+   ypos <- seq(8.5, 1.5, length.out=length(txt))
 
-   text(1+0.5, seq(8.5, 1.5, length.out=length(txt)), txt, pos=4, cex=cex,
-        family=font.mono, font=ifelse(grepl(":", txt), 2, 1), col=.get("col.help"))
+   langswitch <- FALSE
 
-   .waitforclick()
+   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=lwd+3)
+
+   text(1.5, ypos, txt, pos=4, offset=0, cex=cex, family=font.mono, font=ifelse(grepl(":", txt), 2, 1), col=col.help)
+
+   click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.mousedownfun, onKeybd=.keyfun)
+
+   if (identical(click, "i")) {
+      if (lang == "de") {
+         lang <- "en"
+      } else {
+         lang <- "de"
+      }
+      assign("lang", lang, envir=.chesstrainer)
+      langswitch <- TRUE
+   }
+
+   if (langswitch)
+      .showsettings(tab.save, lwd)
 
    #.erase(1, 1, 9, 9)
 

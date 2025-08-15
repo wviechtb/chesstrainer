@@ -1,7 +1,5 @@
 .setscore <- function(score, lwd) {
 
-   lang <- .get("lang")
-
    col.bg          <- .get("col.bg")
    col.help        <- .get("col.help")
    col.help.border <- .get("col.help.border")
@@ -18,9 +16,9 @@
 
    sw.string <- max(strwidth(string.cur, family=font.mono, cex=cex), strwidth(string.new, family=font.mono, cex=cex))
 
-   text(1+0.5,           7.5, string.cur, pos=4, cex=cex, family=font.mono, col=col.help)
-   text(1+0.5+sw.string, 7.5, score,      pos=4, cex=cex, family=font.mono, col=col.help)
-   text(1+0.5,           6.5, string.new, pos=4, cex=cex, family=font.mono, col=col.help)
+   text(1.5,           7.5, string.cur, pos=4, cex=cex, family=font.mono, col=col.help)
+   text(1.5+sw.string, 7.5, score,      pos=4, cex=cex, family=font.mono, col=col.help)
+   text(1.5,           6.5, string.new, pos=4, cex=cex, family=font.mono, col=col.help)
 
    val <- ""
    sw.val <- 0
@@ -36,11 +34,11 @@
          break
 
       if (grepl("^[0-9]+$", resp)) {
-         if (nchar(val) > 5)
+         if (nchar(val) > 3)
             next
          num <- resp
          val <- paste0(val, resp, collapse="")
-         text(1+0.5+sw.string+sw.val, 6.5, num, pos=4, cex=cex, family=font.mono, col=col.help)
+         text(1.5+sw.string+sw.val, 6.5, num, pos=4, cex=cex, family=font.mono, col=col.help)
          sw.val <- strwidth(val, family=font.mono, cex=cex)
       }
 
@@ -60,17 +58,17 @@
          } else {
             val <- ""
          }
-         rect(1+0.2+sw.string, 6, 8.5, 7, col=col.bg, border=NA)
-         text(1+0.5+sw.string, 6.5, val, pos=4, cex=cex, family=font.mono, col=col.help)
+         rect(1.2+sw.string, 6, 8.5, 7, col=col.bg, border=NA)
+         text(1.5+sw.string, 6.5, val, pos=4, cex=cex, family=font.mono, col=col.help)
          sw.val <- strwidth(val, family=font.mono, cex=cex)
       }
 
    }
 
    if (scoreold != score) {
-      rect(1+0.5, 6, 8.5, 8, col=col.bg, border=NA)
-      text(1+0.5,           7.5, string.cur, pos=4, cex=cex, family=font.mono, col=col.help)
-      text(1+0.5+sw.string, 7.5, score,      pos=4, cex=cex, family=font.mono, col=col.help)
+      rect(1.5, 6, 8.5, 8, col=col.bg, border=NA)
+      text(1.5,           7.5, string.cur, pos=4, cex=cex, family=font.mono, col=col.help)
+      text(1.5+sw.string, 7.5, score,      pos=4, cex=cex, family=font.mono, col=col.help)
       Sys.sleep(1)
    }
 
@@ -81,8 +79,6 @@
 }
 
 .setexpval <- function(expval, scores, lwd) {
-
-   lang <- .get("lang")
 
    col.bg          <- .get("col.bg")
    col.help        <- .get("col.help")
@@ -100,9 +96,9 @@
 
    sw.string <- max(strwidth(string.cur, family=font.mono, cex=cex), strwidth(string.new, family=font.mono, cex=cex))
 
-   text(1+0.5,           7.5, string.cur, pos=4, cex=cex, family=font.mono, col=col.help)
-   text(1+0.5+sw.string, 7.5, expval,     pos=4, cex=cex, family=font.mono, col=col.help)
-   text(1+0.5,           6.5, string.new, pos=4, cex=cex, family=font.mono, col=col.help)
+   text(1.5,           7.5, string.cur, pos=4, cex=cex, family=font.mono, col=col.help)
+   text(1.5+sw.string, 7.5, expval,     pos=4, cex=cex, family=font.mono, col=col.help)
+   text(1.5,           6.5, string.new, pos=4, cex=cex, family=font.mono, col=col.help)
 
    val <- ""
    sw.val <- 0
@@ -118,11 +114,11 @@
          break
 
       if (grepl("^[0-9.]+$", resp)) {
-         if (nchar(val) > 5)
+         if (nchar(val) > 4)
             next
          num <- resp
          val <- paste0(val, resp, collapse="")
-         text(1+0.5+sw.string+sw.val, 6.5, num, pos=4, cex=cex, family=font.mono, col=col.help)
+         text(1.5+sw.string+sw.val, 6.5, num, pos=4, cex=cex, family=font.mono, col=col.help)
          sw.val <- strwidth(val, family=font.mono, cex=cex)
       }
 
@@ -141,17 +137,17 @@
          } else {
             val <- ""
          }
-         rect(1+0.2+sw.string, 6, 8.5, 7, col=col.bg, border=NA)
-         text(1+0.5+sw.string, 6.5, val, pos=4, cex=cex, family=font.mono, col=col.help)
+         rect(1.2+sw.string, 6, 8.5, 7, col=col.bg, border=NA)
+         text(1.5+sw.string, 6.5, val, pos=4, cex=cex, family=font.mono, col=col.help)
          sw.val <- strwidth(val, family=font.mono, cex=cex)
       }
 
    }
 
    if (expvalold != expval) {
-      rect(1+0.5, 6, 8.5, 8, col=col.bg, border=NA)
-      text(1+0.5,           7.5, string.cur, pos=4, cex=cex, family=font.mono, col=col.help)
-      text(1+0.5+sw.string, 7.5, expval,     pos=4, cex=cex, family=font.mono, col=col.help)
+      rect(1.5, 6, 8.5, 8, col=col.bg, border=NA)
+      text(1.5,           7.5, string.cur, pos=4, cex=cex, family=font.mono, col=col.help)
+      text(1.5+sw.string, 7.5, expval,     pos=4, cex=cex, family=font.mono, col=col.help)
       Sys.sleep(1)
    }
 

@@ -5,6 +5,11 @@
 
    lang <- .get("lang")
 
+   col.bg          <- .get("col.bg")
+   col.help        <- .get("col.help")
+   col.help.border <- .get("col.help.border")
+   font.mono       <- .get("font.mono")
+
    if (lang == "en") {
 
       txt.general <- c(
@@ -24,7 +29,6 @@
       ">        - select and manage bookmarks",
       "m        - choose a sequence selection mode",
       "d        - choose a difficulty calculation method",
-      "x        - timed mode on/off",
       "w        - wait after completed sequences on/off",
       "-+       - decrease/increase the time between moves",
       "[]       - decrease/increase the sound volume",
@@ -52,6 +56,7 @@
       "h        - get a hint (can be selected twice)",
       "t        - take back a score increase",
       "o        - manually enter the score for the current sequence",
+      "x        - timed mode on/off",
       "<        - bookmark the current sequence",
       "r        - repeat the last sequence",
       "1 or \U00002191   - restart the current sequence",
@@ -109,7 +114,6 @@
       ">        - Lesezeichen ausw\U000000E4hlen und bearbeiten",
       "m        - Sequenzauswahlmodus ausw\U000000E4hlen",
       "d        - Methode zur Schwierigkeitsberechnung ausw\U000000E4hlen",
-      "x        - Zeitgesteuerter Modus an/aus",
       "w        - Warten nach abgeschlossenen Sequenzen an/aus",
       "-+       - Zeit zwischen den Z\U000000FCgen verringern/erh\U000000F6hen",
       "[]       - Lautst\U000000E4rke verringern/erh\U000000F6hen",
@@ -137,6 +141,7 @@
       "h        - einen Tipp bekommen (kann zweimal gew\U000000E4hlt werden)",
       "t        - Punktekerh\U000000F6hung zur\U000000FCcknehmen",
       "o        - Punktewert f\U000000FCr die aktuelle Sequenz manuell eingeben",
+      "x        - Zeitgesteuerter Modus an/aus",
       "<        - Lesezeichen f\U000000FCr die aktuelle Sequenz setzen",
       "r        - die letzte Sequenz wiederholen",
       "1 oder \U00002191 - die aktuelle Sequenz neu starten",
@@ -193,19 +198,18 @@
 
    langswitch <- FALSE
 
-   font.mono <- .get("font.mono")
-   maxsw <- max(strwidth(page1, family=font.mono), strwidth(page2, family=font.mono))
-   maxsh <- strheight("A", family=font.mono) * length(txt)
-   cex <- min(1.5, (8.5 - 1.5) / max(maxsw, maxsh) * 0.85)
+   cex1 <- .findcex(page1, font=font.mono, x1=1.5, x2=8.2, y1=1.5, y2=8.5)
+   cex2 <- .findcex(page2, font=font.mono, x1=1.5, x2=8.2, y1=1.5, y2=8.5)
+   cex <- min(cex1, cex2)
 
    ypos <- seq(8.5, 1.5, length.out=length(txt))
 
    while (TRUE) {
 
-      rect(1.2, 1.2, 8.8, 8.8, col=.get("col.bg"), border=.get("col.help.border"), lwd=lwd+3)
+      rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=lwd+3)
 
-      text(1+0.5, ypos, txt, pos=4, cex=cex, family=font.mono, font=ifelse(grepl(":", txt), 2, 1), col=.get("col.help"))
-      text(8.8-0.1, 1.4, paste0(page, " / 2"), pos=2, cex=cex, family=font.mono, col=.get("col.help"))
+      text(1.5, ypos, txt, pos=4, offset=0, cex=cex, family=font.mono, font=ifelse(grepl(":", txt), 2, 1), col=col.help)
+      text(8.6, 1.4, paste0(page, " / 2"), pos=2, offset=0, cex=cex, family=font.mono, col=col.help)
 
       click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.mousedownfun, onKeybd=.keyfun)
 

@@ -32,6 +32,31 @@
 
 }
 
+.findcex <- function(txt, font, x1, x2, y1, y2, mincex=1) {
+
+   rootfun <- function(x)
+      x1 + max(strwidth(txt, family=font, cex=x)) - x2
+
+   res1 <- try(uniroot(rootfun, lower=0.01, upper=10), silent=TRUE)
+
+   if (inherits(res1, "try-error"))
+      return(mincex)
+
+   ypos <- seq(y1, y2, length.out=length(txt))
+   dist <- abs(ypos[2] - ypos[1])
+
+   rootfun <- function(x)
+      strheight("A", family=font, cex=x) - 0.8*dist
+
+   res2 <- try(uniroot(rootfun, lower=0.01, upper=10), silent=TRUE)
+
+   if (inherits(res2, "try-error"))
+      return(res1$root)
+
+   return(min(mincex, res1$root, res2$root))
+
+}
+
 .mistakediff <- function(x, dbl100pen=20) {
    x <- c(na.omit(x))
    n <- length(x)

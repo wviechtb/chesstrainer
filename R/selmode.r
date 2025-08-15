@@ -10,7 +10,7 @@
    if (lang == "en") {
 
       txt <- c(
-      "Choose a selection mode:",
+      "Choose a sequence selection mode:",
       "",
       "1 - based on the score, at random",
       "2 - based on the score, highest score",
@@ -27,7 +27,7 @@
    if (lang == "de") {
 
       txt <- c(
-      "Selektionsmodus w\U000000E4hlen:",
+      "W\U000000E4hle einen Modus f\U000000FCr die Sequenzauswahl:",
       "",
       "1 - basierend auf dem Punktewert, zuf\U000000E4llig",
       "2 - basierend auf dem Punktewert, h\U000000F6chster Punktewert",
@@ -43,9 +43,7 @@
 
    rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=lwd+3)
 
-   maxsw <- max(strwidth(txt, family=font.mono))
-   maxsh <- strheight("A", family=font.mono) * length(txt)
-   cex <- min(1.5, (8.5 - 1.5) / max(maxsw, maxsh) * 0.9)
+   cex <- .findcex(txt, font=font.mono, x1=1.5, x2=8.2, y1=3.5, y2=7.5)
 
    selmodes <- c("score_random", "score_highest", "played_random", "played_lowest", "age_random", "age_oldest", "diff_random", "diff_highest", "sequential")
 
@@ -53,8 +51,7 @@
 
    ypos <- seq(7.5, 3.5, length.out=length(txt))
 
-   text(1+0.5, ypos, txt, pos=4, cex=cex,
-        family=font.mono, font=ifelse(c("","",selmodes)==selmode, 2, 1), col=col.help)
+   text(1.5, ypos, txt, pos=4, offset=0, cex=cex, family=font.mono, font=ifelse(c("","",selmodes)==selmode, 2, 1), col=col.help)
 
    ypos <- ypos[-c(1:2)]
    dist <- (ypos[1] - ypos[2]) / 2
@@ -92,9 +89,9 @@
    }
 
    if (selmodes[oldmode] != selmode) {
-      rect(1.5, ypos[oldmode]-dist, 8, ypos[oldmode]+dist, col=col.bg, border=NA)
-      text(1+0.5, ypos[oldmode], txt[oldmode+2], pos=4, cex=cex, family=font.mono, col=col.help)
-      text(1+0.5, ypos[click], txt[click+2], pos=4, cex=cex, family=font.mono, font=2, col=col.help)
+      rect(1.5, ypos[oldmode]-dist, 8.5, ypos[oldmode]+dist, col=col.bg, border=NA)
+      text(1.5, ypos[oldmode], txt[oldmode+2], pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+      text(1.5, ypos[click], txt[click+2], pos=4, offset=0, cex=cex, family=font.mono, font=2, col=col.help)
       Sys.sleep(1)
    }
 

@@ -70,7 +70,7 @@
 
    if (x == "enterplayer") {
       return(switch(lang,
-                    de = "Gib einen (neuen) Spielernamen ein oder die Spielernummer: ",
+                    de = "Gib einen (neuen) Spielernamen oder die Spielernummer ein: ",
                          "Enter a (new) player name or a player number: "
    ))}
 
@@ -156,6 +156,12 @@
       return(switch(lang,
                     de = "Alter",
                          "age"
+   ))}
+
+   if (x == "lastsession") {
+      return(switch(lang,
+                    de = "Letzte Sitzung",
+                         "last session"
    ))}
 
    if (x == "day") {
@@ -588,7 +594,7 @@
    if (x == "hintdepth") {
       return(switch(lang,
                     de = paste0("Hinweistiefe:                             ", arg, "\n"),
-                         paste0("Hint depth:                               ", arg, "\n")
+                         paste0("Hint depth:                          ", arg, "\n")
    ))}
 
    if (x == "sfoptions") {
@@ -734,6 +740,12 @@
       return(switch(lang,
                     de = "Kann den besten Zug nicht anzeigen (vielleicht ist es Matt/Patt?).\n",
                          "Cannot show best move (maybe it is (stale)mate?)."
+   ))}
+
+   if (x == "nomovewoutsf") {
+      return(switch(lang,
+                    de = "Kann nur die besten Z\U000000FCge zeigen, wenn Stockfish l\U000000E4uft.\n",
+                         "Can only show best moves when Stockfish is running."
    ))}
 
    if (x == "sfdeepeval") {
@@ -1070,6 +1082,12 @@
       return(switch(lang,
                     de = "Diagramme k\U000000F6nnen nicht angezeigt werden (zu wenige Sequenzen).",
                          "Cannot show graphs (too few sequences)."
+   ))}
+
+   if (x == "toofewplays") {
+      return(switch(lang,
+                    de = "Diagramme k\U000000F6nnen nicht angezeigt werden (keine gespielten Sequenzen).",
+                         "Cannot show graphs (no played sequences)."
    ))}
 
    if (x == "toofewseqsplayed") {

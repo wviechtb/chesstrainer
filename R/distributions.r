@@ -70,11 +70,13 @@
    pt.cex <- max(0.1, 1 - 1/10 * log10(n)) # adjust point size based on n
    if (n >= 5) {
       tmp <- data.frame(scores=scores, played=played, offset=log(100))
-      res <- lm(log(scores) ~ 0 + played + offset(offset), data=tmp)
-      pred <- predict(res, newdata=data.frame(played=xs, offset=log(100)), interval="prediction")
-      pred <- as.data.frame(pred)
-      #polygon(c(xs,rev(xs)), exp(c(pred$lwr, rev(pred$upr))), border=NA, col=adjustcolor(col.bg, red.f=1.25, green.f=1.25, blue.f=1.25))
-      lines(xs, exp(pred$fit), col=col.top, lwd=2)
+      res <- try(lm(log(scores) ~ 0 + played + offset(offset), data=tmp), silent=TRUE)
+      if (!inherits(res, "try-error") && !anyNA(coef(res))) {
+         pred <- predict(res, newdata=data.frame(played=xs, offset=log(100)), interval="prediction")
+         pred <- as.data.frame(pred)
+         #polygon(c(xs,rev(xs)), exp(c(pred$lwr, rev(pred$upr))), border=NA, col=adjustcolor(col.bg, red.f=1.25, green.f=1.25, blue.f=1.25))
+         lines(xs, exp(pred$fit), col=col.top, lwd=2)
+      }
    }
    lines(xs, ys, col=col.top, lty="dotted")
    points(jitter(played, amount=0.5), jitter(scores, amount=0.5), pch=21, col=col.square.l, bg=col.square.d, cex=pt.cex)

@@ -135,12 +135,13 @@ play <- function(lang="en", sfpath="", ...) {
       saveRDS(cols, file=file.path(configdir, "colors.rds"))
    } else {
       if (file.exists(file.path(configdir, "settings.rds"))) {
-         cat(.text("loadsettings"))
          # apply settings, but only for those that are not set via play()
          settings <- readRDS(file.path(configdir, "settings.rds"))
          mc <- as.list(match.call())
          if (is.null(mc[["lang"]]))
             lang <- settings[["lang"]]
+         assign("lang", lang, envir=.chesstrainer)
+         cat(.text("loadsettings"))
          if (is.null(mc[["player"]]))
             player <- settings[["player"]]
          if (is.null(mc[["mode"]]))
@@ -422,7 +423,7 @@ play <- function(lang="en", sfpath="", ...) {
 
    # define keys
 
-   keys <- c("q", "\033", "ctrl-[", " ", "m", "d", "\\", "#", "n", "p", "ctrl-R",
+   keys <- c("q", "ctrl-Q", "\033", "ctrl-[", " ", "m", "d", "\\", "#", "n", "p", "ctrl-R",
              "g", "H", "h", "Left", "Right", "t", "Up", "0", "1", "2", "9",
              "r", "o", "u",
              "a", "A", "f", "z", "c", "e", "E", "s", "b",
@@ -483,7 +484,7 @@ play <- function(lang="en", sfpath="", ...) {
       # select a player if no player is currently selected
 
       if (player == "") {
-         player <- .selectplayer(player, seqdir[seqdirpos], mustselect=TRUE)
+         player <- .selectplayerconsole(player, seqdir[seqdirpos], mustselect=TRUE)
          settings$player <- player
          saveRDS(settings, file=file.path(configdir, "settings.rds"))
       }
@@ -923,7 +924,7 @@ play <- function(lang="en", sfpath="", ...) {
 
             # q to quit the trainer
 
-            if (identical(click, "q")) {
+            if (identical(click, "q") || identical(click, "ctrl-Q")) {
                session.date.end <- Sys.time()
                session.time.end <- proc.time()[[3]]
                session.playtime <- round(session.time.end - session.time.start)
@@ -1079,10 +1080,8 @@ play <- function(lang="en", sfpath="", ...) {
             # p to select a player (starts a new round if a new player is selected)
 
             if (identical(click, "p")) {
-               eval(expr=switch1)
                oldplayer <- player
-               player <- .selectplayer(player, seqdir[seqdirpos])
-               eval(expr=switch2)
+               player <- .selectplayer(player, seqdir[seqdirpos], lwd)
                if (player != oldplayer) {
                   settings$player <- player
                   saveRDS(settings, file=file.path(configdir, "settings.rds"))
@@ -1105,6 +1104,11 @@ play <- function(lang="en", sfpath="", ...) {
                   session.time.start <- proc.time()[[3]]
                   run.rnd <- FALSE
                   input <- FALSE
+               } else {
+                  .redrawpos(pos, flip=flip)
+                  .drawcircles(circles, lwd=lwd)
+                  .drawarrows(arrows, lwd=lwd)
+                  .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
                }
                next
             }
@@ -1116,11 +1120,13 @@ play <- function(lang="en", sfpath="", ...) {
                rmplayer <- readline(prompt=.text("rlydelplayer", player))
                if (.confirm(rmplayer)) {
                   .removeplayer(player, seqdir[seqdirpos])
-                  player <- .selectplayer(player, seqdir[seqdirpos], mustselect=TRUE)
+                  eval(expr=switch2)
+                  player <- .selectplayer(player, seqdir[seqdirpos], lwd, mustselect=TRUE)
                   run.rnd <- FALSE
                   input <- FALSE
+               } else {
+                  eval(expr=switch2)
                }
-               eval(expr=switch2)
                next
             }
 
@@ -1226,7 +1232,11 @@ play <- function(lang="en", sfpath="", ...) {
                      .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
                      .texttop(paste0(bestmovetxt, collapse="\n"), left=TRUE)
                   } else {
-                     .texttop(.text("nobestmove"), sleep=1)
+                     if (sfrun) {
+                        .texttop(.text("nobestmove"), sleep=1.5)
+                     } else {
+                        .texttop(.text("nomovewoutsf"), sleep=1.5)
+                     }
                   }
                }
                next
@@ -2190,11 +2200,6 @@ play <- function(lang="en", sfpath="", ...) {
                   input <- FALSE
                   mode <- oldmode <- "add"
                   seqno <- 1
-               } else {
-                  .redrawpos(pos, flip=flip)
-                  .drawcircles(circles, lwd=lwd)
-                  .drawarrows(arrows, lwd=lwd)
-                  .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
                }
                next
             }
@@ -2593,11 +2598,15 @@ play <- function(lang="en", sfpath="", ...) {
             # F2 to show the leaderboard and player statistics
 
             if (identical(click, "F2")) {
-               .leaderboard(seqdir[seqdirpos], files, lwd)
-               .redrawpos(pos, flip=flip)
-               .drawcircles(circles, lwd=lwd)
-               .drawarrows(arrows, lwd=lwd)
-               .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
+               tmp <- .leaderboard(seqdir[seqdirpos], files, lwd)
+               if (tmp == 0) {
+                  .texttop(.text("noleader", selmode), sleep=1.5)
+               } else {
+                  .redrawpos(pos, flip=flip)
+                  .drawcircles(circles, lwd=lwd)
+                  .drawarrows(arrows, lwd=lwd)
+                  .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
+               }
                next
             }
 
@@ -2757,6 +2766,12 @@ play <- function(lang="en", sfpath="", ...) {
                   .texttop(texttop)
                   next
                }
+               if (sum(played.selected) == 0) {
+                  .texttop(.text("toofewplays"), sleep=1.5)
+                  .texttop(texttop)
+                  next
+               }
+
                .distributions(scores.selected, played.selected, age.selected, difficulty.selected, lwd, multiplier)
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .draweval(sub$moves$eval[i-1], 0, flip=flip, eval=eval, evalsteps=evalsteps)
