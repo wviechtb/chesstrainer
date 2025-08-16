@@ -42,7 +42,7 @@ play <- function(lang="en", sfpath="", ...) {
    cex.eval    <- ifelse(is.null(ddd[["cex.eval"]]),    0.5,            ddd[["cex.eval"]])
    depth1      <- ifelse(is.null(ddd[["depth1"]]),      20,             ddd[["depth1"]])
    depth2      <- ifelse(is.null(ddd[["depth2"]]),      30,             ddd[["depth2"]])
-   depth3      <- ifelse(is.null(ddd[["depth3"]]),      10,             ddd[["depth3"]])
+   depth3      <- ifelse(is.null(ddd[["depth3"]]),      8,              ddd[["depth3"]])
    multipv1    <- ifelse(is.null(ddd[["multipv1"]]),    1,              ddd[["multipv1"]])
    multipv2    <- ifelse(is.null(ddd[["multipv2"]]),    1,              ddd[["multipv2"]])
    threads     <- ifelse(is.null(ddd[["threads"]]),     1,              ddd[["threads"]])
@@ -726,6 +726,7 @@ play <- function(lang="en", sfpath="", ...) {
       # draw board and add info at the bottom
 
       .drawboard(pos, flip=flip, inhibit=inhibit)
+      .drawcheck(pos, flip=flip)
       .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
 
       # check for getGraphicsEvent() capabilities of the current plotting device
@@ -1647,6 +1648,7 @@ play <- function(lang="en", sfpath="", ...) {
                   }
 
                   .drawboard(pos, flip=flip, inhibit=inhibit)
+                  .drawcheck(pos, flip=flip)
                   .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
                   circles <- matrix(nrow=0, ncol=2)
                   arrows  <- matrix(nrow=0, ncol=4)
@@ -1774,6 +1776,7 @@ play <- function(lang="en", sfpath="", ...) {
                   }
 
                   .drawboard(pos, flip=flip, inhibit=inhibit)
+                  .drawcheck(pos, flip=flip)
                   .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i=1, totalmoves, selmode)
                   circles <- matrix(nrow=0, ncol=2)
                   arrows  <- matrix(nrow=0, ncol=4)
@@ -2768,7 +2771,7 @@ play <- function(lang="en", sfpath="", ...) {
                   session.length <- session.length + 1
                   selmodeold <- selmode
                   selmode <- .loadselmode(seqdir, seqdirpos, selmode, texttop=TRUE)
-                  if (selmodeold != selmode)
+                  if (selmodeold != selmode && !file.exists(file.path(seqdir[seqdirpos], ".sequential")))
                      .texttop(.text("selmodeswitch", selmode), sleep=1.5)
                   run.rnd <- FALSE
                   input <- FALSE
@@ -3184,7 +3187,7 @@ play <- function(lang="en", sfpath="", ...) {
                         sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                         .drawsideindicator(sidetoplay, flip)
                         fen <- .genfen(pos, flip, sidetoplay, i)
-                        res.sf <- .sf.eval(sfproc, sfrun, ifelse(flip, ifelse(sidetoplay=="b", depth1, depth3), ifelse(sidetoplay=="w", depth1, depth3)), multipv1, fen, sidetoplay, verbose)
+                        res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, fen, sidetoplay, verbose)
                         evalval  <- res.sf$eval
                         bestmove <- res.sf$bestmove
                         matetype <- res.sf$matetype
@@ -3326,6 +3329,16 @@ play <- function(lang="en", sfpath="", ...) {
             matetype <- res.sf$matetype
             sfproc   <- res.sf$sfproc
             sfrun    <- res.sf$sfrun
+
+            # in play mode, want to base the actual evaluation on depth1 and not depth3
+
+            if (mode == "play" && depth1 > depth3) {
+               res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, fen, sidetoplay, verbose)
+               evalval  <- res.sf$eval
+               matetype <- res.sf$matetype
+               sfproc   <- res.sf$sfproc
+               sfrun    <- res.sf$sfrun
+            }
 
             .draweval(evalval[1], evalvallast, flip=flip, eval=eval, evalsteps=evalsteps)
 

@@ -54,6 +54,7 @@
 
       tab <- data.frame(players, total.played, last.session)
       names(tab) <- c(.text("player"), .text("played"), .text("lastsession"))
+      tab[[2]] <- as.character(tab[[2]])
       txt <- capture.output(print(tab, right=FALSE, print.gap=3))
       txt <- c(txt[1], "", txt[-1], "")
 

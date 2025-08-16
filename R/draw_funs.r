@@ -55,8 +55,6 @@
       }
    }
 
-   .drawcheck(pos, flip=flip)
-
 }
 
 .redrawpos <- function(pos, posold, flip=FALSE) {
