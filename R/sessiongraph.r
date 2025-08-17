@@ -9,9 +9,9 @@
    col.square.d    <- .get("col.square.d")
    col.help.border <- .get("col.help.border")
 
-   rect(1+0.2, 1+0.2, 9-0.2, 9-0.2, col=col.bg, border=col.help.border, lwd=lwd+3)
+   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=lwd+3)
 
-   par(new=TRUE, mar=rep(11,4))
+   par(new=TRUE, mar=c(11,11,9,9))
 
    plot(NA, xlim=c(1,seqsplayed.total), ylim=c(min(round(unlist(mean.scores)))-1, max(round(unlist(mean.scores)))+1),
         xlab="", ylab=.text("meanscore"), bty="l", las=1, col.axis=col.top, col.lab=col.top, xaxt="n")

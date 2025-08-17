@@ -12,13 +12,13 @@
    col.square.d    <- .get("col.square.d")
    col.help.border <- .get("col.help.border")
 
-   rect(1+0.2, 1+0.2, 9-0.2, 9-0.2, col=col.bg, border=col.help.border, lwd=lwd+3)
+   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=lwd+3)
 
    usr <- NULL
 
    plot.scores <- function(x) {
-      rect(1+0.4, 1+0.4, 9-0.4, 9-0.4, col=col.bg, border=NA)
-      par(new=TRUE, mar=rep(11,4))
+      rect(1.3, 1.3, 8.7, 8.7, col=col.bg, border=NA)
+      par(new=TRUE, mar=c(11,11,9,9))
       if (nrow(x) == 1L) {
          xlim <- c(x$played-1, x$played+1)
       } else {
@@ -58,7 +58,7 @@
             y1 <- grconvertY(click[[2]], from="ndc", to="user")
             if (x1 < 1 || x1 > 9 || y1 < 1 || y1 > 9)
                break
-            par(mar=rep(11,4), usr=usr)
+            par(mar=c(11,11,9,9), usr=usr)
             x1 <- grconvertX(click[[1]], from="ndc", to="user")
             if (x1 < usr[1])
                x1 <- usr[1]
@@ -71,7 +71,7 @@
                next
             if (click[[3]] == 2)
                next
-            par(mar=rep(11,4), usr=usr)
+            par(mar=c(11,11,9,9), usr=usr)
             x2 <- grconvertX(click[[1]], from="ndc", to="user")
             if (x2 < usr[1])
                x2 <- usr[1]

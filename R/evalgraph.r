@@ -28,9 +28,9 @@
 
    n <- nrow(x)
 
-   rect(1+0.2, 1+0.2, 9-0.2, 9-0.2, col=col.bg, border=col.help.border, lwd=lwd+3)
+   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=lwd+3)
 
-   par(new=TRUE, mar=rep(11,4))
+   par(new=TRUE, mar=c(11,11,9,9))
 
    plot(NA, xlim=c(1,n), ylim=c(-9,9), xlab=.text("evalgraph-x"), ylab=.text("evalgraph-y"),
         bty="l", las=1, col.axis=col.top, col.lab=col.top, yaxt="n", xaxt="n")

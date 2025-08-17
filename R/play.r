@@ -40,7 +40,7 @@ play <- function(lang="en", sfpath="", ...) {
    cex.top     <- ifelse(is.null(ddd[["cex.top"]]),     1.4,            ddd[["cex.top"]])
    cex.bot     <- ifelse(is.null(ddd[["cex.bot"]]),     0.7,            ddd[["cex.bot"]])
    cex.eval    <- ifelse(is.null(ddd[["cex.eval"]]),    0.5,            ddd[["cex.eval"]])
-   depth1      <- ifelse(is.null(ddd[["depth1"]]),      20,             ddd[["depth1"]])
+   depth1      <- ifelse(is.null(ddd[["depth1"]]),      16,             ddd[["depth1"]])
    depth2      <- ifelse(is.null(ddd[["depth2"]]),      30,             ddd[["depth2"]])
    depth3      <- ifelse(is.null(ddd[["depth3"]]),      8,              ddd[["depth3"]])
    multipv1    <- ifelse(is.null(ddd[["multipv1"]]),    1,              ddd[["multipv1"]])
@@ -1149,7 +1149,7 @@ play <- function(lang="en", sfpath="", ...) {
                   }
                }
                if (mode %in% c("add","play","analysis")) {
-                  if (any(is.na(sub$moves$eval)))
+                  if (any(is.na(sub$moves$eval)) || i == 1)
                      next
                   .evalgraph(sub$moves, i=i, lwd=lwd)
                   .redrawpos(pos, flip=flip)
@@ -3332,12 +3332,14 @@ play <- function(lang="en", sfpath="", ...) {
 
             # in play mode, want to base the actual evaluation on depth1 and not depth3
 
-            if (mode == "play" && depth1 > depth3) {
+            if (mode %in% c("play","analysis") && depth1 > depth3) {
                res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, fen, sidetoplay, verbose)
                evalval  <- res.sf$eval
                matetype <- res.sf$matetype
                sfproc   <- res.sf$sfproc
                sfrun    <- res.sf$sfrun
+               if (mode == "analysis")
+                  bestmove <- res.sf$bestmove
             }
 
             .draweval(evalval[1], evalvallast, flip=flip, eval=eval, evalsteps=evalsteps)

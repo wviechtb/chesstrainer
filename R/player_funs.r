@@ -48,6 +48,7 @@
          tmp <- readRDS(player.file)
          return(tail(tmp$date.end, 1))
       })
+      tmp.date[current == players] <- Sys.time()
       last.session <- format(as.POSIXct(tmp.date), "%Y-%m-%d %H:%M:%S")
       last.session[is.na(last.session)] <- ""
       last.session <- unname(last.session)
