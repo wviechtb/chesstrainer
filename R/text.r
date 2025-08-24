@@ -1072,6 +1072,18 @@
                          "Incorrect castling specification.\n"
    ))}
 
+   if (x == "enterfen") {
+      return(switch(lang,
+                    de = "FEN: ",
+                         "FEN: "
+   ))}
+
+   if (x == "notvalidfen") {
+      return(switch(lang,
+                    de = "Das ist keine g\U000000FCltige FEN.",
+                         "Not a valid FEN."
+   ))}
+
    if (x == "evalgraph-x") {
       return(switch(lang,
                     de = "Zug",
@@ -1184,6 +1196,24 @@
       return(switch(lang,
                     de = "Springe zur Hauptvariante zur\U000000FCck.",
                          "Jumping back to the main variation."
+   ))}
+
+   if (x == "missingkings") {
+      return(switch(lang,
+                    de = "Illegale Stellung\n(es muss ein wei\U000000DFer und schwarzer K\U000000F6nig auf dem Brett sein)",
+                         "Illegal position\n(there must be one white and black king on the board)"
+   ))}
+
+   if (x == "doublecheck") {
+      return(switch(lang,
+                    de = "Illegale Stellung\n(beide K\U000000F6nige stehen im Schach)",
+                         "Illegal position\n(both kings are in check)"
+   ))}
+
+   if (x == "wrongsidecheck") {
+      return(switch(lang,
+                    de = "Illegale Stellung\n(K\U000000F6nige im Schach, aber die andere Seite zieht)",
+                         "Illegal position\n(king in check but other side moves)"
    ))}
 
 }

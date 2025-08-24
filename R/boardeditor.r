@@ -11,79 +11,76 @@
 
    rochadespec <- FALSE
 
-   while (TRUE) {
+   click1.x <- NULL
+   click1.y <- NULL
+   click2.x <- NULL
+   click2.y <- NULL
+   empty.square <- TRUE
+   button <- 0L
 
-      click1.x <- NULL
-      click1.y <- NULL
-      click2.x <- NULL
-      click2.y <- NULL
-      empty.square <- FALSE
-      button <- 0L
+   mousedown <- function(buttons, x, y) {
+      squares <- .calcsquarebe(x,y,plt)
+      pos.x <- squares[1]
+      pos.y <- squares[2]
+      click1.x <<- pos.x
+      click1.y <<- pos.y
+      click2.x <<- pos.x
+      click2.y <<- pos.y
+      button <<- buttons
+      if (flip && pos[11-pos.x, 11-pos.y] == "") {
+         empty.square <<- TRUE
+         return(NULL)
+      }
+      if (!flip && pos[pos.x, pos.y] == "") {
+         empty.square <<- TRUE
+         return(NULL)
+      }
+      empty.square <<- FALSE
+      if (identical(buttons, 0L))
+         .addrect(pos.x, pos.y, col=.get("col.rect"), lwd=lwd)
+      return(NULL)
+   }
+
+   dragmousemove <- function(buttons, x, y) {
+
+      if (!empty.square) {
+
+         squares <- .calcsquarebe(x,y,plt)
+         pos.x <- squares[1]
+         pos.y <- squares[2]
+
+         .addrect(pos.x, pos.y, col=.get("col.rect"), lwd=lwd)
+
+         if (isTRUE(pos.x != click2.x) || isTRUE(pos.y != click2.y))
+            .boardeditor.rmrect(click2.x, click2.y, lwd=lwd)
+
+         click2.x <<- pos.x
+         click2.y <<- pos.y
+
+      }
+
+      return(NULL)
+
+   }
+
+   mouseup <- function(buttons, x, y) {
+      .boardeditor.rmrect(click1.x, click1.y, lwd=lwd)
+      .boardeditor.rmrect(click2.x, click2.y, lwd=lwd)
+      if (click2.x > 1 && click2.x < 10 && flip && pos[11-click2.x, 11-click2.y] != "")
+         .drawsquare(click2.x, click2.y)
+      if (click2.x > 1 && click2.x < 10 && !flip && pos[click2.x, click2.y] != "")
+         .drawsquare(click2.x, click2.y)
+      empty.square <<- TRUE
+      return(1)
+   }
+
+   while (TRUE) {
 
       plt <- par("plt")
 
-      .calcsquarebe <- function(x, y) {
-         square.x <- floor((y - plt[3]) / (plt[4] - plt[3]) * 10 + 1)
-         square.y <- floor((x - plt[1]) / (plt[2] - plt[1]) * 10 + 1)
-         square.x[square.x < 1] <- 1
-         square.x[square.x > 10] <- 10
-         return(c(square.x, square.y))
-      }
-
-      mousedown <- function(buttons, x, y) {
-         squares <- .calcsquarebe(x,y)
-         pos.x <- squares[1]
-         pos.y <- squares[2]
-         click1.x <<- pos.x
-         click1.y <<- pos.y
-         click2.x <<- pos.x
-         click2.y <<- pos.y
-         button <<- buttons
-         if (flip && pos[11-pos.x, 11-pos.y] == "") {
-            empty.square <<- TRUE
-            return(NULL)
-         }
-         if (!flip && pos[pos.x, pos.y] == "") {
-            empty.square <<- TRUE
-            return(NULL)
-         }
-         empty.square <<- FALSE
-         if (identical(buttons, 0L))
-            .addrect(pos.x, pos.y, col=.get("col.rect"), lwd=lwd)
-         return(NULL)
-      }
-
-      dragmousemove <- function(buttons, x, y) {
-
-         if (!empty.square) {
-
-            squares <- .calcsquarebe(x,y)
-            pos.x <- squares[1]
-            pos.y <- squares[2]
-
-            .addrect(pos.x, pos.y, col=.get("col.rect"), lwd=lwd)
-
-            if (isTRUE(pos.x != click2.x) || isTRUE(pos.y != click2.y))
-               .boardeditor.rmrect(click2.x, click2.y, lwd=lwd)
-
-            click2.x <<- pos.x
-            click2.y <<- pos.y
-
-         }
-
-         return(NULL)
-
-      }
-
-      mouseup <- function(buttons, x, y) {
-         .boardeditor.rmrect(click1.x, click1.y, lwd=lwd)
-         .boardeditor.rmrect(click2.x, click2.y, lwd=lwd)
-         return(1)
-      }
-
       click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=.keyfun)
 
-      keys <- c("q", "\033", "ctrl-[", "n", "f", "s", "c", "r", "F1")
+      keys <- c("q", "\033", "ctrl-[", "n", "f", "s", "c", "r", "o", "F1", "F9")
 
       if (is.character(click) && !is.element(click, keys))
          next
@@ -92,8 +89,24 @@
 
       # q or escape to quit the board editor
 
-      if (identical(click, "q") || identical(click, "\033") || identical(click, "ctrl-["))
+      if (identical(click, "q") || identical(click, "\033") || identical(click, "ctrl-[")) {
+         tmp <- pos[2:9,2:9]
+         if (sum(tmp == "WK") != 1L || sum(tmp == "BK") != 1L) {
+            .texttop(.text("missingkings"), sleep=2, xadj=1, yadj=2)
+            next
+         }
+         ischeck <- c(.isattacked(tmp, xy=c(which(tmp=="WK", arr.ind=TRUE)), attackcolor="b"),
+                      .isattacked(tmp, xy=c(which(tmp=="BK", arr.ind=TRUE)), attackcolor="w"))
+         if (sum(ischeck) == 2L) {
+            .texttop(.text("doublecheck"), sleep=2, xadj=1, yadj=2)
+            next
+         }
+         if ((ischeck[1] && sidetoplay=="b") || (ischeck[2] && sidetoplay=="w")) {
+            .texttop(.text("wrongsidecheck"), sleep=2, xadj=1, yadj=2)
+            next
+         }
          break
+      }
 
       # n to reset the board into the starting position
 
@@ -142,11 +155,44 @@
          next
       }
 
+      # o to enter FEN
+
+      if (identical(click, "o")) {
+         eval(expr=switch1)
+         fen <- readline(prompt=.text("enterfen"))
+         eval(expr=switch2)
+         if (identical(fen, ""))
+            next
+         isfen <- .validatefen(fen)
+         if (isfen) {
+            tmp <- .fentopos(fen)
+            pos <- tmp$pos
+            sidetoplay <- tmp$sidetoplay
+            .boardeditor.drawboard(pos, flip, sidetoplay, lwd)
+         } else {
+            .texttop(.text("notvalidfen"), sleep=2, xadj=1, yadj=2)
+         }
+         next
+      }
+
       # F1 to show the help
 
       if (identical(click, "F1")) {
          .showhelp.boardeditor(lwd=lwd)
          .boardeditor.drawboard(pos, flip, sidetoplay, lwd)
+         next
+      }
+
+      # F9 to print the FEN and open the position on lichess.org
+
+      if (identical(click, "F9")) {
+         eval(expr=switch1)
+         fen <- .genfen(pos[2:9,2:9], flip, sidetoplay, i=1)
+         cat(fen, "\n")
+         eval(expr=switch2)
+         clipr::write_clip(fen, object_type="character")
+         fen <- paste0("https://lichess.org/analysis/standard/", gsub(" ", "_", fen, fixed=TRUE))
+         #browseURL(fen)
          next
       }
 
@@ -222,7 +268,9 @@
       "n  - reset the board into the starting position",
       "c  - clear the board",
       "r  - enter castling availability",
-      "F1 - show this help")
+      "o  - open the position for a given FEN",
+      "F1 - show this help",
+      "F9 - open the current position on lichess.org")
 
    }
 
@@ -240,7 +288,9 @@
       "n  - Brett in die Ausgangsposition zur\U000000FCcksetzen",
       "c  - Brett leer r\U000000E4umen",
       "r  - Rochadem\U000000F6glichkeiten eingeben",
-      "F1 - diese Hilfe anzeigen")
+      "o  - \U000000F6ffne die Position f\U000000FCr eine bestimmte FEN",
+      "F1 - diese Hilfe anzeigen",
+      "F9 - die aktuelle Position auf lichess.org \U000000F6ffnen")
 
    }
 

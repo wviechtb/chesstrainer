@@ -1,5 +1,9 @@
 .sessiongraph <- function(seqsplayed, mean.scores, playtime, lwd) {
 
+   isnull <- seqsplayed == 0
+   seqsplayed <- seqsplayed[!isnull]
+   mean.scores <- mean.scores[!isnull]
+
    seqsplayed.total <- sum(seqsplayed)
 
    col.top         <- .get("col.top")
@@ -13,8 +17,10 @@
 
    par(new=TRUE, mar=c(11,11,9,9))
 
-   plot(NA, xlim=c(1,seqsplayed.total), ylim=c(min(round(unlist(mean.scores)))-1, max(round(unlist(mean.scores)))+1),
-        xlab="", ylab=.text("meanscore"), bty="l", las=1, col.axis=col.top, col.lab=col.top, xaxt="n")
+   ylim <- range(round(unlist(mean.scores))) + c(-1,1)
+
+   plot(NA, xlim=c(1,seqsplayed.total), ylim=ylim, xlab="", ylab=.text("meanscore"),
+        bty="l", las=1, col.axis=col.top, col.lab=col.top, xaxt="n")
    axis(side=1, at=seq_len(seqsplayed.total), col.axis=col.top)
 
    start.pos <- 0

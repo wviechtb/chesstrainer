@@ -128,7 +128,7 @@
 }
 \section{The Board Editor}{
 
-   When in \sQuote{add} mode, the \verb{<b>} key opens up a board editor. Here, you can quickly set up a more advanced position (e.g., for a chess puzzle). With left-click and drag, pieces can be moved around. With right-click and drag, you can copy a piece. A right-click without a drag deletes a piece. The \verb{<f>} key flips the board. The \verb{<n>} key resets the board into the starting position. The \verb{<c>} key clears the board. The \verb{<s>} key can be used to select which side plays the first move. With \verb{<F1>}, you can receive a help overlay. You can quit the board editor with \verb{<q>} or \verb{<escape>}.
+   When in \sQuote{add} mode, the \verb{<b>} key opens up a board editor. Here, you can quickly set up a more advanced position (e.g., for a chess puzzle). With left-click and drag, pieces can be moved around. With right-click and drag, you can copy a piece that is already on the board. A right-click without a drag deletes a piece. The \verb{<f>} key flips the board. The \verb{<n>} key resets the board into the starting position. The \verb{<c>} key clears the board. The \verb{<s>} key can be used to select which side plays the first move. The \verb{<r>} key can be used to enter castling availability in FEN notation (K = white can castle kingside, Q = white can castle queenside, k = black can castle kingside, q = black can castle queenside, - = neither side can castle). With the \verb{<e>} key, you can enter a FEN to set up the corresponding position. With \verb{<F1>}, you can receive a help overlay. You can quit the board editor with \verb{<q>} or \verb{<escape>}.
 
 }
 \section{Managing and Selecting Players}{

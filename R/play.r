@@ -3183,9 +3183,9 @@ play <- function(lang="en", sfpath="", ...) {
                         sub$player <- NULL
                         show <- FALSE
                         .texttop(" ")
-                        .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
                         sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                         .drawsideindicator(sidetoplay, flip)
+                        i <- i + 1
                         fen <- .genfen(pos, flip, sidetoplay, i)
                         res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, fen, sidetoplay, verbose)
                         evalval  <- res.sf$eval
@@ -3193,6 +3193,7 @@ play <- function(lang="en", sfpath="", ...) {
                         matetype <- res.sf$matetype
                         sfproc   <- res.sf$sfproc
                         sfrun    <- res.sf$sfrun
+                        .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
                         donext <- TRUE
                         break
                      }

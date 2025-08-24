@@ -846,14 +846,14 @@
 
 }
 
-.texttop <- function(txt, sleep=0, left=FALSE) {
+.texttop <- function(txt, sleep=0, left=FALSE, xadj=0, yadj=0) {
 
    if (length(txt) == 0L || is.na(txt))
       return()
 
-   xleft   <- 0
-   xright  <- 10
-   ybottom <- 9.2
+   xleft   <- 0 + xadj
+   xright  <- 10 + xadj
+   ybottom <- 9.2 + yadj
    ytop    <- grconvertY(dev.size()[2], from="inches", to="user")-0.2
    xcenter <- (xleft + xright) / 2
 

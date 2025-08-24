@@ -108,6 +108,14 @@
    return(c(square.x, square.y))
 }
 
+.calcsquarebe <- function(x, y, plt) {
+   square.x <- floor((y - plt[3]) / (plt[4] - plt[3]) * 10 + 1)
+   square.y <- floor((x - plt[1]) / (plt[2] - plt[1]) * 10 + 1)
+   square.x[square.x < 1] <- 1
+   square.x[square.x > 10] <- 10
+   return(c(square.x, square.y))
+}
+
 .pickpromotionpiece <- function(buttons, x, y) {
    plt <- par("plt")
    squares <- .calcsquare(x,y,plt)
@@ -191,13 +199,134 @@
 
    # add halfmove clock
 
-   fen <- paste(fen, attr(pos,"moves50"))
+   moves50 <- attr(pos,"moves50")
+
+   if (is.null(moves50))
+      moves50 <- 0
+
+   fen <- paste(fen, moves50)
 
    # add fullmove number
 
    fen <- paste(fen, (i+1) %/% 2)
 
    return(fen)
+
+}
+
+.validatefen <- function(fen) {
+
+   # split fields and check that there are 6 of them
+
+   fields <- unlist(strsplit(fen, " "))
+
+   if (length(fields) != 6L)
+      return(FALSE)
+
+   # piece placement validation
+
+   ranks <- unlist(strsplit(fields[1], "/"))
+
+   if (length(ranks) != 8L)
+      return(FALSE)
+
+   # validate each rank
+
+   pieces <- c("p","n","b","r","q","k","P","N","B","R","Q","K")
+
+   for (rank in ranks) {
+      squares <- 0
+      chars <- unlist(strsplit(rank, ""))
+      for (ch in chars) {
+         if (ch %in% pieces) {
+            squares <- squares + 1
+         } else if (grepl("^[1-8]$", ch)) {
+            squares <- squares + as.integer(ch)
+         } else {
+            return(FALSE)
+         }
+      }
+      if (squares != 8)
+         return(FALSE)
+   }
+
+   # validate side to move
+
+   if (!fields[2] %in% c("w","b"))
+      return(FALSE)
+
+   # validate castling availability
+
+   if (!grepl("^(-|[KQkq]+)$", fields[3]))
+      return(FALSE)
+
+   if (fields[3] != "-" && length(unique(strsplit(fields[3], "")[[1]])) != nchar(fields[3]))
+      return(FALSE)
+
+   # validate en passant target square
+
+   if (!grepl("^(-|[a-h][36])$", fields[4]))
+      return(FALSE)
+
+   # validate halfmove clock (integer >= 0)
+
+   if (!grepl("^[0-9]+$", fields[5]))
+      return(FALSE)
+
+   # validate fullmove number (integer >= 1)
+   if (!grepl("^[1-9][0-9]*$", fields[6]))
+      return(FALSE)
+
+   return(TRUE)
+
+}
+
+.fentopos <- function(fen) {
+
+   pos <- matrix("", nrow=8, ncol=8)
+
+   fields <- unlist(strsplit(fen, " "))
+   ranks <- unlist(strsplit(fields[1], "/"))
+
+   pieces <- c("p","n","b","r","q","k","P","N","B","R","Q","K")
+
+   for (i in 1:8) {
+      chars <- unlist(strsplit(ranks[i], ""))
+      j <- 0
+      for (ch in chars) {
+         if (grepl("^[1-8]$", ch)) {
+            j <- j + as.integer(ch)
+         }
+         if (ch %in% pieces) {
+            j <- j + 1
+            pos[9-i,j] <- ch
+         }
+      }
+   }
+
+   pos[pos == "p"] <- "BP"
+   pos[pos == "n"] <- "BN"
+   pos[pos == "b"] <- "BB"
+   pos[pos == "r"] <- "BR"
+   pos[pos == "q"] <- "BQ"
+   pos[pos == "k"] <- "BK"
+   pos[pos == "P"] <- "WP"
+   pos[pos == "N"] <- "WN"
+   pos[pos == "B"] <- "WB"
+   pos[pos == "R"] <- "WR"
+   pos[pos == "Q"] <- "WQ"
+   pos[pos == "K"] <- "WK"
+
+   pos <- rbind("", pos, "")
+   pos <- cbind("", pos, "")
+   rownames(pos) <- 0:9
+   colnames(pos) <- 0:9
+   pos[1,3:8]  <- c("WK","WQ","WR","WB","WN","WP")
+   pos[10,3:8] <- c("BK","BQ","BR","BB","BN","BP")
+
+   attr(pos,"rochade") <- fields[3]
+
+   return(list(pos=pos, sidetoplay=fields[2]))
 
 }
 
@@ -415,19 +544,22 @@
    cat("\n")
 
    printpos <- pos
-   printpos[printpos == ""] <- "\U00000B7"
-   printpos[printpos == "WP"] <- "\U000265F"
-   printpos[printpos == "WR"] <- "\U000265C"
-   printpos[printpos == "WN"] <- "\U000265E"
-   printpos[printpos == "WB"] <- "\U000265D"
-   printpos[printpos == "WK"] <- "\U000265A"
-   printpos[printpos == "WQ"] <- "\U000265B"
-   printpos[printpos == "BP"] <- "\U0002659"
-   printpos[printpos == "BR"] <- "\U0002656"
-   printpos[printpos == "BN"] <- "\U0002658"
-   printpos[printpos == "BB"] <- "\U0002657"
-   printpos[printpos == "BK"] <- "\U0002654"
-   printpos[printpos == "BQ"] <- "\U0002655"
+
+   if (TRUE) {
+      printpos[printpos == ""] <- "\U00000B7"
+      printpos[printpos == "WP"] <- "\U000265F"
+      printpos[printpos == "WR"] <- "\U000265C"
+      printpos[printpos == "WN"] <- "\U000265E"
+      printpos[printpos == "WB"] <- "\U000265D"
+      printpos[printpos == "WK"] <- "\U000265A"
+      printpos[printpos == "WQ"] <- "\U000265B"
+      printpos[printpos == "BP"] <- "\U0002659"
+      printpos[printpos == "BR"] <- "\U0002656"
+      printpos[printpos == "BN"] <- "\U0002658"
+      printpos[printpos == "BB"] <- "\U0002657"
+      printpos[printpos == "BK"] <- "\U0002654"
+      printpos[printpos == "BQ"] <- "\U0002655"
+   }
 
    if (flip) {
       print(printpos[,8:1], quote=FALSE)
