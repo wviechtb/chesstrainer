@@ -48,8 +48,8 @@
 
       rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=lwd+3)
 
-      ypos1 <- min(8.5, 5+nplayers*0.25)
-      ypos2 <- max(1.5, 5-nplayers*0.25)
+      ypos1 <- min(8.5, 5+nplayers*0.35)
+      ypos2 <- max(1.5, 5-nplayers*0.35)
       ypos <- seq(ypos1, ypos2, length.out=length(txt))
 
       segments(1.8, ypos[2], 8, ypos[2], col=col.help)

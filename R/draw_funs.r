@@ -586,21 +586,22 @@
    x2 <- unname(move[[3]])
    y2 <- unname(move[[4]])
 
-   if (button == 2L && x1 == x2 && y1 == y2 && x1 > 1 && x1 < 10 && y1 > 1 && y1 < 10) {
+   if (x1 == x2 && y1 == y2 && x1 > 1 && x1 < 10 && y1 > 1 && y1 < 10) {
 
-      .drawsquare(x1, y1)
-
-      if (flip) {
-         pos[11-x1,11-y1] <- ""
-      } else {
-         pos[x1,y1] <- ""
+      if (button == 2L) {
+         .drawsquare(x1, y1)
+         if (flip) {
+            pos[11-x1,11-y1] <- ""
+         } else {
+            pos[x1,y1] <- ""
+         }
       }
 
    } else {
 
       if (button == 0L && x1 > 1 && x1 < 10 && y1 > 1 && y1 < 10)
          .drawsquare(x1, y1)
-      if (button == 0L && x2 > 1 && x2 < 10 && y2 > 1 && y2 < 10)
+      if (x2 > 1 && x2 < 10 && y2 > 1 && y2 < 10)
          .drawsquare(x2, y2)
 
       if (flip) {

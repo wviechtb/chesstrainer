@@ -111,8 +111,8 @@
 .calcsquarebe <- function(x, y, plt) {
    square.x <- floor((y - plt[3]) / (plt[4] - plt[3]) * 10 + 1)
    square.y <- floor((x - plt[1]) / (plt[2] - plt[1]) * 10 + 1)
-   square.x[square.x < 1] <- 1
-   square.x[square.x > 10] <- 10
+   #square.x[square.x < 1] <- 1
+   #square.x[square.x > 10] <- 10
    return(c(square.x, square.y))
 }
 

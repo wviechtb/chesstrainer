@@ -22,19 +22,19 @@
       squares <- .calcsquarebe(x,y,plt)
       pos.x <- squares[1]
       pos.y <- squares[2]
+      if (pos.x >= 11 || pos.x <= 0)
+         return(NULL)
+      if (pos.y <= 1 || pos.y >= 10)
+         return(NULL)
       click1.x <<- pos.x
       click1.y <<- pos.y
       click2.x <<- pos.x
       click2.y <<- pos.y
       button <<- buttons
-      if (flip && pos[11-pos.x, 11-pos.y] == "") {
-         empty.square <<- TRUE
+      if (flip && pos[11-pos.x, 11-pos.y] == "")
          return(NULL)
-      }
-      if (!flip && pos[pos.x, pos.y] == "") {
-         empty.square <<- TRUE
+      if (!flip && pos[pos.x, pos.y] == "")
          return(NULL)
-      }
       empty.square <<- FALSE
       if (identical(buttons, 0L))
          .addrect(pos.x, pos.y, col=.get("col.rect"), lwd=lwd)
@@ -42,34 +42,24 @@
    }
 
    dragmousemove <- function(buttons, x, y) {
-
       if (!empty.square) {
-
          squares <- .calcsquarebe(x,y,plt)
          pos.x <- squares[1]
          pos.y <- squares[2]
-
-         .addrect(pos.x, pos.y, col=.get("col.rect"), lwd=lwd)
-
-         if (isTRUE(pos.x != click2.x) || isTRUE(pos.y != click2.y))
+         pos.x[pos.x < 1] <- 1
+         pos.x[pos.x > 10] <- 10
+         if (isTRUE(pos.x != click2.x) || isTRUE(pos.y != click2.y)) {
             .boardeditor.rmrect(click2.x, click2.y, lwd=lwd)
-
+            .addrect(pos.x, pos.y, col=.get("col.rect"), lwd=lwd)
+         }
          click2.x <<- pos.x
          click2.y <<- pos.y
-
       }
-
       return(NULL)
-
    }
 
    mouseup <- function(buttons, x, y) {
-      .boardeditor.rmrect(click1.x, click1.y, lwd=lwd)
       .boardeditor.rmrect(click2.x, click2.y, lwd=lwd)
-      if (click2.x > 1 && click2.x < 10 && flip && pos[11-click2.x, 11-click2.y] != "")
-         .drawsquare(click2.x, click2.y)
-      if (click2.x > 1 && click2.x < 10 && !flip && pos[click2.x, click2.y] != "")
-         .drawsquare(click2.x, click2.y)
       empty.square <<- TRUE
       return(1)
    }
@@ -217,7 +207,7 @@
 
       # don't do anything when dropping a piece on the 1st or 10th row
 
-      if (click2.x == 1 || click2.x == 10)
+      if (click2.x <= 1 || click2.x >= 10)
          next
 
       pos <- .boardeditor.updateboard(pos, move=c(click1.x, click1.y, click2.x, click2.y), flip=flip, button=button)
