@@ -21,7 +21,7 @@
    .drawarrow(3, 8, 6, 8, lwd=lwd, col=adjustcolor(.get("col.best"), alpha.f=0.5))
    .drawsideindicator("w", flip)
    .drawsideindicator("b", flip, clear=FALSE)
-   .draweval(0, flip)
+   .draweval(0.2, flip=flip)
    .drawtimer(settings=TRUE)
 
    while (TRUE) {
@@ -50,7 +50,7 @@
          .drawarrow(3, 8, 6, 8, lwd=lwd, col=adjustcolor(.get("col.best"), alpha.f=0.5))
          .drawsideindicator("w", flip)
          .drawsideindicator("b", flip, clear=FALSE)
-         .draweval(0, flip)
+         .draweval(0.2, flip=flip)
          .drawtimer(settings=TRUE)
       }
    }
@@ -71,7 +71,7 @@
    cat("\n")
 
    .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
-   .draweval(-0.2, flip)
+   .draweval(0.2, flip=flip)
 
    while (TRUE) {
       resp <- readline(prompt=.text("cexwhich"))
@@ -89,7 +89,7 @@
          assign(tab[cexno,1], cex, envir=.chesstrainer)
          tab[cexno,2] <- cex
          .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
-         .draweval(-0.2, flip)
+         .draweval(0.2, flip=flip)
       }
    }
 

@@ -1142,7 +1142,7 @@
 
 }
 
-.draweval <- function(val=NA_real_, last=NA_real_, flip=FALSE, clear=FALSE, eval=TRUE, evalsteps=10) {
+.draweval <- function(val=NA_real_, last=NA_real_, i=1, starteval=NA_real_, flip=FALSE, clear=FALSE, eval=TRUE, evalsteps=10) {
 
    if (!eval)
       return()
@@ -1152,15 +1152,18 @@
    xpos <- 0.12
    indsize <- 0.25
 
+   if (i == 1 && (length(last) == 0L || is.na(last)))
+      last <- starteval
+
+   if (i == 1 && (length(val) == 0L || is.na(val)))
+      val <- starteval
+
    if (clear || length(val) == 0L || is.na(val)) {
       rect(xpos, 1, xpos+indsize, 9, border=NA, col=col.bg)
       return()
    }
 
-   if (length(val) == 0L)
-      return()
-
-   col.fg <- .get("col.fg")
+   col.fg     <- .get("col.fg")
    col.side.w <- .get("col.side.w")
    col.side.b <- .get("col.side.b")
 
@@ -1180,8 +1183,7 @@
    last <- min(max(last, -maxval), maxval)
    last <- (last + maxval) / (2*maxval) * 8 + 1
 
-   steps <- evalsteps
-   props <- seq(0, 1, length.out=steps)^(1/5)
+   props <- seq(0, 1, length.out=evalsteps)^(1/5)
 
    if (flip) {
       if (is.na(last)) {
@@ -1192,7 +1194,7 @@
          rect(xpos, 1, xpos+indsize, 10-last, border=NA, col=col.side.b)
          vals <- last + (val - last) * props
          col.side.bar <- ifelse(val > last, col.side.w, col.side.b)
-         for (i in 2:steps) {
+         for (i in 2:evalsteps) {
             rect(xpos, 10-vals[i-1], xpos+indsize, 10-vals[i], border=NA, col=col.side.bar)
          }
       }
@@ -1210,7 +1212,7 @@
          rect(xpos, 1, xpos+indsize, last, border=NA, col=col.side.w)
          vals <- last + (val - last) * props
          col.side.bar <- ifelse(val > last, col.side.w, col.side.b)
-         for (i in 2:steps) {
+         for (i in 2:evalsteps) {
             rect(xpos, vals[i-1], xpos+indsize, vals[i], border=NA, col=col.side.bar)
          }
       }

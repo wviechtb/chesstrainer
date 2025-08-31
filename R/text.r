@@ -56,6 +56,12 @@
                          "No sequences found.\n"
    ))}
 
+   if (x == "seqsnomoves") {
+      return(switch(lang,
+                    de = "Alle ausgew\U000000E4hlten Sequenzen haben keine Z\U000000FCge.\n",
+                         "All selected sequences have no moves.\n"
+   ))}
+
    if (x == "useseqdir") {
       return(switch(lang,
                     de = paste0("Benutze Sequenzverzeichnis: ", arg, "\n"),

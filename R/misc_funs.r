@@ -32,6 +32,13 @@
 
 }
 
+is.start.pos <- function(pos) {
+   pos <- unname(pos[1:8,1:8])
+   start.pos <- .get("pos")
+   start.pos <- unname(start.pos[1:8,1:8])
+   return(identical(pos, start.pos))
+}
+
 .findcex <- function(txt, font, x1, x2, y1, y2, mincex=1) {
 
    rootfun <- function(x)
@@ -506,9 +513,9 @@
 }
 
 .printverbose <- function(selected, seqno, filename, lastseq, flip, useflip, replast, oldmode, i,
-                          seqname, seqnum, score, played, totalmoves, show, comment, bestmove, evalval,
-                          texttop, scoreadd, sidetoplay, givehint1, givehint2, mistake, timetotal,
-                          movesplayed, movestoplay, drawcircles, drawarrows, showstartcom, pos) {
+                          seqname, seqnum, score, played, totalmoves, show, comment, bestmove, starteval,
+                          evalval, texttop, scoreadd, sidetoplay, givehint1, givehint2, mistake,
+                          timetotal, movesplayed, movestoplay, drawcircles, drawarrows, showstartcom, pos) {
 
    cat("\n")
    cat("selected:     ", selected, "\n")
@@ -528,6 +535,7 @@
    cat("show:         ", show, "\n")
    cat("comment:      ", comment, "\n")
    cat("bestmove:     ", sapply(bestmove, head, 1), "\n")
+   cat("starteval:    ", starteval, "\n")
    cat("evalval:      ", evalval, "\n")
    cat("texttop:      ", texttop, "\n")
    cat("scoreadd:     ", scoreadd, "\n")

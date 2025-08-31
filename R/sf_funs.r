@@ -87,8 +87,10 @@
    bestmove <- as.list(rep("", multipv))
    alive    <- TRUE
 
-   if (progbar)
-      col.top <- .get("col.top")
+   if (!sfrun)
+      return(list(eval=eval, bestmove=bestmove, matetype="none", sfproc=sfproc, sfrun=sfrun))
+
+   col.top <- .get("col.top")
 
    olddepth <- 0
 
@@ -96,6 +98,8 @@
       rect(1, 9.3, 9, 9.4, col=NA, border=col.top)
       segments(seq(1,9,length.out=depth+1), 9.3, seq(1,9,length.out=depth+1), 9.4, col=adjustcolor(col.top, alpha.f=0.4))
    }
+
+   start.time <- proc.time()
 
    if (sfrun) {
 
@@ -139,6 +143,8 @@
       }
 
    }
+
+   end.time <- proc.time()
 
    if (!alive) {
       sfproc <- NULL
@@ -194,6 +200,7 @@
 
    if (verbose) {
       cat("\nFEN:  ", fen, "\n")
+      cat("Time: ", end.time[[3]] - start.time[[3]], "\n")
       cat("Eval: ", eval, "\n")
       cat("Best: ", sapply(bestmove, head, 1), "\n\n")
    }

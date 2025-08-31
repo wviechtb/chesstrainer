@@ -21,7 +21,7 @@
       "n        - start new/next sequence",
       "l        - list all (selected) sequences",
       "/ or ,   - select sequences",
-      "|        - search for sequences",
+      "|        - search for sequences (without selecting them)",
       "* or 8   - select all sequences",
       "^ or 6   - specify the exponent value",
       "?        - select all sequences with the same moves",
@@ -59,8 +59,8 @@
       "o        - manually enter the score for the current sequence",
       "x        - timed mode on/off",
       "<        - bookmark the current sequence",
-      "r        - repeat the last sequence",
       "1 or \U00002191   - restart the current sequence",
+      "r        - repeat the last sequence",
       "R        - automatically repeat sequences after a mistake on/off",
       "g        - show the progress graph for the current sequence",
       "G        - show the progress graph at the end of the sequences on/off",
@@ -93,7 +93,8 @@
       "2 or \U00002193   - jump to the end of the game",
       "3, 4, 5  - jump to the 1st quarter, middle, 3rd quarter of the game",
       "0        - store the current game as the main variation",
-      "9        - jump to the main variation")
+      "9        - jump to the main variation",
+      "a and A  - switch to add mode")
 
    }
 
@@ -108,7 +109,7 @@
       "n        - neue/n\U000000E4chste Sequenz starten",
       "l        - alle (ausgew\U000000E4hlten) Sequenzen auflisten",
       "/ oder , - Sequenzen ausw\U000000E4hlen",
-      "|        - nach Sequenzen suchen",
+      "|        - nach Sequenzen suchen (ohne sie auszuw\U000000E4hlen)",
       "* oder 8 - alle Sequenzen ausw\U000000E4hlen",
       "^ oder 6 - Exponentenwert angeben",
       "?        - alle Sequenzen mit den gleichen Z\U000000FCgen ausw\U000000E4hlen",
@@ -146,8 +147,8 @@
       "o        - Punktewert f\U000000FCr die aktuelle Sequenz manuell eingeben",
       "x        - Zeitgesteuerter Modus an/aus",
       "<        - Lesezeichen f\U000000FCr die aktuelle Sequenz setzen",
-      "r        - die letzte Sequenz wiederholen",
       "1 oder \U00002191 - die aktuelle Sequenz neu starten",
+      "r        - die letzte Sequenz wiederholen",
       "R        - Sequenzen nach Fehler automatisch wiederholen an/aus",
       "g        - Fortschrittsdiagramm f\U000000FCr die aktuelle Sequenz anzeigen",
       "G        - Fortschrittsdiagramm am Ende der Sequenzen anzeigen an/aus",
@@ -181,7 +182,8 @@
       "2 oder \U00002193 - zum Ende der Partie springen",
       "3, 4, 5  - zum 1. Viertel, zur Mitte, zum 3. Viertel der Partie springen",
       "0        - aktuelles Spiel als Hauptvariante sichern",
-      "9        - zur Hauptvariante springen")
+      "9        - zur Hauptvariante springen",
+      "a und A  - in den Hinzuf\U000000FCgen Modus wechseln")
 
    }
 
