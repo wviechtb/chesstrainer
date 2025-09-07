@@ -222,7 +222,7 @@
       if (is.numeric(click))
          break
 
-      if (identical(click, "F1") || identical(click, "\r") || identical(click, "ctrl-J") || identical(click, "q") || identical(click, "\033") || identical(click, "ctrl-["))
+      if (identical(click, "F1") || identical(click, "\r") || identical(click, "ctrl-J") || identical(click, "q") || identical(click, "\033") || identical(click, "ctrl-[") || identical(click, " "))
          break
 
       if (identical(click, "i")) {

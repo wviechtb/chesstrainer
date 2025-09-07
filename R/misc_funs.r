@@ -32,7 +32,7 @@
 
 }
 
-is.start.pos <- function(pos) {
+.is.start.pos <- function(pos) {
    pos <- unname(pos[1:8,1:8])
    start.pos <- .get("pos")
    start.pos <- unname(start.pos[1:8,1:8])

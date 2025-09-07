@@ -235,6 +235,7 @@ play <- function(lang="en", sfpath="", ...) {
    assign("cex.top", cex.top, envir=.chesstrainer)
    assign("cex.bot", cex.bot, envir=.chesstrainer)
    assign("cex.eval", cex.eval, envir=.chesstrainer)
+   assign("upsidedown", FALSE, envir=.chesstrainer)
 
    # if seqdir is not an empty string, remove any directories from seqdir that do not exist
 
@@ -423,9 +424,9 @@ play <- function(lang="en", sfpath="", ...) {
 
    # define keys
 
-   keys <- c("q", "ctrl-Q", "\033", "ctrl-[", " ", "m", "d", "\\", "#", "n", "p", "ctrl-R",
+   keys <- c("q", "ctrl-Q", "\033", "ctrl-[", " ", "m", "d", "\\", "#", "n", "N", "p", "ctrl-R",
              "g", "H", "h", "Left", "Right", "Up", "Down", "t", "0", "1", "2", "3", "4", "5", "9",
-             "r", "o", "u",
+             "r", "o", "u", "M", "B", "U",
              "a", "A", "f", "z", "c", "e", "E", "s", "b",
              "^", "6", "R", "G", "w", "-", "=", "+", "[", "]", "(", ")", "i", "x", "v", "ctrl-V",
              "l", "<", ">", "ctrl-C", "ctrl-S", "ctrl-D", "/", ",", ".", "|", "*", "8", "'", "?",
@@ -1109,9 +1110,9 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # n to start a new sequence / round (from play/analysis mode, jumps back to oldmode)
+            # n (or N) to start a new sequence / round (from play/analysis mode, jumps back to oldmode)
 
-            if (identical(click, "n")) {
+            if (identical(click, "n") || identical(click, "N")) {
                if (mode %in% c("play","analysis"))
                   mode <- oldmode
                useflip <- FALSE
@@ -1639,6 +1640,16 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
+            # U to toggle upsidedown
+
+            if (identical(click, "U")) {
+               upsidedown <- !upsidedown
+               assign("upsidedown", upsidedown, envir=.chesstrainer)
+               run.rnd <- FALSE
+               input <- FALSE
+               next
+            }
+
             ################################################################
 
             ### keys specific to the test mode
@@ -1669,6 +1680,78 @@ play <- function(lang="en", sfpath="", ...) {
                .textbot(mode, score=score, onlyscore=TRUE)
                .drawcircles(circles, lwd=lwd)
                .drawarrows(arrows, lwd=lwd)
+               next
+            }
+
+            # M to trigger a mistake (only in test mode)
+
+            if (mode == "test" && identical(click, "M")) {
+               mistake <- TRUE
+               if (score >= 1) {
+                  scoreadd <- min(adjustwrong, 100-score)
+                  score <- score + scoreadd
+                  .textbot(mode, score=score, onlyscore=TRUE)
+                  playsound(system.file("sounds", "error.ogg", package="chesstrainer"), volume=volume)
+               }
+               next
+            }
+
+            # B to end the sequence (only in test mode)
+
+            if (mode == "test" && identical(click, "B")) {
+               if (i <= nrow(sub$moves)) {
+                  .texttop(.text("notlastmove"), sleep=0.75)
+                  .texttop(sub$moves$comment[i])
+               } else {
+                  playsound(system.file("sounds", "complete.ogg", package="chesstrainer"), volume=volume)
+                  if (is.null(sub$commentend)) {
+                     if (mistake) {
+                        .texttop(.text("nextseq"))
+                     } else {
+                        .texttop(.text("welldone"))
+                     }
+                  } else {
+                     .texttop(sub$commentend)
+                     if (!wait)
+                        .waitforclick()
+                  }
+                  if (!is.null(sub$symbolend)) {
+                     circles <- .parseannot(sub$symbolend$circles, cols=2)
+                     arrows  <- .parseannot(sub$symbolend$arrows, cols=4)
+                     .drawcircles(circles, lwd=lwd)
+                     .drawarrows(arrows, lwd=lwd)
+                     if (!wait)
+                        .waitforclick()
+                  }
+                  lastseq <- seqname
+                  if (mistake && repmistake) {
+                     replast <- TRUE
+                     filename <- seqname
+                  }
+                  if (!mistake && score > 1)
+                     score <- round(score * multiplier)
+                  played <- played + 1
+                  tmp <- data.frame(date=as.numeric(Sys.time()), played=played, score=score)
+                  if (is.null(sub$player[[player]])) {
+                     sub$player[[player]] <- tmp
+                  } else {
+                     sub$player[[player]] <- rbind(sub$player[[player]], tmp)
+                  }
+                  difficulty <- .difffun(sub$player[[player]]$score, difflen, diffmin, adjusthint, multiplier)
+                  .textbot(mode, show, player, seqname, seqnum, score, played, age=0, difficulty, i+1, totalmoves, selmode)
+                  session.seqsplayed[session.length] <- session.seqsplayed[session.length] + 1
+                  session.mean.scores[[session.length]] <- c(session.mean.scores[[session.length]], mean(scores.all, na.rm=TRUE))
+                  if (showgraph) {
+                     .progressgraph(sub$player[[player]], lwd=lwd)
+                     .redrawpos(pos, flip=flip)
+                  }
+                  if (!eval)
+                     .draweval(sub$moves$eval[i], NA, i=i, starteval=starteval, flip=flip, eval=TRUE, evalsteps=evalsteps)
+                  saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
+                  Sys.sleep(2*sleep)
+                  run.rnd <- FALSE
+                  input <- FALSE
+               }
                next
             }
 
@@ -1867,7 +1950,7 @@ play <- function(lang="en", sfpath="", ...) {
             # 0 to make the current position the starting position (only in add mode)
 
             if (mode == "add" && identical(click, "0")) {
-               if (!is.start.pos(pos)) {
+               if (!.is.start.pos(pos)) {
                   .texttop(.text("setposstart"), sleep=1)
                   .texttop(texttop)
                   starteval <- sub$moves$eval[i-1]
@@ -2025,7 +2108,7 @@ play <- function(lang="en", sfpath="", ...) {
                attr(pos,"y1") <- NULL
                attr(pos,"moves50") <- 0
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
-               if (!is.start.pos(pos)) {
+               if (!.is.start.pos(pos)) {
                   sub$pos <- pos
                   fen <- .genfen(pos, flip, sidetoplay, i)
                   res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, fen, sidetoplay, verbose)
@@ -3210,7 +3293,7 @@ play <- function(lang="en", sfpath="", ...) {
                   while (TRUE) {
 
                      if (!eval) # always show evaluation at end even if eval is FALSE
-                     .draweval(sub$moves$eval[i], NA, i=i, starteval=starteval, flip=flip, eval=TRUE, evalsteps=evalsteps)
+                        .draweval(sub$moves$eval[i], NA, i=i, starteval=starteval, flip=flip, eval=TRUE, evalsteps=evalsteps)
 
                      click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=.keyfun)
 

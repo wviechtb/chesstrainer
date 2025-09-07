@@ -112,7 +112,7 @@
 
       click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.mousedownfun, onKeybd=.keyfun)
 
-      if (identical(click, "\r") || identical(click, "ctrl-J") || identical(click, "q") || identical(click, "\033") || identical(click, "ctrl-[") || identical(click, "F12"))
+      if (identical(click, "\r") || identical(click, "ctrl-J") || identical(click, "q") || identical(click, "\033") || identical(click, "ctrl-[") || identical(click, "F12") || identical(click, " "))
          break
 
       if (is.numeric(click) && click[[3]] %in% c(0,2)) {

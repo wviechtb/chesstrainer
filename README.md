@@ -3,7 +3,7 @@ chesstrainer: An R Package to Create and Test Yourself on Chess Lines
 
 ## Description
 
-The purpose of the `chesstrainer` package is to create sequences of moves (lines), save them, and then test yourself on these sequences. This is especially useful for training openings, but can also be used for creating chess puzzles or training tactics. Can you find the forced mate below?
+The main purpose of the `chesstrainer` package is to create sequences of moves (lines), save them, and then test yourself on these sequences. This is especially useful for training openings, but can also be used for creating chess puzzles or training tactics. Can you find the forced mate below?
 
 ![](man/figures/screenshot.png "Find the mate in three!")
 

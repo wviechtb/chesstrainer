@@ -119,7 +119,7 @@
    if (x == "showgraph") {
       return(switch(lang,
                     de = paste0("Fortschrittsdiagramm am Ende von Sequenzen anzeigen: ", ifelse(arg, "an", "aus")),
-                         paste0("Show progress graph at the end of the sequences: ", ifelse(arg, "on", "off"))
+                         paste0("Show progress graph at the end of sequences: ", ifelse(arg, "on", "off"))
    ))}
 
    if (x == "saveseq") {
@@ -421,6 +421,12 @@
       return(switch(lang,
                     de = "Das war der letzte Zug!",
                          "That was the last move!"
+   ))}
+
+   if (x == "notlastmove") {
+      return(switch(lang,
+                    de = "Das war nicht der letzte Zug!",
+                         "That was not the last move!"
    ))}
 
    if (x == "currentexpval") {
