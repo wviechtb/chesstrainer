@@ -98,7 +98,7 @@ play <- function(lang="en", sfpath="", ...) {
    depth2 <- round(depth2)
    depth3 <- round(depth3)
    sflim <- max(0, round(sflim))
-   if (sflim > 20 && sflim < 1320)
+   if (!is.na(sflim) && (sflim > 20 && sflim < 1320))
       sflim <- NA
    sflim[sflim > 3190] <- 3190
    multipv1[multipv1 < 1] <- 1
