@@ -41,8 +41,9 @@ play <- function(lang="en", sfpath="", ...) {
    cex.bot     <- ifelse(is.null(ddd[["cex.bot"]]),     0.7,            ddd[["cex.bot"]])
    cex.eval    <- ifelse(is.null(ddd[["cex.eval"]]),    0.5,            ddd[["cex.eval"]])
    depth1      <- ifelse(is.null(ddd[["depth1"]]),      16,             ddd[["depth1"]])
-   depth2      <- ifelse(is.null(ddd[["depth2"]]),      30,             ddd[["depth2"]])
-   depth3      <- ifelse(is.null(ddd[["depth3"]]),      8,              ddd[["depth3"]])
+   depth2      <- ifelse(is.null(ddd[["depth2"]]),      24,             ddd[["depth2"]])
+   depth3      <- ifelse(is.null(ddd[["depth3"]]),      6,              ddd[["depth3"]])
+   sflim       <- ifelse(is.null(ddd[["sflim"]]),       NA,             ddd[["sflim"]])
    multipv1    <- ifelse(is.null(ddd[["multipv1"]]),    1,              ddd[["multipv1"]])
    multipv2    <- ifelse(is.null(ddd[["multipv2"]]),    1,              ddd[["multipv2"]])
    threads     <- ifelse(is.null(ddd[["threads"]]),     1,              ddd[["threads"]])
@@ -96,6 +97,10 @@ play <- function(lang="en", sfpath="", ...) {
    depth1 <- round(depth1)
    depth2 <- round(depth2)
    depth3 <- round(depth3)
+   sflim <- max(0, round(sflim))
+   if (sflim > 20 && sflim < 1320)
+      sflim <- NA
+   sflim[sflim > 3190] <- 3190
    multipv1[multipv1 < 1] <- 1
    multipv2[multipv2 < 1] <- 1
    multipv1 <- round(multipv1)
@@ -129,7 +134,8 @@ play <- function(lang="en", sfpath="", ...) {
                        selmode=selmode, timed=timed, timepermove=timepermove, expval=expval, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint,
                        eval=eval, evalsteps=evalsteps, wait=wait, sleep=sleep, idletime=idletime, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval,
-                       sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, difffun=difffun, difflen=difflen, diffmin=diffmin)
+                       sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth,
+                       difffun=difffun, difflen=difflen, diffmin=diffmin)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       cols <- sapply(cols.all, function(x) .get(x))
       saveRDS(cols, file=file.path(configdir, "colors.rds"))
@@ -196,6 +202,8 @@ play <- function(lang="en", sfpath="", ...) {
             depth2 <- settings[["depth2"]]
          if (is.null(mc[["depth3"]]))
             depth3 <- settings[["depth3"]]
+         if (is.null(mc[["sflim"]]))
+            sflim <- settings[["sflim"]]
          if (is.null(mc[["multipv1"]]))
             multipv1 <- settings[["multipv1"]]
          if (is.null(mc[["multipv2"]]))
@@ -218,7 +226,8 @@ play <- function(lang="en", sfpath="", ...) {
                        selmode=selmode, timed=timed, timepermove=timepermove, expval=expval, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint,
                        eval=eval, evalsteps=evalsteps, wait=wait, sleep=sleep, idletime=idletime, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval,
-                       sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, difffun=difffun, difflen=difflen, diffmin=diffmin)
+                       sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth,
+                       difffun=difffun, difflen=difflen, diffmin=diffmin)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       if (file.exists(file.path(configdir, "colors.rds"))) {
          cols <- readRDS(file.path(configdir, "colors.rds"))
@@ -733,7 +742,7 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (is.null(attr(pos, "starteval"))) {
                fen <- .genfen(pos, flip, sidetoplay, i)
-               res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, fen, sidetoplay, verbose)
+               res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay, verbose)
                evalval  <- res.sf$eval
                bestmove <- res.sf$bestmove
                matetype <- res.sf$matetype
@@ -863,8 +872,6 @@ play <- function(lang="en", sfpath="", ...) {
                # if Stockfish is not running anymore, then it must have crashed, so wait for click and switch to add mode
 
                if (!sfrun) {
-                  #.waitforclick()
-                  #mode <- oldmode <- "add"
                   mode <- "analysis"
                   .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
                   next
@@ -882,9 +889,6 @@ play <- function(lang="en", sfpath="", ...) {
 
                   if (!nzchar(bestmove[[1]][1])) {
                      .texttop(.text("nomove"))
-                     #.waitforclick()
-                     #run.rnd <- FALSE
-                     #input <- FALSE
                      mode <- "analysis"
                      .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
                      next
@@ -900,9 +904,9 @@ play <- function(lang="en", sfpath="", ...) {
 
                   .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
 
-                  fen <- .genfen(pos, flip, sidetoplay, i)
                   evalvallast <- evalval[1]
-                  res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, fen, sidetoplay, verbose)
+                  fen <- .genfen(pos, flip, sidetoplay, i)
+                  res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay, verbose)
                   evalval   <- res.sf$eval
                   bestmove  <- res.sf$bestmove
                   matetype  <- res.sf$matetype
@@ -1092,7 +1096,11 @@ play <- function(lang="en", sfpath="", ...) {
                timed <- FALSE
                show <- FALSE
                fen <- .genfen(pos, flip, sidetoplay, i)
-               res.sf <- .sf.eval(sfproc, sfrun, ifelse(flip, ifelse(sidetoplay=="b", depth1, depth3), ifelse(sidetoplay=="w", depth1, depth3)), multipv1, fen, sidetoplay, verbose)
+               if ((flip && sidetoplay=="b") || (!flip && sidetoplay=="w")) {
+                  res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay, verbose)
+               } else {
+                  res.sf <- .sf.eval(sfproc, sfrun, depth3, multipv1, sflim, fen, sidetoplay, verbose)
+               }
                evalval  <- res.sf$eval
                bestmove <- res.sf$bestmove
                matetype <- res.sf$matetype
@@ -1203,7 +1211,7 @@ play <- function(lang="en", sfpath="", ...) {
             if (mode %in% c("add","play","analysis") && identical(click, "H") && !is.null(sfproc) && sfrun) {
                fen <- .genfen(pos, flip, sidetoplay, i)
                .texttop(.text("sfdeepeval"))
-               res.sf <- .sf.eval(sfproc, sfrun, depth2, multipv2, fen, sidetoplay, verbose, progbar=TRUE)
+               res.sf <- .sf.eval(sfproc, sfrun, depth2, multipv2, sflim=NA, fen, sidetoplay, verbose, progbar=TRUE)
                evalval  <- res.sf$eval
                bestmove <- res.sf$bestmove
                matetype <- res.sf$matetype
@@ -1243,7 +1251,7 @@ play <- function(lang="en", sfpath="", ...) {
                   }
                   if (i == 1 && is.na(evalval[1])) {
                      fen <- .genfen(pos, flip, sidetoplay, i)
-                     res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, fen, sidetoplay, verbose)
+                     res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay, verbose)
                      evalval  <- res.sf$eval
                      bestmove <- res.sf$bestmove
                      matetype <- res.sf$matetype
@@ -1330,7 +1338,7 @@ play <- function(lang="en", sfpath="", ...) {
                   if (mode %in% c("play","analysis")) {
                      mode <- "analysis"
                      fen <- .genfen(pos, flip, sidetoplay, i)
-                     res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, fen, sidetoplay, verbose)
+                     res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay, verbose)
                      evalval  <- res.sf$eval
                      bestmove <- res.sf$bestmove
                      matetype <- res.sf$matetype
@@ -1397,7 +1405,7 @@ play <- function(lang="en", sfpath="", ...) {
                      .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
                      .drawsideindicator(sidetoplay, flip)
                      fen <- .genfen(pos, flip, sidetoplay, i)
-                     res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, fen, sidetoplay, verbose)
+                     res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay, verbose)
                      evalval  <- res.sf$eval
                      bestmove <- res.sf$bestmove
                      matetype <- res.sf$matetype
@@ -1445,7 +1453,7 @@ play <- function(lang="en", sfpath="", ...) {
                }
                if (mode == "analysis") {
                   fen <- .genfen(pos, flip, sidetoplay, i)
-                  res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, fen, sidetoplay, verbose)
+                  res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay, verbose)
                   evalval  <- res.sf$eval
                   bestmove <- res.sf$bestmove
                   matetype <- res.sf$matetype
@@ -1494,7 +1502,7 @@ play <- function(lang="en", sfpath="", ...) {
                   .texttop(" ")
                   mode <- "analysis"
                   fen <- .genfen(pos, flip, sidetoplay, i)
-                  res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, fen, sidetoplay, verbose)
+                  res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay, verbose)
                   evalval  <- res.sf$eval
                   bestmove <- res.sf$bestmove
                   matetype <- res.sf$matetype
@@ -1580,7 +1588,7 @@ play <- function(lang="en", sfpath="", ...) {
                   .texttop(" ")
                   mode <- "analysis"
                   fen <- .genfen(pos, flip, sidetoplay, i)
-                  res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, fen, sidetoplay, verbose)
+                  res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay, verbose)
                   evalval  <- res.sf$eval
                   bestmove <- res.sf$bestmove
                   matetype <- res.sf$matetype
@@ -1631,7 +1639,7 @@ play <- function(lang="en", sfpath="", ...) {
                .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
                .drawsideindicator(sidetoplay, flip)
                fen <- .genfen(pos, flip, sidetoplay, i)
-               res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, fen, sidetoplay, verbose)
+               res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay, verbose)
                evalval  <- res.sf$eval
                bestmove <- res.sf$bestmove
                matetype <- res.sf$matetype
@@ -1799,7 +1807,7 @@ play <- function(lang="en", sfpath="", ...) {
                      sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                      .drawsideindicator(sidetoplay, flip)
                      fen <- .genfen(pos, flip, sidetoplay, i)
-                     res.sf <- .sf.eval(sfproc, sfrun, depth2, multipv1, fen, sidetoplay, verbose, progbar=TRUE)
+                     res.sf <- .sf.eval(sfproc, sfrun, depth2, multipv1, sflim=NA, fen, sidetoplay, verbose, progbar=TRUE)
                      evalval  <- res.sf$eval
                      bestmove <- res.sf$bestmove
                      matetype <- res.sf$matetype
@@ -1937,7 +1945,7 @@ play <- function(lang="en", sfpath="", ...) {
                .textbot(mode, show=show, i=i, totalmoves=totalmoves, onlyshow=TRUE, onlyi=TRUE)
                .drawsideindicator(sidetoplay, flip)
                fen <- .genfen(pos, flip, sidetoplay, i)
-               res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, fen, sidetoplay, verbose)
+               res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay, verbose)
                evalval  <- res.sf$eval
                bestmove <- res.sf$bestmove
                matetype <- res.sf$matetype
@@ -2111,7 +2119,7 @@ play <- function(lang="en", sfpath="", ...) {
                if (!.is.start.pos(pos)) {
                   sub$pos <- pos
                   fen <- .genfen(pos, flip, sidetoplay, i)
-                  res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, fen, sidetoplay, verbose)
+                  res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay, verbose)
                   evalval  <- res.sf$eval
                   bestmove <- res.sf$bestmove
                   matetype <- res.sf$matetype
@@ -2786,7 +2794,7 @@ play <- function(lang="en", sfpath="", ...) {
             # F3 to print the settings
 
             if (identical(click, "F3")) {
-               tab <- data.frame(lang, player, mode, seqdir=seqdir[seqdirpos], selmode, timed, timepermove, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, wait, sleep, idletime, lwd, volume, showgraph, repmistake, cex.top, cex.bot, cex.eval, sfpath, depth1, depth2, depth3, multipv1, multipv2, threads, hash, hintdepth, difffun, difflen, diffmin)
+               tab <- data.frame(lang, player, mode, seqdir=seqdir[seqdirpos], selmode, timed, timepermove, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, wait, sleep, idletime, lwd, volume, showgraph, repmistake, cex.top, cex.bot, cex.eval, difffun, difflen, diffmin, sfpath, depth1, depth2, depth3, sflim, multipv1, multipv2, threads, hash, hintdepth)
                .showsettings(tab, lwd)
                .redrawpos(pos, flip=flip)
                .drawcircles(circles, lwd=lwd)
@@ -2858,7 +2866,7 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (identical(click, "F7")) {
                eval(expr=switch1)
-               tmp <- .sfsettings(sfproc, sfrun, sfpath, depth1, depth2, depth3, multipv1, multipv2, threads, hash, hintdepth)
+               tmp <- .sfsettings(sfproc, sfrun, sfpath, depth1, depth2, depth3, sflim, multipv1, multipv2, threads, hash, hintdepth)
                eval(expr=switch2)
                sfproc    <- tmp$sfproc
                sfrun     <- tmp$sfrun
@@ -2866,6 +2874,7 @@ play <- function(lang="en", sfpath="", ...) {
                depth1    <- tmp$depth1
                depth2    <- tmp$depth2
                depth3    <- tmp$depth3
+               sflim     <- tmp$sflim
                multipv1  <- tmp$multipv1
                multipv2  <- tmp$multipv2
                threads   <- tmp$threads
@@ -2875,6 +2884,7 @@ play <- function(lang="en", sfpath="", ...) {
                settings$depth1    <- depth1
                settings$depth2    <- depth2
                settings$depth3    <- depth3
+               settings$sflim     <- sflim
                settings$multipv1  <- multipv1
                settings$multipv2  <- multipv2
                settings$threads   <- threads
@@ -3327,7 +3337,7 @@ play <- function(lang="en", sfpath="", ...) {
                         .drawsideindicator(sidetoplay, flip)
                         i <- i + 1
                         fen <- .genfen(pos, flip, sidetoplay, i)
-                        res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, fen, sidetoplay, verbose)
+                        res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay, verbose)
                         evalval  <- res.sf$eval
                         bestmove <- res.sf$bestmove
                         matetype <- res.sf$matetype
@@ -3358,7 +3368,11 @@ play <- function(lang="en", sfpath="", ...) {
                         .drawsideindicator(sidetoplay, flip)
                         i <- i + 1
                         fen <- .genfen(pos, flip, sidetoplay, i)
-                        res.sf <- .sf.eval(sfproc, sfrun, ifelse(flip, ifelse(sidetoplay=="b", depth1, depth3), ifelse(sidetoplay=="w", depth1, depth3)), multipv1, fen, sidetoplay, verbose)
+                        if ((flip && sidetoplay=="b") || (!flip && sidetoplay=="w")) {
+                           res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay, verbose)
+                        } else {
+                           res.sf <- .sf.eval(sfproc, sfrun, depth3, multipv1, sflim, fen, sidetoplay, verbose)
+                        }
                         evalval  <- res.sf$eval
                         bestmove <- res.sf$bestmove
                         matetype <- res.sf$matetype
@@ -3460,32 +3474,32 @@ play <- function(lang="en", sfpath="", ...) {
 
          if (mode %in% c("add","play","analysis")) {
 
-            # get the evaluation and the next bestmove after the move has been made (using depth1 in add mode and depth3 in play/analysis mode)
+            # after the move has been made, get the evaluation and the next bestmove, using depth1 in add/analysis mode and depth3 (with sflim) in play mode
 
-            fen <- .genfen(pos, flip, sidetoplay, i)
             evalvallast <- evalval[1]
-            res.sf <- .sf.eval(sfproc, sfrun, ifelse(mode=="add", depth1, depth3), multipv1, fen, sidetoplay, verbose)
+            fen <- .genfen(pos, flip, sidetoplay, i)
+            if (mode %in% c("add","analysis")) {
+               res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay, verbose)
+            } else {
+               res.sf <- .sf.eval(sfproc, sfrun, depth3, multipv1, sflim, fen, sidetoplay, verbose)
+            }
             evalval  <- res.sf$eval
             bestmove <- res.sf$bestmove # [d]
             matetype <- res.sf$matetype
             sfproc   <- res.sf$sfproc
             sfrun    <- res.sf$sfrun
 
-            # in play/analysis mode, want to base the actual evaluation on depth1 and not depth3, so have to run .sf.eval() one more time
+            # in play mode, base the actual evaluation on depth1 (and without sflim) and not depth3, so have to run .sf.eval() one more time
 
-            if (mode %in% c("play","analysis") && depth1 > depth3) {
-               res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, fen, sidetoplay, verbose)
+            if (mode == "play" && (!is.na(sflim) || depth1 > depth3)) {
+               res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay, verbose)
                evalval  <- res.sf$eval
                matetype <- res.sf$matetype
                sfproc   <- res.sf$sfproc
                sfrun    <- res.sf$sfrun
-               if (mode == "analysis") # in analysis mode, we have use this evaluation for bestmove (but not in play mode)
-                  bestmove <- res.sf$bestmove
             }
 
             .draweval(evalval[1], evalvallast, i=i, starteval=starteval, flip=flip, eval=eval, evalsteps=evalsteps)
-
-            # add the current move to sub
 
             if (is.null(sub$moves$circles))
                sub$moves$circles <- ""
@@ -3499,7 +3513,7 @@ play <- function(lang="en", sfpath="", ...) {
             if (mode == "analysis")
                sub$moves <- sub$moves[seq_len(i-2),,drop=FALSE]
 
-            # determine the correct value for show for sub
+            # determine the correct value for 'show' in sub
 
             if (mode == "add") {
                if (flip) {
@@ -3514,6 +3528,8 @@ play <- function(lang="en", sfpath="", ...) {
                   showval <- sidetoplay == "w"
                }
             }
+
+            # add the current move to sub
 
             sub$moves <- rbind(sub$moves, data.frame(x1=click1.x, y1=click1.y, x2=click2.x, y2=click2.y, show=showval, move=attr(pos,"move"), eval=evalval[1], comment=comment, circles=circlesvar, arrows=arrowsvar, fen=fen))
             comment <- ""

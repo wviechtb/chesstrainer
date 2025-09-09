@@ -157,12 +157,20 @@
    col.bg          <- .get("col.bg")
    col.help        <- .get("col.help")
    col.help.border <- .get("col.help.border")
-   font.mono <- .get("font.mono")
+   font.mono       <- .get("font.mono")
 
    seqdir <- tab$seqdir
    sfpath <- tab$sfpath
 
    tab.save <- tab
+
+   if (!is.na(tab$sflim)) {
+      if (tab$sflim <= 20) {
+         tab$sflim <- paste(tab$sflim, "(level)")
+      } else {
+         tab$sflim <- paste(tab$sflim, "(Elo)")
+      }
+   }
 
    tab <- t(tab)
    tab <- cbind(tab, .text("explsettings"))
@@ -184,7 +192,9 @@
    if (nchar(sfpath) > maxchars-3)
       sfpath <- paste0("...", substr(sfpath, nchar(sfpath)-maxchars-3+1, nchar(sfpath)))
 
-   txt <- c(txt, "", .text("seqdirsettings"), seqdir, "", .text("sfpathsettings"), sfpath)
+   txt <- gsub("<NA>", "NA  ", txt, fixed=TRUE)
+   sfpos <- grep("difffun", txt, fixed=TRUE)
+   txt <- c(.text("generalsettings"), txt[1:(sfpos-1)], "", .text("seqdirsettings"), seqdir, "", .text("sfsettings"), txt[sfpos:length(txt)], "", .text("sfpathsettings"), sfpath)
 
    cex <- .findcex(txt, font=font.mono, x1=1.5, x2=8.2, y1=1.5, y2=8.5)
 
