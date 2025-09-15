@@ -6,6 +6,12 @@ play <- function(lang="en", sfpath="", ...) {
    if (!is.element(lang, c("en","de")))
       stop("Argument 'lang' must be either 'en' or 'de'.", call.=FALSE)
 
+   # set warn=1 for easier debugging
+
+   owarn <- options()$warn
+   options(warn=1)
+   on.exit(options(warn=owarn))
+
    assign("lang", lang, envir=.chesstrainer)
 
    # get arguments passed via ...
@@ -352,7 +358,7 @@ play <- function(lang="en", sfpath="", ...) {
 
    if (dev.cur() != 1L) {
       opar <- par(no.readonly=TRUE)
-      on.exit(par(opar))
+      on.exit(par(opar), add=TRUE)
    }
 
    # create the getGraphicsEvent() functions
@@ -438,7 +444,7 @@ play <- function(lang="en", sfpath="", ...) {
              "r", "o", "u", "M", "B", "U",
              "a", "A", "f", "z", "c", "e", "E", "s", "b",
              "^", "6", "R", "G", "w", "-", "=", "+", "[", "]", "(", ")", "i", "x", "v", "ctrl-V",
-             "l", "<", ">", "ctrl-C", "ctrl-S", "ctrl-D", "/", ",", ".", "|", "*", "8", "'", "?",
+             "l", "<", ">", "ctrl-F", "ctrl-C", "ctrl-D", "/", ",", ".", "|", "*", "8", "'", "?",
              "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12")
 
    run.all <- TRUE
@@ -922,6 +928,26 @@ play <- function(lang="en", sfpath="", ...) {
                   if (!identical(matetype, "none")) {
                      playsound(system.file("sounds", "complete.ogg", package="chesstrainer"), volume=volume)
                      .texttop(.text(matetype))
+                     mode <- "analysis"
+                     .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
+                     next
+                  }
+
+                  threefold <- any(table(sapply(strsplit(sub$moves$fen, " "), function(x) paste(x[1:4], collapse = " "))) == 3L)
+
+                  if (threefold) {
+                     .texttop(.text("threefold"))
+                     playsound(system.file("sounds", "complete.ogg", package="chesstrainer"), volume=volume)
+                     mode <- "analysis"
+                     .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
+                     next
+                  }
+
+                  fifty <- identical(strsplit(fen, " ")[[1]][5], "100")
+
+                  if (fifty) {
+                     .texttop(.text("fifty"))
+                     playsound(system.file("sounds", "complete.ogg", package="chesstrainer"), volume=volume)
                      mode <- "analysis"
                      .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
                      next
@@ -2111,10 +2137,6 @@ play <- function(lang="en", sfpath="", ...) {
                evalvals <- c()
                sub$moves <- sub$moves[numeric(0),]
                sub$flip <- flip
-               attr(pos,"move") <- NULL
-               attr(pos,"ispp") <- NULL
-               attr(pos,"y1") <- NULL
-               attr(pos,"moves50") <- 0
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                if (!.is.start.pos(pos)) {
                   sub$pos <- pos
@@ -2385,9 +2407,9 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # ctrl-c to print and copy the FEN to the clipboard
+            # ctrl-f to print and copy the FEN to the clipboard
 
-            if (identical(click, "ctrl-C")) {
+            if (identical(click, "ctrl-F")) {
                eval(expr=switch1)
                fen <- .genfen(pos, flip, sidetoplay, i)
                cat(fen, "\n")
@@ -2398,13 +2420,15 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # ctrl-s to print and copy the sequence name to the clipboard
+            # ctrl-c to print and copy the sequence name to the clipboard
 
-            if (identical(click, "ctrl-S")) {
+            if (identical(click, "ctrl-C")) {
                if (seqname != "") {
                   eval(expr=switch1)
                   cat(seqnum, " ", seqname, "\n")
-                  clipr::write_clip(seqname, object_type="character")
+                  tmp <- seqname
+                  filename <- sub("\\.rds$", "", tmp) # strip .rds from end of filename
+                  clipr::write_clip(tmp, object_type="character")
                   eval(expr=switch2)
                }
                next
@@ -3420,7 +3444,7 @@ play <- function(lang="en", sfpath="", ...) {
                         browseURL(fen)
                      }
 
-                     if (identical(click, "ctrl-C")) {
+                     if (identical(click, "ctrl-F")) {
                         eval(expr=switch1)
                         fen <- .genfen(pos, flip, ifelse(sidetoplay == "w", "b", "w"), i+1)
                         cat(fen, "\n")
@@ -3430,7 +3454,7 @@ play <- function(lang="en", sfpath="", ...) {
                         .texttop(texttop)
                      }
 
-                     if (identical(click, "ctrl-S")) {
+                     if (identical(click, "ctrl-C")) {
                         eval(expr=switch1)
                         cat(seqnum, " ", seqname, "\n")
                         clipr::write_clip(seqname, object_type="character")
@@ -3534,12 +3558,42 @@ play <- function(lang="en", sfpath="", ...) {
             sub$moves <- rbind(sub$moves, data.frame(x1=click1.x, y1=click1.y, x2=click2.x, y2=click2.y, show=showval, move=attr(pos,"move"), eval=evalval[1], comment=comment, circles=circlesvar, arrows=arrowsvar, fen=fen))
             comment <- ""
 
+            # check for (stale)mate
+
             if (mode %in% c("play","analysis") && !identical(matetype, "none")) {
                playsound(system.file("sounds", "complete.ogg", package="chesstrainer"), volume=volume)
                .texttop(.text(matetype))
                mode <- "analysis"
                .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
                next
+            }
+
+            # check for threefold repetition
+
+            threefold <- any(table(sapply(strsplit(sub$moves$fen, " "), function(x) paste(x[1:4], collapse = " "))) == 3L)
+
+            if (threefold) {
+               .texttop(.text("threefold"))
+               if (mode %in% c("play","analysis")) {
+                  playsound(system.file("sounds", "complete.ogg", package="chesstrainer"), volume=volume)
+                  mode <- "analysis"
+                  .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
+                  next
+               }
+            }
+
+            # check fifty-move rule
+
+            fifty <- identical(strsplit(fen, " ")[[1]][5], "100")
+
+            if (fifty) {
+               .texttop(.text("fifty"))
+               if (mode %in% c("play","analysis")) {
+                  playsound(system.file("sounds", "complete.ogg", package="chesstrainer"), volume=volume)
+                  mode <- "analysis"
+                  .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
+                  next
+               }
             }
 
          }

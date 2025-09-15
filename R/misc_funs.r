@@ -184,7 +184,9 @@
    if (is.null(ispp))
       ispp <- ""
 
-   if (!identical(ispp, "")) {
+   if (identical(ispp, "")) {
+      enpassant <- "-"
+   } else {
       if (ispp == "w") {
          if (flip) {
             enpassant <- paste0(letters[8:1][attr(pos,"y1")], 3, collapse="")
@@ -198,8 +200,6 @@
             enpassant <- paste0(letters[1:8][attr(pos,"y1")], 6, collapse="")
          }
       }
-   } else {
-      enpassant <- "-"
    }
 
    fen <- paste(fen, enpassant)
@@ -324,14 +324,24 @@
    pos[pos == "Q"] <- "WQ"
    pos[pos == "K"] <- "WK"
 
-   pos <- rbind("", pos, "")
-   pos <- cbind("", pos, "")
-   rownames(pos) <- 0:9
-   colnames(pos) <- 0:9
-   pos[1,3:8]  <- c("WK","WQ","WR","WB","WN","WP")
-   pos[10,3:8] <- c("BK","BQ","BR","BB","BN","BP")
+   rochade <- fields[3]
 
-   attr(pos,"rochade") <- fields[3]
+   if (identical(rochade, "-")) {
+      rochade <- rep(FALSE, 4)
+   } else {
+      rochade <- c(grepl("K", rochade), grepl("Q", rochade), grepl("k", rochade), grepl("q", rochade))
+   }
+
+   attr(pos,"rochade")  <- rochade
+   attr(pos, "moves50") <- fields[5]
+   attr(pos,"move")     <- fields[6]
+
+   if (!identical(fields[4], "-")) {
+      attr(pos,"ispp") <- ifelse(fields[2] == "w", "b", "w")
+      letter <- substr(fields[4], 1, 1)
+      y1 <- as.numeric(which(letters[1:8] == letter))
+      attr(pos,"y1") <- y1
+   }
 
    return(list(pos=pos, sidetoplay=fields[2]))
 

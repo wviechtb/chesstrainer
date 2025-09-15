@@ -36,7 +36,7 @@
       "()       - decrease/increase the line width",
       "i        - toggle the language (English/German)",
       "v        - evaluation bar on/off",
-      "Ctrl-c   - copy the FEN of the current position to the clipboard",
+      "Ctrl-f   - copy the FEN of the current position to the clipboard",
       "<escape> - redraw the board / exit a menu",
       "F1       - show this help",
       "F2       - show the leaderboard and player statistics",
@@ -67,7 +67,7 @@
       "a        - extend the current sequence with more moves",
       "A        - extend the current position with more moves",
       "u        - recalculate the evaluations for the current sequence",
-      "Ctrl-s   - copy the name of the current sequence to the clipboard",
+      "Ctrl-c   - copy the name of the current sequence to the clipboard",
       "Ctrl-d   - delete the current sequence")
 
       txt.add <- c(
@@ -124,7 +124,7 @@
       "()       - Linienbreite verringern/erh\U000000F6hen",
       "i        - Sprache wechseln (Englisch/Deutsch)",
       "v        - Bewertungsbalken an/aus",
-      "Strg-c   - FEN der aktuellen Position in die Zwischenablage kopieren",
+      "Strg-f   - FEN der aktuellen Position in die Zwischenablage kopieren",
       "<escape> - Brett neu zeichnen / ein Men\U000000FC verlassen",
       "F1       - diese Hilfe anzeigen",
       "F2       - Rangliste und Spielerstatistiken anzeigen",
@@ -155,7 +155,7 @@
       "a        - die aktuelle Sequenz mit Z\U000000FCgen erweitern",
       "A        - die aktuelle Position mit Z\U000000FCgen erweitern",
       "u        - Bewertungen f\U000000FCr die aktuelle Sequenz neu berechnen",
-      "Strg-s   - den Namen der aktuellen Sequenz in die Zwischenablage kopieren",
+      "Strg-c   - den Namen der aktuellen Sequenz in die Zwischenablage kopieren",
       "Strg-d   - die aktuelle Sequenz l\U000000F6schen")
 
       txt.add <- c(

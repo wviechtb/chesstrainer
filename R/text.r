@@ -1263,6 +1263,18 @@
                          "Illegal position\n(king in check but other side moves)"
    ))}
 
+   if (x == "threefold") {
+      return(switch(lang,
+                    de = "Remis durch dreifache Stellungswiederholung.",
+                         "Draw by threefold repetition."
+   ))}
+
+   if (x == "fifty") {
+      return(switch(lang,
+                    de = "Remis durch die 50-Z\U000000FCge-Regel.",
+                         "Draw by the fifty-move rule."
+   ))}
+
 }
 
 .confirm <- function(x) {

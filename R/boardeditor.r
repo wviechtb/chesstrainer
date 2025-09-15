@@ -1,15 +1,8 @@
 .boardeditor <- function(pos, flip, sidetoplay, lwd, verbose, switch1, switch2) {
 
-   pos <- rbind("", pos, "")
-   pos <- cbind("", pos, "")
-   rownames(pos) <- 0:9
-   colnames(pos) <- 0:9
-   pos[1,3:8]  <- c("WK","WQ","WR","WB","WN","WP")
-   pos[10,3:8] <- c("BK","BQ","BR","BB","BN","BP")
+   pos <- .expandpos(pos)
 
    .boardeditor.drawboard(pos, flip, sidetoplay, lwd)
-
-   rochadespec <- FALSE
 
    click1.x <- NULL
    click1.y <- NULL
@@ -136,8 +129,7 @@
          eval(expr=switch1)
          resp <- readline(prompt=.text("enterrochade"))
          if (grepl("^K?Q?k?q?$", resp)) {
-            rochade <- c(grepl("K", resp), grepl("Q", resp), grepl("k", resp), grepl("q", resp))
-            rochadespec <- TRUE
+            attr(pos, "rochade") <- c(grepl("K", resp), grepl("Q", resp), grepl("k", resp), grepl("q", resp))
          } else {
             cat(.text("notcorrectrochade"))
          }
@@ -156,7 +148,7 @@
          isfen <- .validatefen(fen)
          if (isfen) {
             tmp <- .fentopos(fen)
-            pos <- tmp$pos
+            pos <- .expandpos(tmp$pos)
             sidetoplay <- tmp$sidetoplay
             .boardeditor.drawboard(pos, flip, sidetoplay, lwd)
          } else {
@@ -210,26 +202,93 @@
       if (click2.x <= 1 || click2.x >= 10)
          next
 
+      oldpos <- pos[2:9,2:9]
+
       pos <- .boardeditor.updateboard(pos, move=c(click1.x, click1.y, click2.x, click2.y), flip=flip, button=button)
 
+      if (!identical(oldpos, pos[2:9,2:9])) {
+         attr(pos, "ispp") <- NULL
+         attr(pos, "y1") <- NULL
+      }
+
    }
 
-   pos <- pos[2:9,2:9]
+   pos <- .shrinkpos(pos)
 
-   # if rochade availability was not entered, then assume availability based on king and rook positions
+   rochade <- attr(pos, "rochade")
 
-   if (!rochadespec) {
+   if (is.null(rochade)) {
+
+      # if castling availability is not available, then assume availability based on king and rook positions
+
       rochade <- c((pos[1,5] == "WK" && pos[1,8] == "WR"), (pos[1,5] == "WK" && pos[1,1] == "WR"),
                    (pos[8,5] == "BK" && pos[8,8] == "BR"), (pos[8,5] == "BK" && pos[8,1] == "BR"))
+
+   } else {
+
+      # fix any incorrect castling availability values
+
+      if (pos[1,5] != "WK" || pos[1,8] != "WR")
+         rochade[1] <- FALSE
+      if (pos[1,5] != "WK" || pos[1,1] != "WR")
+         rochade[2] <- FALSE
+      if (pos[8,5] != "BK" || pos[8,8] != "BR")
+         rochade[3] <- FALSE
+      if (pos[8,5] != "BK" || pos[8,1] != "BR")
+         rochade[4] <- FALSE
+
    }
 
-   attr(pos,"rochade") <- rochade
+   attr(pos, "rochade") <- rochade
 
    ischeck <- c(.isattacked(pos, xy=c(which(pos=="WK", arr.ind=TRUE)), attackcolor="b"),
                 .isattacked(pos, xy=c(which(pos=="BK", arr.ind=TRUE)), attackcolor="w"))
    attr(pos,"ischeck") <- ischeck
 
    return(list(pos=pos, flip=flip, sidetoplay=sidetoplay))
+
+}
+
+############################################################################
+
+.expandpos <- function(pos) {
+
+   attribs <- attributes(pos)
+
+   pos <- rbind("", pos, "")
+   pos <- cbind("", pos, "")
+   rownames(pos) <- 0:9
+   colnames(pos) <- 0:9
+   pos[1,3:8]  <- c("WK","WQ","WR","WB","WN","WP")
+   pos[10,3:8] <- c("BK","BQ","BR","BB","BN","BP")
+
+   attr(pos, "moves50") <- attribs$moves50
+   attr(pos, "rochade") <- attribs$rochade
+   attr(pos, "ispp") <- attribs$ispp
+   attr(pos, "y1") <- attribs$y1
+
+   return(pos)
+
+}
+
+.shrinkpos <- function(pos) {
+
+   attribs <- attributes(pos)
+
+   pos <- pos[2:9,2:9]
+
+   attr(pos,"moves50") <- attribs$moves50
+   attr(pos,"rochade") <- attribs$rochade
+   attr(pos, "ispp") <- attribs$ispp
+   attr(pos, "y1") <- attribs$y1
+
+   if (is.null(attr(pos,"moves50"))) {
+      attr(pos,"moves50") <- 0
+   } else {
+      attr(pos,"moves50") <- as.numeric(attr(pos,"moves50"))
+   }
+
+   return(pos)
 
 }
 

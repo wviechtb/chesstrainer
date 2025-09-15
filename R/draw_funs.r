@@ -361,7 +361,7 @@
                   break
             }
             sapply(8:5, function(x2) .drawsquare(x2, y2))
-            mapply(.drawpiece, x=8:5, y=rep(y2,4), piece=pos[1:5,9-y2])
+            mapply(.drawpiece, x=8:5, y=rep(y2,4), piece=pos[1:4,9-y2])
             if (!is.na(move[[6]]) && !identical(promotionpiece, paste0("B", strsplit(sub("+" ,"", move[[6]], fixed=TRUE), "=", fixed=TRUE)[[1]][2])))
                return("prommistake")
          }
@@ -386,7 +386,7 @@
                   break
             }
             sapply(1:4, function(x2) .drawsquare(x2, y2))
-            mapply(.drawpiece, x=1:4, y=rep(y2,4), piece=pos[8:4,9-y2])
+            mapply(.drawpiece, x=1:4, y=rep(y2,4), piece=pos[8:5,9-y2])
             if (!is.na(move[[6]]) && !identical(promotionpiece, paste0("W", strsplit(sub("+" ,"", move[[6]], fixed=TRUE), "=", fixed=TRUE)[[1]][2])))
                return("prommistake")
          }
