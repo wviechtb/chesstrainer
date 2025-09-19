@@ -91,6 +91,7 @@
       return(list(eval=eval, bestmove=bestmove, matetype="none", sfproc=sfproc, sfrun=sfrun))
 
    col.top <- .get("col.top")
+   col.bg  <- .get("col.bg")
 
    olddepth <- 0
 
@@ -153,6 +154,9 @@
    }
 
    end.time <- proc.time()
+
+   if (progbar)
+      .texttop("")
 
    if (!alive) {
       sfproc <- NULL

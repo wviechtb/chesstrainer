@@ -853,6 +853,9 @@
    if (length(txt) == 0L || is.na(txt))
       return()
 
+   if (isTRUE(attr(txt, "left")))
+      left <- TRUE
+
    xleft   <- 0 + xadj
    xright  <- 10 + xadj
    ybottom <- 9.2 + yadj

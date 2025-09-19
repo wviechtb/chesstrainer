@@ -453,10 +453,10 @@
                          "Well done! Next sequence ..."
    ))}
 
-   if (x == "nextseq") {
+   if (x == "keeppracticing") {
       return(switch(lang,
-                    de = "Weiter \U000000FCben! Die n\U000000E4chste Sequenz ...",
-                         "Keep practicing! Next sequence ..."
+                    de = "Weiter \U000000FCben!",
+                         "Keep practicing!"
    ))}
 
    if (x == "noleader") {
@@ -967,6 +967,12 @@
       return(switch(lang,
                     de = "Sequenzen m\U000000FCssen mit einem Zug des Spielers enden.",
                          "Sequences must end with a move by the player."
+   ))}
+
+   if (x == "notatend") {
+      return(switch(lang,
+                    de = "Nicht am Ende der Sequenz.",
+                         "Not at the end of the sequence."
    ))}
 
    if (x == "seqdiroptionwhich") {

@@ -12,7 +12,7 @@
 
    if (lang == "en") {
 
-      txt.general <- c(
+      txt.general1 <- c(
       "General shortcuts:",
       "<space>  - switch mode (test/add)",
       "\\ or #   - switch to play mode",
@@ -52,6 +52,14 @@
       "F12      - show session history",
       "q        - quit the trainer")
 
+      txt.general2 <- c(
+      "General shortcuts:",
+      "\U00002190 and \U00002192  - go back / forward one move",
+      "1 or \U00002191   - jump to the first player move or the beginning of the sequence/game",
+      "2 or \U00002193   - jump to the end of the sequence/game",
+      "3, 4, 5  - jump to the 1st quarter, middle, 3rd quarter of the sequence/game",
+      "u        - recalculate the evaluations for the current sequence/game")
+
       txt.test <- c(
       "Shortcuts for the test mode:",
       "h        - get a hint (can be selected twice)",
@@ -59,14 +67,12 @@
       "o        - manually enter the score for the current sequence",
       "x        - timed mode on/off",
       "<        - bookmark the current sequence",
-      "1 or \U00002191   - restart the current sequence",
       "r        - repeat the last sequence",
       "R        - automatically repeat sequences after a mistake on/off",
       "g        - show the progress graph for the current sequence",
-      "G        - show the progress graph at the end of the sequences on/off",
+      "G        - show the progress graph at the end of sequences on/off",
       "a        - extend the current sequence with more moves",
       "A        - extend the current position with more moves",
-      "u        - recalculate the evaluations for the current sequence",
       "Ctrl-c   - copy the name of the current sequence to the clipboard",
       "Ctrl-d   - delete the current sequence")
 
@@ -77,21 +83,17 @@
       "c        - add a comment to the current move",
       "e and E  - edit the comments / edit the sequence file",
       "h and H  - show the best move according to Stockfish (fast / deep)",
+      "t        - take back the last move",
       "0        - make the current position the starting position",
-      "t or \U00002190   - take back the last move",
-      "g        - show the evaluation graph",
       "b        - start the board editor",
+      "g        - show the evaluation graph",
       "s        - save the sequence")
 
       txt.play <- c(
       "Shortcuts for the play and analysis mode:",
       "g        - show the evaluation graph",
-      "t        - take back the last move",
+      "t        - take back the last move (computer move and own move)",
       "\\ or #   - switch between the play and analysis mode",
-      "\U00002190 and \U00002192  - go back / forward one move",
-      "1 or \U00002191   - jump to the start of the game",
-      "2 or \U00002193   - jump to the end of the game",
-      "3, 4, 5  - jump to the 1st quarter, middle, 3rd quarter of the game",
       "0        - store the current game as the main variation",
       "9        - jump to the main variation",
       "a and A  - switch to add mode")
@@ -100,7 +102,7 @@
 
    if (lang == "de") {
 
-      txt.general <- c(
+      txt.general1 <- c(
       "Allgemeine Tastenk\U000000FCrzel:",
       "<space>  - Modus wechseln (Test/Hinzuf\U000000FCgen)",
       "\\ oder # - in den Spielmodus wechseln",
@@ -140,6 +142,14 @@
       "F12      - Sitzungsverlauf anzeigen",
       "q        - Trainer beenden")
 
+      txt.general2 <- c(
+      "Allgemeine Tastenk\U000000FCrzel:",
+      "\U00002190 und \U00002192  - einen Zug zur\U000000FCck / vorw\U000000E4rts gehen",
+      "1 oder \U00002191 - zum ersten Spielerzug oder an den Anfang der Sequenz/Partie springen",
+      "2 oder \U00002193 - zum Ende der Sequenz/Partie springen",
+      "3, 4, 5  - zum 1. Viertel, zur Mitte, zum 3. Viertel der Sequenz/Partie springen",
+      "u        - Bewertungen f\U000000FCr die aktuelle Sequenz/Partie neu berechnen")
+
       txt.test <- c(
       "Tastenk\U000000FCrzel f\U000000FCr den Test Modus:",
       "h        - einen Tipp bekommen (kann zweimal gew\U000000E4hlt werden)",
@@ -147,14 +157,12 @@
       "o        - Punktewert f\U000000FCr die aktuelle Sequenz manuell eingeben",
       "x        - Zeitgesteuerter Modus an/aus",
       "<        - Lesezeichen f\U000000FCr die aktuelle Sequenz setzen",
-      "1 oder \U00002191 - die aktuelle Sequenz neu starten",
       "r        - die letzte Sequenz wiederholen",
       "R        - Sequenzen nach Fehler automatisch wiederholen an/aus",
       "g        - Fortschrittsdiagramm f\U000000FCr die aktuelle Sequenz anzeigen",
       "G        - Fortschrittsdiagramm am Ende der Sequenzen anzeigen an/aus",
       "a        - die aktuelle Sequenz mit Z\U000000FCgen erweitern",
       "A        - die aktuelle Position mit Z\U000000FCgen erweitern",
-      "u        - Bewertungen f\U000000FCr die aktuelle Sequenz neu berechnen",
       "Strg-c   - den Namen der aktuellen Sequenz in die Zwischenablage kopieren",
       "Strg-d   - die aktuelle Sequenz l\U000000F6schen")
 
@@ -165,30 +173,26 @@
       "c        - Kommentar zum aktuellen Zug hinzuf\U000000FCgen",
       "e und E  - Kommentare editieren / Sequenzfile editieren",
       "h und H  - den besten Zug laut Stockfish anzeigen (schnell / tief)",
+      "t        - den letzten Zug zur\U000000FCcknehmen",
       "0        - die aktuelle Position zur Ausgangsposition machen",
-      "t oder \U00002190 - den letzten Zug zur\U000000FCcknehmen",
-      "g        - Bewertungsdiagram anzeigen",
       "b        - Bretteditor starten",
+      "g        - Bewertungsdiagram anzeigen",
       "s        - Sequenz abspeichern"
       )
 
       txt.play <- c(
       "Tastenk\U000000FCrzel f\U000000FCr den Spiel- und Analysemodus:",
       "g        - Bewertungsdiagram anzeigen",
-      "t        - den letzten Zug zur\U000000FCcknehmen",
+      "t        - den letzten Zug zur\U000000FCcknehmen (Computerzug und eigener Zug)",
       "\\ oder # - zwischen dem Spiel- und Analysemodus wechseln",
-      "\U00002190 und \U00002192  - einen Zug zur\U000000FCck / vorw\U000000E4rts gehen",
-      "1 oder \U00002191 - zum Anfang der Partie springen",
-      "2 oder \U00002193 - zum Ende der Partie springen",
-      "3, 4, 5  - zum 1. Viertel, zur Mitte, zum 3. Viertel der Partie springen",
       "0        - aktuelles Spiel als Hauptvariante sichern",
       "9        - zur Hauptvariante springen",
       "a und A  - in den Hinzuf\U000000FCgen Modus wechseln")
 
    }
 
-   page1 <- c(txt.general)
-   page2 <- c(txt.test, "", txt.add, "", txt.play)
+   page1 <- c(txt.general1)
+   page2 <- c(txt.general2, "", txt.test, "", txt.add, "", txt.play)
 
    if (length(page1) > length(page2)) {
       page2 <- c(page2, rep("", length(page1)-length(page2)))
