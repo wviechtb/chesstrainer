@@ -1193,16 +1193,17 @@ play <- function(lang="en", sfpath="", ...) {
             # ctrl-r to remove the current player (starts a new round)
 
             if (identical(click, "ctrl-R")) {
-               eval(expr=switch1)
-               rmplayer <- readline(prompt=.text("rlydelplayer", player))
-               if (.confirm(rmplayer)) {
+               .texttop(.text("rlydelplayer", player))
+               answer <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=.keyfun)
+               answer <- .confirm(answer)
+               if (answer) {
+                  .texttop(.text("delplayer", player), sleep=1)
                   .removeplayer(player, seqdir[seqdirpos])
-                  eval(expr=switch2)
                   player <- .selectplayer(player, seqdir[seqdirpos], lwd, mustselect=TRUE)
                   run.rnd <- FALSE
                   input <- FALSE
                } else {
-                  eval(expr=switch2)
+                  .texttop(texttop)
                }
                next
             }
@@ -2453,15 +2454,17 @@ play <- function(lang="en", sfpath="", ...) {
             # ctrl-d to delete the current sequence (only in test mode)
 
             if (mode == "test" && identical(click, "ctrl-D")) {
-               eval(expr=switch1)
-               answer <- readline(prompt=.text("rlydelseq"))
-               if (.confirm(answer)) {
-                  cat(.text("delseq"))
+               .texttop(.text("rlydelseq"))
+               answer <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=.keyfun)
+               answer <- .confirm(answer)
+               if (answer) {
+                  .texttop(.text("delseq"), sleep=1)
                   file.remove(file.path(seqdir[seqdirpos], seqname))
                   run.rnd <- FALSE
                   input <- FALSE
+               } else {
+                  .texttop(texttop)
                }
-               eval(expr=switch2)
                next
             }
 
@@ -3353,7 +3356,8 @@ play <- function(lang="en", sfpath="", ...) {
                      if (is.numeric(click) && identical(click[3], 0)) # left button goes to next sequence
                         break
 
-                     if (is.numeric(click) && identical(click[3], 1)) { # middle button repeats the sequence
+                     if (identical(click, "r") || (is.numeric(click) && identical(click[3], 1))) { # r or middle button repeats the sequence
+                        saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
                         .texttop(.text("replast"), sleep=0.75)
                         replast <- TRUE
                         filename <- seqname
@@ -3385,13 +3389,6 @@ play <- function(lang="en", sfpath="", ...) {
                         sfrun    <- res.sf$sfrun
                         .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
                         donext <- TRUE
-                        break
-                     }
-
-                     if (identical(click, "r")) {
-                        .texttop(.text("replast"), sleep=0.75)
-                        replast <- TRUE
-                        filename <- seqname
                         break
                      }
 

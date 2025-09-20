@@ -88,8 +88,14 @@
 
    if (x == "rlydelplayer") {
       return(switch(lang,
-                    de = paste0("Wirlich Spieler '", arg, "' l\U000000F6schen? (j/N): "),
-                         paste0("Really delete player '", arg, "'? (y/N): ")
+                    de = paste0("Wirlich Spieler '", arg, "' l\U000000F6schen? (j/N)"),
+                         paste0("Really delete player '", arg, "'? (y/N)")
+   ))}
+
+   if (x == "delplayer") {
+      return(switch(lang,
+                    de = paste0("L\U000000F6sche Spieler '", arg, "' ..."),
+                         paste0("Deleting the player '", arg, "' ...")
    ))}
 
    if (x == "wait") {
@@ -239,14 +245,14 @@
 
    if (x == "rlydelseq") {
       return(switch(lang,
-                    de = "Die aktuelle Sequenz l\U000000F6schen (j/N): ",
-                         "Delete the current sequence? (y/N): "
+                    de = "Die aktuelle Sequenz l\U000000F6schen? (j/N)",
+                         "Delete the current sequence? (y/N)"
    ))}
 
    if (x == "delseq") {
       return(switch(lang,
-                    de = "L\U000000F6sche die Sequenz ...\n",
-                         "Deleting the sequence ...\n"
+                    de = "L\U000000F6sche die Sequenz ...",
+                         "Deleting the sequence ..."
    ))}
 
    if (x == "seqsearch") {
