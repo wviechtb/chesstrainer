@@ -58,6 +58,7 @@
       tab[[2]] <- as.character(tab[[2]])
       txt <- capture.output(print(tab, right=FALSE, print.gap=3))
       txt <- c(txt[1], "", txt[-1], "")
+      txt[1] <- sub("^ ", "#", txt[1])
 
       ypos1 <- 8
       ypos2 <- max(2.5, 8-0.5*length(players))

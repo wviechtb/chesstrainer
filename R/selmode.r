@@ -10,7 +10,7 @@
    if (lang == "en") {
 
       txt <- c(
-      "Choose a sequence selection mode:",
+      "Choose a sequence selection mode",
       "",
       "1 - based on the score, at random",
       "2 - based on the score, highest score",
@@ -27,7 +27,7 @@
    if (lang == "de") {
 
       txt <- c(
-      "W\U000000E4hle einen Modus f\U000000FCr die Sequenzauswahl:",
+      "W\U000000E4hle einen Modus f\U000000FCr die Sequenzauswahl",
       "",
       "1 - basierend auf dem Punktewert, zuf\U000000E4llig",
       "2 - basierend auf dem Punktewert, h\U000000F6chster Punktewert",
@@ -52,6 +52,9 @@
    ypos <- seq(7.5, 3.5, length.out=length(txt))
 
    text(1.5, ypos, txt, pos=4, offset=0, cex=cex, family=font.mono, font=ifelse(c("","",selmodes)==selmode, 2, 1), col=col.help)
+
+   segments(1.5, ypos[1] - (ypos[1]-ypos[2]), 8, ypos[1] - (ypos[1]-ypos[2]), col=col.help)
+   segments(1.5, ypos[length(txt)] - (ypos[1]-ypos[2]), 8, ypos[length(txt)] - (ypos[1]-ypos[2]), col=col.help)
 
    ypos <- ypos[-c(1:2)]
    dist <- (ypos[1] - ypos[2]) / 2

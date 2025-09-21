@@ -10,7 +10,7 @@
    if (lang == "en") {
 
       txt <- c(
-      "Choose a difficulty calculation method:",
+      "Choose a difficulty calculation method",
       "",
       "1 - average score increase over the plays of the sequence",
       "2 - percentage of plays where the score did not improve",
@@ -28,7 +28,7 @@
    if (lang == "de") {
 
       txt <- c(
-      "W\U000000E4hle eine Methode zur Schwierigkeitsberechnung:",
+      "W\U000000E4hle eine Methode zur Schwierigkeitsberechnung",
       "",
       "1 - durchschnittliche Punktsteigerung \U000000FCber die Spiele der Sequenz",
       "2 - Prozent der Spiele, in denen sich die Punktzahl nicht verbessert hat",
@@ -55,6 +55,9 @@
    ypos <- seq(7.5, 3.5, length.out=length(txt))
 
    text(1.5, ypos, txt, pos=4, offset=0, cex=cex, family=font.mono, font=ifelse(c("","",opts)==difffun, 2, 1), col=col.help)
+
+   segments(1.5, ypos[1] - (ypos[1]-ypos[2]), 8, ypos[1] - (ypos[1]-ypos[2]), col=col.help)
+   segments(1.5, ypos[length(txt)] - (ypos[1]-ypos[2]), 8, ypos[length(txt)] - (ypos[1]-ypos[2]), col=col.help)
 
    ypos <- ypos[-c(1:2)]
    dist <- (ypos[1] - ypos[2]) / 2
