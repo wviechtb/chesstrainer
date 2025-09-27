@@ -24,6 +24,12 @@ play <- function(lang="en", sfpath="", ...) {
       seqdir <- ddd[["seqdir"]]
    }
 
+   if (is.null(ddd[["eval"]])) { # eval can be a vector, so not using ifelse()
+      eval <- TRUE
+   } else {
+      eval <- ddd[["eval"]]
+   }
+
    player      <- ifelse(is.null(ddd[["player"]]),      "",             ddd[["player"]])
    seqdirpos   <- ifelse(is.null(ddd[["seqdirpos"]]),   1,              ddd[["seqdirpos"]])
    mode        <- ifelse(is.null(ddd[["mode"]]),        "add",          ddd[["mode"]])
@@ -34,9 +40,8 @@ play <- function(lang="en", sfpath="", ...) {
    multiplier  <- ifelse(is.null(ddd[["multiplier"]]),  0.8,            ddd[["multiplier"]])
    adjustwrong <- ifelse(is.null(ddd[["adjustwrong"]]), 40,             ddd[["adjustwrong"]])
    adjusthint  <- ifelse(is.null(ddd[["adjusthint"]]),  20,             ddd[["adjusthint"]])
-   eval        <- ifelse(is.null(ddd[["eval"]]),        TRUE,           isTRUE(ddd[["eval"]]))
    evalsteps   <- ifelse(is.null(ddd[["evalsteps"]]),   5,              ddd[["evalsteps"]])
-   wait        <- ifelse(is.null(ddd[["wait"]]),        TRUE,           isTRUE(ddd[["wait"]]))
+   wait        <- ifelse(is.null(ddd[["wait"]]),        TRUE,           ddd[["wait"]])
    sleep       <- ifelse(is.null(ddd[["sleep"]]),       0.5,            ddd[["sleep"]])
    idletime    <- ifelse(is.null(ddd[["idletime"]]),    120,            ddd[["idletime"]])
    lwd         <- ifelse(is.null(ddd[["lwd"]]),         2,              ddd[["lwd"]])
@@ -86,6 +91,8 @@ play <- function(lang="en", sfpath="", ...) {
    multiplier[multiplier > 1] <- 1
    adjustwrong[adjustwrong < 0] <- 0
    adjusthint[adjusthint < 0] <- 0
+   if (length(eval) == 1L)
+      eval <- c(add=eval, test=eval, play=eval, analysis=eval)
    evalsteps[evalsteps < 2] <- 2
    evalsteps <- round(evalsteps)
    sleep[sleep < 0] <- 0
@@ -774,7 +781,7 @@ play <- function(lang="en", sfpath="", ...) {
       .drawboard(pos, flip=flip, inhibit=inhibit)
       .drawcheck(pos, flip=flip)
       .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
-      .draweval(starteval, NA, i=i, starteval=starteval, flip=flip, eval=eval, evalsteps=evalsteps)
+      .draweval(starteval, NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
 
       # check for getGraphicsEvent() capabilities of the current plotting device
 
@@ -795,7 +802,7 @@ play <- function(lang="en", sfpath="", ...) {
             if (i == 1 && !is.null(sub$commentstart) && showstartcom) {
                .startcomment(sub$commentstart, lwd=lwd)
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
-               .draweval(starteval, NA, i=i, starteval=starteval, flip=flip, eval=eval, evalsteps=evalsteps)
+               .draweval(starteval, NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
             }
 
             if (nrow(sub$moves) == 0L) {
@@ -832,7 +839,7 @@ play <- function(lang="en", sfpath="", ...) {
                }
                pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE, volume=volume, verbose=verbose)
                sub$moves$move[i] <- attr(pos,"move")
-               .draweval(sub$moves$eval[i], sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, eval=eval, evalsteps=evalsteps)
+               .draweval(sub$moves$eval[i], sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                i <- i + 1
                sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                if (identical(sub$moves$comment[i], "") && !identical(sub$moves$comment[i-1], "")) {
@@ -922,7 +929,7 @@ play <- function(lang="en", sfpath="", ...) {
                   sub$moves$eval[i-1] <- evalval[1]
                   sub$moves$fen[i-1] <- fen
 
-                  .draweval(sub$moves$eval[i-1], sub$moves$eval[i-2], i=i, starteval=starteval, flip=flip, eval=eval, evalsteps=evalsteps)
+                  .draweval(sub$moves$eval[i-1], sub$moves$eval[i-2], i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                   .drawsideindicator(sidetoplay, flip)
 
                   if (!identical(matetype, "none")) {
@@ -1024,7 +1031,7 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (identical(click, "\033") || identical(click, "ctrl-[")) {
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
-               .draweval(sub$moves$eval[i-1], NA, i=i, starteval=starteval, flip=flip, eval=eval, evalsteps=evalsteps)
+               .draweval(sub$moves$eval[i-1], NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                circles <- matrix(nrow=0, ncol=2)
                arrows  <- matrix(nrow=0, ncol=4)
                harrows <- matrix(nrow=0, ncol=4)
@@ -1369,7 +1376,7 @@ play <- function(lang="en", sfpath="", ...) {
                }
                playsound(system.file("sounds", "move.ogg", package="chesstrainer"), volume=volume)
                .redrawpos(pos, posold, flip=flip)
-               .draweval(neweval, oldeval, i=i, starteval=starteval, flip=flip, eval=eval, evalsteps=evalsteps)
+               .draweval(neweval, oldeval, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                if (mode %in% c("add","test")) {
                   texttop <- .texttop(sub$moves$comment[i])
                   circles <- .parseannot(sub$moves$circles[i], cols=2)
@@ -1460,7 +1467,7 @@ play <- function(lang="en", sfpath="", ...) {
                   sub$moves <- sub$moves[seq_len(i-1),,drop=FALSE]
                playsound(system.file("sounds", "move.ogg", package="chesstrainer"), volume=volume)
                .redrawpos(pos, posold, flip=flip)
-               .draweval(neweval, oldeval, i=i, starteval=starteval, flip=flip, eval=eval, evalsteps=evalsteps)
+               .draweval(neweval, oldeval, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                if (mode %in% c("add","test")) {
                   texttop <- .texttop(sub$moves$comment[i])
                   circles <- .parseannot(sub$moves$circles[i], cols=2)
@@ -1511,7 +1518,7 @@ play <- function(lang="en", sfpath="", ...) {
                }
                pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE, volume=volume, verbose=verbose)
                sub$moves$move[i] <- attr(pos,"move")
-               .draweval(sub$moves$eval[i], sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, eval=eval, evalsteps=evalsteps)
+               .draweval(sub$moves$eval[i], sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                if (mode == "test" && timed) {
                   .drawtimer(movestoplay, movesplayed, timetotal, timepermove)
@@ -1596,7 +1603,7 @@ play <- function(lang="en", sfpath="", ...) {
                }
                playsound(system.file("sounds", "move.ogg", package="chesstrainer"), volume=volume)
                .redrawpos(pos, posold, flip=flip)
-               .draweval(sub$moves$eval[i-1], oldeval, i=i, starteval=starteval, flip=flip, eval=eval, evalsteps=evalsteps)
+               .draweval(sub$moves$eval[i-1], oldeval, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                if (mode == "test" && timed) {
                   .drawtimer(movestoplay, movesplayed, timetotal, timepermove)
                } else {
@@ -1674,7 +1681,7 @@ play <- function(lang="en", sfpath="", ...) {
                }
                playsound(system.file("sounds", "move.ogg", package="chesstrainer"), volume=volume)
                .redrawpos(pos, posold, flip=flip)
-               .draweval(sub$moves$eval[i-1], oldeval, i=i, starteval=starteval, flip=flip, eval=eval, evalsteps=evalsteps)
+               .draweval(sub$moves$eval[i-1], oldeval, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
                .drawsideindicator(sidetoplay, flip)
                fen <- .genfen(pos, flip, sidetoplay, i)
@@ -1745,7 +1752,7 @@ play <- function(lang="en", sfpath="", ...) {
                      sfrun    <- res.sf$sfrun
                      sub$moves$eval[i] <- evalval[1]
                      sub$moves$fen[i] <- fen
-                     .draweval(sub$moves$eval[i], sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, eval=eval, evalsteps=evalsteps)
+                     .draweval(sub$moves$eval[i], sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                   }
                   i <- i + 1
                   .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
@@ -1865,7 +1872,7 @@ play <- function(lang="en", sfpath="", ...) {
                      .progressgraph(sub$player[[player]], lwd=lwd)
                      .redrawpos(pos, flip=flip)
                   }
-                  if (!eval)
+                  if (!eval[[mode]])
                      .draweval(sub$moves$eval[i], NA, i=i, starteval=starteval, flip=flip, eval=TRUE, evalsteps=evalsteps)
                   saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
                   Sys.sleep(2*sleep)
@@ -1966,7 +1973,7 @@ play <- function(lang="en", sfpath="", ...) {
                         texttop <- .texttop(sub$moves$comment[i])
                      }
                      .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
-                     .draweval(sub$moves$eval[i], sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, eval=eval, evalsteps=evalsteps)
+                     .draweval(sub$moves$eval[i], sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                      sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                      Sys.sleep(sleep)
                   }
@@ -2020,7 +2027,7 @@ play <- function(lang="en", sfpath="", ...) {
                harrows <- matrix(nrow=0, ncol=4)
                evalvals <- c()
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
-               .draweval(starteval, starteval, i=i, starteval=starteval, flip=flip, eval=eval, evalsteps=evalsteps)
+               .draweval(starteval, starteval, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                next
             }
 
@@ -2166,7 +2173,7 @@ play <- function(lang="en", sfpath="", ...) {
                   sfrun    <- res.sf$sfrun
                   starteval <- evalval[1]
                   attr(sub$pos, "starteval") <- starteval
-                  .draweval(starteval, NA, i=i, starteval=starteval, flip=flip, eval=eval, evalsteps=evalsteps)
+                  .draweval(starteval, NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                }
                if (verbose)
                   print(pos)
@@ -2312,10 +2319,10 @@ play <- function(lang="en", sfpath="", ...) {
             # v to toggle the evaluation bar on/off
 
             if (identical(click, "v")) {
-               eval <- !eval
-               .texttop(.text("eval", eval), sleep=0.75)
-               if (eval) {
-                  .draweval(sub$moves$eval[i-1], NA, i=i, starteval=starteval, flip=flip, eval=eval, evalsteps=evalsteps)
+               eval[[mode]] <- !eval[[mode]]
+               .texttop(.text("eval", eval[[mode]]), sleep=0.75)
+               if (eval[[mode]]) {
+                  .draweval(sub$moves$eval[i-1], NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                } else {
                   .draweval(clear=TRUE)
                }
@@ -2838,7 +2845,10 @@ play <- function(lang="en", sfpath="", ...) {
             # F3 to print the settings
 
             if (identical(click, "F3")) {
-               tab <- data.frame(lang, player, mode, seqdir=seqdir[seqdirpos], selmode, timed, timepermove, expval, multiplier, adjustwrong, adjusthint, eval, evalsteps, wait, sleep, idletime, lwd, volume, showgraph, repmistake, cex.top, cex.bot, cex.eval, difffun, difflen, diffmin, sfpath, depth1, depth2, depth3, sflim, multipv1, multipv2, threads, hash, hintdepth)
+               tab <- list(lang=lang, player=player, mode=mode, seqdir=seqdir[seqdirpos], selmode=selmode, timed=timed, timepermove=timepermove, expval=expval,
+                           multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, eval=eval, evalsteps=evalsteps, wait=wait, sleep=sleep, idletime=idletime, lwd=lwd,
+                           volume=volume, showgraph=showgraph, repmistake=repmistake, cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, difffun=difffun, difflen=difflen, diffmin=diffmin,
+                           sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth)
                .showsettings(tab, lwd)
                .redrawpos(pos, flip=flip)
                .drawcircles(circles, lwd=lwd)
@@ -2854,7 +2864,7 @@ play <- function(lang="en", sfpath="", ...) {
                .colorsettings(cols.all, pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, lwd, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                eval(expr=switch2)
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
-               .draweval(sub$moves$eval[i-1], NA, i=i, starteval=starteval, flip=flip, eval=eval, evalsteps=evalsteps)
+               .draweval(sub$moves$eval[i-1], NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                .drawcircles(circles, lwd=lwd)
                .drawarrows(arrows, lwd=lwd)
                .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
@@ -2870,7 +2880,7 @@ play <- function(lang="en", sfpath="", ...) {
                .cexsettings(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, lwd, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                eval(expr=switch2)
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
-               .draweval(sub$moves$eval[i-1], NA, i=i, starteval=starteval, flip=flip, eval=eval, evalsteps=evalsteps)
+               .draweval(sub$moves$eval[i-1], NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                .drawcircles(circles, lwd=lwd)
                .drawarrows(arrows, lwd=lwd)
                .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
@@ -3000,7 +3010,7 @@ play <- function(lang="en", sfpath="", ...) {
                }
                .distributions(scores.selected, played.selected, age.selected, difficulty.selected, lwd, multiplier)
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
-               .draweval(sub$moves$eval[i-1], NA, i=i, starteval=starteval, flip=flip, eval=eval, evalsteps=evalsteps)
+               .draweval(sub$moves$eval[i-1], NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                .drawcircles(circles, lwd=lwd)
                .drawarrows(arrows, lwd=lwd)
                .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
@@ -3018,7 +3028,7 @@ play <- function(lang="en", sfpath="", ...) {
                session.playtime <- round(proc.time()[[3]] - session.time.start)
                .sessiongraph(session.seqsplayed, session.mean.scores, session.playtime, lwd)
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
-               .draweval(sub$moves$eval[i-1], NA, i=i, starteval=starteval, flip=flip, eval=eval, evalsteps=evalsteps)
+               .draweval(sub$moves$eval[i-1], NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                .drawcircles(circles, lwd=lwd)
                .drawarrows(arrows, lwd=lwd)
                .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
@@ -3038,7 +3048,7 @@ play <- function(lang="en", sfpath="", ...) {
                   next
                }
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
-               .draweval(sub$moves$eval[i-1], NA, i=i, starteval=starteval, flip=flip, eval=eval, evalsteps=evalsteps)
+               .draweval(sub$moves$eval[i-1], NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                .drawcircles(circles, lwd=lwd)
                .drawarrows(arrows, lwd=lwd)
                .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
@@ -3226,7 +3236,7 @@ play <- function(lang="en", sfpath="", ...) {
                   if (timed) .drawtimer(movestoplay, movesplayed, timetotal, timepermove)
                   domistake <- FALSE
                   pos <- tmp
-                  .draweval(sub$moves$eval[i], sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, eval=eval, evalsteps=evalsteps)
+                  .draweval(sub$moves$eval[i], sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                   sub$moves$move[i] <- attr(pos,"move")
                }
             }
@@ -3345,12 +3355,12 @@ play <- function(lang="en", sfpath="", ...) {
 
                   while (TRUE) {
 
-                     if (!eval) # always show evaluation at end even if eval is FALSE
+                     if (!eval[[mode]]) # always show evaluation at end even if eval is FALSE
                         .draweval(sub$moves$eval[i], NA, i=i, starteval=starteval, flip=flip, eval=TRUE, evalsteps=evalsteps)
 
                      click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=.keyfun)
 
-                     if (!eval)
+                     if (!eval[[mode]])
                         .draweval(clear=TRUE)
 
                      if (is.numeric(click) && identical(click[3], 0)) # left button goes to next sequence
@@ -3534,7 +3544,7 @@ play <- function(lang="en", sfpath="", ...) {
                sfrun    <- res.sf$sfrun
             }
 
-            .draweval(evalval[1], evalvallast, i=i, starteval=starteval, flip=flip, eval=eval, evalsteps=evalsteps)
+            .draweval(evalval[1], evalvallast, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
 
             if (is.null(sub$moves$circles))
                sub$moves$circles <- ""
@@ -3632,7 +3642,7 @@ play <- function(lang="en", sfpath="", ...) {
             }
             pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE, volume=volume, verbose=verbose)
             sub$moves$move[i] <- attr(pos,"move")
-            .draweval(sub$moves$eval[i], sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, eval=eval, evalsteps=evalsteps)
+            .draweval(sub$moves$eval[i], sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
             texttop <- .texttop(sub$moves$comment[i])
             if (nrow(circles) >= 1L || nrow(arrows) >= 1L) {
                .rmannot(pos, circles, arrows, flip)

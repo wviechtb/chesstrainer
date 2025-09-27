@@ -172,6 +172,19 @@
       }
    }
 
+   #tab$eval <- paste0(names(tab$eval[tab$eval]), collapse=", ")
+   tab$eval <- paste0(tab$eval, collapse="/")
+   if (lang == "en") {
+      tab$eval <- gsub("TRUE", "Yes", tab$eval, fixed=TRUE)
+      tab$eval <- gsub("FALSE", "No", tab$eval, fixed=TRUE)
+   }
+   if (lang == "de") {
+      tab$eval <- gsub("TRUE", "Ja",    tab$eval, fixed=TRUE)
+      tab$eval <- gsub("FALSE", "Nein", tab$eval, fixed=TRUE)
+   }
+
+   tab <- as.data.frame(tab)
+
    tab <- t(tab)
    tab <- cbind(tab, .text("explsettings"))
    colnames(tab) <- c("", "")
