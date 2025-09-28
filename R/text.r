@@ -1149,10 +1149,16 @@
                          "Move"
    ))}
 
-   if (x == "evalgraph-y") {
+   if (x == "evalgraph-y-cp") {
       return(switch(lang,
                     de = "Bewertung",
                          "Evaluation"
+   ))}
+
+   if (x == "evalgraph-y-wp") {
+      return(switch(lang,
+                    de = "Gewinnwahrscheinlichkeit",
+                         "Win Percentage"
    ))}
 
    if (x == "toofewscores") {

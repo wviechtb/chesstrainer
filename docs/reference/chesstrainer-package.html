@@ -31,7 +31,7 @@ The main purpose of the chesstrainer package is to create sequences of moves (li
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chesstrainer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-99</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-100</span>
       </span>
     </div>
 
@@ -207,7 +207,8 @@ The main purpose of the chesstrainer package is to create sequences of moves (li
 
 
 <p>If Stockfish is running, you can switch into <em>play mode</em> at any time with the <code>&lt;\&gt;</code> or <code>&lt;#&gt;</code> key. This is especially useful at the end of a sequence, to continue playing further moves against the computer from the end position of a sequence (e.g., to practice holding an advantage gained during an opening sequence). In this mode, the computer chooses by default its move according to a search depth of 6 half-moves, but this can be adjusted via <code>&lt;F7&gt;</code>. Here, one can also set a limit on the play strength of Stockfish (either as a skill level between 0 and 20 or as an approximate Elo value between 1320 and 3190).</p>
-<p>Using the <code>&lt;g&gt;</code> key in <em>play mode</em> shows a graph of the position evaluations for the moves played so far (this also works in <em>add mode</em>). Using the <code>&lt;t&gt;</code> key, you can take back the last move (i.e., the move played by the computer and your own move).</p>
+<p>Using the <code>&lt;g&gt;</code> key in <em>play mode</em> shows a graph of the position evaluations for the moves played so far (this also works in <em>add mode</em>). By default, the y-axis shows the evaluation based on the centipawns (\(cp\)) divided by 100, but pressing the middle mouse shows the win percentage (computed with \(50 + 50 \times (2 / (1 + \exp(-0.00368208 * cp)) - 1)\); see here: <code>https://lichess.org/page/accuracy</code>).</p>
+<p>Using the <code>&lt;t&gt;</code> key, you can take back the last move (i.e., the move played by the computer and your own move), so that it is again your move to play.</p>
 <p>The <code>&lt;left&gt;</code>, <code>&lt;right&gt;</code>, <code>&lt;up&gt;</code>, and <code>&lt;down&gt;</code> arrow keys and the <code>&lt;1&gt;</code>, <code>&lt;2&gt;</code>, <code>&lt;3&gt;</code>, <code>&lt;4&gt;</code>, and <code>&lt;5&gt;</code> keys work the same as described earlier (except that <code>&lt;1&gt;</code> always jumps to the start of the game). This automatically takes you into the <em>analysis mode</em>, where you can try out variations and/or force the computer to make a different move from a given position. Before doing so, using the <code>&lt;0&gt;</code> key, you can store the current game (i.e., sequence of moves) as the main variation. Using the <code>&lt;9&gt;</code> key, you can jump back to the end of the main variation.</p>
 <p>Once in <em>play mode</em>, the <code>&lt;\&gt;</code> or <code>&lt;#&gt;</code> key toggles between the analysis and the play mode. On the other hand, <code>&lt;space&gt;</code> takes you back to the mode that was active before the <em>play mode</em> was chosen.</p>
     </div>
