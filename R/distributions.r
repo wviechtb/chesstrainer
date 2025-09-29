@@ -1,4 +1,4 @@
-.distributions <- function(scores, played, age, difficulty, lwd, multiplier) {
+.distributions <- function(scores, played, age, difficulty, multiplier, lwd, mar) {
 
    n <- length(scores)
 
@@ -60,7 +60,7 @@
 
    # scatterplot of 'played' versus 'scores'
 
-   par(mar=c(5.4,15.4,5.4,15.4))
+   par(mar=mar+c(0,10,0,10))
 
    plot(NA, las=1, col.axis=col.top, col.lab=col.top, col=col.square.l, col.main=col.fg,
         bty="l", main=paste0(.text("played"), " vs. ", .text("score")), xlab=.text("played"), ylab=.text("score"),
@@ -83,7 +83,7 @@
    #legend("topright", lty=c("dotted","solid"), lwd=c(1,1), col=col.top, legend=.text("plotlegend"), bg=col.bg, box.col=col.square.l)
    #box(which="figure", col=col.help.border, lwd=lwd)
 
-   par(mar=rep(5.2,4))
+   par(mar=mar)
 
    #########################################################################
 

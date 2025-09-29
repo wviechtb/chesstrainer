@@ -32,7 +32,7 @@
 
    plot.eval <- function(x) {
       rect(1.3, 1.3, 8.7, 8.7, col=col.bg, border=NA)
-      par(new=TRUE, mar=c(11,11,9,9))
+      par(new=TRUE, mar=mar+c(5.5,5.5,3.5,3.5))
       ys <- x$eval
       if (yvalue == "cp") {
          ylim <- c(-9, 9)
@@ -64,7 +64,7 @@
       lines(xs, ys, col="#d85000", lwd=3)
       if (i > 1 && i-1 != n)
          segments(i-1, -9, i-1, 9, lty="dotted", col=col.top)
-      par(mar=rep(5.2,4), usr=c(1,9,1,9))
+      par(mar=mar, usr=c(1,9,1,9))
    }
 
    yvalue <- "cp"
@@ -94,7 +94,7 @@
 
    }
 
-   par(new=FALSE, mar=rep(mar,4))
+   par(new=FALSE, mar=mar)
 
    #.erase(1, 1, 9, 9)
 

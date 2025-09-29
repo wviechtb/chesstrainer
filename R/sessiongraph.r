@@ -15,7 +15,7 @@
 
    rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=lwd+3)
 
-   par(new=TRUE, mar=c(11,11,9,9))
+   par(new=TRUE, mar=mar+c(5.5,5.5,3.5,3.5))
 
    ylim <- range(round(unlist(mean.scores))) + c(-1,1)
 
@@ -31,7 +31,7 @@
       start.pos <- start.pos + max(seqsplayed[j])
    }
 
-   par(new=FALSE, mar=rep(mar,4), usr=c(1,9,1,9))
+   par(new=FALSE, mar=mar, usr=c(1,9,1,9))
 
    .texttop(.text("playtime", .totaltime(playtime)))
 

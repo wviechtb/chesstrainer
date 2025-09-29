@@ -1,4 +1,4 @@
-.progressgraph <- function(dat, lwd) {
+.progressgraph <- function(dat, lwd, mar) {
 
    if (dat$played[1] == 1)
       dat <- rbind(data.frame(date=NA, played=0, score=100), dat)
@@ -18,7 +18,7 @@
 
    plot.scores <- function(x) {
       rect(1.3, 1.3, 8.7, 8.7, col=col.bg, border=NA)
-      par(new=TRUE, mar=c(11,11,9,9))
+      par(new=TRUE, mar=mar+c(5.5,5.5,3.5,3.5))
       if (nrow(x) == 1L) {
          xlim <- c(x$played-1, x$played+1)
       } else {
@@ -29,7 +29,7 @@
       axis(side=1, at=x$played, col.axis=col.top)
       points(x$played, x$score, type="o", pch=21, lwd=2, col=col.square.l, bg=col.square.d)
       usr <<- par()$usr
-      par(mar=rep(5.2,4), usr=c(1,9,1,9))
+      par(mar=mar, usr=c(1,9,1,9))
    }
 
    zoom <- 1
@@ -58,20 +58,20 @@
             y1 <- grconvertY(click[[2]], from="ndc", to="user")
             if (x1 < 1 || x1 > 9 || y1 < 1 || y1 > 9)
                break
-            par(mar=c(11,11,9,9), usr=usr)
+            par(mar=mar+c(5.5,5.5,3.5,3.5), usr=usr)
             x1 <- grconvertX(click[[1]], from="ndc", to="user")
             if (x1 < usr[1])
                x1 <- usr[1]
             if (x1 > usr[2])
                x1 <- usr[2]
             segments(x1, 0, x1, usr[4], lty="dotted", col=col.top)
-            par(mar=rep(5.2,4), usr=c(1,9,1,9))
+            par(mar=mar, usr=c(1,9,1,9))
             click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.mousedownfun, onKeybd=.keyfun)
             if (!is.numeric(click))
                next
             if (click[[3]] == 2)
                next
-            par(mar=c(11,11,9,9), usr=usr)
+            par(mar=mar+c(5.5,5.5,3.5,3.5), usr=usr)
             x2 <- grconvertX(click[[1]], from="ndc", to="user")
             if (x2 < usr[1])
                x2 <- usr[1]
@@ -81,7 +81,7 @@
             segments(x1, 0, x2, 0, lty="dotted", col=col.top)
             segments(x1, usr[4], x2, usr[4], lty="dotted", col=col.top)
             Sys.sleep(0.5)
-            par(mar=rep(5.2,4), usr=c(1,9,1,9))
+            par(mar=mar, usr=c(1,9,1,9))
             sel <- dat$played >= min(x1,x2) & dat$played <= max(x1,x2)
             if (sum(sel) == 0L)
                next
@@ -97,7 +97,7 @@
    #ypos <- axTicks(side=2)
    #segments(par("usr")[1], ypos, par("usr")[2], ypos, lty="dotted", col=.get("col.fg"))
 
-   par(new=FALSE, mar=rep(mar,4))
+   par(new=FALSE, mar=mar)
 
    #.waitforclick()
 

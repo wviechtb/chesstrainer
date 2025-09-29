@@ -9,7 +9,7 @@
    }
 }
 
-.drawboard <- function(pos, flip=FALSE, inhibit=FALSE, mar=5.2, pty="s") {
+.drawboard <- function(pos, flip=FALSE, inhibit=FALSE, mar=rep(5.5,4)) {
 
    col.bg <- .get("col.bg")
    col.fg <- .get("col.fg")
@@ -24,7 +24,7 @@
       }
    }
 
-   par(xpd=NA, pty=pty, mar=rep(mar,4), fg=col.fg, bg=col.bg)
+   par(xpd=NA, pty="s", mar=mar, fg=col.fg, bg=col.bg)
 
    mat <- outer(1:8, 1:8, function(x,y) .is.even(x+y))
 
@@ -111,9 +111,9 @@
 
 }
 
-.redrawall <- function(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove, pty) {
+.redrawall <- function(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove, mar) {
 
-   .drawboard(pos, flip, pty=pty)
+   .drawboard(pos, flip, mar=mar)
    .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
    .texttop(texttop)
    .drawcheck(pos, flip=flip)
