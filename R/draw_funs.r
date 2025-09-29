@@ -9,7 +9,7 @@
    }
 }
 
-.drawboard <- function(pos, flip=FALSE, inhibit=FALSE) {
+.drawboard <- function(pos, flip=FALSE, inhibit=FALSE, pty="s") {
 
    col.bg <- .get("col.bg")
    col.fg <- .get("col.fg")
@@ -24,7 +24,7 @@
       }
    }
 
-   par(xpd=NA, pty="s", mar=rep(5.2,4), fg=col.fg, bg=col.bg)
+   par(xpd=NA, pty=pty, mar=rep(5.2,4), fg=col.fg, bg=col.bg)
 
    mat <- outer(1:8, 1:8, function(x,y) .is.even(x+y))
 

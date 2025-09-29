@@ -65,6 +65,7 @@ play <- function(lang="en", sfpath="", ...) {
    diffmin     <- ifelse(is.null(ddd[["diffmin"]]),     5,              ddd[["diffmin"]])
    quitanim    <- ifelse(is.null(ddd[["quitanim"]]),    TRUE,           ddd[["quitanim"]])
    inhibit     <- ifelse(is.null(ddd[["inhibit"]]),     FALSE,          ddd[["inhibit"]])
+   pty         <- ifelse(is.null(ddd[["pty"]]),         "s",            ddd[["pty"]])
 
    # get switch1/switch2 functions if they are specified via ...
 
@@ -778,7 +779,7 @@ play <- function(lang="en", sfpath="", ...) {
 
       # draw board and add info at the bottom
 
-      .drawboard(pos, flip=flip, inhibit=inhibit)
+      .drawboard(pos, flip=flip, inhibit=inhibit, pty=pty)
       .drawcheck(pos, flip=flip)
       .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
       .draweval(starteval, NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
@@ -1721,7 +1722,7 @@ play <- function(lang="en", sfpath="", ...) {
                      pos <- sub$pos
                   }
 
-                  .drawboard(pos, flip=flip, inhibit=inhibit)
+                  .drawboard(pos, flip=flip, inhibit=inhibit, pty=pty)
                   .drawcheck(pos, flip=flip)
                   .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
                   circles <- matrix(nrow=0, ncol=2)
@@ -1957,7 +1958,7 @@ play <- function(lang="en", sfpath="", ...) {
                      sidetoplay <- ifelse(startsWith(piece, "W"), "w", "b")
                   }
 
-                  .drawboard(pos, flip=flip, inhibit=inhibit)
+                  .drawboard(pos, flip=flip, inhibit=inhibit, pty=pty)
                   .drawcheck(pos, flip=flip)
                   .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i=1, totalmoves, selmode)
                   circles <- matrix(nrow=0, ncol=2)
