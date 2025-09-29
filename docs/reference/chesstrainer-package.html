@@ -31,7 +31,7 @@ The main purpose of the chesstrainer package is to create sequences of moves (li
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chesstrainer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-100</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-101</span>
       </span>
     </div>
 
@@ -222,7 +222,7 @@ The main purpose of the chesstrainer package is to create sequences of moves (li
 <p></p><ul><li><p>By default, there is a 0.5 second sleep time between moves played by the trainer. This can be decreased/increased with the <code>&lt;-&gt;</code> and <code>&lt;+&gt;</code> keys.</p></li>
 <li><p>By default, the trainer waits for a mouse click at the end of a sequence before starting a new sequence. You can toggle this on/off with the <code>&lt;w&gt;</code> key.</p></li>
 <li><p>With the <code>&lt;i&gt;</code> key, the language of the trainer can be toggled between English and German (author note: I wrote this trainer in part for my chess playing kids, which is the reason why a German translation is available).</p></li>
-<li><p>With the <code>&lt;v&gt;</code> key, the evaluation bar can be toggled on/off. Note that this mode specific. If no evaluations are available for a sequence, the bar is never shown. If the evaluation bar is turned off in <em>test mode</em>, it is still shown at the end of each sequence.</p></li>
+<li><p>With the <code>&lt;v&gt;</code> key, the evaluation bar can be toggled on/off. This is mode specific. If evaluations are not available, the bar is not shown irrespective of whether it is toggled on or off. If the evaluation bar is turned off in <em>test mode</em>, it is still shown at the end of each sequence.</p></li>
 </ul><p>The settings are stored across sessions and can be shown with <code>&lt;F3&gt;</code>. With <code>&lt;F4&gt;</code>, you can adjust the colors. With <code>&lt;F5&gt;</code>, you can adjust the size of the text at the top, the text at the bottom, and the size of the evaluation value in the evaluation bar (if it is shown).</p>
 <p>With <code>&lt;F6&gt;</code>, you can adjust some miscellaneous settings, namely the multiplier for the score when completing a sequence without any mistakes (0.8 by default), the score penalty when making a wrong move (40 by default), the score penalty per hint (20 by default), the number of animation steps for the evaluation bar (5 by default), the time per move for the <em>timed mode</em> (5 seconds by default), and the idle time (120 seconds by default; time without any inputs longer than this value is not counted towards the play time for the session history).</p>
 <p>With <code>&lt;F9&gt;</code>, the FEN of the current position is printed to the console and the position is opened on the <a href="https://lichess.org" class="external-link">https://lichess.org</a> website for analysis. With <code>Ctrl-&lt;f&gt;</code>, the FEN is printed and copied to the clipboard (this makes use of the <code><a href="http://matthewlincoln.net/clipr/reference/write_clip.html" class="external-link">write_clip</a></code> function from the <span class="pkg">clipr</span> package). With <code>Ctrl-&lt;c&gt;</code>, the current sequence name is printed and copied to the clipboard in <em>test mode</em>.</p>

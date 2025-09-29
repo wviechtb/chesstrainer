@@ -267,6 +267,12 @@
                          "All sequences selected.\n"
    ))}
 
+   if (x == "allseqalreadyselected") {
+      return(switch(lang,
+                    de = "Alle Sequenzen sind bereits selektiert.\n",
+                         "All sequences are already selected.\n"
+   ))}
+
    if (x == "noseqsfound") {
       return(switch(lang,
                     de = "Keine passenden Sequenzen gefunden.\n",

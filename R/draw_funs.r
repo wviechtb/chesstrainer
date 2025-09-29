@@ -1160,13 +1160,15 @@
 
 .draweval <- function(val=NA_real_, last=NA_real_, i=1, starteval=NA_real_, flip=FALSE, clear=FALSE, eval=TRUE, evalsteps=10) {
 
-   if (!eval)
-      return()
-
    col.bg <- .get("col.bg")
 
    xpos <- 0.12
    indsize <- 0.25
+
+   if (!eval) {
+      rect(xpos, 1, xpos+indsize, 9, border=NA, col=col.bg)
+      return()
+   }
 
    if (i == 1 && (length(last) == 0L || is.na(last)))
       last <- starteval

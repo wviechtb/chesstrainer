@@ -182,7 +182,7 @@
    \item By default, there is a 0.5 second sleep time between moves played by the trainer. This can be decreased/increased with the \verb{<->} and \verb{<+>} keys.
    \item By default, the trainer waits for a mouse click at the end of a sequence before starting a new sequence. You can toggle this on/off with the \verb{<w>} key.
    \item With the \verb{<i>} key, the language of the trainer can be toggled between English and German (author note: I wrote this trainer in part for my chess playing kids, which is the reason why a German translation is available).
-   \item With the \verb{<v>} key, the evaluation bar can be toggled on/off. Note that this mode specific. If no evaluations are available for a sequence, the bar is never shown. If the evaluation bar is turned off in \emph{test mode}, it is still shown at the end of each sequence.
+   \item With the \verb{<v>} key, the evaluation bar can be toggled on/off. This is mode specific. If evaluations are not available, the bar is not shown irrespective of whether it is toggled on or off. If the evaluation bar is turned off in \emph{test mode}, it is still shown at the end of each sequence.
    }
 
    The settings are stored across sessions and can be shown with \verb{<F3>}. With \verb{<F4>}, you can adjust the colors. With \verb{<F5>}, you can adjust the size of the text at the top, the text at the bottom, and the size of the evaluation value in the evaluation bar (if it is shown).

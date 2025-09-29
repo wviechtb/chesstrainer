@@ -800,7 +800,7 @@ play <- function(lang="en", sfpath="", ...) {
 
             # show the start comment if there one at move 1 (and showstartcom is TRUE)
             if (i == 1 && !is.null(sub$commentstart) && showstartcom) {
-               .startcomment(sub$commentstart, lwd=lwd)
+               .startcomment(sub$commentstart, lwd=lwd) # waits for click
                .redrawall(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove)
                .draweval(starteval, NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
             }
@@ -882,11 +882,12 @@ play <- function(lang="en", sfpath="", ...) {
 
                .drawsideindicator(sidetoplay, flip)
 
-               # if Stockfish is not running anymore, then it must have crashed, so wait for click and switch to add mode
+               # if Stockfish is not running anymore, then it must have crashed, so wait for click and switch to analysis mode
 
                if (!sfrun) {
                   mode <- "analysis"
                   .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
+                  .draweval(clear=TRUE)
                   next
                }
 
@@ -904,6 +905,7 @@ play <- function(lang="en", sfpath="", ...) {
                      .texttop(.text("nomove"))
                      mode <- "analysis"
                      .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
+                     .draweval(evalval[1], NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                      next
                   }
 
@@ -933,30 +935,30 @@ play <- function(lang="en", sfpath="", ...) {
                   .drawsideindicator(sidetoplay, flip)
 
                   if (!identical(matetype, "none")) {
-                     playsound(system.file("sounds", "complete.ogg", package="chesstrainer"), volume=volume)
                      .texttop(.text(matetype))
                      mode <- "analysis"
-                     .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
-                     next
                   }
 
                   threefold <- any(table(sapply(strsplit(sub$moves$fen, " "), function(x) paste(x[1:4], collapse = " "))) == 3L)
 
                   if (threefold) {
                      .texttop(.text("threefold"))
-                     playsound(system.file("sounds", "complete.ogg", package="chesstrainer"), volume=volume)
+                     evalval <- 0
                      mode <- "analysis"
-                     .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
-                     next
                   }
 
                   fifty <- identical(strsplit(fen, " ")[[1]][5], "100")
 
                   if (fifty) {
                      .texttop(.text("fifty"))
-                     playsound(system.file("sounds", "complete.ogg", package="chesstrainer"), volume=volume)
+                     evalval <- 0
                      mode <- "analysis"
+                  }
+
+                  if (mode == "analysis") {
+                     playsound(system.file("sounds", "complete.ogg", package="chesstrainer"), volume=volume)
                      .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
+                     .draweval(evalval[1], NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                      next
                   }
 
@@ -1123,8 +1125,10 @@ play <- function(lang="en", sfpath="", ...) {
                   show <- FALSE
                   mode <- "analysis"
                   .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
+                  .draweval(evalval[1], NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                   next
                }
+               prevmode <- mode
                mode <- "play"
                timed <- FALSE
                show <- FALSE
@@ -1147,6 +1151,7 @@ play <- function(lang="en", sfpath="", ...) {
                   arrows  <- matrix(nrow=0, ncol=4)
                   harrows <- matrix(nrow=0, ncol=4)
                }
+               .draweval(evalval[1], NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                next
             }
 
@@ -1255,7 +1260,7 @@ play <- function(lang="en", sfpath="", ...) {
                click <- "h"
             }
 
-            # h to get a hint in test mode or show the best move in add or play mode
+            # h to get a hint in test mode or show the best move in add/play/analysis mode
 
             if (identical(click, "h")) {
                if (mode == "test") {
@@ -1376,7 +1381,6 @@ play <- function(lang="en", sfpath="", ...) {
                }
                playsound(system.file("sounds", "move.ogg", package="chesstrainer"), volume=volume)
                .redrawpos(pos, posold, flip=flip)
-               .draweval(neweval, oldeval, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                if (mode %in% c("add","test")) {
                   texttop <- .texttop(sub$moves$comment[i])
                   circles <- .parseannot(sub$moves$circles[i], cols=2)
@@ -1391,16 +1395,17 @@ play <- function(lang="en", sfpath="", ...) {
                if (mode == "play")
                   mode <- "analysis"
                .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
+               .draweval(neweval, oldeval, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                .drawsideindicator(sidetoplay, flip)
-               if (mode == "play")
-                  mode <- "analysis"
-               fen <- .genfen(pos, flip, sidetoplay, i)
-               res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay, verbose)
-               evalval  <- res.sf$eval
-               bestmove <- res.sf$bestmove
-               matetype <- res.sf$matetype
-               sfproc   <- res.sf$sfproc
-               sfrun    <- res.sf$sfrun
+               if (mode %in% c("add","analysis")) {
+                  fen <- .genfen(pos, flip, sidetoplay, i)
+                  res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay, verbose)
+                  evalval  <- res.sf$eval
+                  bestmove <- res.sf$bestmove
+                  matetype <- res.sf$matetype
+                  sfproc   <- res.sf$sfproc
+                  sfrun    <- res.sf$sfrun
+               }
                next
             }
 
@@ -1467,7 +1472,6 @@ play <- function(lang="en", sfpath="", ...) {
                   sub$moves <- sub$moves[seq_len(i-1),,drop=FALSE]
                playsound(system.file("sounds", "move.ogg", package="chesstrainer"), volume=volume)
                .redrawpos(pos, posold, flip=flip)
-               .draweval(neweval, oldeval, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                if (mode %in% c("add","test")) {
                   texttop <- .texttop(sub$moves$comment[i])
                   circles <- .parseannot(sub$moves$circles[i], cols=2)
@@ -1482,6 +1486,7 @@ play <- function(lang="en", sfpath="", ...) {
                if (mode == "play" && identical(click, "Left"))
                   mode <- "analysis"
                .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
+               .draweval(neweval, oldeval, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                if (mode == "test" && timed) {
                   .drawtimer(movestoplay, movesplayed, timetotal, timepermove)
                } else {
@@ -1603,7 +1608,6 @@ play <- function(lang="en", sfpath="", ...) {
                }
                playsound(system.file("sounds", "move.ogg", package="chesstrainer"), volume=volume)
                .redrawpos(pos, posold, flip=flip)
-               .draweval(sub$moves$eval[i-1], oldeval, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                if (mode == "test" && timed) {
                   .drawtimer(movestoplay, movesplayed, timetotal, timepermove)
                } else {
@@ -1632,14 +1636,17 @@ play <- function(lang="en", sfpath="", ...) {
                }
                if (mode == "play")
                   mode <- "analysis"
+               .draweval(sub$moves$eval[i-1], oldeval, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
-               fen <- .genfen(pos, flip, sidetoplay, i)
-               res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay, verbose)
-               evalval  <- res.sf$eval
-               bestmove <- res.sf$bestmove
-               matetype <- res.sf$matetype
-               sfproc   <- res.sf$sfproc
-               sfrun    <- res.sf$sfrun
+               if (mode %in% c("add","analysis")) {
+                  fen <- .genfen(pos, flip, sidetoplay, i)
+                  res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay, verbose)
+                  evalval  <- res.sf$eval
+                  bestmove <- res.sf$bestmove
+                  matetype <- res.sf$matetype
+                  sfproc   <- res.sf$sfproc
+                  sfrun    <- res.sf$sfrun
+               }
                next
             }
 
@@ -1932,6 +1939,7 @@ play <- function(lang="en", sfpath="", ...) {
                      evalvals <- c()
                   }
 
+                  .draweval(sub$moves$eval[i-1], NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                   .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
 
                } else {
@@ -2730,17 +2738,20 @@ play <- function(lang="en", sfpath="", ...) {
 
             }
 
-            # * (or 8) to select all sequences (starts a new round in add mode)
+            # * (or 8) to select all sequences (starts a new round) (only in add and test mode)
 
-            if (identical(click, "*") || identical(click, "8")) {
-               eval(expr=switch1)
-               cat(.text("allseqselected"))
-               selected <- NULL
-               run.rnd <- FALSE
-               input <- FALSE
-               mode <- oldmode <- "add"
-               seqno <- 1
-               eval(expr=switch2)
+            if (mode %in% c("add","test") && (identical(click, "*") || identical(click, "8"))) {
+               if (!is.null(selected)) {
+                  .texttop(.text("allseqselected"), sleep=1)
+                  selected <- NULL
+                  run.rnd <- FALSE
+                  input <- FALSE
+                  mode <- oldmode <- "add"
+                  seqno <- 1
+               } else {
+                  .texttop(.text("allseqalreadyselected"), sleep=1)
+                  .texttop(texttop)
+               }
                next
             }
 
@@ -2754,6 +2765,7 @@ play <- function(lang="en", sfpath="", ...) {
                searchterm <- paste(strsplit(searchterm, " ", fixed=TRUE)[[1]][1:3], collapse=" ")
                seqident <- sapply(dat.all, function(x) any(grepl(searchterm, x$moves$fen, fixed=TRUE)))
                if (any(seqident)) {
+                  eval(expr=switch1)
                   cat(.text("seqsmatchfen"))
                   tab <- data.frame(Name=files.all[seqident])
                   tab$Name <- format(tab$Name, justify="left")
@@ -2768,10 +2780,11 @@ play <- function(lang="en", sfpath="", ...) {
                      input <- FALSE
                      seqno <- 1
                   }
+                  eval(expr=switch2)
                } else {
-                  cat(.text("noseqsfound"))
+                  .texttop(.text("noseqsfound"), sleep=1.5)
+                  .texttop(texttop)
                }
-               eval(expr=switch2)
                next
             }
 
@@ -2780,9 +2793,9 @@ play <- function(lang="en", sfpath="", ...) {
             if (identical(click, "?")) {
                if (i == 1)
                   next
-               eval(expr=switch1)
                seqident <- sapply(dat.all, function(x) identical(sub$moves[1:(i-1),1:4], x$moves[1:(i-1),1:4]))
                if (any(seqident)) {
+                  eval(expr=switch1)
                   cat(.text("seqsmatchstart"))
                   tab <- data.frame(Name=files.all[seqident])
                   tab$Name <- format(tab$Name, justify="left")
@@ -2797,10 +2810,11 @@ play <- function(lang="en", sfpath="", ...) {
                      input <- FALSE
                      seqno <- 1
                   }
+                  eval(expr=switch2)
                } else {
-                  cat(.text("noseqsfound"))
+                  .texttop(.text("noseqsfound"), sleep=1.5)
+                  .texttop(texttop)
                }
-               eval(expr=switch2)
                next
             }
 
@@ -3360,9 +3374,6 @@ play <- function(lang="en", sfpath="", ...) {
 
                      click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=.keyfun)
 
-                     if (!eval[[mode]])
-                        .draweval(clear=TRUE)
-
                      if (is.numeric(click) && identical(click[3], 0)) # left button goes to next sequence
                         break
 
@@ -3388,6 +3399,7 @@ play <- function(lang="en", sfpath="", ...) {
                         show <- FALSE
                         texttop <- .texttop("")
                         sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
+                        .draweval(sub$moves$eval[i], NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                         .drawsideindicator(sidetoplay, flip)
                         i <- i + 1
                         fen <- .genfen(pos, flip, sidetoplay, i)
@@ -3412,6 +3424,7 @@ play <- function(lang="en", sfpath="", ...) {
                         timed <- FALSE
                         texttop <- .texttop("")
                         sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
+                        .draweval(sub$moves$eval[i], NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                         .drawsideindicator(sidetoplay, flip)
                         i <- i + 1
                         fen <- .genfen(pos, flip, sidetoplay, i)
@@ -3534,7 +3547,7 @@ play <- function(lang="en", sfpath="", ...) {
             sfproc   <- res.sf$sfproc
             sfrun    <- res.sf$sfrun
 
-            # in play mode, base the actual evaluation on depth1 (and without sflim) and not depth3, so have to run .sf.eval() one more time
+            # in play mode, have to run .sf.eval() one more time, to base the actual evaluation on depth1 (and without sflim) and not depth3
 
             if (mode == "play" && (!is.na(sflim) || depth1 > depth3)) {
                res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay, verbose)
@@ -3587,6 +3600,7 @@ play <- function(lang="en", sfpath="", ...) {
                .texttop(.text(matetype))
                mode <- "analysis"
                .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
+               .draweval(evalval[1], evalvallast, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                next
             }
 
@@ -3600,6 +3614,7 @@ play <- function(lang="en", sfpath="", ...) {
                   playsound(system.file("sounds", "complete.ogg", package="chesstrainer"), volume=volume)
                   mode <- "analysis"
                   .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
+                  .draweval(evalval[1], evalvallast, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                   next
                }
             }
@@ -3614,6 +3629,7 @@ play <- function(lang="en", sfpath="", ...) {
                   playsound(system.file("sounds", "complete.ogg", package="chesstrainer"), volume=volume)
                   mode <- "analysis"
                   .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
+                  .draweval(evalval[1], evalvallast, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                   next
                }
             }

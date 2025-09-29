@@ -35,14 +35,14 @@
       par(new=TRUE, mar=c(11,11,9,9))
       ys <- x$eval
       if (yvalue == "cp") {
-         ylim <- c(-9,9)
-         yat <- seq(-8,8,by=2)
+         ylim <- c(-9, 9)
+         yat <- seq(-8, 8, by=2)
          evanval <- 0
          ylab <- .text("evalgraph-y-cp")
       }
       if (yvalue == "wp") {
-         ylim <- c(0,100)
-         yat <- seq(0,100,by=10)
+         ylim <- c(0, 100)
+         yat <- seq(0, 90, by=10)
          evanval <- 50
          ylab <- .text("evalgraph-y-wp")
          ys <- 50 + 50 * (2 / (1 + exp(-0.00368208 * ys*100)) - 1)
