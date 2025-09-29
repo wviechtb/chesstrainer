@@ -97,7 +97,7 @@
    #ypos <- axTicks(side=2)
    #segments(par("usr")[1], ypos, par("usr")[2], ypos, lty="dotted", col=.get("col.fg"))
 
-   par(new=FALSE)
+   par(new=FALSE, mar=rep(mar,4))
 
    #.waitforclick()
 

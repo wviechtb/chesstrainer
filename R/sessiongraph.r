@@ -1,4 +1,4 @@
-.sessiongraph <- function(seqsplayed, mean.scores, playtime, lwd) {
+.sessiongraph <- function(seqsplayed, mean.scores, playtime, lwd, mar) {
 
    isnull <- seqsplayed == 0
    seqsplayed <- seqsplayed[!isnull]
@@ -31,7 +31,7 @@
       start.pos <- start.pos + max(seqsplayed[j])
    }
 
-   par(new=FALSE, mar=rep(5.2,4), usr=c(1,9,1,9))
+   par(new=FALSE, mar=rep(mar,4), usr=c(1,9,1,9))
 
    .texttop(.text("playtime", .totaltime(playtime)))
 

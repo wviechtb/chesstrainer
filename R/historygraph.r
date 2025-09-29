@@ -1,4 +1,4 @@
-.historygraph <- function(player, date.start, playtime, seqsplayed, lwd) {
+.historygraph <- function(player, date.start, playtime, seqsplayed, lwd, mar) {
 
    # load the session history for the player
    player.file <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "sessions", paste0(player, ".rds"))
@@ -216,7 +216,7 @@
 
    }
 
-   par(new=FALSE)
+   par(new=FALSE, mar=rep(mar,4))
 
    #.erase(1, 1, 9, 9)
 

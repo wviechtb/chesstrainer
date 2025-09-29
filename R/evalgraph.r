@@ -1,4 +1,4 @@
-.evalgraph <- function(x, i, lwd) {
+.evalgraph <- function(x, i, lwd, mar) {
 
    col.top         <- .get("col.top")
    col.bg          <- .get("col.bg")
@@ -94,7 +94,7 @@
 
    }
 
-   par(new=FALSE)
+   par(new=FALSE, mar=rep(mar,4))
 
    #.erase(1, 1, 9, 9)
 
