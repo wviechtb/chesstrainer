@@ -63,17 +63,19 @@
    In \emph{test mode}, sequences are played by default at random based on the score as described above. However, you can toggle into a different selection mode with the \verb{<m>} key. Selection can be based on:
 
    \enumerate{
-   \item the score where sequences with higher scores have a higher play probability (the default),
-   \item the score where the sequence with the highest score is played next,
-   \item the play frequency where sequences with lower play frequencies have a higher play probability,
-   \item the play frequency where the sequence with the lowest play frequency is played next,
-   \item the age where sequences that were last played longer ago have a higher play probability,
-   \item the age where the sequence that was last played the longest ago is played next,
-   \item the difficulty where more difficult sequences have a higher play probability,
-   \item the difficulty where the sequence with the highest difficulty is played next.
+   \item the score, where sequences with higher scores have a higher play probability (the default),
+   \item the score, where the sequence with the highest score is played next,
+   \item the play frequency, where sequences with lower play frequencies have a higher play probability,
+   \item the play frequency, where the sequence with the lowest play frequency is played next,
+   \item the age, where sequences that were last played longer ago have a higher play probability,
+   \item the age, where the sequence that was last played the longest ago is played next,
+   \item the difficulty, where more difficult sequences have a higher play probability,
+   \item the difficulty, where the sequence with the highest difficulty is played next.
    }
 
    The exponent value affects selection modes 1, 3, 5, and 7. Setting the exponent value to a large value makes mode 1 essentially the same as mode 2 (and similarly, mode 3 like mode 4, mode 5 like mode 6, and mode 7 like mode 8). For modes 2, 4, 6, and 8, if the highest score, lowest play frequency, highest age, or highest difficulty is the same for multiple sequences, the alphabetically first one is played next. For modes 5 and 6, sequences that have never been played before are given the highest priority. For all modes, sequences whose score was set to 0 are never played.
+
+   One can also choose to play sequences sequentially (either ordered alphabetically or ordered by length, which is given by the number of moves that have to be made by the player).
 
    In \emph{test mode}, the \verb{<r>} key repeats the last played sequence. At the end of a sequence, you can also use the middle mouse button to repeat the sequence (before a new sequence is started). With the \verb{<R>} key, you can toggle whether a sequence will be automatically repeated if a mistake was made while playing the sequence.
 

@@ -954,16 +954,17 @@
       }
 
       selmode <- switch(selmode,
-                        score_random  = "score, at random",
-                        score_highest = "score, highest next",
-                        played_random = "play frequency, at random",
-                        played_lowest = "play frequency, lowest next",
-                        age_random    = "age, at random",
-                        age_oldest    = "age, oldest next",
-                        diff_random   = "difficulty, at random",
-                        diff_highest  = "difficulty, highest next",
-                        sequential    = "sequential",
-                        default       = "default")
+                        score_random   = "score, at random",
+                        score_highest  = "score, highest next",
+                        played_random  = "play frequency, at random",
+                        played_lowest  = "play frequency, lowest next",
+                        age_random     = "age, at random",
+                        age_oldest     = "age, oldest next",
+                        diff_random    = "difficulty, at random",
+                        diff_highest   = "difficulty, highest next",
+                        sequential     = "sequentially, alphabetically",
+                        sequential_len = "sequentially, by length",
+                        default        = "default")
 
       if (mode == "test") {
          if (onlyi) {
@@ -1020,16 +1021,17 @@
       }
 
       selmode <- switch(selmode,
-                        score_random  = "Punktewert, zuf\U000000E4llig",
-                        score_highest = "Punktewert, h\U000000F6chster",
-                        played_random = "Spielh\U000000E4ufigkeit, zuf\U000000E4llig",
-                        played_lowest = "Spielh\U000000E4ufigkeit, niedrigste",
-                        age_random    = "Alter, zuf\U000000E4llig",
-                        age_oldest    = "Alter, \U000000E4ltestes",
-                        diff_random   = "Schwierigkeit, zuf\U000000E4llig",
-                        diff_highest  = "Schwierigkeit, h\U000000F6chster",
-                        sequential    = "sequenziell",
-                        default       = "default")
+                        score_random   = "Punktewert, zuf\U000000E4llig",
+                        score_highest  = "Punktewert, h\U000000F6chster",
+                        played_random  = "Spielh\U000000E4ufigkeit, zuf\U000000E4llig",
+                        played_lowest  = "Spielh\U000000E4ufigkeit, niedrigste",
+                        age_random     = "Alter, zuf\U000000E4llig",
+                        age_oldest     = "Alter, \U000000E4ltestes",
+                        diff_random    = "Schwierigkeit, zuf\U000000E4llig",
+                        diff_highest   = "Schwierigkeit, h\U000000F6chster",
+                        sequential     = "sequenziell, alphabetisch",
+                        sequential_len = "sequenziell, nach L\U000000E4nge",
+                        default        = "default")
 
       if (mode == "test") {
          if (onlyi) {

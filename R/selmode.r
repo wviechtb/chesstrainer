@@ -20,7 +20,8 @@
       "6 - based on the age, oldest date",
       "7 - based on the difficulty, at random",
       "8 - based on the difficulty, highest value",
-      "9 - sequential")
+      "9 - sequentially, ordered alphabetical",
+      "10 - sequentially, ordered by length")
 
    }
 
@@ -37,7 +38,8 @@
       "6 - basierend auf dem Alter, \U000000E4ltestes Datum",
       "7 - basierend auf der Schwierigkeit, zuf\U000000E4llig",
       "8 - basierend auf der Schwierigkeit, h\U000000F6chster Wert",
-      "9 - sequenziell")
+      "9 - sequenziell, alphabetisch sortiert",
+      "10 - sequenziell, nach L\U000000E4nge sortiert")
 
    }
 
@@ -45,11 +47,11 @@
 
    cex <- .findcex(txt, font=font.mono, x1=1.5, x2=8.2, y1=3.5, y2=7.5)
 
-   selmodes <- c("score_random", "score_highest", "played_random", "played_lowest", "age_random", "age_oldest", "diff_random", "diff_highest", "sequential")
+   selmodes <- c("score_random", "score_highest", "played_random", "played_lowest", "age_random", "age_oldest", "diff_random", "diff_highest", "sequential", "sequential_len")
 
    oldmode <- which(selmode == selmodes)
 
-   ypos <- seq(7.5, 3.5, length.out=length(txt))
+   ypos <- seq(7.5, 3.0, length.out=length(txt))
 
    text(1.5, ypos, txt, pos=4, offset=0, cex=cex, family=font.mono, font=ifelse(c("","",selmodes)==selmode, 2, 1), col=col.help)
 
@@ -66,7 +68,7 @@
       if (is.numeric(click)) {
 
          x <- grconvertX(click[[1]], from="ndc", to="user")
-         y <- grconvertX(click[[2]], from="ndc", to="user")
+         y <- grconvertY(click[[2]], from="ndc", to="user")
 
          if (x >= 1.5 && x <= 8) {
             click <- which(y < ypos + dist & y > ypos - dist)

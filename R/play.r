@@ -595,8 +595,9 @@ play <- function(lang="en", sfpath="", ...) {
       difficulty.selected <- lapply(dat, function(x) .difffun(x$player[[player]]$score, difflen, diffmin, adjusthint, multiplier))
       difficulty.selected[is.na(difficulty.selected) | .is.null(difficulty.selected)] <- NA_real_
       difficulty.selected <- unlist(difficulty.selected)
+      length.selected <- sapply(dat, function(x) sum(!x$moves$show))
 
-      if (all(scores.selected == 0)) # in case all sequences have a score of 0
+      if (all(scores.selected == 0)) # in case all selected sequences have a score of 0
          scores.selected <- rep(1, length(scores.selected))
 
       if (selmode == "score_random") {
@@ -674,12 +675,17 @@ play <- function(lang="en", sfpath="", ...) {
          probvals.selected[which(tmp == max(tmp[scores.selected != 0]))[1]] <- 100
       }
 
-      if (selmode == "sequential" && length(scores.selected) >= 1L && !replast) {
+      if (selmode %in% c("sequential","sequential_len") && length(scores.selected) >= 1L && !replast) {
          while (scores.selected[seqno] == 0) {
             seqno <- seqno + 1
+            if (seqno > k)
+               seqno <- 1
          }
          probvals.selected <- rep(0, k)
-         probvals.selected[seqno] <- 100
+         if (selmode == "sequential")
+            probvals.selected[seqno] <- 100
+         if (selmode == "sequential_len")
+            probvals.selected[order(length.selected)[seqno]] <- 100
       }
 
       if (mode %in% c("add","play")) {
@@ -708,7 +714,7 @@ play <- function(lang="en", sfpath="", ...) {
                sel <- sample(seq_len(k), 1L, prob=probvals.selected)
             }
 
-            if (selmode == "sequential") {
+            if (selmode %in% c("sequential","sequential_len")) {
                seqno <- seqno + 1
                if (seqno > k)
                   seqno <- 1
@@ -2489,7 +2495,7 @@ play <- function(lang="en", sfpath="", ...) {
                   eval(expr=switch1)
                   cat(seqnum, " ", seqname, "\n")
                   tmp <- seqname
-                  filename <- sub("\\.rds$", "", tmp) # strip .rds from end of filename
+                  tmp <- sub("\\.rds$", "", tmp) # strip .rds from end of filename
                   clipr::write_clip(tmp, object_type="character")
                   eval(expr=switch2)
                }
@@ -2633,12 +2639,12 @@ play <- function(lang="en", sfpath="", ...) {
                # 'number' entered
 
                if (grepl("^[0-9]+$", searchterm)) {
-                  seqno <- as.numeric(searchterm)
-                  if (seqno < 1 || seqno > k.all) {
+                  tmp <- as.numeric(searchterm)
+                  if (tmp < 1 || tmp > k.all) {
                      cat(.text("noseqfound"))
                   } else {
-                     cat(.text("selseq", seqno))
-                     selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[seqno]
+                     cat(.text("selseq", tmp))
+                     selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[tmp]
                      run.rnd <- FALSE
                      input <- FALSE
                      mode <- oldmode <- "add"

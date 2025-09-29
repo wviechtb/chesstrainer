@@ -155,7 +155,7 @@
       if (is.numeric(click)) {
 
          x <- grconvertX(click[[1]], from="ndc", to="user")
-         y <- grconvertX(click[[2]], from="ndc", to="user")
+         y <- grconvertY(click[[2]], from="ndc", to="user")
 
          if (x >= 1.5 && x <= 8) {
             click <- which(y < ypos + dist & y > ypos - dist)

@@ -31,7 +31,7 @@ The main purpose of the chesstrainer package is to create sequences of moves (li
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chesstrainer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-102</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-103</span>
       </span>
     </div>
 
@@ -128,15 +128,16 @@ The main purpose of the chesstrainer package is to create sequences of moves (li
 </ul><p>The keywords <code>score</code>, <code>played</code>, <code>age</code>, and <code>difficulty</code> can be abbreviated to <code>s</code>, <code>p</code>, <code>a</code>, and <code>d</code> (so <code>s &gt; 80</code>, <code>p &lt; 1</code>, <code>a &gt; 2</code>, and <code>d &gt; 20</code> would also work). Other comparators such as <code>&gt;=</code>, <code>&lt;</code>, and <code>&gt;=</code> can also be used (e.g., <code>s &lt;= 10</code>).</p>
 <p>Hitting <code>&lt;enter&gt;</code> at the prompt (i.e., not entering any search string) keeps the current selection. Entering <code>*</code> at the prompt selects all sequences. The <code>&lt;*&gt;</code> (or <code>&lt;8&gt;</code>) key also selects all sequences without using <code>&lt;/&gt;</code> first. If you only want to search for sequences (without selecting them), you can use the <code>&lt;|&gt;</code> key.</p>
 <p>In <em>test mode</em>, sequences are played by default at random based on the score as described above. However, you can toggle into a different selection mode with the <code>&lt;m&gt;</code> key. Selection can be based on:</p>
-<p></p><ol><li><p>the score where sequences with higher scores have a higher play probability (the default),</p></li>
-<li><p>the score where the sequence with the highest score is played next,</p></li>
-<li><p>the play frequency where sequences with lower play frequencies have a higher play probability,</p></li>
-<li><p>the play frequency where the sequence with the lowest play frequency is played next,</p></li>
-<li><p>the age where sequences that were last played longer ago have a higher play probability,</p></li>
-<li><p>the age where the sequence that was last played the longest ago is played next,</p></li>
-<li><p>the difficulty where more difficult sequences have a higher play probability,</p></li>
-<li><p>the difficulty where the sequence with the highest difficulty is played next.</p></li>
+<p></p><ol><li><p>the score, where sequences with higher scores have a higher play probability (the default),</p></li>
+<li><p>the score, where the sequence with the highest score is played next,</p></li>
+<li><p>the play frequency, where sequences with lower play frequencies have a higher play probability,</p></li>
+<li><p>the play frequency, where the sequence with the lowest play frequency is played next,</p></li>
+<li><p>the age, where sequences that were last played longer ago have a higher play probability,</p></li>
+<li><p>the age, where the sequence that was last played the longest ago is played next,</p></li>
+<li><p>the difficulty, where more difficult sequences have a higher play probability,</p></li>
+<li><p>the difficulty, where the sequence with the highest difficulty is played next.</p></li>
 </ol><p>The exponent value affects selection modes 1, 3, 5, and 7. Setting the exponent value to a large value makes mode 1 essentially the same as mode 2 (and similarly, mode 3 like mode 4, mode 5 like mode 6, and mode 7 like mode 8). For modes 2, 4, 6, and 8, if the highest score, lowest play frequency, highest age, or highest difficulty is the same for multiple sequences, the alphabetically first one is played next. For modes 5 and 6, sequences that have never been played before are given the highest priority. For all modes, sequences whose score was set to 0 are never played.</p>
+<p>One can also choose to play sequences sequentially (either ordered alphabetically or ordered by length, which is given by the number of moves that have to be made by the player).</p>
 <p>In <em>test mode</em>, the <code>&lt;r&gt;</code> key repeats the last played sequence. At the end of a sequence, you can also use the middle mouse button to repeat the sequence (before a new sequence is started). With the <code>&lt;R&gt;</code> key, you can toggle whether a sequence will be automatically repeated if a mistake was made while playing the sequence.</p>
     </div>
     <div id="timed-mode">
