@@ -596,6 +596,9 @@ play <- function(lang="en", sfpath="", ...) {
       difficulty.selected[is.na(difficulty.selected) | .is.null(difficulty.selected)] <- NA_real_
       difficulty.selected <- unlist(difficulty.selected)
       length.selected <- sapply(dat, function(x) sum(!x$moves$show))
+      moves.selected <- sapply(dat, function(x) paste0(x$moves$move, collapse=", "))
+      moves.selected <- gsub("[NBRKQ+=]", "", moves.selected)
+      moves.selected <- gsub("x", "-", moves.selected)
 
       if (all(scores.selected == 0)) # in case all selected sequences have a score of 0
          scores.selected <- rep(1, length(scores.selected))
@@ -675,7 +678,7 @@ play <- function(lang="en", sfpath="", ...) {
          probvals.selected[which(tmp == max(tmp[scores.selected != 0]))[1]] <- 100
       }
 
-      if (selmode %in% c("sequential","sequential_len") && length(scores.selected) >= 1L && !replast) {
+      if (selmode %in% c("sequential","sequential_len","sequential_mov") && length(scores.selected) >= 1L && !replast) {
          while (scores.selected[seqno] == 0) {
             seqno <- seqno + 1
             if (seqno > k)
@@ -686,6 +689,8 @@ play <- function(lang="en", sfpath="", ...) {
             probvals.selected[seqno] <- 100
          if (selmode == "sequential_len")
             probvals.selected[order(length.selected)[seqno]] <- 100
+         if (selmode == "sequential_mov")
+            probvals.selected[order(moves.selected)[seqno]] <- 100
       }
 
       if (mode %in% c("add","play")) {
@@ -714,7 +719,7 @@ play <- function(lang="en", sfpath="", ...) {
                sel <- sample(seq_len(k), 1L, prob=probvals.selected)
             }
 
-            if (selmode %in% c("sequential","sequential_len")) {
+            if (selmode %in% c("sequential","sequential_len","sequential_mov")) {
                seqno <- seqno + 1
                if (seqno > k)
                   seqno <- 1
@@ -2799,7 +2804,7 @@ play <- function(lang="en", sfpath="", ...) {
                eval(expr=switch1)
                searchterm <- .genfen(pos, flip, sidetoplay, i)
                searchterm <- paste(strsplit(searchterm, " ", fixed=TRUE)[[1]][1:3], collapse=" ")
-               seqident <- sapply(dat.all, function(x) any(grepl(searchterm, x$moves$fen, fixed=TRUE)))
+               seqident <- sapply(dat.all, function(x) any(grepl(searchterm, x$moves$fen, fixed=TRUE)) && identical(flip, x$flip))
                if (any(seqident)) {
                   eval(expr=switch1)
                   cat(.text("seqsmatchfen"))
@@ -2829,7 +2834,7 @@ play <- function(lang="en", sfpath="", ...) {
             if (identical(click, "?")) {
                if (i == 1)
                   next
-               seqident <- sapply(dat.all, function(x) identical(sub$moves[1:(i-1),1:4], x$moves[1:(i-1),1:4]))
+               seqident <- sapply(dat.all, function(x) identical(sub$moves[1:(i-1),1:4], x$moves[1:(i-1),1:4]) && identical(flip, x$flip))
                if (any(seqident)) {
                   eval(expr=switch1)
                   cat(.text("seqsmatchstart"))

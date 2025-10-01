@@ -964,6 +964,7 @@
                         diff_highest   = "difficulty, highest next",
                         sequential     = "sequentially, alphabetically",
                         sequential_len = "sequentially, by length",
+                        sequential_mov = "sequentially, by moves",
                         default        = "default")
 
       if (mode == "test") {
@@ -1031,6 +1032,7 @@
                         diff_highest   = "Schwierigkeit, h\U000000F6chster",
                         sequential     = "sequenziell, alphabetisch",
                         sequential_len = "sequenziell, nach L\U000000E4nge",
+                        sequential_mov = "sequenziell, nach Z\U000000FCgen",
                         default        = "default")
 
       if (mode == "test") {

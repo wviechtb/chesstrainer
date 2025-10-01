@@ -21,7 +21,8 @@
       "7 - based on the difficulty, at random",
       "8 - based on the difficulty, highest value",
       "9 - sequentially, ordered alphabetical",
-      "10 - sequentially, ordered by length")
+      "10 - sequentially, ordered by length",
+      "11 - sequentially, ordered by moves")
 
    }
 
@@ -39,7 +40,8 @@
       "7 - basierend auf der Schwierigkeit, zuf\U000000E4llig",
       "8 - basierend auf der Schwierigkeit, h\U000000F6chster Wert",
       "9 - sequenziell, alphabetisch sortiert",
-      "10 - sequenziell, nach L\U000000E4nge sortiert")
+      "10 - sequenziell, nach L\U000000E4nge sortiert",
+      "11 - sequenziell, nach Z\U000000FCgen sortiert")
 
    }
 
@@ -47,7 +49,7 @@
 
    cex <- .findcex(txt, font=font.mono, x1=1.5, x2=8.2, y1=3.5, y2=7.5)
 
-   selmodes <- c("score_random", "score_highest", "played_random", "played_lowest", "age_random", "age_oldest", "diff_random", "diff_highest", "sequential", "sequential_len")
+   selmodes <- c("score_random", "score_highest", "played_random", "played_lowest", "age_random", "age_oldest", "diff_random", "diff_highest", "sequential", "sequential_len", "sequential_mov")
 
    oldmode <- which(selmode == selmodes)
 
