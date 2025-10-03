@@ -383,8 +383,8 @@
 
    if (x == "selmatchesconfirm") {
       return(switch(lang,
-                    de = "Sequenzen selektiert.\n",
-                         "Sequences selected.\n"
+                    de = paste0(arg, " Sequenz", ifelse(arg > 1, "en", ""), " selektiert.\n"),
+                         paste0(arg, " sequence", ifelse(arg > 1, "s", ""), " selected.\n")
    ))}
 
    if (x == "sleeptime") {
@@ -425,7 +425,7 @@
 
    if (x == "setposstart") {
       return(switch(lang,
-                    de = "Setze die jetzige Stellung als Startposition.",
+                    de = "Setze die jetzige Stellung als Ausgangsstellung.",
                          "Setting the current position as the start position."
    ))}
 
@@ -1303,6 +1303,12 @@
       return(switch(lang,
                     de = "Remis durch die 50-Z\U000000FCge-Regel.",
                          "Draw by the fifty-move rule."
+   ))}
+
+   if (x == "finishedround") {
+      return(switch(lang,
+                    de = "Eine Runde aller Sequenzen abgeschlossen.",
+                         "Finished one round of all sequences."
    ))}
 
 }

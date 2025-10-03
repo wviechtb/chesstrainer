@@ -1,4 +1,4 @@
-.evalgraph <- function(x, i, lwd, mar) {
+.evalgraph <- function(x, i, flip, lwd, mar) {
 
    col.top         <- .get("col.top")
    col.bg          <- .get("col.bg")
@@ -6,19 +6,19 @@
    col.square.d    <- .get("col.square.d")
    col.help.border <- .get("col.help.border")
 
-   shade_segment <- function(x0, y0, x1, y1, evenval) {
+   shade_segment <- function(x0, y0, x1, y1, evenval, invert) {
       if (y0 >= evenval & y1 >= evenval) {
-         polygon(c(x0, x1, x1, x0), c(evenval, evenval, y1, y0), col="gray55", border=NA)
+         polygon(c(x0, x1, x1, x0), c(evenval, evenval, y1, y0), col=ifelse(invert,"black","gray55"), border=NA)
       } else if (y0 <= evenval & y1 <= evenval) {
-         polygon(c(x0, x1, x1, x0), c(evenval, evenval, y1, y0), col="black", border=NA)
+         polygon(c(x0, x1, x1, x0), c(evenval, evenval, y1, y0), col=ifelse(invert,"gray55","black"), border=NA)
       } else {
          x_cross <- x0 + (evenval - y0) * (x1 - x0) / (y1 - y0)
          if (y0 < evenval) {
-            polygon(c(x0, x_cross, x0), c(y0, evenval, evenval), col="black", border=NA)
-            polygon(c(x_cross, x1, x1, x_cross), c(evenval, evenval, y1, evenval), col="gray55", border=NA)
+            polygon(c(x0, x_cross, x0), c(y0, evenval, evenval), col=ifelse(invert,"gray55","black"), border=NA)
+            polygon(c(x_cross, x1, x1, x_cross), c(evenval, evenval, y1, evenval), col=ifelse(invert,"black","gray55"), border=NA)
          } else {
-            polygon(c(x0, x_cross, x0), c(y0, evenval, evenval), col="gray55", border=NA)
-            polygon(c(x_cross, x1, x1, x_cross), c(evenval, evenval, y1, evenval), col="black", border=NA)
+            polygon(c(x0, x_cross, x0), c(y0, evenval, evenval), col=ifelse(invert,"black","gray55"), border=NA)
+            polygon(c(x_cross, x1, x1, x_cross), c(evenval, evenval, y1, evenval), col=ifelse(invert,"gray55","black"), border=NA)
          }
       }
    }
@@ -39,12 +39,19 @@
          yat <- seq(-8, 8, by=2)
          evanval <- 0
          ylab <- .text("evalgraph-y-cp")
+         invert <- FALSE
       }
       if (yvalue == "wp") {
          ylim <- c(0, 100)
          yat <- seq(0, 90, by=10)
          evanval <- 50
          ylab <- .text("evalgraph-y-wp")
+         if (flip) {
+            ys <- -ys
+            invert <- TRUE
+         } else {
+            invert <- FALSE
+         }
          ys <- 50 + 50 * (2 / (1 + exp(-0.00368208 * ys*100)) - 1)
       }
       plot(NA, xlim=c(1,n), ylim=ylim, xlab=.text("evalgraph-x"), ylab=ylab,
@@ -55,7 +62,7 @@
       xs <- 1:n
       if (n > 2) {
          for (j in 1:(n-1)) {
-            shade_segment(xs[j], ys[j], xs[j+1], ys[j+1], evenval=evanval)
+            shade_segment(xs[j], ys[j], xs[j+1], ys[j+1], evenval=evanval, invert=invert)
          }
       } else {
          points(xs, ys, type="o", pch=21, lwd=2, col=col.square.l, bg=col.square.d)

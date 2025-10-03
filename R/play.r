@@ -57,7 +57,7 @@ play <- function(lang="en", sfpath="", ...) {
    cex.top     <- ifelse(is.null(ddd[["cex.top"]]),     1.4,            ddd[["cex.top"]])
    cex.bot     <- ifelse(is.null(ddd[["cex.bot"]]),     0.7,            ddd[["cex.bot"]])
    cex.eval    <- ifelse(is.null(ddd[["cex.eval"]]),    0.5,            ddd[["cex.eval"]])
-   depth1      <- ifelse(is.null(ddd[["depth1"]]),      16,             ddd[["depth1"]])
+   depth1      <- ifelse(is.null(ddd[["depth1"]]),      14,             ddd[["depth1"]])
    depth2      <- ifelse(is.null(ddd[["depth2"]]),      24,             ddd[["depth2"]])
    depth3      <- ifelse(is.null(ddd[["depth3"]]),      6,              ddd[["depth3"]])
    sflim       <- ifelse(is.null(ddd[["sflim"]]),       NA,             ddd[["sflim"]])
@@ -462,7 +462,7 @@ play <- function(lang="en", sfpath="", ...) {
              "r", "o", "u", "M", "B", "U",
              "a", "A", "f", "z", "c", "e", "E", "s", "b",
              "^", "6", "R", "G", "w", "-", "=", "+", "[", "]", "{", "}", "(", ")", "i", "x", "v", "ctrl-V",
-             "l", "<", ">", "ctrl-F", "ctrl-C", "ctrl-D", "/", ",", ".", "|", "*", "8", "'", "?",
+             "l", "<", ">", "ctrl-F", "ctrl-C", "ctrl-D", "/", ",", ".", "|", "*", "8", "?", "'", "\"",
              "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12")
 
    run.all <- TRUE
@@ -721,8 +721,12 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (selmode %in% c("sequential","sequential_len","sequential_mov")) {
                seqno <- seqno + 1
-               if (seqno > k)
+               if (seqno > k) {
+                  playsound(system.file("sounds", "finished.ogg", package="chesstrainer"), volume=volume)
+                  .texttop(.text("finishedround"), sleep=2)
+                  .texttop(texttop)
                   seqno <- 1
+               }
             }
 
          }
@@ -1253,7 +1257,7 @@ play <- function(lang="en", sfpath="", ...) {
                if (mode %in% c("add","play","analysis")) {
                   if (any(is.na(sub$moves$eval)) || i == 1)
                      next
-                  .evalgraph(sub$moves, i=i, lwd=lwd, mar=mar)
+                  .evalgraph(sub$moves, i=i, flip=flip, lwd=lwd, mar=mar)
                }
                .redrawpos(pos, flip=flip)
                .drawcircles(circles, lwd=lwd)
@@ -1490,8 +1494,6 @@ play <- function(lang="en", sfpath="", ...) {
                   }
                   i <- i + 1
                }
-               if (mode == "add" && identical(click, "t")) # t in add mode removes all further moves
-                  sub$moves <- sub$moves[seq_len(i-1),,drop=FALSE]
                playsound(system.file("sounds", "move.ogg", package="chesstrainer"), volume=volume)
                .redrawpos(pos, posold, flip=flip)
                if (mode %in% c("add","test")) {
@@ -1514,6 +1516,8 @@ play <- function(lang="en", sfpath="", ...) {
                } else {
                   .drawsideindicator(sidetoplay, flip)
                }
+               if (mode == "add" && identical(click, "t")) # t in add mode removes all further moves
+                  sub$moves <- sub$moves[seq_len(i-1),,drop=FALSE]
                if (mode %in% c("add","play","analysis")) {
                   fen <- .genfen(pos, flip, sidetoplay, i)
                   res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay, verbose)
@@ -2580,7 +2584,7 @@ play <- function(lang="en", sfpath="", ...) {
                      print(tab, print.gap=2)
                      selmatches <- readline(prompt=.text("selmatches"))
                      if (identical(selmatches, "") || .confirm(selmatches)) {
-                        cat(.text("selmatchesconfirm"))
+                        cat(.text("selmatchesconfirm", sum(seqident)))
                         selected <- files.all[seqident]
                         run.rnd <- FALSE
                         input <- FALSE
@@ -2608,7 +2612,7 @@ play <- function(lang="en", sfpath="", ...) {
                      print(tab, print.gap=2)
                      selmatches <- readline(prompt=.text("selmatches"))
                      if (identical(selmatches, "") || .confirm(selmatches)) {
-                        cat(.text("selmatchesconfirm"))
+                        cat(.text("selmatchesconfirm", sum(seqident)))
                         selected <- files.all[seqident]
                         run.rnd <- FALSE
                         input <- FALSE
@@ -2796,7 +2800,37 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # ' to find all sequences with the same FEN
+            # ? to find all sequences that start with the same moves
+
+            if (identical(click, "?")) {
+               if (i == 1)
+                  next
+               seqident <- sapply(dat.all, function(x) identical(sub$moves[1:(i-1),1:4], x$moves[1:(i-1),1:4]) && identical(flip, x$flip))
+               if (any(seqident)) {
+                  eval(expr=switch1)
+                  cat(.text("seqsmatchstart"))
+                  tab <- data.frame(Name=files.all[seqident])
+                  tab$Name <- format(tab$Name, justify="left")
+                  names(tab)[1] <- ""
+                  rownames(tab) <- which(seqident)
+                  print(tab, print.gap=2)
+                  selmatches <- readline(prompt=.text("selmatches"))
+                  if (identical(selmatches, "") || .confirm(selmatches)) {
+                     cat(.text("selmatchesconfirm", sum(seqident)))
+                     selected <- files.all[seqident]
+                     run.rnd <- FALSE
+                     input <- FALSE
+                     seqno <- 1
+                  }
+                  eval(expr=switch2)
+               } else {
+                  .texttop(.text("noseqsfound"), sleep=1.5)
+                  .texttop(texttop)
+               }
+               next
+            }
+
+            # ' to find all sequences that include the same FEN
 
             if (identical(click, "'")) {
                if (i == 1)
@@ -2815,7 +2849,7 @@ play <- function(lang="en", sfpath="", ...) {
                   print(tab, print.gap=2)
                   selmatches <- readline(prompt=.text("selmatches"))
                   if (identical(selmatches, "") || .confirm(selmatches)) {
-                     cat(.text("selmatchesconfirm"))
+                     cat(.text("selmatchesconfirm", sum(seqident)))
                      selected <- files.all[seqident]
                      run.rnd <- FALSE
                      input <- FALSE
@@ -2829,15 +2863,18 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # ? to find all sequences that start in the same way
+            # " to find all sequences that end on the same FEN
 
-            if (identical(click, "?")) {
+            if (identical(click, "\"")) {
                if (i == 1)
                   next
-               seqident <- sapply(dat.all, function(x) identical(sub$moves[1:(i-1),1:4], x$moves[1:(i-1),1:4]) && identical(flip, x$flip))
+               eval(expr=switch1)
+               searchterm <- .genfen(pos, flip, sidetoplay, i)
+               searchterm <- paste(strsplit(searchterm, " ", fixed=TRUE)[[1]][1:3], collapse=" ")
+               seqident <- sapply(dat.all, function(x) grepl(searchterm, tail(x$moves$fen, 1), fixed=TRUE) && identical(flip, x$flip))
                if (any(seqident)) {
                   eval(expr=switch1)
-                  cat(.text("seqsmatchstart"))
+                  cat(.text("seqsmatchfen"))
                   tab <- data.frame(Name=files.all[seqident])
                   tab$Name <- format(tab$Name, justify="left")
                   names(tab)[1] <- ""
@@ -2845,7 +2882,7 @@ play <- function(lang="en", sfpath="", ...) {
                   print(tab, print.gap=2)
                   selmatches <- readline(prompt=.text("selmatches"))
                   if (identical(selmatches, "") || .confirm(selmatches)) {
-                     cat(.text("selmatchesconfirm"))
+                     cat(.text("selmatchesconfirm", sum(seqident)))
                      selected <- files.all[seqident]
                      run.rnd <- FALSE
                      input <- FALSE
