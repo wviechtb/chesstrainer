@@ -721,12 +721,8 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (selmode %in% c("sequential","sequential_len","sequential_mov")) {
                seqno <- seqno + 1
-               if (seqno > k) {
-                  playsound(system.file("sounds", "finished.ogg", package="chesstrainer"), volume=volume)
-                  .texttop(.text("finishedround"), sleep=2)
-                  .texttop(texttop)
+               if (seqno > k)
                   seqno <- 1
-               }
             }
 
          }
@@ -3597,7 +3593,14 @@ play <- function(lang="en", sfpath="", ...) {
                }
 
                saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
-               Sys.sleep(2*sleep)
+
+               if (selmode %in% c("sequential","sequential_len","sequential_mov") && length(scores.selected) > 1L && !replast && seqno == 1) {
+                  playsound(system.file("sounds", "finished.ogg", package="chesstrainer"), volume=volume)
+                  .texttop(.text("finishedround"), sleep=2)
+               } else {
+                  Sys.sleep(2*sleep)
+               }
+
                run.rnd <- FALSE
                next
 
