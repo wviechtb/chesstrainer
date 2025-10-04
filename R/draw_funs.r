@@ -908,7 +908,7 @@
    col    <- .get("col.bot")
    col.bg <- .get("col.bg")
 
-   if (zenmode) {
+   if (mode == "test" && zenmode) {
       rect(-2, -1, 12, 0.6, col=col.bg, border=NA)
       return()
    }
