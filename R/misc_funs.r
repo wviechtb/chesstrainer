@@ -724,14 +724,14 @@
    # check if white pawn move is legal
    if (piece == "WP") {
       if (flip) {
-         if (y1 == y2 && (x1 - x2 == 1 || (x1 - x2 == 2 && x1 == 7 && pos[3,9-y1] == ""))) # regular pawn move
+         if (y1 == y2 && target == "" && (x1 - x2 == 1 || (x1 - x2 == 2 && x1 == 7 && pos[3,9-y1] == ""))) # regular pawn move
             islegal <- TRUE
          if (abs(y1 - y2) == 1 && x1 - x2 == 1 && target != "") # pawn capture
             islegal <- TRUE
          if (abs(y1 - y2) == 1 && x1 - x2 == 1 && x1 == 4 && pos[9-x1,9-y2] == "BP" && identical(attr(pos,"ispp"), "b") && identical(attr(pos,"y1"), y2)) # en passant
             islegal <- TRUE
       } else {
-         if (y1 == y2 && (x2 - x1 == 1 || (x2 - x1 == 2 && x1 == 2 && pos[3,y1] == ""))) # regular pawn move
+         if (y1 == y2 && target == "" && (x2 - x1 == 1 || (x2 - x1 == 2 && x1 == 2 && pos[3,y1] == ""))) # regular pawn move
             islegal <- TRUE
          if (abs(y1 - y2) == 1 && x2 - x1 == 1 && target != "") # pawn capture
             islegal <- TRUE
@@ -743,14 +743,14 @@
    # check if black pawn move is legal
    if (piece == "BP") {
       if (flip) {
-         if (y1 == y2 && (x2 - x1 == 1 || (x2 - x1 == 2 && x1 == 2 && pos[6,9-y1] == ""))) # regular pawn move
+         if (y1 == y2 && target == "" && (x2 - x1 == 1 || (x2 - x1 == 2 && x1 == 2 && pos[6,9-y1] == ""))) # regular pawn move
             islegal <- TRUE
          if (abs(y1 - y2) == 1 && x2 - x1 == 1 && target != "") # pawn capture
             islegal <- TRUE
          if (abs(y1 - y2) == 1 && x2 - x1 == 1 && x1 == 5 && pos[9-x1,9-y2] == "WP" && identical(attr(pos,"ispp"), "w") && identical(attr(pos,"y1"), y2)) # en passant
             islegal <- TRUE
       } else {
-         if (y1 == y2 && (x1 - x2 == 1 || (x1 - x2 == 2 && x1 == 7 && pos[6,y1] == ""))) # regular pawn move
+         if (y1 == y2 && target == "" && (x1 - x2 == 1 || (x1 - x2 == 2 && x1 == 7 && pos[6,y1] == ""))) # regular pawn move
             islegal <- TRUE
          if (abs(y1 - y2) == 1 && x1 - x2 == 1 && target != "") # pawn capture
             islegal <- TRUE
