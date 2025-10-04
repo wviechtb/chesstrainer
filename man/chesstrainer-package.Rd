@@ -20,7 +20,7 @@
 
    The trainer will then make the next move, after which you will then again have to make the correct move. This will continue until the end of the sequence. If you do not know what the correct move is, the \verb{<h>} key will provide a hint showing which piece to move. Pressing \verb{<h>} for a second time will show the target square. Once the sequence has ended, left-clicking starts a new sequence.
 
-   In \emph{test mode}, information is shown at the bottom about the current mode, the name of the current sequence, the player name, the current move number and the total number of moves of the sequence, the number of times that the sequence has been played so far, the age of the sequence (how many days ago the sequence was last played), the estimated difficulty of the sequence (see below), and the sequence score (see below).
+   In \emph{test mode}, information is shown at the bottom about the current mode, the name of the current sequence, the player name, the current move number and the total number of moves of the sequence, the number of times that the sequence has been played so far, the age of the sequence (how many days ago the sequence was last played), the estimated difficulty of the sequence (see below), and the sequence score (see below). With \verb{<z>}, you can toggle on \sQuote{zen mode} to hide this information.
 
    With \verb{<F1>}, you obtain an overview of all keyboard shortcuts. These will be explained in further detail below. You can quit the trainer with the \verb{<q>} key.
 

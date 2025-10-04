@@ -111,10 +111,10 @@
 
 }
 
-.redrawall <- function(pos, flip, mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove, mar) {
+.redrawall <- function(pos, flip, mode, zenmode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove, mar) {
 
    .drawboard(pos, flip, mar=mar)
-   .textbot(mode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
+   .textbot(mode, zenmode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
    .texttop(texttop)
    .drawcheck(pos, flip=flip)
    if (mode == "test" && timed) {
@@ -900,13 +900,18 @@
 
 }
 
-.textbot <- function(mode, show, player, seqname, seqnum, score, played, age=NA, difficulty=NA, i, totalmoves, selmode="default", onlyshow=FALSE, onlyi=FALSE, onlyscore=FALSE) {
+.textbot <- function(mode, zenmode, show, player, seqname, seqnum, score, played, age=NA, difficulty=NA, i, totalmoves, selmode="default", onlyshow=FALSE, onlyi=FALSE, onlyscore=FALSE) {
 
    lang   <- .get("lang")
    cex    <- .get("cex.bot")
    font   <- .get("font.mono")
    col    <- .get("col.bot")
    col.bg <- .get("col.bg")
+
+   if (zenmode) {
+      rect(-2, -1, 12, 0.6, col=col.bg, border=NA)
+      return()
+   }
 
    if (.get("upsidedown")) {
       srt <- 180
