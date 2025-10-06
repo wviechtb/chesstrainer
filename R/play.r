@@ -1373,36 +1373,33 @@ play <- function(lang="en", sfpath="", ...) {
                   evalvals <- c()
                }
                oldeval <- sub$moves$eval[i-1]
-               neweval <- starteval
                posold <- pos
                if (is.null(sub$pos)) {
                   pos <- start.pos
                } else {
                   pos <- sub$pos
+                  starteval <- attr(pos, "starteval")
                }
+               neweval <- starteval
                sidetoplay <- sidetoplaystart
                comment <- ""
-               if (i == 2) {
-                  i <- 1
-               } else {
-                  if (mode %in% c("add","test")) {
-                     # find the first move that must be made by the player
-                     firstmove <- which(!sub$moves$show[1:(i-1)])
-                     if (length(firstmove) > 0L) {
-                        # if there is such a move, go back one more move
-                        for (i in seq_len(min(firstmove)-1)) {
-                           pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE, volume=0, verbose=verbose, draw=FALSE)
-                           sub$moves$move[i] <- attr(pos,"move")
-                           sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
-                        }
-                        neweval <- sub$moves$eval[i]
-                        i <- i + 1
-                     } else {
-                        i <- 1
+               if (mode %in% c("add","test")) {
+                  # find the first move that must be made by the player
+                  firstmove <- which(!sub$moves$show[1:(i-1)])
+                  if (length(firstmove) > 0L && min(firstmove) > 1) {
+                     # if there is such a move, go back one more move
+                     for (i in seq_len(min(firstmove)-1)) {
+                        pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE, volume=0, verbose=verbose, draw=FALSE)
+                        sub$moves$move[i] <- attr(pos,"move")
+                        sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                      }
+                     neweval <- sub$moves$eval[i]
+                     i <- i + 1
                   } else {
                      i <- 1
                   }
+               } else {
+                  i <- 1
                }
                playsound(system.file("sounds", "move.ogg", package="chesstrainer"), volume=volume)
                .redrawpos(pos, posold, flip=flip)
@@ -1465,13 +1462,14 @@ play <- function(lang="en", sfpath="", ...) {
                   evalvals <- c()
                }
                oldeval <- sub$moves$eval[i-1]
-               neweval <- starteval
                posold <- pos
                if (is.null(sub$pos)) {
                   pos <- start.pos
                } else {
                   pos <- sub$pos
+                  starteval <- attr(pos, "starteval")
                }
+               neweval <- starteval
                sidetoplay <- sidetoplaystart
                comment <- ""
                if (i == 2 || (mode == "play" && identical(click, "t") && i == 3)) {
@@ -1612,6 +1610,7 @@ play <- function(lang="en", sfpath="", ...) {
                   pos <- start.pos
                } else {
                   pos <- sub$pos
+                  starteval <- attr(pos, "starteval")
                }
                sidetoplay <- sidetoplaystart
                if (identical(click, "2"))
@@ -1702,6 +1701,7 @@ play <- function(lang="en", sfpath="", ...) {
                   pos <- start.pos
                } else {
                   pos <- sub$pos
+                  starteval <- attr(pos, "starteval")
                }
                sidetoplay <- sidetoplaystart
                i <- 1
@@ -1984,6 +1984,7 @@ play <- function(lang="en", sfpath="", ...) {
                      sidetoplay <- "w"
                   } else {
                      pos <- sub$pos
+                     starteval <- attr(pos, "starteval")
                      if (flip) {
                         piece <- pos[9-sub$moves[1,1], 9-sub$moves[1,2]]
                      } else {
