@@ -1595,6 +1595,16 @@ play <- function(lang="en", sfpath="", ...) {
                      .texttop(texttop)
                   next
                }
+               if (identical(click, "2"))
+                  target <- nrow(sub$moves)
+               if (identical(click, "3"))
+                  target <- max(1, round(nrow(sub$moves) * 1/4))
+               if (identical(click, "4"))
+                  target <- max(1, round(nrow(sub$moves) * 2/4))
+               if (identical(click, "5"))
+                  target <- max(1, round(nrow(sub$moves) * 3/4))
+               if (target == i-1)
+                  next
                .rmcheck(pos, flip=flip)
                if (nrow(circles) >= 1L || nrow(arrows) >= 1L || nrow(harrows) >= 1L) {
                   .rmannot(pos, circles, rbind(arrows, harrows), flip)
@@ -1613,16 +1623,6 @@ play <- function(lang="en", sfpath="", ...) {
                   starteval <- attr(pos, "starteval")
                }
                sidetoplay <- sidetoplaystart
-               if (identical(click, "2"))
-                  target <- nrow(sub$moves)
-               if (identical(click, "3"))
-                  target <- max(1, round(nrow(sub$moves) * 1/4))
-               if (identical(click, "4"))
-                  target <- round(nrow(sub$moves) * 2/4)
-               if (identical(click, "5"))
-                  target <- round(nrow(sub$moves) * 3/4)
-               if (target == i-1)
-                  next
                i <- 1
                while (i <= target) {
                   pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE, volume=0, verbose=verbose, draw=FALSE)
@@ -1754,7 +1754,7 @@ play <- function(lang="en", sfpath="", ...) {
                   sidetoplay <- sidetoplaystart
 
                   cat(.text("evalupdateold"))
-                  print(sub$moves[-11])
+                  print(sub$moves[-c(9:11)])
                   cat(.text("evalupdatestart"))
 
                   if (!is.null(sub$pos)) {
@@ -1790,7 +1790,7 @@ play <- function(lang="en", sfpath="", ...) {
                   .textbot(mode, zenmode, i=i, totalmoves=totalmoves, onlyi=TRUE)
                   .drawsideindicator(sidetoplay, flip)
                   cat(.text("evalupdatenew"))
-                  print(sub$moves[-11])
+                  print(sub$moves[-c(9:11)])
                   if (mode == "test")
                      saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
                   playsound(system.file("sounds", "complete.ogg", package="chesstrainer"), volume=volume)
