@@ -1,4 +1,4 @@
-.historygraph <- function(player, date.start, playtime, seqsplayed, lwd, mar) {
+.historygraph <- function(player, date.start, playtime, seqsplayed, lwd, mar, mar2) {
 
    # load the session history for the player
    player.file <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "sessions", paste0(player, ".rds"))
@@ -59,7 +59,7 @@
       total.playtime <- sum(x$playtime)
       x$playtime <- round(x$playtime / 60, 1)
       rect(1.3, 1.3, 8.7, 8.7, col=col.bg, border=NA)
-      par(new=TRUE, mar=mar+c(5.5,5.5,3.5,3.5))
+      par(new=TRUE, mar=mar2)
       if (nrow(x) == 1L) {
          xlim <- c(x[[1]]-1, x[[1]]+1)
       } else {
@@ -80,7 +80,7 @@
       plotlwd <- max(0.2, 5 - 0.02*nrow(x))
       total.seqsplayed <- sum(x$seqsplayed)
       rect(1.3, 1.3, 8.7, 8.7, col=col.bg, border=NA)
-      par(new=TRUE, mar=mar+c(5.5,5.5,3.5,3.5))
+      par(new=TRUE, mar=mar2)
       if (nrow(x) == 1L) {
          xlim <- c(x[[1]]-1, x[[1]]+1)
       } else {
@@ -115,6 +115,16 @@
       if (identical(click, "\r") || identical(click, "ctrl-J") || identical(click, "q") || identical(click, "\033") || identical(click, "ctrl-[") || identical(click, "F12") || identical(click, " "))
          break
 
+      if (identical(click, "{") || identical(click, "}")) {
+         if (identical(click, "{")) {
+            mar2 <- pmax(1, mar2 - 0.5)
+         } else {
+            mar2 <- mar2 + 0.5
+         }
+         .texttop(.text("maradj", mar2), sleep=0.5)
+         next
+      }
+
       if (is.numeric(click) && click[[3]] %in% c(0,2)) {
          if (click[[3]] == 2) { # right mouse button resets zoom or exits if zoomed out
             if (zoom == 1) {
@@ -135,7 +145,7 @@
             y1 <- grconvertY(click[[2]], from="ndc", to="user")
             if (x1 < 1 || x1 > 9 || y1 < 1 || y1 > 9)
                break
-            par(mar=mar+c(5.5,5.5,3.5,3.5), usr=usr)
+            par(mar=mar2, usr=usr)
             x1 <- grconvertX(click[[1]], from="ndc", to="user")
             if (x1 < usr[1])
                x1 <- usr[1]
@@ -148,7 +158,7 @@
                next
             if (click[[3]] == 2)
                next
-            par(mar=mar+c(5.5,5.5,3.5,3.5), usr=usr)
+            par(mar=mar2, usr=usr)
             x2 <- grconvertX(click[[1]], from="ndc", to="user")
             if (x2 < usr[1])
                x2 <- usr[1]
@@ -220,6 +230,6 @@
 
    #.erase(1, 1, 9, 9)
 
-   return()
+   return(list(mar2=mar2))
 
 }

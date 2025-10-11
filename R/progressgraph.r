@@ -1,4 +1,4 @@
-.progressgraph <- function(dat, lwd, mar) {
+.progressgraph <- function(dat, lwd, mar, mar2) {
 
    if (dat$played[1] == 1)
       dat <- rbind(data.frame(date=NA, played=0, score=100), dat)
@@ -18,7 +18,7 @@
 
    plot.scores <- function(x) {
       rect(1.3, 1.3, 8.7, 8.7, col=col.bg, border=NA)
-      par(new=TRUE, mar=mar+c(5.5,5.5,3.5,3.5))
+      par(new=TRUE, mar=mar2)
       if (nrow(x) == 1L) {
          xlim <- c(x$played-1, x$played+1)
       } else {
@@ -43,6 +43,16 @@
       if (identical(click, "g") || identical(click, "\r") || identical(click, "ctrl-J") || identical(click, "q") || identical(click, "\033") || identical(click, "ctrl-[") || identical(click, " "))
          break
 
+      if (identical(click, "{") || identical(click, "}")) {
+         if (identical(click, "{")) {
+            mar2 <- pmax(1, mar2 - 0.5)
+         } else {
+            mar2 <- mar2 + 0.5
+         }
+         .texttop(.text("maradj", mar2), sleep=0.5)
+         next
+      }
+
       if (is.numeric(click) && click[[3]] %in% c(0,2)) {
          if (click[[3]] == 2) { # right mouse button resets zoom or exits if zoomed out
             if (zoom == 1) {
@@ -58,7 +68,7 @@
             y1 <- grconvertY(click[[2]], from="ndc", to="user")
             if (x1 < 1 || x1 > 9 || y1 < 1 || y1 > 9)
                break
-            par(mar=mar+c(5.5,5.5,3.5,3.5), usr=usr)
+            par(mar=mar2, usr=usr)
             x1 <- grconvertX(click[[1]], from="ndc", to="user")
             if (x1 < usr[1])
                x1 <- usr[1]
@@ -71,7 +81,7 @@
                next
             if (click[[3]] == 2)
                next
-            par(mar=mar+c(5.5,5.5,3.5,3.5), usr=usr)
+            par(mar=mar2, usr=usr)
             x2 <- grconvertX(click[[1]], from="ndc", to="user")
             if (x2 < usr[1])
                x2 <- usr[1]
@@ -99,10 +109,8 @@
 
    par(new=FALSE, mar=mar)
 
-   #.waitforclick()
-
    #.erase(1, 1, 9, 9)
 
-   return()
+   return(list(mar2=mar2))
 
 }

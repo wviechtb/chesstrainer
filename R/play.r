@@ -31,9 +31,15 @@ play <- function(lang="en", sfpath="", ...) {
    }
 
    if (is.null(ddd[["mar"]])) { # mar can be a vector, so not using ifelse()
-      mar <- 5.5
+      mar <- c(5.5, 5.5, 5.5, 5.5)
    } else {
       mar <- ddd[["mar"]]
+   }
+
+   if (is.null(ddd[["mar2"]])) { # mar2 can be a vector, so not using ifelse()
+      mar2 <- c(11, 11, 9, 9)
+   } else {
+      mar2 <- ddd[["mar2"]]
    }
 
    player      <- ifelse(is.null(ddd[["player"]]),      "",             ddd[["player"]])
@@ -136,6 +142,9 @@ play <- function(lang="en", sfpath="", ...) {
    if (length(mar) == 1L)
       mar <- rep(mar,4)
    mar <- pmax(mar,1)
+   if (length(mar2) == 1L)
+      mar2 <- rep(mar2,4)
+   mar2 <- pmax(mar2,1)
 
    verbose <- isTRUE(ddd$verbose)
 
@@ -158,7 +167,7 @@ play <- function(lang="en", sfpath="", ...) {
                        eval=eval, evalsteps=evalsteps, wait=wait, sleep=sleep, idletime=idletime, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth,
-                       difffun=difffun, difflen=difflen, diffmin=diffmin, zenmode=zenmode, mar=mar)
+                       difffun=difffun, difflen=difflen, diffmin=diffmin, zenmode=zenmode, mar=mar, mar2=mar2)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       cols <- sapply(cols.all, function(x) .get(x))
       saveRDS(cols, file=file.path(configdir, "colors.rds"))
@@ -247,6 +256,8 @@ play <- function(lang="en", sfpath="", ...) {
             zenmode <- settings[["zenmode"]]
          if (is.null(mc[["mar"]]))
             mar <- settings[["mar"]]
+         if (is.null(mc[["mar2"]]))
+            mar2 <- settings[["mar2"]]
       }
       sfpath <- suppressWarnings(normalizePath(sfpath))
       settings <- list(lang=lang, player=player, mode=mode, seqdir=seqdir, seqdirpos=seqdirpos,
@@ -254,7 +265,7 @@ play <- function(lang="en", sfpath="", ...) {
                        eval=eval, evalsteps=evalsteps, wait=wait, sleep=sleep, idletime=idletime, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth,
-                       difffun=difffun, difflen=difflen, diffmin=diffmin, zenmode=zenmode, mar=mar)
+                       difffun=difffun, difflen=difflen, diffmin=diffmin, zenmode=zenmode, mar=mar, mar2=mar2)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       if (file.exists(file.path(configdir, "colors.rds"))) {
          cols <- readRDS(file.path(configdir, "colors.rds"))
@@ -466,7 +477,7 @@ play <- function(lang="en", sfpath="", ...) {
              "a", "A", "f", "z", "c", "e", "E", "s", "b",
              "^", "6", "R", "G", "w", "-", "=", "+", "[", "]", "{", "}", "(", ")", "i", "x", "v", "ctrl-V",
              "l", "<", ">", "ctrl-F", "ctrl-C", "ctrl-D", "/", ",", ".", "|", "*", "8", "?", "'", "\"",
-             "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12")
+             "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "ctrl-!", "ctrl-@")
 
    run.all <- TRUE
 
@@ -663,8 +674,8 @@ play <- function(lang="en", sfpath="", ...) {
 
       if (selmode == "diff_random") {
          probvals.selected <- difficulty.selected / max(difficulty.selected, na.rm=TRUE)
-         probvals.selected[is.na(probvals.selected)] <- 1 # if NA, set prob to 1
-         probvals.selected <- difficulty.selected^expval
+         probvals.selected[is.na(probvals.selected)] <- 0 # if NA, set prob to 0
+         probvals.selected <- probvals.selected^expval
          probvals.selected[scores.selected == 0] <- 0 # in case of 0^0
          if (any(is.infinite(probvals.selected))) {
             probvals.selected <- rep(0, k)
@@ -1251,12 +1262,22 @@ play <- function(lang="en", sfpath="", ...) {
                if (mode == "test") {
                   if (is.null(sub$player[[player]]$score))
                      next
-                  .progressgraph(sub$player[[player]], lwd=lwd, mar=mar)
+                  tmp <- .progressgraph(sub$player[[player]], lwd=lwd, mar=mar, mar2=mar2)
+                  if (!identical(mar2, tmp$mar2)) {
+                     mar2 <- tmp$mar2
+                     settings$mar2 <- mar2
+                     saveRDS(settings, file=file.path(configdir, "settings.rds"))
+                  }
                }
                if (mode %in% c("add","play","analysis")) {
                   if (any(is.na(sub$moves$eval)) || i == 1)
                      next
-                  .evalgraph(sub$moves, i=i, flip=flip, lwd=lwd, mar=mar)
+                  tmp <- .evalgraph(sub$moves, i=i, flip=flip, lwd=lwd, mar=mar, mar2=mar2)
+                  if (!identical(mar2, tmp$mar2)) {
+                     mar2 <- tmp$mar2
+                     settings$mar2 <- mar2
+                     saveRDS(settings, file=file.path(configdir, "settings.rds"))
+                  }
                }
                .redrawpos(pos, flip=flip)
                .drawcircles(circles, lwd=lwd)
@@ -1911,7 +1932,12 @@ play <- function(lang="en", sfpath="", ...) {
                   session.seqsplayed[session.length] <- session.seqsplayed[session.length] + 1
                   session.mean.scores[[session.length]] <- c(session.mean.scores[[session.length]], mean(scores.all, na.rm=TRUE))
                   if (showgraph) {
-                     .progressgraph(sub$player[[player]], lwd=lwd, mar=mar)
+                     tmp <- .progressgraph(sub$player[[player]], lwd=lwd, mar=mar, mar2=mar2)
+                     if (!identical(mar2, tmp$mar2)) {
+                        mar2 <- tmp$mar2
+                        settings$mar2 <- mar2
+                        saveRDS(settings, file=file.path(configdir, "settings.rds"))
+                     }
                      .redrawpos(pos, flip=flip)
                   }
                   if (!eval[[mode]])
@@ -2948,10 +2974,10 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (identical(click, "F3")) {
                tab <- list(lang=lang, player=player, mode=mode, seqdir=seqdir[seqdirpos], selmode=selmode, zenmode=zenmode, timed=timed, timepermove=timepermove, expval=expval,
-                           multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, eval=eval, evalsteps=evalsteps, wait=wait, sleep=sleep, idletime=idletime, mar=mar, lwd=lwd,
+                           multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, eval=eval, evalsteps=evalsteps, wait=wait, sleep=sleep, idletime=idletime, mar=mar, mar2=mar2, lwd=lwd,
                            volume=volume, showgraph=showgraph, repmistake=repmistake, cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, difffun=difffun, difflen=difflen, diffmin=diffmin,
                            sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth)
-               .showsettings(tab, lwd)
+               .showsettings(tab)
                .redrawpos(pos, flip=flip)
                .drawcircles(circles, lwd=lwd)
                .drawarrows(arrows, lwd=lwd)
@@ -3121,14 +3147,19 @@ play <- function(lang="en", sfpath="", ...) {
 
             # F11 to show session info
 
-            if (identical(click, "F11")) {
+            if (identical(click, "F11") || identical(click, "ctrl-!")) {
                if (sum(session.seqsplayed) <= 1) {
                   .texttop(.text("toofewseqsplayed"), sleep=1.5)
                   .texttop(texttop)
                   next
                }
                session.playtime <- round(proc.time()[[3]] - session.time.start)
-               .sessiongraph(session.seqsplayed, session.mean.scores, session.playtime, lwd=lwd, mar=mar)
+               tmp <- .sessiongraph(session.seqsplayed, session.mean.scores, session.playtime, lwd=lwd, mar=mar, mar2=mar2)
+               if (!identical(mar2, tmp$mar2)) {
+                  mar2 <- tmp$mar2
+                  settings$mar2 <- mar2
+                  saveRDS(settings, file=file.path(configdir, "settings.rds"))
+               }
                .redrawall(pos, flip, mode, zenmode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove, mar)
                .draweval(sub$moves$eval[i-1], NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                .drawcircles(circles, lwd=lwd)
@@ -3139,11 +3170,16 @@ play <- function(lang="en", sfpath="", ...) {
 
             # F12 to show session history graph
 
-            if (identical(click, "F12")) {
+            if (identical(click, "F12") || identical(click, "ctrl-@")) {
                player.file <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "sessions", paste0(player, ".rds"))
                if (file.exists(player.file)) {
                   session.playtime <- round(proc.time()[[3]] - session.time.start)
-                  .historygraph(player, session.date.start, session.playtime, sum(session.seqsplayed), lwd=lwd, mar=mar)
+                  tmp <- .historygraph(player, session.date.start, session.playtime, sum(session.seqsplayed), lwd=lwd, mar=mar, mar2=mar2)
+                  if (!identical(mar2, tmp$mar2)) {
+                     mar2 <- tmp$mar2
+                     settings$mar2 <- mar2
+                     saveRDS(settings, file=file.path(configdir, "settings.rds"))
+                  }
                } else {
                   .texttop(.text("nosessionhistory"), sleep=1.5)
                   .texttop(texttop)
@@ -3446,7 +3482,12 @@ play <- function(lang="en", sfpath="", ...) {
                session.mean.scores[[session.length]] <- c(session.mean.scores[[session.length]], mean(scores.all, na.rm=TRUE))
 
                if (showgraph) {
-                  .progressgraph(sub$player[[player]], lwd=lwd, mar=mar)
+                  tmp <- .progressgraph(sub$player[[player]], lwd=lwd, mar=mar, mar2=mar2)
+                  if (!identical(mar2, tmp$mar2)) {
+                     mar2 <- tmp$mar2
+                     settings$mar2 <- mar2
+                     saveRDS(settings, file=file.path(configdir, "settings.rds"))
+                  }
                   .redrawpos(pos, flip=flip)
                }
 
@@ -3584,7 +3625,12 @@ play <- function(lang="en", sfpath="", ...) {
                      }
 
                      if (identical(click, "g")) {
-                        .progressgraph(sub$player[[player]], lwd=lwd, mar=mar)
+                        tmp <- .progressgraph(sub$player[[player]], lwd=lwd, mar=mar, mar2=mar2)
+                        if (!identical(mar2, tmp$mar2)) {
+                           mar2 <- tmp$mar2
+                           settings$mar2 <- mar2
+                           saveRDS(settings, file=file.path(configdir, "settings.rds"))
+                        }
                         .redrawpos(pos, flip=flip)
                         .drawcircles(circles, lwd=lwd)
                         .drawarrows(arrows, lwd=lwd)

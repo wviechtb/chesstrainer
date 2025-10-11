@@ -147,10 +147,12 @@
 
 }
 
-.showsettings <- function(tab, lwd) {
+.showsettings <- function(tab) {
 
    #.clearsideindicator()
    #.drawtimer(clear=TRUE)
+
+   lwd <- tab$lwd
 
    lang <- .get("lang")
 
@@ -183,7 +185,8 @@
       tab$eval <- gsub("FALSE", "Nein", tab$eval, fixed=TRUE)
    }
 
-   tab$mar <- paste0(tab$mar, collapse="/")
+   tab$mar  <- paste0(tab$mar,  collapse="/")
+   tab$mar2 <- paste0(tab$mar2, collapse="/")
 
    tab <- as.data.frame(tab)
 
@@ -234,7 +237,7 @@
    }
 
    if (langswitch)
-      .showsettings(tab.save, lwd)
+      .showsettings(tab.save)
 
    #.erase(1, 1, 9, 9)
 

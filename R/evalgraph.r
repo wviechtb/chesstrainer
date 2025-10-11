@@ -1,4 +1,4 @@
-.evalgraph <- function(x, i, flip, lwd, mar) {
+.evalgraph <- function(x, i, flip, lwd, mar, mar2) {
 
    col.top         <- .get("col.top")
    col.bg          <- .get("col.bg")
@@ -32,7 +32,7 @@
 
    plot.eval <- function(x) {
       rect(1.3, 1.3, 8.7, 8.7, col=col.bg, border=NA)
-      par(new=TRUE, mar=mar+c(5.5,5.5,3.5,3.5))
+      par(new=TRUE, mar=mar2)
       ys <- x$eval
       if (yvalue == "cp") {
          ylim <- c(-9, 9)
@@ -85,6 +85,16 @@
       if (is.numeric(click) && click[[3]] == 2) # right mouse button exits
          break
 
+      if (identical(click, "{") || identical(click, "}")) {
+         if (identical(click, "{")) {
+            mar2 <- pmax(1, mar2 - 0.5)
+         } else {
+            mar2 <- mar2 + 0.5
+         }
+         .texttop(.text("maradj", mar2), sleep=0.5)
+         next
+      }
+
       if (is.numeric(click) && click[[3]] == 1) {
          if (yvalue == "cp") {
             yvalue <- "wp"
@@ -105,6 +115,6 @@
 
    #.erase(1, 1, 9, 9)
 
-   return()
+   return(list(mar2=mar2))
 
 }
