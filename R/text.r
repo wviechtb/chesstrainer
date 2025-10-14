@@ -164,10 +164,16 @@
                          "Sequence will be overwritten ...\n"
    ))}
 
-   if (x == "played") {
+   if (x == "round") {
       return(switch(lang,
-                    de = "Gespielt",
-                         "Played"
+                    de = "Runde",
+                         "Round"
+   ))}
+
+   if (x == "rounds") {
+      return(switch(lang,
+                    de = "Runden",
+                         "Rounds"
    ))}
 
    if (x == "age") {
@@ -226,7 +232,7 @@
 
    if (x == "diff") {
       return(switch(lang,
-                    de = "Schw",
+                    de = "Diff",
                          "Diff"
    ))}
 
@@ -263,8 +269,8 @@
 
    if (x == "seqsearch") {
       return(switch(lang,
-                    de = "Sequenzsuche (Text, Nummer1-Nummer2, Nummer, Punkte > Wert, Gespielt < Wert, Alter > Wert, Schwierigkeit > Wert, FEN, K: Text, *):\n",
-                         "Sequence search (string, number1-number2, number, score > value, played < value, age > value, difficulty > value, FEN, c: string, *):\n"
+                    de = "Sequenzsuche (Text, Nummer1-Nummer2, Nummer, Punkte > Wert, Runden < Wert, Alter > Wert, Schwierigkeit > Wert, FEN, K: Text, *):\n",
+                         "Sequence search (string, number1-number2, number, score > value, rounds < value, age > value, difficulty > value, FEN, c: string, *):\n"
    ))}
 
    if (x == "allseqselected") {
@@ -321,13 +327,13 @@
                          paste0(arg, " matching sequences found.\n")
    ))}
 
-   if (x == "strcapplayed") {
+   if (x == "strcaprounds") {
       return(switch(lang,
-                    de = "^[G|g](espielt)?\\s*(>|<|>=|<=)\\s*([[:digit:]]+)$",
-                         "^[P|p](layed)?\\s*(>|<|>=|<=)\\s*([[:digit:]]+)$"
+                    de = "^[R|r](unden)?\\s*(>|<|>=|<=)\\s*([[:digit:]]+)$",
+                         "^[R|r](rounds)?\\s*(>|<|>=|<=)\\s*([[:digit:]]+)$"
    ))}
 
-   if (x == "selseqplayed") {
+   if (x == "selseqrounds") {
       return(switch(lang,
                     de = paste0("\nSuche nach Sequenzen die ", arg[[1]], " ", arg[[2]], " Mal gespielt wurden.\n"),
                          paste0("\nSearching for sequences that were played ", arg[[1]], " ", arg[[2]], " times.\n")
@@ -1315,6 +1321,12 @@
       return(switch(lang,
                     de = "Eine Runde aller Sequenzen abgeschlossen.",
                          "Finished one round of all sequences."
+   ))}
+
+   if (x == "scatterplot") {
+      return(switch(lang,
+                    de = "Streudiagramm",
+                         "Scatterplot"
    ))}
 
 }

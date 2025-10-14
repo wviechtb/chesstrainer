@@ -111,10 +111,10 @@
 
 }
 
-.redrawall <- function(pos, flip, mode, zenmode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove, mar) {
+.redrawall <- function(pos, flip, mode, zenmode, show, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove, mar) {
 
    .drawboard(pos, flip, mar=mar)
-   .textbot(mode, zenmode, show, player, seqname, seqnum, score, played, age, difficulty, i, totalmoves, selmode)
+   .textbot(mode, zenmode, show, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, selmode)
    .texttop(texttop)
    .drawcheck(pos, flip=flip)
    if (mode == "test" && timed) {
@@ -900,7 +900,7 @@
 
 }
 
-.textbot <- function(mode, zenmode, show, player, seqname, seqnum, score, played, age=NA, difficulty=NA, i, totalmoves, selmode="default", onlyshow=FALSE, onlyi=FALSE, onlyscore=FALSE) {
+.textbot <- function(mode, zenmode, show, player, seqname, seqnum, score, rounds, age=NA, difficulty=NA, i, totalmoves, selmode="default", onlyshow=FALSE, onlyi=FALSE, onlyscore=FALSE) {
 
    lang   <- .get("lang")
    cex    <- .get("cex.bot")
@@ -961,8 +961,8 @@
       selmode <- switch(selmode,
                         score_random   = "score, at random",
                         score_highest  = "score, highest next",
-                        played_random  = "play frequency, at random",
-                        played_lowest  = "play frequency, lowest next",
+                        rounds_random  = "rounds, at random",
+                        rounds_lowest  = "rounds, lowest next",
                         age_random     = "age, at random",
                         age_oldest     = "age, oldest next",
                         diff_random    = "difficulty, at random",
@@ -987,7 +987,7 @@
             text(xleft, 0.30, paste0("Name:   ", "(", seqnum, ") ", seqname), pos=4, cex=cex, family=font, col=col, srt=srt)
             text(xleft, 0.15, paste0("Player: ", player), pos=4, cex=cex, family=font, col=col, srt=srt)
             text(xleft, 0.00, paste0("Move:   ", i-1, " / ", totalmoves), pos=4, cex=cex, family=font, col=col, srt=srt)
-            text(xright, 0.45, paste0("Played: ", played), pos=4, cex=cex, family=font, col=col, srt=srt)
+            text(xright, 0.45, paste0("Rounds: ", rounds), pos=4, cex=cex, family=font, col=col, srt=srt)
             text(xright, 0.30, paste0("Age:    ", age), pos=4, cex=cex, family=font, col=col, srt=srt)
             text(xright, 0.15, paste0("Diff:   ", difficulty), pos=4, cex=cex, family=font, col=col, srt=srt)
             text(xright, 0.00, paste0("Score:  ", score), pos=4, cex=cex, family=font, col=col, srt=srt)
@@ -1029,8 +1029,8 @@
       selmode <- switch(selmode,
                         score_random   = "Punktewert, zuf\U000000E4llig",
                         score_highest  = "Punktewert, h\U000000F6chster",
-                        played_random  = "Spielh\U000000E4ufigkeit, zuf\U000000E4llig",
-                        played_lowest  = "Spielh\U000000E4ufigkeit, niedrigste",
+                        rounds_random  = "Runden, zuf\U000000E4llig",
+                        rounds_lowest  = "Runden, niedrigste",
                         age_random     = "Alter, zuf\U000000E4llig",
                         age_oldest     = "Alter, \U000000E4ltestes",
                         diff_random    = "Schwierigkeit, zuf\U000000E4llig",
@@ -1055,7 +1055,7 @@
             text(xleft, 0.30, paste0("Name:    ", "(", seqnum, ") ", seqname), pos=4, cex=cex, family=font, col=col, srt=srt)
             text(xleft, 0.15, paste0("Spieler: ", player), pos=4, cex=cex, family=font, col=col, srt=srt)
             text(xleft, 0.00, paste0("Zug:     ", i-1, " / ", totalmoves), pos=4, cex=cex, family=font, col=col, srt=srt)
-            text(xright, 0.45, paste0("Gespielt: ", played), pos=4, cex=cex, family=font, col=col, srt=srt)
+            text(xright, 0.45, paste0("Runden:   ", rounds), pos=4, cex=cex, family=font, col=col, srt=srt)
             text(xright, 0.30, paste0("Alter:    ", age), pos=4, cex=cex, family=font, col=col, srt=srt)
             text(xright, 0.15, paste0("Schwier:  ", difficulty), pos=4, cex=cex, family=font, col=col, srt=srt)
             text(xright, 0.00, paste0("Punkte:   ", score), pos=4, cex=cex, family=font, col=col, srt=srt)

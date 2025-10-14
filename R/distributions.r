@@ -1,4 +1,4 @@
-.distributions <- function(scores, played, age, difficulty, multiplier, lwd, mar) {
+.distributions <- function(scores, rounds, age, difficulty, multiplier, lwd, mar) {
 
    n <- length(scores)
 
@@ -14,7 +14,7 @@
    #par(mfrow=c(3,2), pty="m")
 
    layout(matrix(c(1,2,3,4,5,5), nrow=3, byrow=TRUE))
-   par(pty="m")
+   par(pty="m", mar=c(5,5,4,2))
 
    #########################################################################
 
@@ -26,10 +26,10 @@
 
    #########################################################################
 
-   # histogram of 'played'
+   # histogram of 'rounds'
 
-   hist(played, breaks=20, las=1, col.axis=col.top, col.lab=col.top, col.main=col.fg,
-        xlab=.text("played"), col=col.square.d, border=col.square.l, main=paste0("Histogram: ", .text("played")))
+   hist(rounds, breaks=20, las=1, col.axis=col.top, col.lab=col.top, col.main=col.fg,
+        xlab=.text("rounds"), col=col.square.d, border=col.square.l, main=paste0("Histogram: ", .text("rounds")))
    #box(which="figure", col=col.help.border, lwd=lwd)
 
    #########################################################################
@@ -58,28 +58,28 @@
 
    #########################################################################
 
-   # scatterplot of 'played' versus 'scores'
+   # scatterplot of 'rounds' versus 'scores'
 
-   par(mar=mar+c(0,10,0,10))
+   par(mar=c(5,15,5,15))
 
    plot(NA, las=1, col.axis=col.top, col.lab=col.top, col=col.square.l, col.main=col.fg,
-        bty="l", main=paste0(.text("played"), " vs. ", .text("score")), xlab=.text("played"), ylab=.text("score"),
-        xlim=c(0,max(played, na.rm=TRUE)), ylim=c(0,100))
-   xs <- seq(0, max(played, na.rm=TRUE), length.out=1000)
+        bty="l", main=paste0(.text("scatterplot"), ": ", .text("rounds"), " vs. ", .text("score")), xlab=.text("rounds"), ylab=.text("score"),
+        xlim=c(0,max(rounds, na.rm=TRUE)), ylim=c(0,100))
+   xs <- seq(0, max(rounds, na.rm=TRUE), length.out=1000)
    ys <- 100 * multiplier^xs
    pt.cex <- max(0.1, 1 - 1/10 * log10(n)) # adjust point size based on n
    if (n >= 5) {
-      tmp <- data.frame(scores=scores, played=played, offset=log(100))
-      res <- try(lm(log(scores) ~ 0 + played + offset(offset), data=tmp), silent=TRUE)
+      tmp <- data.frame(scores=scores, rounds=rounds, offset=log(100))
+      res <- try(lm(log(scores) ~ 0 + rounds + offset(offset), data=tmp), silent=TRUE)
       if (!inherits(res, "try-error") && !anyNA(coef(res))) {
-         pred <- predict(res, newdata=data.frame(played=xs, offset=log(100)), interval="prediction")
+         pred <- predict(res, newdata=data.frame(rounds=xs, offset=log(100)), interval="prediction")
          pred <- as.data.frame(pred)
          #polygon(c(xs,rev(xs)), exp(c(pred$lwr, rev(pred$upr))), border=NA, col=adjustcolor(col.bg, red.f=1.25, green.f=1.25, blue.f=1.25))
          lines(xs, exp(pred$fit), col=col.top, lwd=2)
       }
    }
    lines(xs, ys, col=col.top, lty="dotted")
-   points(jitter(played, amount=0.5), jitter(scores, amount=0.5), pch=21, col=col.square.l, bg=col.square.d, cex=pt.cex)
+   points(jitter(rounds, amount=0.5), jitter(scores, amount=0.5), pch=21, col=col.square.l, bg=col.square.d, cex=pt.cex)
    #legend("topright", lty=c("dotted","solid"), lwd=c(1,1), col=col.top, legend=.text("plotlegend"), bg=col.bg, box.col=col.square.l)
    #box(which="figure", col=col.help.border, lwd=lwd)
 
@@ -87,13 +87,13 @@
 
    #########################################################################
 
-   # scatterplot of 'played' versus 'difficulty'
+   # scatterplot of 'rounds' versus 'difficulty'
 
    #plot(NA, las=1, col.axis=col.top, col.lab=col.top, col=col.square.l, col.main=col.fg,
-   #     bty="l", main=paste0(.text("played"), " vs. ", .text("difficulty")), xlab=.text("played"), ylab=.text("difficulty"),
-   #     xlim=c(0,max(played, na.rm=TRUE)), ylim=c(0,max(difficulty, na.rm=TRUE)))
+   #     bty="l", main=paste0(.text("rounds"), " vs. ", .text("difficulty")), xlab=.text("rounds"), ylab=.text("difficulty"),
+   #     xlim=c(0,max(rounds, na.rm=TRUE)), ylim=c(0,max(difficulty, na.rm=TRUE)))
    #pt.cex <- max(0.1, 1 - 1/10 * log10(n)) # adjust point size based on n
-   #points(jitter(played, amount=0.5), jitter(difficulty, amount=0.5), pch=21, col=col.square.l, bg=col.square.d, cex=pt.cex)
+   #points(jitter(rounds, amount=0.5), jitter(difficulty, amount=0.5), pch=21, col=col.square.l, bg=col.square.d, cex=pt.cex)
 
    #########################################################################
 

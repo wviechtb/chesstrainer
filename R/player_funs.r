@@ -33,13 +33,13 @@
 
       # if there are players in the sequence files, show a list of them
 
-      tmp.played <- lapply(players, function(player) {
-         x <- lapply(dat, function(x) tail(x$player[[player]]$played,1))
+      tmp.rounds <- lapply(players, function(player) {
+         x <- lapply(dat, function(x) tail(x$player[[player]]$round,1))
          x[sapply(x, is.null)] <- 0
          unlist(x)
       })
-      tmp.played <- do.call(cbind, tmp.played)
-      total.played <- round(apply(tmp.played, 2, sum, na.rm=TRUE))
+      tmp.rounds <- do.call(cbind, tmp.rounds)
+      total.rounds <- round(apply(tmp.rounds, 2, sum, na.rm=TRUE))
 
       tmp.date <- sapply(players, function(player) {
          player.file <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "sessions", paste0(player, ".rds"))
@@ -53,8 +53,8 @@
       last.session[is.na(last.session)] <- ""
       last.session <- unname(last.session)
 
-      tab <- data.frame(players, total.played, last.session)
-      names(tab) <- c(.text("player"), .text("played"), .text("lastsession"))
+      tab <- data.frame(players, total.rounds, last.session)
+      names(tab) <- c(.text("player"), .text("rounds"), .text("lastsession"))
       tab[[2]] <- as.character(tab[[2]])
       txt <- capture.output(print(tab, right=FALSE, print.gap=3))
       txt <- c(txt[1], "", txt[-1], "")

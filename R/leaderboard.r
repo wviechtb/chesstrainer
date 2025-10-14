@@ -30,16 +30,16 @@
       min.scores  <- apply(tmp.scores, 2, min, na.rm=TRUE)
       max.scores  <- apply(tmp.scores, 2, max, na.rm=TRUE)
 
-      tmp.played <- lapply(players, function(player) {
-         x <- lapply(tmp, function(x) tail(x$player[[player]]$played,1))
+      tmp.rounds <- lapply(players, function(player) {
+         x <- lapply(tmp, function(x) tail(x$player[[player]]$round,1))
          x[sapply(x, is.null)] <- 0
          unlist(x)
       })
-      tmp.played <- do.call(cbind, tmp.played)
-      total.played <- round(apply(tmp.played, 2, sum, na.rm=TRUE))
+      tmp.rounds <- do.call(cbind, tmp.rounds)
+      total.rounds <- round(apply(tmp.rounds, 2, sum, na.rm=TRUE))
 
-      tmp <- data.frame(players, mean.scores, sd.scores, min.scores, max.scores, total.played)
-      names(tmp) <- c(.text("player"), .text("score"), "SD", "Min", "Max", .text("played"))
+      tmp <- data.frame(players, mean.scores, sd.scores, min.scores, max.scores, total.rounds)
+      names(tmp) <- c(.text("player"), .text("score"), "SD", "Min", "Max", .text("rounds"))
       tmp <- tmp[order(tmp[[2]]),]
       rownames(tmp) <- NULL
 

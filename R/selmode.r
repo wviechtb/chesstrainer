@@ -14,8 +14,8 @@
       "",
       "1 - based on the score, at random",
       "2 - based on the score, highest score",
-      "3 - based on the play frequency, at random",
-      "4 - based on the play frequency, lowest frequency",
+      "3 - based on the number of rounds, at random",
+      "4 - based on the number of rounds, lowest number",
       "5 - based on the age, at random",
       "6 - based on the age, oldest date",
       "7 - based on the difficulty, at random",
@@ -33,8 +33,8 @@
       "",
       "1 - basierend auf dem Punktewert, zuf\U000000E4llig",
       "2 - basierend auf dem Punktewert, h\U000000F6chster Punktewert",
-      "3 - basierend auf der Spielh\U000000E4ufigkeit, zuf\U000000E4llig",
-      "4 - basierend auf der Spielh\U000000E4ufigkeit, niedrigste H\U000000E4ufigkeit",
+      "3 - basierend auf der Anzahl der Runden, zuf\U000000E4llig",
+      "4 - basierend auf der Anzahl der Runden, niedrigste Anzahl",
       "5 - basierend auf dem Alter, zuf\U000000E4llig",
       "6 - basierend auf dem Alter, \U000000E4ltestes Datum",
       "7 - basierend auf der Schwierigkeit, zuf\U000000E4llig",
@@ -49,7 +49,7 @@
 
    cex <- .findcex(txt, font=font.mono, x1=1.5, x2=8.2, y1=3.5, y2=7.5)
 
-   selmodes <- c("score_random", "score_highest", "played_random", "played_lowest", "age_random", "age_oldest", "diff_random", "diff_highest", "sequential", "sequential_len", "sequential_mov")
+   selmodes <- c("score_random", "score_highest", "rounds_random", "rounds_lowest", "age_random", "age_oldest", "diff_random", "diff_highest", "sequential", "sequential_len", "sequential_mov")
 
    oldmode <- which(selmode == selmodes)
 

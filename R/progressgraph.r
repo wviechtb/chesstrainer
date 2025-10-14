@@ -1,7 +1,7 @@
 .progressgraph <- function(dat, lwd, mar, mar2) {
 
-   if (dat$played[1] == 1)
-      dat <- rbind(data.frame(date=NA, played=0, score=100), dat)
+   if (dat$round[1] == 1)
+      dat <- rbind(data.frame(date=NA, round=0, score=100), dat)
 
    x <- dat
 
@@ -20,14 +20,14 @@
       rect(1.3, 1.3, 8.7, 8.7, col=col.bg, border=NA)
       par(new=TRUE, mar=mar2)
       if (nrow(x) == 1L) {
-         xlim <- c(x$played-1, x$played+1)
+         xlim <- c(x$round-1, x$round+1)
       } else {
-         xlim <- range(x$played)
+         xlim <- range(x$round)
       }
-      plot(NA, xlim=xlim, ylim=c(0,100), xlab="", ylab=.text("score"),
+      plot(NA, xlim=xlim, ylim=c(0,100), xlab=.text("round"), ylab=.text("score"),
            bty="l", las=1, col.axis=col.top, col.lab=col.top, xaxt="n")
-      axis(side=1, at=x$played, col.axis=col.top)
-      points(x$played, x$score, type="o", pch=21, lwd=2, col=col.square.l, bg=col.square.d)
+      axis(side=1, at=x$round, col.axis=col.top)
+      points(x$round, x$score, type="o", pch=21, lwd=2, col=col.square.l, bg=col.square.d)
       usr <<- par()$usr
       par(mar=mar, usr=c(1,9,1,9))
    }
@@ -92,7 +92,7 @@
             segments(x1, usr[4], x2, usr[4], lty="dotted", col=col.top)
             Sys.sleep(0.5)
             par(mar=mar, usr=c(1,9,1,9))
-            sel <- dat$played >= min(x1,x2) & dat$played <= max(x1,x2)
+            sel <- dat$round >= min(x1,x2) & dat$round <= max(x1,x2)
             if (sum(sel) == 0L)
                next
             zoom <- zoom + 1

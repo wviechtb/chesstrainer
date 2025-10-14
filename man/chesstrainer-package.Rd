@@ -20,7 +20,7 @@
 
    The trainer will then make the next move, after which you will then again have to make the correct move. This will continue until the end of the sequence. If you do not know what the correct move is, the \verb{<h>} key will provide a hint showing which piece to move. Pressing \verb{<h>} for a second time will show the target square. Once the sequence has ended, left-clicking starts a new sequence.
 
-   In \emph{test mode}, information is shown at the bottom about the current mode, the name of the current sequence, the player name, the current move number and the total number of moves of the sequence, the number of times that the sequence has been played so far, the age of the sequence (how many days ago the sequence was last played), the estimated difficulty of the sequence (see below), and the sequence score (see below). With \verb{<z>}, you can toggle on \sQuote{zen mode} to hide this information.
+   In \emph{test mode}, information is shown at the bottom about the current mode, the name of the current sequence, the player name, the current move number and the total number of moves of the sequence, the number of rounds (how many times the sequence has been played so far), the age of the sequence (how many days ago the sequence was last played), the estimated difficulty of the sequence (see below), and the sequence score (see below). With \verb{<z>}, you can toggle on \sQuote{zen mode} to hide this information.
 
    With \verb{<F1>}, you obtain an overview of all keyboard shortcuts. These will be explained in further detail below. You can quit the trainer with the \verb{<q>} key.
 
@@ -31,7 +31,7 @@
 
    The trainer uses the score to choose the next sequence. Sequences with higher scores have a higher chance to be presented. The probability of playing a particular sequence is computed with \eqn{p_i = s_i^e / \sum s_i^e}, where \eqn{s_i} is the score of the \eqn{i}th sequence and \eqn{e} is the \sQuote{exponent value}. This is set to 2 by default and enhances the probability that sequences with higher scores are more likely to be played. The exponent value can be adjusted with the \verb{<^>} (or \verb{<6>}) key. Setting the exponent value to 0 makes all sequences equally likely to be played. Setting it to a large value (e.g., 10) makes it very likely that the sequence with the highest score is played next. The score for the current sequence can also be set manually with the \verb{<o>} key. Setting the score to 0 means that the sequence has a zero probability of being presented.
 
-   After completing a sequence, the current score for the sequence is saved (together with the number of times that the sequence has been played and when it was last played) to the sequence file. This way, your progress in learning the sequence is saved permanently across sessions. Using the \verb{<g>} key, a progress graph (showing the sequence scores over consecutive plays) for the current sequence can be shown (if the sequence has been played before). This is useful to check whether progress is being made in learning the sequence. You can zoom into the graph by left-clicking twice (once for the start and once for the end of the interval). This can be repeated to zoom in further. Clicking the right mouse button zooms all the way out. Clicking outside of the graph, right-clicking anywhere when zoomed out, or the \verb{<escape>} key closes the graph.
+   After completing a sequence, the current score for the sequence is saved (together with the number of times that the sequence has been played and when it was last played) to the sequence file. This way, your progress in learning the sequence is saved permanently across sessions. Using the \verb{<g>} key, a progress graph (showing the sequence scores over consecutive rounds) for the current sequence can be shown (if the sequence has been played before). This is useful to check whether progress is being made in learning the sequence. You can zoom into the graph by left-clicking twice (once for the start and once for the end of the interval). This can be repeated to zoom in further. Clicking the right mouse button zooms all the way out. Clicking outside of the graph, right-clicking anywhere when zoomed out, or the \verb{<escape>} key closes the graph.
 
    Using the \verb{<G>} key, you can toggle whether the progress graph will be automatically shown at the end of each completed sequence.
 
@@ -40,7 +40,7 @@
 }
 \section{Managing and Selecting Sequences}{
 
-   Using the \verb{<l>} key, you can obtain a list of all sequences, together with their current score, the number of times they have been played (the play frequency), their age (in days; \code{NA} if a sequence has not been played before), the estimated difficulty of the sequence (\code{NA} if this cannot be computed yet), and the current play probability (with 0 to 5 asterisks next to it based on the probability). Note that this is shown in the console, so ideally you should place the window with the chess board and the console window next to each other.
+   Using the \verb{<l>} key, you can obtain a list of all sequences, together with their current score, the number of rounds (how times they have been played so far), their age (in days; \code{NA} if a sequence has not been played before), the estimated difficulty of the sequence (\code{NA} if this cannot be computed yet), and the current play probability (with 0 to 5 asterisks next to it based on the probability). Note that this is shown in the console, so ideally you should place the window with the chess board and the console window next to each other.
 
    In \emph{test mode}, you can use \verb{<Ctrl-d>} to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.
 
@@ -51,14 +51,14 @@
    \item a sequence number (e.g., \verb{2} to select the 2nd sequence),
    \item a sequence number range (e.g., \verb{2-5} to select sequences 2 to 5),
    \item something like \verb{score > 80} to select sequences with a score above a certain threshold,
-   \item something like \verb{played < 1} to select sequences that have been played less than a certain number of times,
+   \item something like \verb{rounds < 1} to select sequences that have been played less than a certain number of times,
    \item something like \verb{age > 2} to select sequences that have been played more than a certain number of days ago,
    \item something like \verb{difficulty > 20} to select sequences with a difficulty above a certain threshold,
    \item a \href{https://en.wikipedia.org/wiki/Forsyth-Edwards_Notation}{FEN} to select all sequences that contain a position matching the FEN,
    \item \verb{c:} followed by a (case insensitive) text string to select all sequences where a comment contains the text string.
    }
 
-   The keywords \verb{score}, \verb{played}, \verb{age}, and \verb{difficulty} can be abbreviated to \verb{s}, \verb{p}, \verb{a}, and \verb{d} (so \verb{s > 80}, \verb{p < 1}, \verb{a > 2}, and \verb{d > 20} would also work). Other comparators such as \verb{>=}, \verb{<}, and \verb{>=} can also be used (e.g., \verb{s <= 10}).
+   The keywords \verb{score}, \verb{rounds}, \verb{age}, and \verb{difficulty} can be abbreviated to \verb{s}, \verb{r}, \verb{a}, and \verb{d} (so \verb{s > 80}, \verb{r < 1}, \verb{a > 2}, and \verb{d > 20} would also work). Other comparators such as \verb{>=}, \verb{<}, and \verb{>=} can also be used (e.g., \verb{s <= 10}).
 
    Just pressing \verb{<enter>} at the prompt (i.e., not entering any search string) keeps the current selection. Entering \verb{*} at the prompt selects all sequences. The \verb{<*>} (or \verb{<8>}) key also selects all sequences without using \verb{</>} first. If you only want to search for sequences (without selecting them), you can use the \verb{<|>} key (instead of \verb{</>}).
 
@@ -67,15 +67,15 @@
    \enumerate{
    \item the score, where sequences with higher scores have a higher play probability (the default),
    \item the score, where the sequence with the highest score is played next,
-   \item the play frequency, where sequences with lower play frequencies have a higher play probability,
-   \item the play frequency, where the sequence with the lowest play frequency is played next,
+   \item the number of rounds, where sequences with a lower number of rounds have a higher play probability,
+   \item the number of rounds, where the sequence with the lowest number of rounds is played next,
    \item the age, where sequences that were last played longer ago have a higher play probability,
    \item the age, where the sequence that was last played the longest ago is played next,
    \item the difficulty, where more difficult sequences have a higher play probability,
    \item the difficulty, where the sequence with the highest difficulty is played next.
    }
 
-   The exponent value affects selection modes 1, 3, 5, and 7. Setting the exponent value to a large value makes mode 1 essentially the same as mode 2 (and similarly, mode 3 like mode 4, mode 5 like mode 6, and mode 7 like mode 8). For modes 2, 4, 6, and 8, if the highest score, lowest play frequency, highest age, or highest difficulty is the same for multiple sequences, the alphabetically first one is played next. For modes 5 and 6, sequences that have never been played before are given the highest priority. For all modes, sequences whose score was set to 0 are never played.
+   The exponent value affects selection modes 1, 3, 5, and 7. Setting the exponent value to a large value makes mode 1 essentially the same as mode 2 (and similarly, mode 3 like mode 4, mode 5 like mode 6, and mode 7 like mode 8). For modes 2, 4, 6, and 8, if the highest score, lowest number of rounds, highest age, or highest difficulty is the same for multiple sequences, the alphabetically first one is played next. For modes 5 and 6, sequences that have never been played before are given the highest priority. For all modes, sequences whose score was set to 0 are never played.
 
    One can also choose to play sequences sequentially, either ordered alphabetically, ordered by their length (which is given by the number of moves that have to be made by the player), or ordered by their moves. The latter is especially useful when practicing a particular opening and one wants to go through a set of corresponding sequences in the order of the variations.
 
@@ -145,7 +145,7 @@
 
    The current player can be deleted with \verb{<Ctrl-r>}. Since this deletes all progress information for this player from the sequence files (in the current sequence directory), you will receive a prompt to confirm this.
 
-   With \verb{<F2>}, a leaderboard (based on the lowest average score) and player statistics are shown (i.e., the average score, the standard deviation of the scores, the minimum and maximum score, and the total number of sequences played). The statistics are based on the currently selected sequences (or all sequences in the current sequence directory if no selection has been applied). Also, sequences whose score was manually set to 0 are not included in these statistics.
+   With \verb{<F2>}, a leaderboard (based on the lowest average score) and player statistics are shown (i.e., the average score, the standard deviation of the scores, the minimum and maximum score, and the total number of rounds). The statistics are based on the currently selected sequences (or all sequences in the current sequence directory if no selection has been applied). Also, sequences whose score was manually set to 0 are not included in these statistics.
 
    For each player, the trainer also keeps track of each session including the play time. With \verb{<F12>} (or \verb{<Ctrl-2>}), you can obtain a plot of your session history, showing the play time (in minutes) over days (multiple sessions on the same day are collapsed into a single session; sessions shorter than two minutes are not counted). The total play time across all sessions is also shown. With the \verb{<down>/<up>} arrow keys (or the middle mouse button), you can toggle to a view of the number of sequences played over days. You can zoom into a particular time frame by left-clicking twice (once for the start and once for the end of the interval). This can be repeated to zoom in further. Clicking the right mouse button zooms all the way out. With the \verb{<right>/<left>} arrow keys, you can toggle to a view of the history over weeks and months (these views are only available if the session history spans multiple weeks/months). Again, one can zoom into particular time frames in these views by clicking the left mouse button twice. Clicking outside of the graph, right-clicking anywhere when zoomed out, or \verb{<escape>} closes the graph.
 
@@ -195,7 +195,7 @@
 
    With \verb{<F9>}, the FEN of the current position is printed to the console and the position is opened on the \url{https://lichess.org} website for analysis. With \verb{<Ctrl-f>}, the FEN is printed and copied to the clipboard (this makes use of the \code{\link[clipr]{write_clip}} function from the \pkg{clipr} package). With \verb{<Ctrl-c>}, the current sequence name is printed and copied to the clipboard in \emph{test mode}.
 
-   With \verb{<F10>}, you can obtain histograms of the scores of the (selected) sequences, how many times they have been played, how long ago they were played, their difficulty, and a scatterplot of the number of times they have been played versus their scores. In the scatterplot, the dotted line indicates the best possible performance (i.e., never making a mistake when playing the sequence over and over) and the solid line the actual performance (as estimated based on a regression model; only shown when there are 5 or more points).
+   With \verb{<F10>}, you can obtain histograms of the scores of the (selected) sequences, how many times they have been played so far (the number of rounds), how long ago they were played, their difficulty, and a scatterplot of the number of times they have been played versus their scores. In the scatterplot, the dotted line indicates the best possible performance (i.e., never making a mistake when playing the sequence over and over) and the solid line the actual performance (as estimated based on a regression model; only shown when there are 5 or more points).
 
 }
 \section{Playing Sounds}{
