@@ -19,7 +19,7 @@
       rect(1.3, 1.3, 8.7, 8.7, col=col.bg, border=NA)
       par(new=TRUE, mar=mar2)
       ylim <- range(round(unlist(mean.scores))) + c(-1,1)
-      plot(NA, xlim=c(1,seqsplayed.total), ylim=ylim, xlab="", ylab=.text("meanscore"),
+      plot(NA, xlim=c(1,seqsplayed.total), ylim=ylim, xlab=.text("round"), ylab=.text("meanscore"),
            bty="l", las=1, col.axis=col.top, col.lab=col.top, xaxt="n")
       axis(side=1, at=seq_len(seqsplayed.total), col.axis=col.top)
       start.pos <- 0

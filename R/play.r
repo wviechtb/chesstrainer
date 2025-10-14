@@ -3396,7 +3396,10 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            if (i == nrow(sub$moves)) {
+            i <- i + 1
+            sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
+
+            if (i > nrow(sub$moves)) {
 
                # end of the sequence in test mode
 
@@ -3421,6 +3424,10 @@ play <- function(lang="en", sfpath="", ...) {
                      .texttop(.text("tooslow", round(timetotal, digits=2), round(timepermitted, digits=2)))
                      .waitforclick()
                   }
+
+               } else {
+
+                  .drawsideindicator(sidetoplay, flip)
 
                }
 
@@ -3474,7 +3481,7 @@ play <- function(lang="en", sfpath="", ...) {
 
                difficulty <- .difffun(sub$player[[player]]$score, difflen, diffmin, adjusthint, multiplier)
 
-               .textbot(mode, zenmode, show, player, seqname, seqnum, score, rounds, age=0, difficulty, i+1, totalmoves, selmode)
+               .textbot(mode, zenmode, show, player, seqname, seqnum, score, rounds, age=0, difficulty, i, totalmoves, selmode)
 
                # increase session.seqsplayed and compute session.mean.scores
 
@@ -3493,13 +3500,13 @@ play <- function(lang="en", sfpath="", ...) {
 
                if (wait) {
 
-                  dobreak <- FALSE
-                  donext  <- FALSE
+                  skipsave <- FALSE
+                  contplay <- FALSE
 
                   while (TRUE) {
 
                      if (!eval[[mode]]) # always show evaluation at end even if eval is FALSE
-                        .draweval(sub$moves$eval[i], NA, i=i, starteval=starteval, flip=flip, eval=TRUE, evalsteps=evalsteps)
+                        .draweval(sub$moves$eval[i-1], NA, i=i, starteval=starteval, flip=flip, eval=TRUE, evalsteps=evalsteps)
 
                      click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=.keyfun)
 
@@ -3515,7 +3522,7 @@ play <- function(lang="en", sfpath="", ...) {
                      }
 
                      if (identical(click, "n")) { # n goes to next sequence without saving
-                        dobreak <- TRUE
+                        skipsave <- TRUE
                         break
                      }
 
@@ -3527,10 +3534,8 @@ play <- function(lang="en", sfpath="", ...) {
                         sub$player <- NULL
                         show <- FALSE
                         texttop <- .texttop("")
-                        sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
-                        .draweval(sub$moves$eval[i], NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
+                        .draweval(sub$moves$eval[i-1], NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                         .drawsideindicator(sidetoplay, flip)
-                        i <- i + 1
                         fen <- .genfen(pos, flip, sidetoplay, i)
                         res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay, verbose)
                         evalval  <- res.sf$eval
@@ -3539,23 +3544,21 @@ play <- function(lang="en", sfpath="", ...) {
                         sfproc   <- res.sf$sfproc
                         sfrun    <- res.sf$sfrun
                         .textbot(mode, zenmode, show, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, selmode)
-                        donext <- TRUE
+                        contplay <- TRUE
                         break
                      }
 
                      if (identical(click, "\\") || identical(click, "#")) {
                         saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
                         .rmannot(pos, circles, rbind(arrows, harrows), flip)
-                        sub$moves <- sub$moves[seq_len(i),,drop=FALSE]
+                        sub$moves <- sub$moves[seq_len(i-1),,drop=FALSE]
                         oldmode <- "test"
                         mode <- "play"
                         show <- FALSE
                         timed <- FALSE
                         texttop <- .texttop("")
-                        sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
-                        .draweval(sub$moves$eval[i], NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
+                        .draweval(sub$moves$eval[i-1], NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                         .drawsideindicator(sidetoplay, flip)
-                        i <- i + 1
                         fen <- .genfen(pos, flip, sidetoplay, i)
                         if ((flip && sidetoplay=="b") || (!flip && sidetoplay=="w")) {
                            res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay, verbose)
@@ -3568,7 +3571,7 @@ play <- function(lang="en", sfpath="", ...) {
                         sfproc   <- res.sf$sfproc
                         sfrun    <- res.sf$sfrun
                         .textbot(mode, zenmode, show, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, selmode)
-                        donext <- TRUE
+                        contplay <- TRUE
                         break
                      }
 
@@ -3601,7 +3604,7 @@ play <- function(lang="en", sfpath="", ...) {
 
                      if (identical(click, "F9")) {
                         eval(expr=switch1)
-                        fen <- .genfen(pos, flip, ifelse(sidetoplay == "w", "b", "w"), i+1)
+                        fen <- .genfen(pos, flip, sidetoplay, i)
                         cat(fen, "\n")
                         eval(expr=switch2)
                         fen <- paste0("https://lichess.org/analysis/standard/", gsub(" ", "_", fen, fixed=TRUE))
@@ -3610,7 +3613,7 @@ play <- function(lang="en", sfpath="", ...) {
 
                      if (identical(click, "ctrl-F")) {
                         eval(expr=switch1)
-                        fen <- .genfen(pos, flip, ifelse(sidetoplay == "w", "b", "w"), i+1)
+                        fen <- .genfen(pos, flip, sidetoplay, i+1)
                         cat(fen, "\n")
                         eval(expr=switch2)
                         clipr::write_clip(fen, object_type="character")
@@ -3644,10 +3647,10 @@ play <- function(lang="en", sfpath="", ...) {
 
                   }
 
-                  if (dobreak) # to skip saving when 'n' was pressed
+                  if (skipsave) # to skip saving when 'n' was pressed
                      break
 
-                  if (donext)
+                  if (contplay)
                      next
 
                }
@@ -3666,10 +3669,12 @@ play <- function(lang="en", sfpath="", ...) {
 
             }
 
-         }
+         } else {
 
-         i <- i + 1
-         sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
+            i <- i + 1
+            sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
+
+         }
 
          if (mode %in% c("add","play","analysis")) {
 
