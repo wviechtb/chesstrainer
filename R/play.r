@@ -806,7 +806,7 @@ play <- function(lang="en", sfpath="", ...) {
          }
 
          # compute number of moves to be made by the player
-         movestoplay <- (sum(!sub$moves$show) + 1) / 2
+         movestoplay <- sum(!sub$moves$show)
 
       }
 
