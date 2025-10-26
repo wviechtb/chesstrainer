@@ -31,7 +31,7 @@ The main purpose of the chesstrainer package is to create sequences of moves (li
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chesstrainer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-109</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-110</span>
       </span>
     </div>
 
@@ -139,6 +139,7 @@ The main purpose of the chesstrainer package is to create sequences of moves (li
 <li><p>the difficulty, where the sequence with the highest difficulty is played next.</p></li>
 </ol><p>The exponent value affects selection modes 1, 3, 5, and 7. Setting the exponent value to a large value makes mode 1 essentially the same as mode 2 (and similarly, mode 3 like mode 4, mode 5 like mode 6, and mode 7 like mode 8). For modes 2, 4, 6, and 8, if the highest score, lowest number of rounds, highest age, or highest difficulty is the same for multiple sequences, the alphabetically first one is played next. For modes 5 and 6, sequences that have never been played before are given the highest priority. For all modes, sequences whose score was set to 0 are never played.</p>
 <p>One can also choose to play sequences sequentially, either ordered alphabetically, ordered by their length (which is given by the number of moves that have to be made by the player), or ordered by their moves. The latter is especially useful when practicing a particular opening and one wants to go through a set of corresponding sequences in the order of the variations.</p>
+<p>For the sequential selection modes and for selection mode 6 (i.e., when playing the oldest sequence next), a message is shown after completing one round of all (selected) sequences (as long as more than one sequence is selected).</p>
 <p>In <em>test mode</em>, the <code>&lt;r&gt;</code> key repeats the last played sequence. At the end of a sequence, you can also use the middle mouse button to repeat the sequence (before a new sequence is started). With the <code>&lt;R&gt;</code> key, you can toggle whether a sequence will be automatically repeated if a mistake was made while playing the sequence.</p>
     </div>
     <div id="timed-mode">

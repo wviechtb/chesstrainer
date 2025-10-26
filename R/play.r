@@ -733,7 +733,7 @@ play <- function(lang="en", sfpath="", ...) {
                sel <- sample(seq_len(k), 1L, prob=probvals.selected)
             }
 
-            if (selmode %in% c("sequential","sequential_len","sequential_mov")) {
+            if (selmode %in% c("sequential","sequential_len","sequential_mov","age_oldest")) {
                seqno <- seqno + 1
                if (seqno > k)
                   seqno <- 1
@@ -3657,7 +3657,7 @@ play <- function(lang="en", sfpath="", ...) {
 
                saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
 
-               if (selmode %in% c("sequential","sequential_len","sequential_mov") && length(scores.selected) > 1L && !replast && seqno == 1) {
+               if (selmode %in% c("sequential","sequential_len","sequential_mov","age_oldest") && length(scores.selected) > 1L && !replast && seqno == 1) {
                   playsound(system.file("sounds", "finished.ogg", package="chesstrainer"), volume=volume)
                   .texttop(.text("finishedround"), sleep=2)
                } else {
