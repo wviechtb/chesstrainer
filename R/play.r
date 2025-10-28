@@ -832,7 +832,7 @@ play <- function(lang="en", sfpath="", ...) {
 
          ###### [b] ######
 
-         if (mode == "test") {
+         if (mode == "test" && i <= nrow(sub$moves)) {
 
             # show the start comment if there one at move 1 (and showstartcom is TRUE)
             if (i == 1 && !is.null(sub$commentstart) && showstartcom) {
@@ -3814,7 +3814,7 @@ play <- function(lang="en", sfpath="", ...) {
             i <- i + 1
             sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
 
-            if (sub$moves$show[i])
+            if (isTRUE(sub$moves$show[i]))
                Sys.sleep(sleep)
 
          }
