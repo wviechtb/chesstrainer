@@ -469,6 +469,16 @@ play <- function(lang="en", sfpath="", ...) {
       return(1)
    }
 
+   mousedown2 <- function(buttons, x, y) {
+      squares <- .calcsquare(x,y,plt)
+      pos.x <- squares[1]
+      pos.y <- squares[2]
+      click2.x <<- pos.x
+      click2.y <<- pos.y
+      button <<- buttons
+      return(1)
+   }
+
    # define keys
 
    keys <- c("q", "ctrl-Q", "\033", "ctrl-[", " ", "m", "d", "\\", "#", "n", "N", "p", "ctrl-R",
@@ -3234,6 +3244,8 @@ play <- function(lang="en", sfpath="", ...) {
                      circles <- rbind(circles, c(click1.x, click1.y))
                   }
 
+                  next
+
                } else {
 
                   # if other buttons were pressed, remove the annotations (if there are any)
@@ -3244,12 +3256,56 @@ play <- function(lang="en", sfpath="", ...) {
                      arrows  <- matrix(nrow=0, ncol=4)
                      harrows <- matrix(nrow=0, ncol=4)
                      evalvals <- c()
+                  }
+
+                  # check which piece was selected; it must be of the correct color; otherwise do next
+
+                  piece.sel <- ifelse(flip, pos[9-click1.x,9-click1.y], pos[click1.x,click1.y])
+
+                  if (tolower(substr(piece.sel, 1, 1)) != sidetoplay)
                      next
+
+                  dounselect <- FALSE
+
+                  while (TRUE) {
+
+                     # highlight the selected piece
+
+                     .addrect(click1.x, click1.y, col=.get("col.rect"), lwd=lwd)
+
+                     click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown2)
+
+                     # if the same piece is selected twice, then we unselect it and start over
+
+                     if (click1.x == click2.x && click1.y == click2.y) {
+                        .rmrect(click1.x, click1.y, lwd=lwd)
+                        dounselect <- TRUE
+                        break
+                     }
+
+                     # if another piece of the same color is selected, then make this the selected piece;
+                     # otherwise, break out of the while() loop
+
+                     square.sel <- ifelse(flip, pos[9-click2.x,9-click2.y], pos[click2.x,click2.y])
+
+                     if (tolower(substr(square.sel, 1, 1)) == sidetoplay) {
+                        .rmrect(click1.x, click1.y, lwd=lwd)
+                        click1.x <- click2.x
+                        click1.y <- click2.y
+                     } else {
+                        break
+                     }
+
+                  }
+
+                  if (!dounselect) {
+                     .addrect(click2.x, click2.y, col=.get("col.rect"), lwd=lwd)
+                     Sys.sleep(0.1)
+                     .rmrect(click1.x, click1.y, lwd=lwd)
+                     .rmrect(click2.x, click2.y, lwd=lwd)
                   }
 
                }
-
-               next
 
             }
 
