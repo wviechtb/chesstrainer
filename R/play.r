@@ -404,57 +404,50 @@ play <- function(lang="en", sfpath="", ...) {
       click2.x <<- pos.x
       click2.y <<- pos.y
       button <<- buttons
+      empty.square <<- FALSE
       if (identical(buttons, 0L)) {
-         if (flip && pos[9-pos.x, 9-pos.y] == "") {
+         square.sel <- ifelse(flip, pos[9-pos.x,9-pos.y], pos[pos.x,pos.y])
+         if (square.sel == "") {
             empty.square <<- TRUE
             return(NULL)
          }
-         if (!flip && pos[pos.x, pos.y] == "") {
+         if (tolower(substr(square.sel, 1, 1)) == sidetoplay) {
+            .addrect(pos.x, pos.y, col=.get("col.rect"), lwd=lwd)
+         } else {
             empty.square <<- TRUE
-            return(NULL)
          }
       }
-      empty.square <<- FALSE
-      if (identical(buttons, 0L))
-         .addrect(pos.x, pos.y, col=.get("col.rect"), lwd=lwd)
       return(NULL)
    }
 
    dragmousemove <- function(buttons, x, y) {
-
       if (identical(buttons, 0L) && !empty.square) {
-
          squares <- .calcsquare(x,y,plt)
          pos.x <- squares[1]
          pos.y <- squares[2]
-
-         .addrect(pos.x, pos.y, col=.get("col.rect"), lwd=lwd)
-
+         if (isTRUE(pos.x == click1.x) && isTRUE(pos.y == click1.y))
+            .addrect(pos.x, pos.y, col=.get("col.rect"), lwd=lwd)
+         if (isTRUE(pos.x != click1.x) || isTRUE(pos.y != click1.y)) {
+            did.drag <<- TRUE
+            .addrect(pos.x, pos.y, col=.get("col.rect"), lwd=lwd)
+         }
          if (isTRUE(pos.x != click2.x) || isTRUE(pos.y != click2.y))
             .rmrect(click2.x, click2.y, lwd=lwd)
-
          click2.x <<- pos.x
          click2.y <<- pos.y
-
       }
-
       if (identical(buttons, 2L)) {
-
          squares <- .calcsquare(x,y,plt)
          pos.x <- squares[1]
          pos.y <- squares[2]
-
          click2.x <<- pos.x
          click2.y <<- pos.y
-
       }
-
       return(NULL)
-
    }
 
    mouseup <- function(buttons, x, y) {
-      if (identical(buttons, 0L)) {
+      if (identical(buttons, 0L) && isFALSE(click1.x == click2.x && click1.y == click2.y)) {
          .rmrect(click1.x, click1.y, lwd=lwd)
          .rmrect(click2.x, click2.y, lwd=lwd)
       }
@@ -466,7 +459,7 @@ play <- function(lang="en", sfpath="", ...) {
          .rmrect(hintx2, hinty2, lwd=lwd)
          givehint2 <<- FALSE
       }
-      return(1)
+      return(TRUE)
    }
 
    mousedown2 <- function(buttons, x, y) {
@@ -476,7 +469,7 @@ play <- function(lang="en", sfpath="", ...) {
       click2.x <<- pos.x
       click2.y <<- pos.y
       button <<- buttons
-      return(1)
+      return(TRUE)
    }
 
    # define keys
@@ -1019,6 +1012,7 @@ play <- function(lang="en", sfpath="", ...) {
             click2.x <- NULL
             click2.y <- NULL
             empty.square <- FALSE
+            did.drag <- FALSE
             button <- 0L
 
             plt <- par("plt")
@@ -2879,11 +2873,12 @@ play <- function(lang="en", sfpath="", ...) {
             # ' to find all sequences that include the same FEN
 
             if (identical(click, "'")) {
-               if (i == 1)
+               if (.is.start.pos(pos))
                   next
                eval(expr=switch1)
                searchterm <- .genfen(pos, flip, sidetoplay, i)
                searchterm <- paste(strsplit(searchterm, " ", fixed=TRUE)[[1]][1:3], collapse=" ")
+               print(searchterm)
                seqident <- sapply(dat.all, function(x) any(grepl(searchterm, x$moves$fen, fixed=TRUE)) && identical(flip, x$flip))
                if (any(seqident)) {
                   eval(expr=switch1)
@@ -3258,14 +3253,23 @@ play <- function(lang="en", sfpath="", ...) {
                      evalvals <- c()
                   }
 
-                  # check which piece was selected; it must be of the correct color; otherwise do next
+                  # if a piece was dragged, remove the rectangle and jump back to [c]
 
-                  piece.sel <- ifelse(flip, pos[9-click1.x,9-click1.y], pos[click1.x,click1.y])
+                  if (did.drag) {
+                     .rmrect(click1.x, click1.y, lwd=lwd)
+                     next
+                  }
 
-                  if (tolower(substr(piece.sel, 1, 1)) != sidetoplay)
+                  # check which piece was selected; it must be of the correct color; otherwise jump back to [c]
+
+                  piece.sel.1 <- ifelse(flip, pos[9-click1.x,9-click1.y], pos[click1.x,click1.y])
+
+                  if (tolower(substr(piece.sel.1, 1, 1)) != sidetoplay)
                      next
 
-                  dounselect <- FALSE
+                  move.piece <- TRUE
+
+                  ### !!!
 
                   while (TRUE) {
 
@@ -3273,22 +3277,30 @@ play <- function(lang="en", sfpath="", ...) {
 
                      .addrect(click1.x, click1.y, col=.get("col.rect"), lwd=lwd)
 
-                     click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown2)
+                     # get the second click
+
+                     click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown2, onKeybd=.keyfun)
+
+                     if (!is.numeric(click)) {
+                        .rmrect(click1.x, click1.y, lwd=lwd)
+                        move.piece <- FALSE
+                        break
+                     }
 
                      # if the same piece is selected twice, then we unselect it and start over
 
                      if (click1.x == click2.x && click1.y == click2.y) {
                         .rmrect(click1.x, click1.y, lwd=lwd)
-                        dounselect <- TRUE
+                        move.piece <- FALSE
                         break
                      }
 
                      # if another piece of the same color is selected, then make this the selected piece;
                      # otherwise, break out of the while() loop
 
-                     square.sel <- ifelse(flip, pos[9-click2.x,9-click2.y], pos[click2.x,click2.y])
+                     piece.sel.2 <- ifelse(flip, pos[9-click2.x,9-click2.y], pos[click2.x,click2.y])
 
-                     if (tolower(substr(square.sel, 1, 1)) == sidetoplay) {
+                     if (tolower(substr(piece.sel.2, 1, 1)) == sidetoplay) {
                         .rmrect(click1.x, click1.y, lwd=lwd)
                         click1.x <- click2.x
                         click1.y <- click2.y
@@ -3298,7 +3310,7 @@ play <- function(lang="en", sfpath="", ...) {
 
                   }
 
-                  if (!dounselect) {
+                  if (move.piece) {
                      .addrect(click2.x, click2.y, col=.get("col.rect"), lwd=lwd)
                      Sys.sleep(0.1)
                      .rmrect(click1.x, click1.y, lwd=lwd)
