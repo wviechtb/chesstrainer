@@ -396,80 +396,150 @@ play <- function(lang="en", sfpath="", ...) {
    # create the getGraphicsEvent() functions
 
    mousedown <- function(buttons, x, y) {
-      squares <- .calcsquare(x,y,plt)
+      click.num <<- ifelse(click.num == 0, 1, click.num)
+      squares <- .calcsquare(x, y, plt)
       pos.x <- squares[1]
       pos.y <- squares[2]
-      click1.x <<- pos.x
-      click1.y <<- pos.y
-      click2.x <<- pos.x
-      click2.y <<- pos.y
+      square.sel <- ifelse(flip, pos[9-pos.x,9-pos.y], pos[pos.x,pos.y]) # get the value of the clicked square
+      piece.color <- tolower(substr(square.sel, 1, 1)) # get the color of the piece on the clicked square (either w, b, or "" if the clicked square is empty)
+      empty.square <- piece.color == ""
       button <<- buttons
-      empty.square <<- FALSE
-      if (identical(buttons, 0L)) {
-         square.sel <- ifelse(flip, pos[9-pos.x,9-pos.y], pos[pos.x,pos.y])
-         if (square.sel == "") {
-            empty.square <<- TRUE
-            return(NULL)
+      if (click.num == 1) {
+         # if this is the first click
+         click1.x <<- pos.x
+         click1.y <<- pos.y
+         click2.x <<- pos.x
+         click2.y <<- pos.y
+         if (identical(buttons, 0L)) { # if the click is made with the left mouse button
+            if (givehint1) {
+               .rmrect(hintx1, hinty1, lwd=lwd)
+               givehint1 <<- FALSE
+            }
+            if (givehint2) {
+               .rmrect(hintx2, hinty2, lwd=lwd)
+               givehint2 <<- FALSE
+            }
+            if (!empty.square && piece.color == sidetoplay) { # then check that the square is not empty and has a piece of the correct color
+               .addrect(pos.x, pos.y, col=.get("col.rect"), lwd=lwd) # if so, highlight the corresponding square (this is the starting square)
+               return(NULL) # note: if the mouse button is released right away, then mouseup() increases click.num to 2
+            } else {
+               # otherwise exit start over
+               remove.annotations <<- TRUE
+               return(0)
+            }
          }
-         if (tolower(substr(square.sel, 1, 1)) == sidetoplay) {
-            .addrect(pos.x, pos.y, col=.get("col.rect"), lwd=lwd)
+      } else {
+         # if we are here, then (click1.x, click1.y) is the selected square, is not empty, and has a piece of the correct color
+         click2.x <<- pos.x
+         click2.y <<- pos.y
+         if (identical(buttons, 0L)) {
+            # if the second click was with the left mouse button
+            if (empty.square || piece.color != sidetoplay) { # if the second clicked square is empty or has a piece of the opposite color
+               .rmrect(click1.x, click1.y, lwd=lwd) # remove the highlight from the starting square
+               .rmrect(click2.x, click2.y, lwd=lwd) # remove the highlight from the target square
+               return(1) # exit and then try to move the selected piece to this square
+            }
+            if (isTRUE(click1.x == click2.x) && isTRUE(click1.y == click2.y)) { # if the second clicked square is the same as (click1.x, click1.y)
+               return(NULL)
+            }
+            if (piece.color == sidetoplay) { # if another piece of the same color is clicked
+               .rmrect(click1.x, click1.y, lwd=lwd) # remove the highlight from the original square
+               .addrect(pos.x, pos.y, col=.get("col.rect"), lwd=lwd) # highlight the new square
+               click1.x <<- pos.x
+               click1.y <<- pos.y
+               new.piece <<- TRUE
+               return(NULL)
+            }
          } else {
-            empty.square <<- TRUE
+            # if the second click was with the right mouse button (could either be the same as the starting square or a different one)
+            .rmrect(click1.x, click1.y, lwd=lwd) # remove the highlight from the starting square
+            .rmrect(click2.x, click2.y, lwd=lwd) # remove the highlight from the target square
+            return(1) # exit and either draw/remove a circle or draw an arrow from the starting to the target square
          }
       }
-      return(NULL)
    }
 
-   dragmousemove <- function(buttons, x, y) {
-      if (identical(buttons, 0L) && !empty.square) {
-         squares <- .calcsquare(x,y,plt)
-         pos.x <- squares[1]
-         pos.y <- squares[2]
-         if (isTRUE(pos.x == click1.x) && isTRUE(pos.y == click1.y))
-            .addrect(pos.x, pos.y, col=.get("col.rect"), lwd=lwd)
-         if (isTRUE(pos.x != click1.x) || isTRUE(pos.y != click1.y)) {
-            did.drag <<- TRUE
-            .addrect(pos.x, pos.y, col=.get("col.rect"), lwd=lwd)
+   mousemove <- function(buttons, x, y) {
+      if (click.num == 0) # need this in case we start over but the mouse button is still pressed and dragged, so nothing happens
+         return(NULL)
+      squares <- .calcsquare(x, y, plt)
+      pos.x <- squares[1]
+      pos.y <- squares[2]
+      new.square <- isTRUE(pos.x != click2.x) || isTRUE(pos.y != click2.y)
+      if (new.square) {
+         switched.square <<- TRUE
+         if (identical(buttons, 0L) || click.num == 2) {
+            if (isTRUE(pos.x == click1.x) && isTRUE(pos.y == click1.y)) {
+               # if the new square is the starting square, remove the highlight from the previous square
+               .rmrect(click2.x, click2.y, lwd=lwd)
+            } else {
+               # if the new square is not the starting square, then highlight the new square and remove the highlight from the previous square but only if the previous square was not the starting square
+               .addrect(pos.x, pos.y, col=.get("col.rect"), lwd=lwd)
+               if (isTRUE(click1.x != click2.x) || isTRUE(click1.y != click2.y))
+                  .rmrect(click2.x, click2.y, lwd=lwd)
+            }
          }
-         if (isTRUE(pos.x != click2.x) || isTRUE(pos.y != click2.y))
-            .rmrect(click2.x, click2.y, lwd=lwd)
-         click2.x <<- pos.x
-         click2.y <<- pos.y
       }
-      if (identical(buttons, 2L)) {
-         squares <- .calcsquare(x,y,plt)
-         pos.x <- squares[1]
-         pos.y <- squares[2]
-         click2.x <<- pos.x
-         click2.y <<- pos.y
-      }
+      click2.x <<- pos.x
+      click2.y <<- pos.y
       return(NULL)
    }
 
    mouseup <- function(buttons, x, y) {
-      if (identical(buttons, 0L) && isFALSE(click1.x == click2.x && click1.y == click2.y)) {
-         .rmrect(click1.x, click1.y, lwd=lwd)
-         .rmrect(click2.x, click2.y, lwd=lwd)
-      }
-      if (givehint1) {
-         .rmrect(hintx1, hinty1, lwd=lwd)
-         givehint1 <<- FALSE
-      }
-      if (givehint2) {
-         .rmrect(hintx2, hinty2, lwd=lwd)
-         givehint2 <<- FALSE
-      }
-      return(TRUE)
-   }
-
-   mousedown2 <- function(buttons, x, y) {
-      squares <- .calcsquare(x,y,plt)
-      pos.x <- squares[1]
-      pos.y <- squares[2]
-      click2.x <<- pos.x
-      click2.y <<- pos.y
+      if (click.num == 0) # need this in case we start over but the mouse button is still pressed and then released, so nothing happens
+         return(NULL)
       button <<- buttons
-      return(TRUE)
+      if (click.num == 1) {
+         if (isTRUE(click1.x != click2.x) || isTRUE(click1.y != click2.y)) {
+            # if we are here, then a starting square was clicked, the button was held, the mouse was moved to another square, and the button was released
+            if (identical(buttons, 0L)) { # if the dragging was done with the left mouse button
+               .rmrect(click1.x, click1.y, lwd=lwd) # remove the highlight from the starting square
+               .rmrect(click2.x, click2.y, lwd=lwd) # remove the highlight from the target square
+            }
+            return(1) # exit and try to make the corresponding move or draw the corresponding arrow; this also covers dragging a piece over another piece of the same color (an illegal move)
+         } else {
+            if (switched.square) {
+               # if we are here, then a starting square was clicked, the button was held, the mouse moved to another square and then back to the starting square, and the button was released
+               .rmrect(click1.x, click1.y, lwd=lwd) # remove the highlight from the starting square
+               return(0) # exit and start over
+            } else {
+               # if we are here, then a starting square was clicked and the mouse button was released on the same square without moving the mouse in-between to a different square;
+               if (identical(buttons, 0L)) {
+                  click.num <<- 2
+                  return(NULL)
+               } else {
+                  return(1) # if the square was clicked with the right mouse button, then exit and draw a circle on the square or remove it if there already is a circle
+               }
+            }
+         }
+      } else {
+         if (isTRUE(click1.x == click2.x) && isTRUE(click1.y == click2.y)) {
+            if (new.piece) {
+               # here another piece of the same color was clicked
+               new.piece <<- FALSE
+               return(NULL)
+            } else {
+               # if we are here, then the second click was on the same square as the starting square with the left mouse button
+               # (cannot have been with the right mouse button, since then we would have already exited via mousedown())
+               .rmrect(click1.x, click1.y, lwd=lwd) # remove the highlight from the starting square
+               return(0) # exit and start over
+            }
+         } else {
+            # if we are here, then the second left mouse button *release* was on a different square than the starting square
+            # (if the second *clicked* square is empty or has a piece of the opposite color, then we already exited via mousedown())
+            square.sel <- ifelse(flip, pos[9-click2.x,9-click2.y], pos[click2.x,click2.y]) # get the value of the square on which the mouse button was released
+            piece.color <- tolower(substr(square.sel, 1, 1)) # get the color of the piece on this square (either w, b, or "")
+            empty.square <- piece.color == ""
+            .rmrect(click1.x, click1.y, lwd=lwd)
+            .rmrect(click2.x, click2.y, lwd=lwd)
+            if (empty.square || piece.color != sidetoplay) {
+               return(1) # exit and then try to move the selected piece to this square
+            } else {
+               # here the piece is dragged onto another piece of the same color
+               return(0) # exit and start over
+            }
+         }
+      }
    }
 
    # define keys
@@ -509,19 +579,20 @@ play <- function(lang="en", sfpath="", ...) {
          flip <- FALSE
          useflip <- TRUE
       }
-      scoreadd     <- 0
-      sidetoplay   <- "w"
-      givehint1    <- FALSE
-      givehint2    <- FALSE
-      mistake      <- FALSE
-      timetotal    <- 0
-      movesplayed  <- 0
-      movestoplay  <- 1
-      drawcircles  <- TRUE
-      drawarrows   <- TRUE
-      showstartcom <- TRUE
-      matetype     <- "none"
-      savgame      <- NULL
+      scoreadd      <- 0
+      sidetoplay    <- "w"
+      sideindicator <- NA
+      givehint1     <- FALSE
+      givehint2     <- FALSE
+      mistake       <- FALSE
+      timetotal     <- 0
+      movesplayed   <- 0
+      movestoplay   <- 1
+      drawcircles   <- TRUE
+      drawarrows    <- TRUE
+      showstartcom  <- TRUE
+      matetype      <- "none"
+      savgame       <- NULL
       assign("checkpos", c(NA,NA), envir=.chesstrainer)
 
       circles <- matrix(nrow=0, ncol=2) # to store circles
@@ -837,7 +908,7 @@ play <- function(lang="en", sfpath="", ...) {
 
          if (mode == "test" && i <= nrow(sub$moves)) {
 
-            # show the start comment if there one at move 1 (and showstartcom is TRUE)
+            # show the start comment if there is one at move 1 (and showstartcom is TRUE)
             if (i == 1 && !is.null(sub$commentstart) && showstartcom) {
                .startcomment(sub$commentstart, lwd=lwd) # waits for click
                .redrawall(pos, flip, mode, zenmode, show, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove, mar)
@@ -904,7 +975,7 @@ play <- function(lang="en", sfpath="", ...) {
          if (mode == "test" && timed) {
             .drawtimer(movestoplay, movesplayed, timetotal, timepermove)
          } else {
-            .drawsideindicator(sidetoplay, flip)
+            sideindicator <- .drawsideindicator(sidetoplay, flip=flip, clear=!identical(sideindicator, sidetoplay))
          }
 
          input <- TRUE
@@ -917,15 +988,12 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (mode == "play") {
 
-               # in play mode, if it is the computer to move, make the move now
-
-               .drawsideindicator(sidetoplay, flip)
-
-               # if Stockfish is not running anymore, then it must have crashed, so wait for click and switch to analysis mode
+               # if Stockfish is not running anymore, then it must have crashed, so switch to analysis mode
 
                if (!sfrun) {
                   mode <- "analysis"
                   .textbot(mode, zenmode, show, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, selmode)
+                  sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
                   .draweval(clear=TRUE)
                   next
                }
@@ -937,6 +1005,10 @@ play <- function(lang="en", sfpath="", ...) {
                }
 
                if (domove) {
+
+                  # in play mode, if it is the computer to move, make the move now
+
+                  sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
 
                   # note: bestmove comes from [d]
 
@@ -971,7 +1043,7 @@ play <- function(lang="en", sfpath="", ...) {
                   sub$moves$fen[i-1] <- fen
 
                   .draweval(sub$moves$eval[i-1], sub$moves$eval[i-2], i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
-                  .drawsideindicator(sidetoplay, flip)
+                  sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
 
                   if (!identical(matetype, "none")) {
                      .texttop(.text(matetype))
@@ -1012,14 +1084,17 @@ play <- function(lang="en", sfpath="", ...) {
             click2.x <- NULL
             click2.y <- NULL
             empty.square <- FALSE
-            did.drag <- FALSE
+            switched.square <- FALSE
+            new.piece <- FALSE
             button <- 0L
+            click.num <- 0
+            remove.annotations <- FALSE
 
             plt <- par("plt")
 
             timestart <- proc.time()[[3]]
 
-            click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=.keyfun)
+            click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=mousemove, onMouseUp=mouseup, onKeybd=.keyfun)
 
             idle.time <- proc.time()[[3]] - timestart
 
@@ -1028,13 +1103,28 @@ play <- function(lang="en", sfpath="", ...) {
 
             #if (mode == "test") {
             #   if (seqname == "<lastsequence>.rds") {
-            #      click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=.keyfun)
+            #      click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=mousemove, onMouseUp=mouseup, onKeybd=.keyfun)
             #   } else {
             #      click <- "u"
             #   }
             #} else {
-            #   click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=.keyfun)
+            #   click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=mousemove, onMouseUp=mouseup, onKeybd=.keyfun)
             #}
+
+            if (remove.annotations) {
+
+               if (nrow(circles) >= 1L || nrow(arrows) >= 1L || nrow(harrows) >= 1L) {
+                  .rmannot(pos, circles, rbind(arrows, harrows), flip)
+                  circles <- matrix(nrow=0, ncol=2)
+                  arrows  <- matrix(nrow=0, ncol=4)
+                  harrows <- matrix(nrow=0, ncol=4)
+                  evalvals <- c()
+               }
+
+            }
+
+            if (is.numeric(click) && isTRUE(click == 0))
+               next
 
             if (is.character(click) && !is.element(click, keys))
                next
@@ -1443,7 +1533,7 @@ play <- function(lang="en", sfpath="", ...) {
                   mode <- "analysis"
                .textbot(mode, zenmode, i=i, totalmoves=totalmoves, onlyi=TRUE)
                .draweval(neweval, oldeval, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
-               .drawsideindicator(sidetoplay, flip)
+               sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
                if (mode %in% c("add","analysis")) {
                   fen <- .genfen(pos, flip, sidetoplay, i)
                   res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay, verbose)
@@ -1536,7 +1626,7 @@ play <- function(lang="en", sfpath="", ...) {
                if (mode == "test" && timed) {
                   .drawtimer(movestoplay, movesplayed, timetotal, timepermove)
                } else {
-                  .drawsideindicator(sidetoplay, flip)
+                  sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
                }
                if (mode == "add" && identical(click, "t")) # t in add mode removes all further moves
                   sub$moves <- sub$moves[seq_len(i-1),,drop=FALSE]
@@ -1576,7 +1666,7 @@ play <- function(lang="en", sfpath="", ...) {
                if (mode == "test" && timed) {
                   .drawtimer(movestoplay, movesplayed, timetotal, timepermove)
                } else {
-                  .drawsideindicator(sidetoplay, flip)
+                  sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
                }
                i <- i + 1
                if (i > nrow(sub$moves)) {
@@ -1660,7 +1750,7 @@ play <- function(lang="en", sfpath="", ...) {
                if (mode == "test" && timed) {
                   .drawtimer(movestoplay, movesplayed, timetotal, timepermove)
                } else {
-                  .drawsideindicator(sidetoplay, flip)
+                  sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
                }
                if (mode %in% c("add","test")) {
                   if (i > nrow(sub$moves)) {
@@ -1740,7 +1830,7 @@ play <- function(lang="en", sfpath="", ...) {
                .redrawpos(pos, posold, flip=flip)
                .draweval(sub$moves$eval[i-1], oldeval, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                .textbot(mode, zenmode, i=i, totalmoves=totalmoves, onlyi=TRUE)
-               .drawsideindicator(sidetoplay, flip)
+               sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
                fen <- .genfen(pos, flip, sidetoplay, i)
                res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay, verbose)
                evalval  <- res.sf$eval
@@ -1799,7 +1889,7 @@ play <- function(lang="en", sfpath="", ...) {
                      sub$moves$move[i] <- attr(pos,"move")
                      .textbot(mode, zenmode, i=i, totalmoves=totalmoves, onlyi=TRUE)
                      sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
-                     .drawsideindicator(sidetoplay, flip)
+                     sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
                      fen <- .genfen(pos, flip, sidetoplay, i)
                      res.sf <- .sf.eval(sfproc, sfrun, depth2, multipv2, sflim=NA, fen, sidetoplay, verbose, progbar=TRUE)
                      evalval  <- res.sf$eval
@@ -1813,7 +1903,7 @@ play <- function(lang="en", sfpath="", ...) {
                   }
                   i <- i + 1
                   .textbot(mode, zenmode, i=i, totalmoves=totalmoves, onlyi=TRUE)
-                  .drawsideindicator(sidetoplay, flip)
+                  sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
                   cat(.text("evalupdatenew"))
                   print(sub$moves[-c(9:11)])
                   if (mode == "test")
@@ -2058,7 +2148,7 @@ play <- function(lang="en", sfpath="", ...) {
                }
 
                .textbot(mode, zenmode, show=show, i=i, totalmoves=totalmoves, onlyshow=TRUE, onlyi=TRUE)
-               .drawsideindicator(sidetoplay, flip)
+               sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
                fen <- .genfen(pos, flip, sidetoplay, i)
                res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay, verbose)
                evalval  <- res.sf$eval
@@ -2404,7 +2494,7 @@ play <- function(lang="en", sfpath="", ...) {
                   input <- FALSE
                } else {
                   .drawtimer(clear=TRUE)
-                  .drawsideindicator(sidetoplay, flip)
+                  sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
                }
                next
             }
@@ -3209,7 +3299,7 @@ play <- function(lang="en", sfpath="", ...) {
                cat("\n")
             }
 
-            # when clicking too fast, click may not be registered
+            # just in case a click is not registered
 
             if (is.null(click1.x) || is.null(click2.x) || is.null(click1.y) || is.null(click2.y))
                next
@@ -3217,13 +3307,13 @@ play <- function(lang="en", sfpath="", ...) {
             if (is.na(click1.x) || is.na(click2.x) || is.na(click1.y) || is.na(click2.y))
                next
 
-            # when start and end positions are the same
-
             if (click1.x == click2.x && click1.y == click2.y) {
+
+               # if the start and end positions are the same
 
                if (identical(button, 2L)) {
 
-                  # if the right button was pressed, then draw a circle on the square (or if the square already has a circle, remove the circle)
+                  # if the right button was pressed, then draw a circle on the square or if the square already has a circle, remove it
 
                   hascircle <- apply(circles, 1, function(x) isTRUE(x[1] == click1.x && x[2] == click1.y))
 
@@ -3240,82 +3330,6 @@ play <- function(lang="en", sfpath="", ...) {
                   }
 
                   next
-
-               } else {
-
-                  # if other buttons were pressed, remove the annotations (if there are any)
-
-                  if (nrow(circles) >= 1L || nrow(arrows) >= 1L || nrow(harrows) >= 1L) {
-                     .rmannot(pos, circles, rbind(arrows, harrows), flip)
-                     circles <- matrix(nrow=0, ncol=2)
-                     arrows  <- matrix(nrow=0, ncol=4)
-                     harrows <- matrix(nrow=0, ncol=4)
-                     evalvals <- c()
-                  }
-
-                  # if a piece was dragged, remove the rectangle and jump back to [c]
-
-                  if (did.drag) {
-                     .rmrect(click1.x, click1.y, lwd=lwd)
-                     next
-                  }
-
-                  # check which piece was selected; it must be of the correct color; otherwise jump back to [c]
-
-                  piece.sel.1 <- ifelse(flip, pos[9-click1.x,9-click1.y], pos[click1.x,click1.y])
-
-                  if (tolower(substr(piece.sel.1, 1, 1)) != sidetoplay)
-                     next
-
-                  move.piece <- TRUE
-
-                  ### !!!
-
-                  while (TRUE) {
-
-                     # highlight the selected piece
-
-                     .addrect(click1.x, click1.y, col=.get("col.rect"), lwd=lwd)
-
-                     # get the second click
-
-                     click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown2, onKeybd=.keyfun)
-
-                     if (!is.numeric(click)) {
-                        .rmrect(click1.x, click1.y, lwd=lwd)
-                        move.piece <- FALSE
-                        break
-                     }
-
-                     # if the same piece is selected twice, then we unselect it and start over
-
-                     if (click1.x == click2.x && click1.y == click2.y) {
-                        .rmrect(click1.x, click1.y, lwd=lwd)
-                        move.piece <- FALSE
-                        break
-                     }
-
-                     # if another piece of the same color is selected, then make this the selected piece;
-                     # otherwise, break out of the while() loop
-
-                     piece.sel.2 <- ifelse(flip, pos[9-click2.x,9-click2.y], pos[click2.x,click2.y])
-
-                     if (tolower(substr(piece.sel.2, 1, 1)) == sidetoplay) {
-                        .rmrect(click1.x, click1.y, lwd=lwd)
-                        click1.x <- click2.x
-                        click1.y <- click2.y
-                     } else {
-                        break
-                     }
-
-                  }
-
-                  if (move.piece) {
-                     .addrect(click2.x, click2.y, col=.get("col.rect"), lwd=lwd)
-                     Sys.sleep(0.1)
-                     .rmrect(click1.x, click1.y, lwd=lwd)
-                     .rmrect(click2.x, click2.y, lwd=lwd)
-                  }
 
                }
 
@@ -3396,26 +3410,29 @@ play <- function(lang="en", sfpath="", ...) {
             # check if castling from a checked position (not a legal move)
 
             if (check.before)
-               next
+               islegal <- FALSE
 
             # check that the king does not pass through an attacked square (not a legal move)
 
             if (sidetoplay == "w" && attr(tmp,"move") == "0-0" && .isattacked(pos, xy=c(1,6), attackcolor="b"))
-               next
+               islegal <- FALSE
             if (sidetoplay == "w" && attr(tmp,"move") == "0-0-0" && .isattacked(pos, xy=c(1,4), attackcolor="b"))
-               next
+               islegal <- FALSE
             if (sidetoplay == "b" && attr(tmp,"move") == "0-0" && .isattacked(pos, xy=c(8,6), attackcolor="w"))
-               next
+               islegal <- FALSE
             if (sidetoplay == "b" && attr(tmp,"move") == "0-0-0" && .isattacked(pos, xy=c(8,4), attackcolor="w"))
-               next
+               islegal <- FALSE
 
          }
 
          # check if the king is in check after the move (not a legal move)
 
          if (sidetoplay == "w" && ischeck.after[1])
-            next
+            islegal <- FALSE
          if (sidetoplay == "b" && ischeck.after[2])
+            islegal <- FALSE
+
+         if (!islegal)
             next
 
          if (mode %in% c("add","play","analysis")) {
@@ -3495,7 +3512,7 @@ play <- function(lang="en", sfpath="", ...) {
 
                } else {
 
-                  .drawsideindicator(sidetoplay, flip)
+                  sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
 
                }
 
@@ -3603,7 +3620,7 @@ play <- function(lang="en", sfpath="", ...) {
                         show <- FALSE
                         texttop <- .texttop("")
                         .draweval(sub$moves$eval[i-1], NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
-                        .drawsideindicator(sidetoplay, flip)
+                        sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
                         fen <- .genfen(pos, flip, sidetoplay, i)
                         res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay, verbose)
                         evalval  <- res.sf$eval
@@ -3626,7 +3643,7 @@ play <- function(lang="en", sfpath="", ...) {
                         timed <- FALSE
                         texttop <- .texttop("")
                         .draweval(sub$moves$eval[i-1], NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
-                        .drawsideindicator(sidetoplay, flip)
+                        sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
                         fen <- .genfen(pos, flip, sidetoplay, i)
                         if ((flip && sidetoplay=="b") || (!flip && sidetoplay=="w")) {
                            res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay, verbose)
@@ -3858,7 +3875,7 @@ play <- function(lang="en", sfpath="", ...) {
             if (timed) {
                .drawtimer(movestoplay, movesplayed, timetotal, timepermove)
             } else {
-               .drawsideindicator(sidetoplay, flip)
+               sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
             }
             texttop <- .texttop(sub$moves$comment[i])
             circles <- .parseannot(sub$moves$circles[i], cols=2)
@@ -3893,9 +3910,11 @@ play <- function(lang="en", sfpath="", ...) {
 
          # go to [b]
 
-      }
+      } # end of while (run.rnd) {}
 
-   }
+      # go to [a]
+
+   } # end of while (run.all) {}
 
    return(invisible())
 

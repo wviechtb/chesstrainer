@@ -120,7 +120,7 @@
    if (mode == "test" && timed) {
       .drawtimer(movestoplay, movesplayed, timetotal, timepermove)
    } else {
-      .drawsideindicator(sidetoplay, flip)
+      .drawsideindicator(sidetoplay, flip=flip)
    }
 
    return()
@@ -163,7 +163,7 @@
       }
    }
 
-   .drawsideindicator(sidetoplay, flip, adj=1)
+   .drawsideindicator(sidetoplay, flip=flip, adj=1)
 
 }
 
@@ -1101,6 +1101,8 @@
          rect(9.25+adj, 9.0+adj, 9.25+indsize+adj, 9.0-indsize+adj, border=NA, col=col.side.b)
       }
    }
+
+   return(sidetoplay)
 
 }
 

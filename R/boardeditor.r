@@ -111,7 +111,7 @@
 
       if (identical(click, "s")) {
          sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
-         .drawsideindicator(sidetoplay, flip, adj=1)
+         .drawsideindicator(sidetoplay, flip=flip, adj=1)
          next
       }
 

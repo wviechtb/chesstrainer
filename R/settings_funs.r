@@ -19,8 +19,8 @@
    .drawcircle(4, 6, lwd=lwd)
    .drawarrow(3, 7, 6, 7, lwd=lwd)
    .drawarrow(3, 8, 6, 8, lwd=lwd, col=adjustcolor(.get("col.best"), alpha.f=0.5))
-   .drawsideindicator("w", flip)
-   .drawsideindicator("b", flip, clear=FALSE)
+   .drawsideindicator("w", flip=flip)
+   .drawsideindicator("b", flip=flip, clear=FALSE)
    .draweval(0.2, flip=flip)
    .drawtimer(settings=TRUE)
 
@@ -48,8 +48,8 @@
          .drawcircle(4, 6, lwd=lwd)
          .drawarrow(3, 7, 6, 7, lwd=lwd)
          .drawarrow(3, 8, 6, 8, lwd=lwd, col=adjustcolor(.get("col.best"), alpha.f=0.5))
-         .drawsideindicator("w", flip)
-         .drawsideindicator("b", flip, clear=FALSE)
+         .drawsideindicator("w", flip=flip)
+         .drawsideindicator("b", flip=flip, clear=FALSE)
          .draweval(0.2, flip=flip)
          .drawtimer(settings=TRUE)
       }
