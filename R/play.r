@@ -550,7 +550,7 @@ play <- function(lang="en", sfpath="", ...) {
              "a", "A", "f", "z", "c", "e", "E", "s", "b",
              "^", "6", "R", "G", "w", "-", "=", "+", "[", "]", "{", "}", "(", ")", "i", "x", "v", "ctrl-V",
              "l", "<", ">", "ctrl-F", "ctrl-C", "ctrl-D", "/", ",", ".", "|", "*", "8", "?", "'", "\"",
-             "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "ctrl-!", "ctrl-@")
+             "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "ctrl-!", "ctrl-@", "ctrl-E")
 
    run.all <- TRUE
 
@@ -1133,7 +1133,7 @@ play <- function(lang="en", sfpath="", ...) {
 
             ### general keys
 
-            # q to quit the trainer
+            # q (or ctrl-q) to quit the trainer
 
             if (identical(click, "q") || identical(click, "ctrl-Q")) {
                session.date.end <- Sys.time()
@@ -3218,7 +3218,7 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # F10 to show histograms / scatterplot
+            # F10 to show the histograms / scatterplot
 
             if (identical(click, "F10")) {
                if (length(scores.selected) <= 1L) {
@@ -3240,7 +3240,7 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # F11 to show session info
+            # F11 (or ctrl-1) to show the session info
 
             if (identical(click, "F11") || identical(click, "ctrl-!")) {
                if (sum(session.seqsplayed) <= 1) {
@@ -3263,7 +3263,7 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # F12 to show session history graph
+            # F12 (or ctrl-2) to show the session history graph
 
             if (identical(click, "F12") || identical(click, "ctrl-@")) {
                player.file <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "sessions", paste0(player, ".rds"))
@@ -3286,6 +3286,57 @@ play <- function(lang="en", sfpath="", ...) {
                .drawarrows(arrows, lwd=lwd)
                .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
                next
+            }
+
+            # ctrl-E to edit the session history file
+
+            if (identical(click, "ctrl-E")) {
+               player.file <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "sessions", paste0(player, ".rds"))
+               if (file.exists(player.file)) {
+                  dat.player <- readRDS(player.file)
+                  dosave <- FALSE
+                  eval(expr=switch1)
+                  while (TRUE) {
+                     print(dat.player)
+                     cat(.text("edithistory"))
+                     rowvals <- readline(prompt="")
+                     # enter to exit
+                     if (identical(rowvals , ""))
+                        break
+                     # 'number - number' entered
+                     tmp <- strcapture("^([[:digit:]]+)\\s*-\\s*([[:digit:]]+)$", rowvals, data.frame(row.lo=integer(), row.hi=integer()))
+                     if (!is.na(tmp$row.lo)) {
+                        if (tmp$row.lo < 1L || tmp$row.lo > nrow(dat.player) || tmp$row.hi < tmp$row.lo || tmp$row.hi > nrow(dat.player)) {
+                           next
+                        } else {
+                           dat.player <- dat.player[-(tmp$row.lo:tmp$row.hi),]
+                           rownames(dat.player) <- NULL
+                           dosave <- TRUE
+                           next
+                        }
+                     }
+                     # 'number' entered
+                     if (grepl("^[0-9]+$", rowvals)) {
+                        rowval <- as.numeric(rowvals)
+                        if (rowval < 1 || rowval > nrow(dat.player)) {
+                           next
+                        } else {
+                           dat.player <- dat.player[-rowval,]
+                           rownames(dat.player) <- NULL
+                           dosave <- TRUE
+                           next
+                        }
+                     }
+                  }
+                  eval(expr=switch2)
+                  if (dosave)
+                     saveRDS(dat.player, file=player.file)
+                  next
+               } else {
+                  .texttop(.text("nosessionhistory"), sleep=1.5)
+                  .texttop(texttop)
+                  next
+               }
             }
 
             ##################################################################

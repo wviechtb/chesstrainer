@@ -1329,6 +1329,12 @@
                          "Scatterplot"
    ))}
 
+   if (x == "edithistory") {
+      return(switch(lang,
+                    de = "\nZeilen l\U000000F6schen (<Nummer>, <Nummer1-Nummer2>, oder <Enter> zum Verlassen): ",
+                         "\nDelete rows (<number>, <number1-number2>, or <enter> to exit): "
+   ))}
+
 }
 
 .confirm <- function(x) {
