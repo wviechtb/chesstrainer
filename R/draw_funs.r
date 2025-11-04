@@ -111,10 +111,10 @@
 
 }
 
-.redrawall <- function(pos, flip, mode, zenmode, show, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, timed, movestoplay, movesplayed, timetotal, timepermove, mar) {
+.redrawall <- function(pos, flip, mode, zenmode, show, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, timed, movestoplay, movesplayed, timetotal, timepermove, mar) {
 
    .drawboard(pos, flip, mar=mar)
-   .textbot(mode, zenmode, show, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, selmode)
+   .textbot(mode, zenmode, show, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
    .texttop(texttop)
    .drawcheck(pos, flip=flip)
    if (mode == "test" && timed) {
@@ -900,7 +900,7 @@
 
 }
 
-.textbot <- function(mode, zenmode, show, player, seqname, seqnum, score, rounds, age=NA, difficulty=NA, i, totalmoves, selmode="default", onlyshow=FALSE, onlyi=FALSE, onlyscore=FALSE) {
+.textbot <- function(mode, zenmode, show, player, seqname, seqnum, score, rounds, age=NA, difficulty=NA, i, totalmoves, selmode="default", k, seqno, onlyshow=FALSE, onlyi=FALSE, onlyscore=FALSE) {
 
    lang   <- .get("lang")
    cex    <- .get("cex.bot")
@@ -964,12 +964,12 @@
                         rounds_random  = "rounds, at random",
                         rounds_lowest  = "rounds, lowest next",
                         age_random     = "age, at random",
-                        age_oldest     = "age, oldest next",
+                        age_oldest     = paste0("age, oldest next, ", seqno, "/", k),
                         diff_random    = "difficulty, at random",
                         diff_highest   = "difficulty, highest next",
-                        sequential     = "sequentially, alphabetically",
-                        sequential_len = "sequentially, by length",
-                        sequential_mov = "sequentially, by moves",
+                        sequential     = paste0("sequentially, alphabetically, ", seqno, "/", k),
+                        sequential_len = paste0("sequentially, by length, ", seqno, "/", k),
+                        sequential_mov = paste0("sequentially, by moves, ", seqno, "/", k),
                         default        = "default")
 
       if (mode == "test") {
@@ -1032,12 +1032,12 @@
                         rounds_random  = "Runden, zuf\U000000E4llig",
                         rounds_lowest  = "Runden, niedrigste",
                         age_random     = "Alter, zuf\U000000E4llig",
-                        age_oldest     = "Alter, \U000000E4ltestes",
+                        age_oldest     = paste0("Alter, \U000000E4ltestes, ", seqno, "/", k),
                         diff_random    = "Schwierigkeit, zuf\U000000E4llig",
                         diff_highest   = "Schwierigkeit, h\U000000F6chster",
-                        sequential     = "sequenziell, alphabetisch",
-                        sequential_len = "sequenziell, nach L\U000000E4nge",
-                        sequential_mov = "sequenziell, nach Z\U000000FCgen",
+                        sequential     = paste0("sequenziell, alphabetisch, ", seqno, "/", k),
+                        sequential_len = paste0("sequenziell, nach L\U000000E4nge, ", seqno, "/", k),
+                        sequential_mov = paste0("sequenziell, nach Z\U000000FCgen, ", seqno, "/", k),
                         default        = "default")
 
       if (mode == "test") {

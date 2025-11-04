@@ -1335,6 +1335,12 @@
                          "\nDelete rows (<number>, <number1-number2>, or <enter> to exit): "
    ))}
 
+   if (x == "setseqno") {
+      return(switch(lang,
+                    de = paste0("Setze seqno (1-", arg, ") auf: "),
+                         paste0("Set seqno (1-", arg, ") to: ")
+   ))}
+
 }
 
 .confirm <- function(x) {
