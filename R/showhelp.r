@@ -119,7 +119,7 @@
       "|        - nach Sequenzen suchen (ohne sie auszuw\U000000E4hlen)",
       "* oder 8 - alle Sequenzen ausw\U000000E4hlen",
       "?        - alle Sequenzen ausw\U000000E4hlen, die mit den gleichen Z\U000000FCgen anfangen",
-      "'        - alle Sequenzen ausw\U000000E4hlen, die die gleichen Stellung beinhalten",
+      "'        - alle Sequenzen ausw\U000000E4hlen, die die gleiche Stellung beinhalten",
       "\"        - alle Sequenzen ausw\U000000E4hlen, die mit der gleichen Stellung enden",
       ".        - zuletzt gespeicherte Sequenz ausw\U000000E4hlen",
       ">        - Lesezeichen ausw\U000000E4hlen und bearbeiten",

@@ -2933,6 +2933,18 @@ play <- function(lang="en", sfpath="", ...) {
 
                cat(.text("seqsearchterm", searchterm))
 
+               andsearch <- FALSE
+               orsearch  <- FALSE
+
+               if (startsWith(searchterm, "& ")) {
+                  andsearch <- TRUE
+                  searchterm <- substr(searchterm, 3, nchar(searchterm))
+               }
+               if (startsWith(searchterm, "| ")) {
+                  orsearch <- TRUE
+                  searchterm <- substr(searchterm, 3, nchar(searchterm))
+               }
+
                if (length(grep(searchterm, files.all)) == 0L) {
                   cat(.text("noseqsfound"))
                } else {
@@ -2944,8 +2956,17 @@ play <- function(lang="en", sfpath="", ...) {
                      rownames(tab) <- which(tmp)
                      print(tab, print.gap=2)
                   } else {
-                     selected <- grepl(searchterm, files.all)
-                     selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected]
+                     if (andsearch || orsearch) {
+                        selected2 <- grepl(searchterm, files.all)
+                        selected2 <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected2]
+                        if (andsearch)
+                           selected <- intersect(selected, selected2)
+                        if (orsearch)
+                           selected <- union(selected, selected2)
+                     } else {
+                        selected <- grepl(searchterm, files.all)
+                        selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected]
+                     }
                      cat(.text("numseqfound", length(selected)))
                      run.rnd <- FALSE
                      input <- FALSE

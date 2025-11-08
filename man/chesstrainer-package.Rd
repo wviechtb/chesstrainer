@@ -47,7 +47,7 @@
    Using the \verb{</>} (or \verb{<,>}) key, you can select a subset of the sequences in various ways by entering:
 
    \itemize{
-   \item a search term (which is applied as a regular expression to the filenames of the sequences),
+   \item a text string (which is applied as a regular expression to the filenames of the sequences),
    \item a sequence number (e.g., \verb{2} to select the 2nd sequence),
    \item a sequence number range (e.g., \verb{2-5} to select sequences 2 to 5),
    \item something like \verb{score > 80} to select sequences with a score above a certain threshold,
@@ -58,7 +58,7 @@
    \item \verb{c:} followed by a (case insensitive) text string to select all sequences where a comment contains the text string.
    }
 
-   The keywords \verb{score}, \verb{rounds}, \verb{age}, and \verb{difficulty} can be abbreviated to \verb{s}, \verb{r}, \verb{a}, and \verb{d} (so \verb{s > 80}, \verb{r < 1}, \verb{a > 2}, and \verb{d > 20} would also work). Other comparators such as \verb{>=}, \verb{<}, and \verb{>=} can also be used (e.g., \verb{s <= 10}).
+   The keywords \verb{score}, \verb{rounds}, \verb{age}, and \verb{difficulty} can be abbreviated to \verb{s}, \verb{r}, \verb{a}, and \verb{d} (so \verb{s > 80}, \verb{r < 1}, \verb{a > 2}, and \verb{d > 20} would also work). Other comparators such as \verb{>=}, \verb{<}, and \verb{>=} can also be used (e.g., \verb{s <= 10}). When entering a text string, you can refine your search by prefixing the string with either \sQuote{\verb{& }} or \sQuote{\verb{| }}, that is, \sQuote{\verb{& <text string>}} searches for the intersection of the currently selected sequences and those matching the new text string while \sQuote{\verb{| <text string>}} searches for their union.
 
    Just pressing \verb{<enter>} at the prompt (i.e., not entering any search string) keeps the current selection. Entering \verb{*} at the prompt selects all sequences. The \verb{<*>} (or \verb{<8>}) key also selects all sequences without using \verb{</>} first. If you only want to search for sequences (without selecting them), you can use the \verb{<|>} key (instead of \verb{</>}).
 

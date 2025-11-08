@@ -31,7 +31,7 @@ The main purpose of the chesstrainer package is to create sequences of moves (li
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chesstrainer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-114</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-115</span>
       </span>
     </div>
 
@@ -117,7 +117,7 @@ The main purpose of the chesstrainer package is to create sequences of moves (li
 <p>Using the <code>&lt;l&gt;</code> key, you can obtain a list of all sequences, together with their current score, the number of rounds (how times they have been played so far), their age (in days; <code>NA</code> if a sequence has not been played before), the estimated difficulty of the sequence (<code>NA</code> if this cannot be computed yet), and the current play probability (with 0 to 5 asterisks next to it based on the probability). Note that this is shown in the console, so ideally you should place the window with the chess board and the console window next to each other.</p>
 <p>In <em>test mode</em>, you can use <code>&lt;Ctrl-d&gt;</code> to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.</p>
 <p>Using the <code>&lt;/&gt;</code> (or <code>&lt;,&gt;</code>) key, you can select a subset of the sequences in various ways by entering:</p>
-<p></p><ul><li><p>a search term (which is applied as a regular expression to the filenames of the sequences),</p></li>
+<p></p><ul><li><p>a text string (which is applied as a regular expression to the filenames of the sequences),</p></li>
 <li><p>a sequence number (e.g., <code>2</code> to select the 2nd sequence),</p></li>
 <li><p>a sequence number range (e.g., <code>2-5</code> to select sequences 2 to 5),</p></li>
 <li><p>something like <code>score &gt; 80</code> to select sequences with a score above a certain threshold,</p></li>
@@ -126,7 +126,7 @@ The main purpose of the chesstrainer package is to create sequences of moves (li
 <li><p>something like <code>difficulty &gt; 20</code> to select sequences with a difficulty above a certain threshold,</p></li>
 <li><p>a <a href="https://en.wikipedia.org/wiki/Forsyth-Edwards_Notation" class="external-link">FEN</a> to select all sequences that contain a position matching the FEN,</p></li>
 <li><p><code>c:</code> followed by a (case insensitive) text string to select all sequences where a comment contains the text string.</p></li>
-</ul><p>The keywords <code>score</code>, <code>rounds</code>, <code>age</code>, and <code>difficulty</code> can be abbreviated to <code>s</code>, <code>r</code>, <code>a</code>, and <code>d</code> (so <code>s &gt; 80</code>, <code>r &lt; 1</code>, <code>a &gt; 2</code>, and <code>d &gt; 20</code> would also work). Other comparators such as <code>&gt;=</code>, <code>&lt;</code>, and <code>&gt;=</code> can also be used (e.g., <code>s &lt;= 10</code>).</p>
+</ul><p>The keywords <code>score</code>, <code>rounds</code>, <code>age</code>, and <code>difficulty</code> can be abbreviated to <code>s</code>, <code>r</code>, <code>a</code>, and <code>d</code> (so <code>s &gt; 80</code>, <code>r &lt; 1</code>, <code>a &gt; 2</code>, and <code>d &gt; 20</code> would also work). Other comparators such as <code>&gt;=</code>, <code>&lt;</code>, and <code>&gt;=</code> can also be used (e.g., <code>s &lt;= 10</code>). When entering a text string, you can refine your search by prefixing the string with either ‘<code>&amp; </code>’ or ‘<code>| </code>’, that is, ‘<code>&amp; &lt;text string&gt;</code>’ searches for the intersection of the currently selected sequences and those matching the new text string while ‘<code>| &lt;text string&gt;</code>’ searches for their union.</p>
 <p>Just pressing <code>&lt;enter&gt;</code> at the prompt (i.e., not entering any search string) keeps the current selection. Entering <code>*</code> at the prompt selects all sequences. The <code>&lt;*&gt;</code> (or <code>&lt;8&gt;</code>) key also selects all sequences without using <code>&lt;/&gt;</code> first. If you only want to search for sequences (without selecting them), you can use the <code>&lt;|&gt;</code> key (instead of <code>&lt;/&gt;</code>).</p>
 <p>In <em>test mode</em>, sequences are played by default at random based on the score as described above. However, you can toggle into a different sequence selection mode with the <code>&lt;m&gt;</code> key. Selection can be based on:</p>
 <p></p><ol><li><p>the score, where sequences with higher scores have a higher play probability (the default),</p></li>
