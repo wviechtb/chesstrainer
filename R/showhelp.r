@@ -72,10 +72,11 @@
       "<        - bookmark the current sequence",
       "r        - repeat the last sequence",
       "R        - automatically repeat sequences after a mistake on/off",
+      "j        - jump to a sequence number (only for sequential sequence selection modes)",
       "g        - show the progress graph for the current sequence",
       "G        - show the progress graph at the end of sequences on/off",
-      "a        - extend the current sequence with more moves",
-      "A        - extend the current position with more moves",
+      "a        - extend the current sequence with more moves (switches to add mode)",
+      "A        - extend the current position with more moves (switches to add mode)",
       "Ctrl-c   - copy the name of the current sequence to the clipboard",
       "Ctrl-d   - delete the current sequence")
 
@@ -141,7 +142,7 @@
       "F6       - Einstellungen f\U000000FCr Sonstiges",
       "F7       - Einstellungen f\U000000FCr Stockfish",
       "F8       - Sequenzverzeichnisse hinzuf\U000000FCgen, entfernen und ausw\U000000E4hlen",
-      "F9       - die aktuelle Stellung auf lichess.org \U000000F6ffnen",
+      "F9       - aktuelle Stellung auf lichess.org \U000000F6ffnen",
       "F10      - Histogramme/Streudiagramm anzeigen",
       "F11      - Sitzungsinfos anzeigen",
       "F12      - Sitzungsverlauf anzeigen",
@@ -159,18 +160,19 @@
       "Tastenk\U000000FCrzel f\U000000FCr den Test Modus:",
       "h        - einen Tipp bekommen (kann zweimal gew\U000000E4hlt werden)",
       "t        - Punktekerh\U000000F6hung zur\U000000FCcknehmen",
-      "o        - Punktewert f\U000000FCr die aktuelle Sequenz manuell eingeben",
+      "o        - Punktewert f\U000000FCr aktuelle Sequenz manuell eingeben",
       "z        - Zen Modus an/aus",
       "x        - Zeitgesteuerter Modus an/aus",
-      "<        - Lesezeichen f\U000000FCr die aktuelle Sequenz setzen",
-      "r        - die letzte Sequenz wiederholen",
+      "<        - Lesezeichen f\U000000FCr aktuelle Sequenz setzen",
+      "r        - letzte Sequenz wiederholen",
       "R        - Sequenzen nach Fehler automatisch wiederholen an/aus",
-      "g        - Fortschrittsdiagramm f\U000000FCr die aktuelle Sequenz anzeigen",
+      "j        - springe zu einer Sequenznummer (nur f\U000000FCr sequenzielle Sequenzauswahlmodi)",
+      "g        - Fortschrittsdiagramm f\U000000FCr aktuelle Sequenz anzeigen",
       "G        - Fortschrittsdiagramm am Ende der Sequenzen anzeigen an/aus",
-      "a        - die aktuelle Sequenz mit Z\U000000FCgen erweitern",
-      "A        - die aktuelle Stellung mit Z\U000000FCgen erweitern",
+      "a        - aktuelle Sequenz mit Z\U000000FCgen erweitern (wechselt zum Hinzuf\U000000FCgen Modus)",
+      "A        - aktuelle Stellung mit Z\U000000FCgen erweitern (wechselt zum Hinzuf\U000000FCgen Modus)",
       "Strg-c   - den Namen der aktuellen Sequenz in die Zwischenablage kopieren",
-      "Strg-d   - die aktuelle Sequenz l\U000000F6schen")
+      "Strg-d   - aktuelle Sequenz l\U000000F6schen")
 
       txt.add <- c(
       "Tastenk\U000000FCrzel f\U000000FCr den Hinzuf\U000000FCgen Modus:",
@@ -180,7 +182,7 @@
       "e und E  - Kommentare editieren / Sequenzfile editieren",
       "h und H  - den besten Zug laut Stockfish anzeigen (schnell / tief)",
       "t        - den letzten Zug zur\U000000FCcknehmen",
-      "0        - die aktuelle Stellung zur Ausgangsstellung machen",
+      "0        - aktuelle Stellung zur Ausgangsstellung machen",
       "b        - Bretteditor starten",
       "g        - Bewertungsdiagram anzeigen",
       "s        - Sequenz abspeichern"

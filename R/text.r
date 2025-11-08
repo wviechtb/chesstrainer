@@ -1335,10 +1335,22 @@
                          "\nDelete rows (<number>, <number1-number2>, or <enter> to exit): "
    ))}
 
-   if (x == "setseqno") {
+   if (x == "currentseqno") {
       return(switch(lang,
-                    de = paste0("Setze seqno (1-", arg, ") auf: "),
-                         paste0("Set seqno (1-", arg, ") to: ")
+                    de = "Aktuelle Sequenznummer: ",
+                         "Current sequence number: "
+   ))}
+
+   if (x == "newseqno") {
+      return(switch(lang,
+                    de = paste0("Neue Sequenznummer (1-", arg, "): "),
+                         paste0("New sequence number (1-", arg, "): ")
+   ))}
+
+   if (x == "jumponlymodes") {
+      return(switch(lang,
+                    de = "Das Springen zu einer Sequenznummer geht nur in sequenziellen Auswahlmodi.",
+                         "Jumping to a sequence number is only possible in sequential selection modes."
    ))}
 
 }

@@ -22,7 +22,7 @@
 
    In \emph{test mode}, information is shown at the bottom about the current mode, the name of the current sequence, the player name, the current move number and the total number of moves of the sequence, the number of rounds (how many times the sequence has been played so far), the age of the sequence (how many days ago the sequence was last played), the estimated difficulty of the sequence (see below), and the sequence score (see below). With \verb{<z>}, you can toggle on \sQuote{zen mode} to hide this information.
 
-   With \verb{<F1>}, you obtain an overview of all keyboard shortcuts. These will be explained in further detail below. You can quit the trainer with the \verb{<q>} key.
+   With \verb{<F1>}, you obtain an overview of all keyboard shortcuts (the \verb{<left>} and \verb{<right>} arrow keys toggle between both pages). These will be explained in further detail below. You can quit the trainer with the \verb{<q>} key.
 
 }
 \section{The Sequence Score}{

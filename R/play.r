@@ -546,7 +546,7 @@ play <- function(lang="en", sfpath="", ...) {
 
    keys <- c("q", "ctrl-Q", "\033", "ctrl-[", " ", "m", "d", "\\", "#", "n", "N", "p", "ctrl-R",
              "g", "H", "h", "Left", "Right", "Up", "Down", "t", "0", "1", "2", "3", "4", "5", "9",
-             "r", "o", "u", "M", "B", "U", "S",
+             "r", "o", "u", "M", "B", "U", "j",
              "a", "A", "f", "z", "c", "e", "E", "s", "b",
              "^", "6", "R", "G", "w", "-", "=", "+", "[", "]", "{", "}", "(", ")", "i", "x", "v", "ctrl-V",
              "l", "<", ">", "ctrl-F", "ctrl-C", "ctrl-D", "/", ",", ".", "|", "*", "8", "?", "'", "\"",
@@ -1937,16 +1937,25 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # S to manually set the seqno value
+            # j to manually jump to a seqno value when playing sequences sequentially
 
-            if (identical(click, "S")) {
-               eval(expr=switch1)
-               tmp <- suppressWarnings(round(as.numeric(readline(prompt=.text("setseqno", k)))))
-               if (!is.na(tmp) && tmp >=1 && tmp <= k)
-                  seqno <- tmp
-               eval(expr=switch2)
-               run.rnd <- FALSE
-               input <- FALSE
+            if (identical(click, "j")) {
+               if (selmode %in% c("sequential","sequential_len","sequential_mov")) {
+                  seqnoold <- seqno
+                  seqno <- .setseqno(seqno, k, lwd)
+                  if (seqnoold != seqno) {
+                     run.rnd <- FALSE
+                     input <- FALSE
+                  } else {
+                     .redrawpos(pos, flip=flip)
+                     .drawcircles(circles, lwd=lwd)
+                     .drawarrows(arrows, lwd=lwd)
+                     .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
+                  }
+               } else {
+                  .texttop(.text("jumponlymodes"), sleep=2)
+                  .texttop(texttop)
+               }
                next
             }
 

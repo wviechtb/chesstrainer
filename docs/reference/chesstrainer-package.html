@@ -31,7 +31,7 @@ The main purpose of the chesstrainer package is to create sequences of moves (li
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chesstrainer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-112</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-114</span>
       </span>
     </div>
 
@@ -92,13 +92,13 @@ The main purpose of the chesstrainer package is to create sequences of moves (li
     <h2>Starting the Trainer</h2>
 
 
-<p>To start the trainer, run <code><a href="play.html">play</a>()</code> from the console. When starting the trainer for the first time, a directory is created for storing settings and a directory where sequences will be stored. A few example sequences also come with the package and you will receive a prompt whether to copy these sequences to the sequence directory. To familiarize yourself with the trainer, it would be good to do so.</p>
+<p>To start the trainer, run <code><a href="play.html">play()</a></code> from the console. When starting the trainer for the first time, a directory is created for storing settings and a directory where sequences will be stored. A few example sequences also come with the package and you will receive a prompt whether to copy these sequences to the sequence directory. To familiarize yourself with the trainer, it would be good to do so.</p>
 <p>You will then receive a prompt to enter a player name. Choose a name and press enter.</p>
 <p>The trainer then starts in <em>add mode</em> (see the ‘Note’ section at the bottom if you receive an error that the graphics device does not support event handling). For now, click on the window showing the chess board and press <code>&lt;space&gt;</code> (i.e., the space bar), which will switch to the <em>test mode</em> (note: in this manual, key presses are indicated as: <code>&lt;key&gt;</code>). One of the existing sequences will then be chosen at random. The trainer may immediately prompt you to play a certain opening (via a comment at the top of the window), it may make some moves for you, or it may start at a later position during a game. Either way, you will then have to make the correct move based on the position. You do this by either left-clicking and dragging the piece to be played from its current position to the desired target square or by left-clicking on the piece to be moved and then left-clicking on the target square.</p>
 <p>If the line width of the green rectangles (that show up when moving a piece) is too narrow or too thick, you can use the <code>&lt;(&gt;</code> and <code>&lt;)&gt;</code> keys to decrease/increase the line width. Adjust this value such that the rectangles are clearly visible, but do not overlap into adjacent squares. If the text on the bottom or other visual elements are getting cut off, you can use the <code>&lt;{&gt;</code> and <code>&lt;}&gt;</code> keys to decrease/increase the margin width.</p>
 <p>The trainer will then make the next move, after which you will then again have to make the correct move. This will continue until the end of the sequence. If you do not know what the correct move is, the <code>&lt;h&gt;</code> key will provide a hint showing which piece to move. Pressing <code>&lt;h&gt;</code> for a second time will show the target square. Once the sequence has ended, left-clicking starts a new sequence.</p>
 <p>In <em>test mode</em>, information is shown at the bottom about the current mode, the name of the current sequence, the player name, the current move number and the total number of moves of the sequence, the number of rounds (how many times the sequence has been played so far), the age of the sequence (how many days ago the sequence was last played), the estimated difficulty of the sequence (see below), and the sequence score (see below). With <code>&lt;z&gt;</code>, you can toggle on ‘zen mode’ to hide this information.</p>
-<p>With <code>&lt;F1&gt;</code>, you obtain an overview of all keyboard shortcuts. These will be explained in further detail below. You can quit the trainer with the <code>&lt;q&gt;</code> key.</p>
+<p>With <code>&lt;F1&gt;</code>, you obtain an overview of all keyboard shortcuts (the <code>&lt;left&gt;</code> and <code>&lt;right&gt;</code> arrow keys toggle between both pages). These will be explained in further detail below. You can quit the trainer with the <code>&lt;q&gt;</code> key.</p>
     </div>
     <div id="the-sequence-score">
     <h2>The Sequence Score</h2>
@@ -291,7 +291,7 @@ The main purpose of the chesstrainer package is to create sequences of moves (li
 </div>
 
 <div class="pkgdown">
-  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
+  <p></p><p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
   <p class="preferably">Using <a href="https://preferably.amirmasoudabdol.name/?source=footer" class="external-link">preferably</a> template.</p>
 </div>
 
