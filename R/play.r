@@ -3904,11 +3904,13 @@ play <- function(lang="en", sfpath="", ...) {
                Sys.sleep(2*sleep)
 
                if (!replast && k > 1L) {
-                  if (selmode %in% c("sequential","sequential_len","sequential_mov","age_oldest") && seqno == 1) {
-                     playsound(system.file("sounds", "finished.ogg", package="chesstrainer"), volume=volume)
-                     .texttop(.text("finishedround"), sleep=2)
+                  if (selmode %in% c("sequential","sequential_len","sequential_mov","age_oldest")) {
+                     if (seqno == 1) {
+                        playsound(system.file("sounds", "finished.ogg", package="chesstrainer"), volume=volume)
+                        .texttop(.text("finishedround"), sleep=2)
+                     }
                   } else {
-                     if (!skipsave && any(scores.selected >= target) && score < target && all(scores.selected[-seqnum] < target)) {
+                     if (!skipsave && sum(scores.selected >= target) == 1L && score < target) {
                         playsound(system.file("sounds", "finished.ogg", package="chesstrainer"), volume=volume)
                         .texttop(.text("belowtarget", target), sleep=2)
                      }
