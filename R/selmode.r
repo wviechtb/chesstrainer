@@ -60,6 +60,8 @@
    segments(1.5, ypos[1] - (ypos[1]-ypos[2]), 8, ypos[1] - (ypos[1]-ypos[2]), col=col.help)
    segments(1.5, ypos[length(txt)] - (ypos[1]-ypos[2]), 8, ypos[length(txt)] - (ypos[1]-ypos[2]), col=col.help)
 
+   text(1.5, ypos[length(txt)] - 2*(ypos[1]-ypos[2]), .text("selmodeinfo"), pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+
    ypos <- ypos[-c(1:2)]
    dist <- (ypos[1] - ypos[2]) / 2
 
@@ -85,8 +87,14 @@
          if (identical(click, "m") || identical(click, "\r") || identical(click, "ctrl-J") || identical(click, "q") || identical(click, "\033") || identical(click, "ctrl-["))
             break
 
-         if (is.element(click, 1:length(selmodes))) {
+         if (is.element(click, 0:length(selmodes))) {
             click <- as.numeric(click)
+            selmode <- selmodes[click]
+            break
+         }
+
+         if (is.element(click, paste0("F", 1:11))) {
+            click <- as.numeric(substring(click, 2))
             selmode <- selmodes[click]
             break
          }

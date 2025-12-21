@@ -65,9 +65,15 @@
       } else {
          xlim <- NULL
       }
-      plot(x[[1]], x$playtime, type="h", lwd=plotlwd, col=col.square.l,
-           xlim=xlim, ylim=c(0, max(x$playtime)), bty="l", las=1,
-           xlab=.text(timeframe, FALSE), ylab=.text("historyplaytime"),
+      yvals <- x$playtime
+      yismins <- TRUE
+      if (max(yvals) > 600) {
+         yismins <- FALSE
+         yvals <- yvals / 60
+      }
+      plot(x[[1]], yvals, type="h", lwd=plotlwd, col=col.square.l,
+           xlim=xlim, ylim=c(0, max(yvals)), bty="l", las=1, xlab=.text(timeframe, FALSE),
+           ylab=ifelse(yismins, .text("historyplaytime_mins"), .text("historyplaytime_hours")),
            col.axis=col.top, col.lab=col.top, col.main=col.fg, xaxt="n")
       xaxis(x[[1]])
       usr <<- par()$usr

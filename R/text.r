@@ -88,7 +88,7 @@
 
    if (x == "rlydelplayer") {
       return(switch(lang,
-                    de = paste0("Wirlich Spieler '", arg, "' l\U000000F6schen? (j/N)"),
+                    de = paste0("Wirklich Spieler '", arg, "' l\U000000F6schen? (j/N)"),
                          paste0("Really delete player '", arg, "'? (y/N)")
    ))}
 
@@ -465,10 +465,16 @@
                          paste0("New exponent value: ")
    ))}
 
-   if (x == "setnewexpval") {
+   if (x == "currenttarget") {
       return(switch(lang,
-                    de = paste0("Setze den Exponentenwert auf ", arg, ".\n"),
-                         paste0("Setting the exponent value to ", arg, ".\n")
+                    de = "Aktueller Zielwert: ",
+                         "Current target score: "
+   ))}
+
+   if (x == "newtarget") {
+      return(switch(lang,
+                    de = paste0("Neuer Zielwert: "),
+                         paste0("New target score: ")
    ))}
 
    if (x == "welldone") {
@@ -487,6 +493,12 @@
       return(switch(lang,
                     de = "Keine Rangliste verf\U000000FCgbar.\n",
                          "No leaderboard available.\n"
+   ))}
+
+   if (x == "noleader_selected") {
+      return(switch(lang,
+                    de = "Keine Rangliste verf\U000000FCgbar f\U000000FCr die ausgew\U000000E4hlte(n) Sequenz(en).\n",
+                         "No leaderboard available for the selected sequence(s).\n"
    ))}
 
    if (x == "lang") {
@@ -857,8 +869,8 @@
 
    if (x == "explsettings") {
       return(switch(lang,
-                    de = c("Sprache", "Spielername", "Modus", "Aktuelles Sequenzverzeichnis", "Selektionsmodus f\U000000FCr Sequenzen", "Zen Modus", "Zeitgesteuerter Modus", "Zeit pro Zug im zeitgesteuerten Modus (in Sekunden)", "Exponentenwert", "Multiplikator f\U000000FCr abgeschlossene Sequenzen", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Bewertungsleiste anzeigen (pro Modus)", "Animationsschritte f\U000000FCr die Bewertungsleiste", "Warten zwischen Sequenzen", "Zeit zwischen den Z\U000000FCgen (in Sekunden)", "Leerlaufzeit (in Sekunden)", "Randbreite (unten/links/oben/rechts)", "Randbreite f\U000000FCr Inline-Diagramme", "Linienbreite", "Lautst\U000000E4rke (in %)", "Fortschrittsdiagramm nach Sequenzen anzeigen", "Sequenzen nach Fehler wiederholen", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Schwierigkeitsberechnung (Methode)", "Schwierigkeitsberechnung (Anzahl der letzten Werte)", "Schwierigkeitsberechnung (Mindestanzahl der Werten)", "Stockfish Pfad", "Berechnungstiefe (schnell)", "Berechnungstiefe (tief)", "Berechnungstiefe (spielen)", "Spielmodus-St\U000000E4rke-Limit", "Anzahl der besten Zugvarianten (schnell)", "Anzahl der besten Zugvarianten (tief)", "Anzahl der Threads f\U000000FCr Stockfish", "Hashgr\U000000F6\U000000DFe f\U000000FCr Stockfish", "Hinweistiefe"),
-                         c("Language", "Player name", "Mode", "Current sequence directory", "Selection mode for sequences", "Zen mode", "Timed mode", "Time per move in timed mode (in seconds)", "Exponent value", "Multiplier for completed sequences", "Score penalty for wrong moves", "Score penalty per hint", "Show evaluation bar (for each modus)", "Animation steps for the evaluation bar", "Wait between sequences", "Time between moves (in seconds)", "Idle time (in seconds)", "Margin width (bottom/left/top/right)", "Margin width for inline graphs", "Line width", "Sound volume (in %)", "Show progress graph after sequences", "Repeat sequences after mistake", "Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Difficulty Calculation (method)", "Difficulty Calculation (number of most recent values)", "Difficulty Calculation (minimum number of values)", "Stockfish path", "Calculation depth (fast)", "Calculation depth (deep)", "Calculation depth (play)", "Play mode strength limit", "Number of principal variations (fast)", "Number of principal variations (deep)", "Number of threads for Stockfish", "Hash size for Stockfish", "Hint depth")
+                    de = c("Sprache", "Spielername", "Modus", "Aktuelles Sequenzverzeichnis", "Selektionsmodus f\U000000FCr Sequenzen", "Zen Modus", "Zeitgesteuerter Modus", "Zeit pro Zug im zeitgesteuerten Modus (in Sekunden)", "Exponentenwert", "Multiplikator f\U000000FCr abgeschlossene Sequenzen", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Bewertungsleiste anzeigen (pro Modus)", "Animationsschritte f\U000000FCr die Bewertungsleiste", "Warten zwischen Sequenzen", "Zeit zwischen den Z\U000000FCgen (in Sekunden)", "Leerlaufzeit (in Sekunden)", "Randbreite (unten/links/oben/rechts)", "Randbreite f\U000000FCr Inline-Diagramme", "Linienbreite", "Lautst\U000000E4rke (in %)", "Fortschrittsdiagramm nach Sequenzen anzeigen", "Sequenzen nach Fehler wiederholen", "Zielwert", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Schwierigkeitsberechnung (Methode)", "Schwierigkeitsberechnung (Anzahl der letzten Werte)", "Schwierigkeitsberechnung (Mindestanzahl der Werten)", "Stockfish Pfad", "Berechnungstiefe (schnell)", "Berechnungstiefe (tief)", "Berechnungstiefe (spielen)", "Spielmodus-St\U000000E4rke-Limit", "Anzahl der besten Zugvarianten (schnell)", "Anzahl der besten Zugvarianten (tief)", "Anzahl der Threads f\U000000FCr Stockfish", "Hashgr\U000000F6\U000000DFe f\U000000FCr Stockfish", "Hinweistiefe"),
+                         c("Language", "Player name", "Mode", "Current sequence directory", "Selection mode for sequences", "Zen mode", "Timed mode", "Time per move in timed mode (in seconds)", "Exponent value", "Multiplier for completed sequences", "Score penalty for wrong moves", "Score penalty per hint", "Show evaluation bar (for each modus)", "Animation steps for the evaluation bar", "Wait between sequences", "Time between moves (in seconds)", "Idle time (in seconds)", "Margin width (bottom/left/top/right)", "Margin width for inline graphs", "Line width", "Sound volume (in %)", "Show progress graph after sequences", "Repeat sequences after mistake", "Target score", "Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Difficulty Calculation (method)", "Difficulty Calculation (number of most recent values)", "Difficulty Calculation (minimum number of values)", "Stockfish path", "Calculation depth (fast)", "Calculation depth (deep)", "Calculation depth (play)", "Play mode strength limit", "Number of principal variations (fast)", "Number of principal variations (deep)", "Number of threads for Stockfish", "Hash size for Stockfish", "Hint depth")
    ))}
 
    if (x == "comment") {
@@ -1101,6 +1113,12 @@
                          "Switching to the sequential selection mode ..."
    ))}
 
+   if (x == "selmodeinfo") {
+      return(switch(lang,
+                    de = "W\U000000E4hle mit den Zifferntasten 1-9, F1-F11, oder per Mausklick aus.",
+                         "Select via number keys 1-9, F1-F11, or mouse click."
+   ))}
+
    if (x == "fliponlyatstart") {
       return(switch(lang,
                     de = "Das Brett kann nur am Anfang einer Sequenz gedreht werden.",
@@ -1221,10 +1239,16 @@
                          paste0("play time: ", arg)
    ))}
 
-   if (x == "historyplaytime") {
+   if (x == "historyplaytime_mins") {
       return(switch(lang,
                     de = "Spielzeit (Minuten)",
                          "play time (minutes)"
+   ))}
+
+   if (x == "historyplaytime_hours") {
+      return(switch(lang,
+                    de = "Spielzeit (Stunden)",
+                         "play time (hours)"
    ))}
 
    if (x == "historyseqsplayed") {
@@ -1321,6 +1345,12 @@
       return(switch(lang,
                     de = "Eine Runde aller Sequenzen abgeschlossen.",
                          "Finished one round of all sequences."
+   ))}
+
+   if (x == "belowtarget") {
+      return(switch(lang,
+                    de = paste0("Die Punktzahlen aller (ausgew\U000000E4hlten) Sequenzen liegen jetzt unter ", arg, "."),
+                         paste0("The scores of all (selected) sequences are now below ", arg, ".")
    ))}
 
    if (x == "scatterplot") {

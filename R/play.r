@@ -49,6 +49,7 @@ play <- function(lang="en", sfpath="", ...) {
    timed       <- ifelse(is.null(ddd[["timed"]]),       FALSE,          ddd[["timed"]])
    timepermove <- ifelse(is.null(ddd[["timepermove"]]), 5,              ddd[["timepermove"]])
    expval      <- ifelse(is.null(ddd[["expval"]]),      2,              ddd[["expval"]])
+   target      <- ifelse(is.null(ddd[["target"]]),      0,              ddd[["target"]])
    multiplier  <- ifelse(is.null(ddd[["multiplier"]]),  0.8,            ddd[["multiplier"]])
    adjustwrong <- ifelse(is.null(ddd[["adjustwrong"]]), 40,             ddd[["adjustwrong"]])
    adjusthint  <- ifelse(is.null(ddd[["adjusthint"]]),  20,             ddd[["adjusthint"]])
@@ -100,6 +101,9 @@ play <- function(lang="en", sfpath="", ...) {
 
    seqdirpos <- round(seqdirpos)
    expval[expval < 0] <- 0
+   target <- round(target)
+   target[target < 1] <- 1
+   target[target > 100] <- 100
    multiplier[multiplier < 0] <- 0
    multiplier[multiplier > 1] <- 1
    adjustwrong[adjustwrong < 0] <- 0
@@ -163,7 +167,7 @@ play <- function(lang="en", sfpath="", ...) {
       if (!success)
          stop(.text("dircreateerror"), call.=FALSE)
       settings <- list(lang=lang, player=player, mode=mode, seqdir=seqdir, seqdirpos=seqdirpos,
-                       selmode=selmode, timed=timed, timepermove=timepermove, expval=expval, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint,
+                       selmode=selmode, timed=timed, timepermove=timepermove, expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint,
                        eval=eval, evalsteps=evalsteps, wait=wait, sleep=sleep, idletime=idletime, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth,
@@ -196,6 +200,8 @@ play <- function(lang="en", sfpath="", ...) {
             timepermove <- settings[["timepermove"]]
          if (is.null(mc[["expval"]]))
             expval <- settings[["expval"]]
+         if (is.null(mc[["target"]]))
+            target <- settings[["target"]]
          if (is.null(mc[["multiplier"]]))
             multiplier <- settings[["multiplier"]]
          if (is.null(mc[["adjustwrong"]]))
@@ -261,7 +267,7 @@ play <- function(lang="en", sfpath="", ...) {
       }
       sfpath <- suppressWarnings(normalizePath(sfpath))
       settings <- list(lang=lang, player=player, mode=mode, seqdir=seqdir, seqdirpos=seqdirpos,
-                       selmode=selmode, timed=timed, timepermove=timepermove, expval=expval, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint,
+                       selmode=selmode, timed=timed, timepermove=timepermove, expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint,
                        eval=eval, evalsteps=evalsteps, wait=wait, sleep=sleep, idletime=idletime, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth,
@@ -545,7 +551,7 @@ play <- function(lang="en", sfpath="", ...) {
    # define keys
 
    keys <- c("q", "ctrl-Q", "\033", "ctrl-[", " ", "m", "d", "\\", "#", "n", "N", "p", "ctrl-R",
-             "g", "H", "h", "Left", "Right", "Up", "Down", "t", "0", "1", "2", "3", "4", "5", "9",
+             "g", "H", "h", "Left", "Right", "Up", "Down", "t", "T", "0", "1", "2", "3", "4", "5", "9",
              "r", "o", "u", "M", "B", "U", "j",
              "a", "A", "f", "z", "c", "e", "E", "s", "b",
              "^", "6", "R", "G", "w", "-", "=", "+", "[", "]", "{", "}", "(", ")", "i", "x", "v", "ctrl-V",
@@ -816,12 +822,8 @@ play <- function(lang="en", sfpath="", ...) {
 
          }
 
-         if (is.null(sel) || sel == 0) {
-            # just in case ('attempt to select less than one element in get1index'
-            # error did occur before, although not sure how this could arise)
-            #print(probvals.selected)
+         if (is.null(sel) || is.na(sel) || sel == 0) # just in case
             sel <- 1
-         }
 
          sub <- dat[[sel]]
          seqname <- files[sel]
@@ -1722,14 +1724,14 @@ play <- function(lang="en", sfpath="", ...) {
                   next
                }
                if (identical(click, "2"))
-                  target <- nrow(sub$moves)
+                  movnumber <- nrow(sub$moves)
                if (identical(click, "3"))
-                  target <- max(1, round(nrow(sub$moves) * 1/4))
+                  movnumber <- max(1, round(nrow(sub$moves) * 1/4))
                if (identical(click, "4"))
-                  target <- max(1, round(nrow(sub$moves) * 2/4))
+                  movnumber <- max(1, round(nrow(sub$moves) * 2/4))
                if (identical(click, "5"))
-                  target <- max(1, round(nrow(sub$moves) * 3/4))
-               if (target == i-1)
+                  movnumber <- max(1, round(nrow(sub$moves) * 3/4))
+               if (movnumber == i-1)
                   next
                .rmcheck(pos, flip=flip)
                if (nrow(circles) >= 1L || nrow(arrows) >= 1L || nrow(harrows) >= 1L) {
@@ -1750,7 +1752,7 @@ play <- function(lang="en", sfpath="", ...) {
                }
                sidetoplay <- sidetoplaystart
                i <- 1
-               while (i <= target) {
+               while (i <= movnumber) {
                   pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE, volume=0, verbose=verbose, draw=FALSE)
                   sub$moves$move[i] <- attr(pos,"move")
                   sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
@@ -1955,6 +1957,22 @@ play <- function(lang="en", sfpath="", ...) {
                } else {
                   .texttop(.text("jumponlymodes"), sleep=2)
                   .texttop(texttop)
+               }
+               next
+            }
+
+            # T to set a target for points
+
+            if (identical(click, "T")) {
+               targetold <- target
+               target <- .settarget(target, lwd)
+               .redrawpos(pos, flip=flip)
+               .drawcircles(circles, lwd=lwd)
+               .drawarrows(arrows, lwd=lwd)
+               .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
+               if (targetold != target) {
+                  settings$target <- target
+                  saveRDS(settings, file=file.path(configdir, "settings.rds"))
                }
                next
             }
@@ -2398,7 +2416,7 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (identical(click, "^") || identical(click, "6")) {
                expvalold <- expval
-               expval <- .setexpval(expval, scores.all, lwd)
+               expval <- .setexpval(expval, lwd)
                .redrawpos(pos, flip=flip)
                .drawcircles(circles, lwd=lwd)
                .drawarrows(arrows, lwd=lwd)
@@ -2676,15 +2694,30 @@ play <- function(lang="en", sfpath="", ...) {
             # ctrl-c to print and copy the sequence name to the clipboard
 
             if (identical(click, "ctrl-C")) {
-               if (seqname != "") {
-                  eval(expr=switch1)
-                  cat(seqnum, " ", seqname, "\n")
+
+               tmp <- NULL
+
+               if (seqname == "") {
+                  # in case a single sequence is selected but we are not in test mode
+                  if (length(selected) == 1L) {
+                     tmp <- selected
+                     seqnum  <- which(selected == files.all)
+                  }
+               } else {
                   tmp <- seqname
+                  seqnum  <- which(seqname == files.all)
+               }
+
+               if (!is.null(tmp)) {
+                  eval(expr=switch1)
+                  cat(seqnum, " ", tmp, "\n")
                   tmp <- sub("\\.rds$", "", tmp) # strip .rds from end of filename
                   clipr::write_clip(tmp, object_type="character")
                   eval(expr=switch2)
                }
+
                next
+
             }
 
             # ctrl-d to delete the current sequence (only in test mode)
@@ -3121,7 +3154,11 @@ play <- function(lang="en", sfpath="", ...) {
             if (identical(click, "F2")) {
                tmp <- .leaderboard(seqdir[seqdirpos], files, lwd)
                if (tmp == 0) {
-                  .texttop(.text("noleader", selmode), sleep=1.5)
+                  if (is.null(selected)) {
+                     .texttop(.text("noleader"), sleep=1.5)
+                  } else {
+                     .texttop(.text("noleader_selected"), sleep=1.5)
+                  }
                   .texttop(texttop)
                } else {
                   .redrawpos(pos, flip=flip)
@@ -3137,7 +3174,7 @@ play <- function(lang="en", sfpath="", ...) {
             if (identical(click, "F3")) {
                tab <- list(lang=lang, player=player, mode=mode, seqdir=seqdir[seqdirpos], selmode=selmode, zenmode=zenmode, timed=timed, timepermove=timepermove, expval=expval,
                            multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, eval=eval, evalsteps=evalsteps, wait=wait, sleep=sleep, idletime=idletime, mar=mar, mar2=mar2, lwd=lwd,
-                           volume=volume, showgraph=showgraph, repmistake=repmistake, cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, difffun=difffun, difflen=difflen, diffmin=diffmin,
+                           volume=volume, showgraph=showgraph, repmistake=repmistake, target=target, cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, difffun=difffun, difflen=difflen, diffmin=diffmin,
                            sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth)
                .showsettings(tab)
                .redrawpos(pos, flip=flip)
@@ -3701,10 +3738,10 @@ play <- function(lang="en", sfpath="", ...) {
                   .redrawpos(pos, flip=flip)
                }
 
-               if (wait) {
+               skipsave <- FALSE
+               contplay <- FALSE
 
-                  skipsave <- FALSE
-                  contplay <- FALSE
+               if (wait) {
 
                   while (TRUE) {
 
@@ -3751,7 +3788,7 @@ play <- function(lang="en", sfpath="", ...) {
                         break
                      }
 
-                     if (identical(click, "\\") || identical(click, "#")) {
+                     if (identical(click, "\\") || identical(click, "#")) { # \ or # goes to play mode
                         saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
                         .rmannot(pos, circles, rbind(arrows, harrows), flip)
                         sub$moves <- sub$moves[seq_len(i-1),,drop=FALSE]
@@ -3850,27 +3887,32 @@ play <- function(lang="en", sfpath="", ...) {
 
                   }
 
-                  if (!replast) {
-                     seqno <- seqno + 1
-                     if (seqno > k)
-                        seqno <- 1
-                  }
+               } # end of 'if (wait) {'
 
-                  if (skipsave) # to skip saving when 'n' was pressed
-                     break
-
-                  if (contplay)
-                     next
-
+               if (!replast && !contplay) {
+                  seqno <- seqno + 1
+                  if (seqno > k)
+                     seqno <- 1
                }
 
-               saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
+               if (contplay)
+                  next
 
-               if (selmode %in% c("sequential","sequential_len","sequential_mov","age_oldest") && k > 1L && seqno == 1) {
-                  playsound(system.file("sounds", "finished.ogg", package="chesstrainer"), volume=volume)
-                  .texttop(.text("finishedround"), sleep=2)
-               } else {
-                  Sys.sleep(2*sleep)
+               if (!skipsave)
+                  saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
+
+               Sys.sleep(2*sleep)
+
+               if (!replast && k > 1L) {
+                  if (selmode %in% c("sequential","sequential_len","sequential_mov","age_oldest") && seqno == 1) {
+                     playsound(system.file("sounds", "finished.ogg", package="chesstrainer"), volume=volume)
+                     .texttop(.text("finishedround"), sleep=2)
+                  } else {
+                     if (!skipsave && any(scores.selected >= target) && score < target && all(scores.selected[-seqnum] < target)) {
+                        playsound(system.file("sounds", "finished.ogg", package="chesstrainer"), volume=volume)
+                        .texttop(.text("belowtarget", target), sleep=2)
+                     }
+                  }
                }
 
                run.rnd <- FALSE
