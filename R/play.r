@@ -1129,8 +1129,14 @@ play <- function(lang="en", sfpath="", ...) {
             if (is.numeric(click) && isTRUE(click == 0))
                next
 
-            if (is.character(click) && !is.element(click, keys))
-               next
+            if (is.character(click)) {
+               if (is.element(click, keys)) {
+                  .rmrect(click1.x, click1.y, lwd=lwd)
+                  .rmrect(click2.x, click2.y, lwd=lwd)
+               } else {
+                  next
+               }
+            }
 
             ##################################################################
 
