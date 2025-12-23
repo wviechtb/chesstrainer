@@ -1,4 +1,4 @@
-.distributions <- function(scores, rounds, age, difficulty, multiplier, lwd, mar) {
+.distributions <- function(scores, rounds, age, difficulty, multiplier, target, lwd, mar) {
 
    n <- length(scores)
 
@@ -78,7 +78,9 @@
          lines(xs, exp(pred$fit), col=col.top, lwd=2)
       }
    }
-   lines(xs, ys, col=col.top, lty="dotted")
+   if (target > 0)
+      abline(h=target, lty="dotted", col=col.top)
+   lines(xs, ys, col=col.top, lty="dashed")
    points(jitter(rounds, amount=0.5), jitter(scores, amount=0.5), pch=21, col=col.square.l, bg=col.square.d, cex=pt.cex)
    #legend("topright", lty=c("dotted","solid"), lwd=c(1,1), col=col.top, legend=.text("plotlegend"), bg=col.bg, box.col=col.square.l)
    #box(which="figure", col=col.help.border, lwd=lwd)

@@ -79,7 +79,7 @@
 
    One can also choose to play sequences sequentially, either ordered alphabetically, ordered by their length (which is given by the number of moves that have to be made by the player), or ordered by their moves. The latter is especially useful when practicing a particular opening and one wants to go through a set of corresponding sequences in the order of the variations.
 
-   For the sequential selection modes and for selection mode 6 (i.e., when playing the oldest sequence next), a message is shown after completing one round of all (selected) sequences (as long as more than one sequence is selected). For the other selection modes, one can also set a target score with the \verb{<T>} key. Once all (selected) sequences have a score below this target score, a message will be shown.
+   For the sequential selection modes and for selection mode 6 (i.e., when playing the oldest sequence next), a message is shown after completing one round of all (selected) sequences (as long as more than one sequence is selected). For the other selection modes, one can also set a \sQuote{target score} with the \verb{<T>} key (the default value is 0, which has no effect). Once all (selected) sequences have a score below this target score, a message will be shown.
 
    In \emph{test mode}, the \verb{<r>} key repeats the last played sequence. At the end of a sequence, you can also use the middle mouse button to repeat the sequence (before a new sequence is started). With the \verb{<R>} key, you can toggle whether a sequence will be automatically repeated if a mistake was made while playing the sequence.
 
@@ -197,7 +197,7 @@
 
    With \verb{<F9>}, the FEN of the current position is printed to the console and the position is opened on the \url{https://lichess.org} website for analysis. With \verb{<Ctrl-f>}, the FEN is printed and copied to the clipboard (this makes use of the \code{\link[clipr]{write_clip}} function from the \pkg{clipr} package). With \verb{<Ctrl-c>}, the current sequence name is printed and copied to the clipboard in \emph{test mode}.
 
-   With \verb{<F10>}, you can obtain histograms of the scores of the (selected) sequences, how many times they have been played so far (the number of rounds), how long ago they were played, their difficulty, and a scatterplot of the number of times they have been played versus their scores. In the scatterplot, the dotted line indicates the best possible performance (i.e., never making a mistake when playing the sequence over and over) and the solid line the actual performance (as estimated based on a regression model; only shown when there are 5 or more points).
+   With \verb{<F10>}, you can obtain histograms of the scores of the (selected) sequences, how many times they have been played so far (the number of rounds), how long ago they were played, their difficulty, and a scatterplot of the number of times they have been played versus their scores. In the scatterplot, the downward sloping dashed line indicates the best possible performance (i.e., never making a mistake when playing the sequence over and over) and the solid line the actual performance (as estimated based on a regression model; only shown when there are 5 or more points). If a target score value above 0 has been set (see above), the horizontal dotted line indicates this value.
 
 }
 \section{Playing Sounds}{

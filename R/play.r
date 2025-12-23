@@ -2065,7 +2065,7 @@ play <- function(lang="en", sfpath="", ...) {
                      filename <- seqname
                   }
                   if (!mistake && score > 1)
-                     score <- round(score * multiplier)
+                     score <- max(1, round(score * multiplier))
                   rounds <- rounds + 1
                   tmp <- data.frame(date=as.numeric(Sys.time()), round=rounds, score=score)
                   if (is.null(sub$player[[player]])) {
@@ -3335,7 +3335,7 @@ play <- function(lang="en", sfpath="", ...) {
                   .texttop(texttop)
                   next
                }
-               .distributions(scores.selected, rounds.selected, age.selected, difficulty.selected, multiplier, lwd=lwd, mar=mar)
+               .distributions(scores.selected, rounds.selected, age.selected, difficulty.selected, multiplier, target, lwd=lwd, mar=mar)
                .redrawall(pos, flip, mode, zenmode, show, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, timed, movestoplay, movesplayed, timetotal, timepermove, mar)
                .draweval(sub$moves$eval[i-1], NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                .drawcircles(circles, lwd=lwd)
@@ -3707,7 +3707,7 @@ play <- function(lang="en", sfpath="", ...) {
                # adjust the score (but only if no mistake was made)
 
                if (!mistake && score > 1)
-                  score <- round(score * multiplier)
+                  score <- max(1, round(score * multiplier))
 
                rounds <- rounds + 1
 
