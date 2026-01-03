@@ -118,8 +118,14 @@
 
    if (x == "showmoves") {
       return(switch(lang,
-                    de = paste0("Zug zeigen: ", ifelse(arg, "an", "aus")),
+                    de = paste0("Z\U000000FCge zeigen: ", ifelse(arg, "an", "aus")),
                          paste0("Show moves: ", ifelse(arg, "on", "off"))
+   ))}
+
+   if (x == "showmovescomp") {
+      return(switch(lang,
+                    de = paste0("Computer Z\U000000FCge zeigen: ", ifelse(arg, "an", "aus")),
+                         paste0("Show computer moves: ", ifelse(arg, "on", "off"))
    ))}
 
    if (x == "zenmode") {

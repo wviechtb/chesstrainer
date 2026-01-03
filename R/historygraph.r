@@ -106,7 +106,7 @@
    timeframe <- "day"
    whichplot <- "playtime"
    agg <- dat.day
-   zoom <- 1
+   zoom <- FALSE
 
    while (TRUE) {
 
@@ -133,16 +133,16 @@
 
       if (is.numeric(click) && click[[3]] %in% c(0,2)) {
          if (click[[3]] == 2) { # right mouse button resets zoom or exits if zoomed out
-            if (zoom == 1) {
-               break
-            } else {
+            if (zoom) {
                if (timeframe == "day")
                   agg <- dat.day
                if (timeframe == "week")
                   agg <- dat.week
                if (timeframe == "month")
                   agg <- dat.month
-               zoom <- zoom - 1
+               zoom <- FALSE
+            } else {
+               break
             }
          }
          if (click[[3]] == 0) { # left mouse button to set first and second zoom point
@@ -178,7 +178,7 @@
             sel <- agg[[1]] >= min(x1,x2) & agg[[1]] <= max(x1,x2)
             if (sum(sel) == 0L)
                next
-            zoom <- zoom + 1
+            zoom <- TRUE
             agg <- agg[sel,]
          }
       }
@@ -195,6 +195,7 @@
       }
 
       if (identical(click, "Right") || (is.numeric(click) && click[[3]] == 3)) {
+         zoom <- FALSE
          if (timeframe == "day" && nrow(dat.week) > 1L) {
             timeframe <- "week"
             agg <- dat.week
@@ -213,6 +214,7 @@
       }
 
       if (identical(click, "Left")) {
+         zoom <- FALSE
          if (timeframe == "day" && nrow(dat.month) > 1L) {
             timeframe <- "month"
             agg <- dat.month

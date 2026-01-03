@@ -111,10 +111,10 @@
 
 }
 
-.redrawall <- function(pos, flip, mode, zenmode, show, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, timed, movestoplay, movesplayed, timetotal, timepermove, mar) {
+.redrawall <- function(pos, flip, mode, zenmode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, timed, movestoplay, movesplayed, timetotal, timepermove, mar) {
 
    .drawboard(pos, flip, mar=mar)
-   .textbot(mode, zenmode, show, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
+   .textbot(mode, zenmode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
    .texttop(texttop)
    .drawcheck(pos, flip=flip)
    if (mode == "test" && timed) {
@@ -900,7 +900,7 @@
 
 }
 
-.textbot <- function(mode, zenmode, show, player, seqname, seqnum, score, rounds, age=NA, difficulty=NA, i, totalmoves, selmode="default", k, seqno, onlyshow=FALSE, onlyi=FALSE, onlyscore=FALSE) {
+.textbot <- function(mode, zenmode, show, showcomp, player, seqname, seqnum, score, rounds, age=NA, difficulty=NA, i, totalmoves, selmode="default", k, seqno, onlyshow=FALSE, onlyi=FALSE, onlyscore=FALSE) {
 
    lang   <- .get("lang")
    cex    <- .get("cex.bot")
@@ -944,8 +944,8 @@
 
       if (mode == "add") {
          if (onlyshow) {
-            text(xleft, 0.30, paste0("      ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2, srt=srt)
-            text(xleft, 0.30, paste0("Show: ", ifelse(show, "Yes", "No")), pos=4, cex=cex, family=font, col=col, srt=srt)
+            text(xleft, 0.30, paste0("      ", paste0(rep("\U00002588",8), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2, srt=srt)
+            text(xleft, 0.30, paste0("Show: ", ifelse(show, "Yes", "No"), ifelse(showcomp, "", " / No")), pos=4, cex=cex, family=font, col=col, srt=srt)
          }
          if (onlyi) {
             text(xleft, 0.15, paste0("      ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2, srt=srt)
@@ -953,7 +953,7 @@
          }
          if (redraw) {
             text(xleft, 0.45, paste0("Mode: ", "Add"), pos=4, cex=cex, family=font, col=col, srt=srt)
-            text(xleft, 0.30, paste0("Show: ", ifelse(show, "Yes", "No")), pos=4, cex=cex, family=font, col=col, srt=srt)
+            text(xleft, 0.30, paste0("Show: ", ifelse(show, "Yes", "No"), ifelse(showcomp, "", " / No")), pos=4, cex=cex, family=font, col=col, srt=srt)
             text(xleft, 0.15, paste0("Move: ", i), pos=4, cex=cex, family=font, col=col, srt=srt)
          }
       }
@@ -1012,8 +1012,8 @@
 
       if (mode == "add") {
          if (onlyshow) {
-            text(xleft, 0.30, paste0("        ", paste0(rep("\U00002588",4), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2, srt=srt)
-            text(xleft, 0.30, paste0("        ", ifelse(show, "Ja", "Nein")), pos=4, cex=cex, family=font, col=col, srt=srt)
+            text(xleft, 0.30, paste0("        ", paste0(rep("\U00002588",11), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2, srt=srt)
+            text(xleft, 0.30, paste0("        ", ifelse(show, "Ja", "Nein"), ifelse(showcomp, "", " / Nein")), pos=4, cex=cex, family=font, col=col, srt=srt)
          }
          if (onlyi) {
             text(xleft, 0.15, paste0("        ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2, srt=srt)
@@ -1021,7 +1021,7 @@
          }
          if (redraw) {
             text(xleft, 0.45, paste0("Modus:  ", "Hinzuf\U000000FCgen"), pos=4, cex=cex, family=font, col=col, srt=srt)
-            text(xleft, 0.30, paste0("Zeigen: ", ifelse(show, "Ja", "Nein")), pos=4, cex=cex, family=font, col=col, srt=srt)
+            text(xleft, 0.30, paste0("Zeigen: ", ifelse(show, "Ja", "Nein"), ifelse(showcomp, "", " / Nein")), pos=4, cex=cex, family=font, col=col, srt=srt)
             text(xleft, 0.15, paste0("Zug:    ", i), pos=4, cex=cex, family=font, col=col, srt=srt)
          }
       }

@@ -72,7 +72,7 @@
       "<        - bookmark the current sequence",
       "r        - repeat the last sequence",
       "R        - automatically repeat sequences after a mistake on/off",
-      "j        - jump to a sequence number (only for sequential sequence selection modes)",
+      "j        - jump to a sequence number (for sequential sequence selection modes)",
       "T        - set target score",
       "g        - show the progress graph for the current sequence",
       "G        - show the progress graph at the end of sequences on/off",
@@ -84,7 +84,7 @@
       txt.add <- c(
       "Shortcuts for the add mode:",
       "f        - flip the board",
-      "z        - show moves (play automatically) on/off",
+      "z and Z  - show moves (own/computer) on/off",
       "c        - add a comment to the current move",
       "e and E  - edit the comments / edit the sequence file",
       "h and H  - show the best move according to Stockfish (fast / deep)",
@@ -167,7 +167,7 @@
       "<        - Lesezeichen f\U000000FCr aktuelle Sequenz setzen",
       "r        - letzte Sequenz wiederholen",
       "R        - Sequenzen nach Fehler automatisch wiederholen an/aus",
-      "j        - springe zu einer Sequenznummer (nur f\U000000FCr sequenzielle Sequenzauswahlmodi)",
+      "j        - springe zu einer Sequenznummer (f\U000000FCr sequenzielle Sequenzauswahlmodi)",
       "T        - Zielwert festlegen",
       "g        - Fortschrittsdiagramm f\U000000FCr aktuelle Sequenz anzeigen",
       "G        - Fortschrittsdiagramm am Ende der Sequenzen anzeigen an/aus",
@@ -179,7 +179,7 @@
       txt.add <- c(
       "Tastenk\U000000FCrzel f\U000000FCr den Hinzuf\U000000FCgen Modus:",
       "f        - Brett umdrehen",
-      "z        - Z\U000000FCge zeigen (automatisch spielen) an/aus",
+      "z und Z  - Z\U000000FCge zeigen (eigene/Computer) an/aus",
       "c        - Kommentar zum aktuellen Zug hinzuf\U000000FCgen",
       "e und E  - Kommentare editieren / Sequenzfile editieren",
       "h und H  - den besten Zug laut Stockfish anzeigen (schnell / tief)",
@@ -238,6 +238,16 @@
 
       if (identical(click, "F1") || identical(click, "\r") || identical(click, "ctrl-J") || identical(click, "q") || identical(click, "\033") || identical(click, "ctrl-[") || identical(click, " "))
          break
+
+      if (identical(click, "m")) {
+         browseURL("https://wviechtb.github.io/chesstrainer/reference/chesstrainer-package.html")
+         next
+      }
+
+      if (identical(click, "t")) {
+         print(help("chesstrainer", help_type="text"))
+         next
+      }
 
       if (identical(click, "i")) {
          if (lang == "de") {

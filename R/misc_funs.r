@@ -523,7 +523,7 @@
 }
 
 .printverbose <- function(selected, seqno, filename, lastseq, flip, useflip, replast, oldmode, i,
-                          seqname, seqnum, score, rounds, totalmoves, show, comment, bestmove, starteval,
+                          seqname, seqnum, score, rounds, totalmoves, show, showcomp, comment, bestmove, starteval,
                           evalval, texttop, scoreadd, sidetoplay, givehint1, givehint2, mistake,
                           timetotal, movesplayed, movestoplay, drawcircles, drawarrows, showstartcom, pos) {
 
@@ -543,6 +543,7 @@
    cat("rounds:       ", rounds, "\n")
    cat("totalmoves:   ", totalmoves, "\n")
    cat("show:         ", show, "\n")
+   cat("showcomp:     ", showcomp, "\n")
    cat("comment:      ", comment, "\n")
    cat("bestmove:     ", sapply(bestmove, head, 1), "\n")
    cat("starteval:    ", starteval, "\n")
