@@ -72,9 +72,9 @@
    pos[8,5] <- "BK"
    colnames(pos) <- LETTERS[1:8]
    rownames(pos) <- 1:8
-   attr(pos,"rochade") <- rep(TRUE,4)
-   attr(pos,"ischeck") <- c(FALSE, FALSE)
-   attr(pos,"moves50") <- 0
+   attr(pos, "rochade") <- rep(TRUE, 4)
+   attr(pos, "ischeck") <- c(FALSE, FALSE)
+   attr(pos, "moves50") <- 0
    assign("pos", pos, envir=.chesstrainer)
 
    pos <- rbind("", pos, "")
@@ -83,6 +83,7 @@
    colnames(pos) <- 0:9
    pos[1,3:8]  <- c("WK","WQ","WR","WB","WN","WP")
    pos[10,3:8] <- c("BK","BQ","BR","BB","BN","BP")
+   attr(pos, "rochade") <- rep(TRUE, 4)
    assign("boardeditorpos", pos, envir=.chesstrainer)
 
    # welcome message

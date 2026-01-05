@@ -221,6 +221,25 @@
 
 }
 
+.expandfen <- function(fen) {
+
+   fields <- unlist(strsplit(fen, " "))
+
+   norochade <- FALSE
+
+   if (length(fields) == 1L) {
+
+      # if there is only one field, then it is only field 1; fill in the rest with default values
+
+      fen <- paste(fen, "w - - 0 1")
+      norochade <- TRUE
+
+   }
+
+   return(list(fen=fen, norochade=norochade))
+
+}
+
 .validatefen <- function(fen) {
 
    # split fields and check that there are 6 of them
@@ -281,6 +300,7 @@
       return(FALSE)
 
    # validate fullmove number (integer >= 1)
+
    if (!grepl("^[1-9][0-9]*$", fields[6]))
       return(FALSE)
 

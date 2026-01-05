@@ -99,7 +99,7 @@
       "g        - show the evaluation graph",
       "t        - take back the last move (computer move and own move)",
       "\\ or #   - switch between the play and analysis mode",
-      "0        - store the current game as the main variation",
+      "0        - store the current moves and position as the main variation",
       "9        - jump to the main variation",
       "a and A  - switch to add mode")
 
@@ -143,7 +143,7 @@
       "F6       - Einstellungen f\U000000FCr Sonstiges",
       "F7       - Einstellungen f\U000000FCr Stockfish",
       "F8       - Sequenzverzeichnisse hinzuf\U000000FCgen, entfernen und ausw\U000000E4hlen",
-      "F9       - aktuelle Stellung auf lichess.org \U000000F6ffnen",
+      "F9       - die aktuelle Stellung auf lichess.org \U000000F6ffnen",
       "F10      - Histogramme/Streudiagramm anzeigen",
       "F11      - Sitzungsinfos anzeigen",
       "F12      - Sitzungsverlauf anzeigen",
@@ -195,7 +195,7 @@
       "g        - Bewertungsdiagram anzeigen",
       "t        - den letzten Zug zur\U000000FCcknehmen (Computerzug und eigener Zug)",
       "\\ oder # - zwischen dem Spiel- und Analysemodus wechseln",
-      "0        - aktuelles Spiel als Hauptvariante sichern",
+      "0        - aktuelle Zugfolge und Stellung als Hauptvariante sichern",
       "9        - zur Hauptvariante springen",
       "a und A  - in den Hinzuf\U000000FCgen Modus wechseln")
 
