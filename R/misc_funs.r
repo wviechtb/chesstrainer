@@ -615,6 +615,7 @@
    islegal <- FALSE
 
    # get the piece moved and the piece on the target square ("" if the target square is empty)
+
    if (flip) {
       piece <- pos[9-x1,9-y1]
       target <- pos[9-x2,9-y2]
@@ -624,20 +625,24 @@
    }
 
    # can never capture a king
+
    if (target %in% c("WK","BK"))
       return(FALSE)
 
    # check if moving the wrong color
+
    color <- tolower(substr(piece, 1, 1))
    if (sidetoplay != color)
       return(FALSE)
 
    # check if capturing own piece
+
    targetcolor <- tolower(substr(target, 1, 1)) # if target is "", then this remains ""
    if (sidetoplay == targetcolor)
       return(FALSE)
 
    # check if king move is legal
+
    if (piece %in% c("WK","BK")) {
       isrochade <- ""
       rochade <- attr(pos,"rochade")
@@ -667,6 +672,7 @@
    }
 
    # check if bishop move is legal
+
    if (piece %in% c("WB","BB")) {
       if (abs(x1 - x2) == abs(y1 - y2)) {
          islegal <- TRUE
@@ -682,6 +688,7 @@
    }
 
    # check if rook move is legal
+
    if (piece %in% c("WR","BR")) {
       if (x1 == x2 || y1 == y2) {
          islegal <- TRUE
@@ -705,6 +712,7 @@
    }
 
    # check if queen move is legal
+
    if (piece %in% c("WQ","BQ")) {
       if ((x1 == x2 || y1 == y2) || abs(x1 - x2) == abs(y1 - y2)) {
          islegal <- TRUE
@@ -736,6 +744,7 @@
    }
 
    # check if knight move is legal
+
    if (piece %in% c("WN","BN")) {
       kmove <- c(abs(x1 - x2), abs(y1 - y2))
       if (identical(kmove, c(1,2)) || identical(kmove, c(2,1)))
@@ -743,6 +752,7 @@
    }
 
    # check if white pawn move is legal
+
    if (piece == "WP") {
       if (flip) {
          if (y1 == y2 && target == "" && (x1 - x2 == 1 || (x1 - x2 == 2 && x1 == 7 && pos[3,9-y1] == ""))) # regular pawn move
@@ -762,6 +772,7 @@
    }
 
    # check if black pawn move is legal
+
    if (piece == "BP") {
       if (flip) {
          if (y1 == y2 && target == "" && (x2 - x1 == 1 || (x2 - x1 == 2 && x1 == 2 && pos[6,9-y1] == ""))) # regular pawn move

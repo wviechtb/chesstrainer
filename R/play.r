@@ -383,6 +383,7 @@ play <- function(lang="en", sfpath="", ...) {
    replast  <- FALSE
    oldmode  <- ifelse(mode == "play", "add", mode)
    .difffun <- eval(parse(text=paste0(".difffun", difffun)))
+   contanalysis <- FALSE
 
    # session variables
 
@@ -551,7 +552,7 @@ play <- function(lang="en", sfpath="", ...) {
    # define keys
 
    keys <- c("q", "ctrl-Q", "\033", "ctrl-[", " ", "m", "d", "\\", "#", "n", "N", "p", "ctrl-R",
-             "g", "h", "H", "Left", "Right", "Up", "Down", "t", "T", "0", "1", "2", "3", "4", "5", "9",
+             "g", "h", "H", "y", "Left", "Right", "Up", "Down", "t", "T", "0", "1", "2", "3", "4", "5", "9",
              "r", "o", "u", "M", "B", "U", "j",
              "a", "A", "f", "z", "Z", "c", "e", "E", "s", "b",
              "^", "6", "R", "G", "w", "-", "=", "+", "[", "]", "{", "}", "(", ")", "i", "x", "v", "ctrl-V",
@@ -982,6 +983,13 @@ play <- function(lang="en", sfpath="", ...) {
             sideindicator <- .drawsideindicator(sidetoplay, flip=flip, clear=!identical(sideindicator, sidetoplay))
          }
 
+         if (mode %in% c("add","analysis") && contanalysis) {
+            tmp <- .showbestmove(pos, flip, sidetoplay, i, circles, arrows, harrows, lwd, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim, verbose)
+            harrows  <- tmp$harrows
+            texttop  <- tmp$texttop
+            evalvals <- tmp$evalvals
+         }
+
          input <- TRUE
 
          while (input) {
@@ -1025,7 +1033,6 @@ play <- function(lang="en", sfpath="", ...) {
                   }
 
                   tmp <- .parsebestmove(bestmove[[1]][1], pos=pos, flip=flip, evalval=NA, i=i, sidetoplay=sidetoplay, rename=FALSE, returnline=FALSE, hintdepth=1)
-
                   sub$moves <- rbind(sub$moves, data.frame(x1=tmp$x1, y1=tmp$y1, x2=tmp$x2, y2=tmp$y2, show=TRUE, move=tmp$txt, eval=evalval[1], comment="", circles="", arrows="", fen=fen))
                   pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE, volume=volume, verbose=verbose)
 
@@ -1442,54 +1449,10 @@ play <- function(lang="en", sfpath="", ...) {
                   }
                   .textbot(mode, zenmode, score=score, onlyscore=TRUE)
                } else {
-                  if (nrow(circles) >= 1L || nrow(arrows) >= 1L || nrow(harrows) >= 1L) {
-                     .rmannot(pos, circles, rbind(arrows, harrows), flip)
-                     harrows <- matrix(nrow=0, ncol=4)
-                     .drawcircles(circles, lwd=lwd)
-                     .drawarrows(arrows, lwd=lwd)
-                  }
-                  if (i == 1 && is.na(evalval[1])) {
-                     fen <- .genfen(pos, flip, sidetoplay, i)
-                     res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay, verbose)
-                     evalval  <- res.sf$eval
-                     bestmove <- res.sf$bestmove
-                     matetype <- res.sf$matetype
-                     sfproc   <- res.sf$sfproc
-                     sfrun    <- res.sf$sfrun
-                  }
-                  if (bestmove[[1]][1] != "") { # bestmove comes from [d] (unless it was calculate above)
-                     nmoves <- length(bestmove)
-                     bestmovetxt <- rep(NA_character_, nmoves)
-                     evalvals <- rep(NA_real_, nmoves)
-                     for (j in 1:nmoves) {
-                        if (bestmove[[j]][1] == "")
-                           next
-                        bestmovetxt[j] <- .parsebestmove(bestmove[[j]], pos=pos, flip=flip, evalval=evalval[j], i=i, sidetoplay=sidetoplay, rename=TRUE, returnline=TRUE, hintdepth=hintdepth)$txt
-                        evalvals[j] <- evalval[j]
-                        bestx1 <- as.numeric(substr(bestmove[[j]][1], 2, 2))
-                        besty1 <- which(letters[1:8] == substr(bestmove[[j]][1], 1, 1))
-                        bestx2 <- as.numeric(substr(bestmove[[j]][1], 4, 4))
-                        besty2 <- which(letters[1:8] == substr(bestmove[[j]][1], 3, 3))
-                        if (flip) {
-                           bestx1 <- 9 - bestx1
-                           besty1 <- 9 - besty1
-                           bestx2 <- 9 - bestx2
-                           besty2 <- 9 - besty2
-                        }
-                        harrows <- rbind(harrows, c(bestx1, besty1, bestx2, besty2))
-                     }
-                     evalvals <- evalvals[!is.na(evalvals)]
-                     bestmovetxt <- bestmovetxt[!is.na(bestmovetxt)]
-                     .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
-                     texttop <- .texttop(paste0(bestmovetxt, collapse="\n"), left=TRUE)
-                     attr(texttop, "left") <- TRUE
-                  } else {
-                     if (sfrun) {
-                        .texttop(.text("nobestmove"), sleep=1.5)
-                     } else {
-                        .texttop(.text("nomovewoutsf"), sleep=1.5)
-                     }
-                  }
+                  tmp <- .showbestmove(pos, flip, sidetoplay, i, circles, arrows, harrows, lwd, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim, verbose)
+                  harrows  <- tmp$harrows
+                  texttop  <- tmp$texttop
+                  evalvals <- tmp$evalvals
                }
                next
             }
@@ -1562,7 +1525,14 @@ play <- function(lang="en", sfpath="", ...) {
                   matetype <- res.sf$matetype
                   sfproc   <- res.sf$sfproc
                   sfrun    <- res.sf$sfrun
+                  if (mode %in% c("add","analysis") && contanalysis) {
+                     tmp <- .showbestmove(pos, flip, sidetoplay, i, circles, arrows, harrows, lwd, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim, verbose)
+                     harrows  <- tmp$harrows
+                     texttop  <- tmp$texttop
+                     evalvals <- tmp$evalvals
+                  }
                }
+
                next
             }
 
@@ -1658,6 +1628,12 @@ play <- function(lang="en", sfpath="", ...) {
                   matetype <- res.sf$matetype
                   sfproc   <- res.sf$sfproc
                   sfrun    <- res.sf$sfrun
+                  if (mode %in% c("add","analysis") && contanalysis) {
+                     tmp <- .showbestmove(pos, flip, sidetoplay, i, circles, arrows, harrows, lwd, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim, verbose)
+                     harrows  <- tmp$harrows
+                     texttop  <- tmp$texttop
+                     evalvals <- tmp$evalvals
+                  }
                }
                next
             }
@@ -1715,6 +1691,12 @@ play <- function(lang="en", sfpath="", ...) {
                   matetype <- res.sf$matetype
                   sfproc   <- res.sf$sfproc
                   sfrun    <- res.sf$sfrun
+                  if (mode %in% c("add","analysis") && contanalysis) {
+                     tmp <- .showbestmove(pos, flip, sidetoplay, i, circles, arrows, harrows, lwd, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim, verbose)
+                     harrows  <- tmp$harrows
+                     texttop  <- tmp$texttop
+                     evalvals <- tmp$evalvals
+                  }
                }
                next
             }
@@ -1805,6 +1787,12 @@ play <- function(lang="en", sfpath="", ...) {
                   matetype <- res.sf$matetype
                   sfproc   <- res.sf$sfproc
                   sfrun    <- res.sf$sfrun
+                  if (mode %in% c("add","analysis") && contanalysis) {
+                     tmp <- .showbestmove(pos, flip, sidetoplay, i, circles, arrows, harrows, lwd, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim, verbose)
+                     harrows  <- tmp$harrows
+                     texttop  <- tmp$texttop
+                     evalvals <- tmp$evalvals
+                  }
                }
                next
             }
@@ -1858,6 +1846,12 @@ play <- function(lang="en", sfpath="", ...) {
                matetype <- res.sf$matetype
                sfproc   <- res.sf$sfproc
                sfrun    <- res.sf$sfrun
+               if (mode %in% c("add","analysis") && contanalysis) {
+                  tmp <- .showbestmove(pos, flip, sidetoplay, i, circles, arrows, harrows, lwd, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim, verbose)
+                  harrows  <- tmp$harrows
+                  texttop  <- tmp$texttop
+                  evalvals <- tmp$evalvals
+               }
                next
             }
 
@@ -2227,6 +2221,12 @@ play <- function(lang="en", sfpath="", ...) {
                matetype <- res.sf$matetype
                sfproc   <- res.sf$sfproc
                sfrun    <- res.sf$sfrun
+               if (mode %in% c("add","analysis") && contanalysis) {
+                  tmp <- .showbestmove(pos, flip, sidetoplay, i, circles, arrows, harrows, lwd, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim, verbose)
+                  harrows  <- tmp$harrows
+                  texttop  <- tmp$texttop
+                  evalvals <- tmp$evalvals
+               }
                next
 
             }
@@ -2420,6 +2420,12 @@ play <- function(lang="en", sfpath="", ...) {
                   starteval <- evalval[1]
                   attr(sub$pos, "starteval") <- starteval
                   .draweval(starteval, NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
+                  if (mode %in% c("add","analysis") && contanalysis) {
+                     tmp <- .showbestmove(pos, flip, sidetoplay, i, circles, arrows, harrows, lwd, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim, verbose)
+                     harrows  <- tmp$harrows
+                     texttop  <- tmp$texttop
+                     evalvals <- tmp$evalvals
+                  }
                }
                if (verbose)
                   print(pos)
@@ -2607,6 +2613,31 @@ play <- function(lang="en", sfpath="", ...) {
                   eval(expr=switch2)
                }
                .texttop(.text("verbose", verbose), sleep=0.5)
+               .texttop(texttop)
+               next
+            }
+
+            # y to toggle continuous analysis on/off
+
+            if (identical(click, "y")) {
+               contanalysis <- !contanalysis
+               .texttop(.text("contanalysis", contanalysis), sleep=0.75)
+               if (contanalysis) {
+                  if (mode %in% c("add","analysis")) {
+                     tmp <- .showbestmove(pos, flip, sidetoplay, i, circles, arrows, harrows, lwd, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim, verbose)
+                     harrows  <- tmp$harrows
+                     texttop  <- tmp$texttop
+                     evalvals <- tmp$evalvals
+                  }
+               } else {
+                  if (nrow(circles) >= 1L || nrow(arrows) >= 1L || nrow(harrows) >= 1L) {
+                     .rmannot(pos, circles, rbind(arrows, harrows), flip)
+                     harrows <- matrix(nrow=0, ncol=4)
+                     .drawcircles(circles, lwd=lwd)
+                     .drawarrows(arrows, lwd=lwd)
+                  }
+                  texttop <- ""
+               }
                .texttop(texttop)
                next
             }
@@ -3802,6 +3833,12 @@ play <- function(lang="en", sfpath="", ...) {
                         matetype <- res.sf$matetype
                         sfproc   <- res.sf$sfproc
                         sfrun    <- res.sf$sfrun
+                        if (mode %in% c("add","analysis") && contanalysis) {
+                           tmp <- .showbestmove(pos, flip, sidetoplay, i, circles, arrows, harrows, lwd, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim, verbose)
+                           harrows  <- tmp$harrows
+                           texttop  <- tmp$texttop
+                           evalvals <- tmp$evalvals
+                        }
                         .textbot(mode, zenmode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
                         contplay <- TRUE
                         break

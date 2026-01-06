@@ -1296,6 +1296,64 @@
 
 }
 
+.showbestmove <- function(pos, flip, sidetoplay, i, circles, arrows, harrows, lwd, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim, verbose) {
+
+   texttop <- ""
+   evalvals <- NULL
+
+   if (nrow(circles) >= 1L || nrow(arrows) >= 1L || nrow(harrows) >= 1L) {
+      .rmannot(pos, circles, rbind(arrows, harrows), flip)
+      .drawcircles(circles, lwd=lwd)
+      .drawarrows(arrows, lwd=lwd)
+   }
+   harrows <- matrix(nrow=0, ncol=4)
+   if (i == 1 && is.na(evalval[1])) {
+      fen <- .genfen(pos, flip, sidetoplay, i)
+      res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay, verbose)
+      evalval  <- res.sf$eval
+      bestmove <- res.sf$bestmove
+      matetype <- res.sf$matetype
+      sfproc   <- res.sf$sfproc
+      sfrun    <- res.sf$sfrun
+   }
+   if (bestmove[[1]][1] != "") { # bestmove comes from [d] (unless it was calculate above)
+      nmoves <- length(bestmove)
+      bestmovetxt <- rep(NA_character_, nmoves)
+      evalvals <- rep(NA_real_, nmoves)
+      for (j in 1:nmoves) {
+         if (bestmove[[j]][1] == "")
+            next
+         bestmovetxt[j] <- .parsebestmove(bestmove[[j]], pos=pos, flip=flip, evalval=evalval[j], i=i, sidetoplay=sidetoplay, rename=TRUE, returnline=TRUE, hintdepth=hintdepth)$txt
+         evalvals[j] <- evalval[j]
+         bestx1 <- as.numeric(substr(bestmove[[j]][1], 2, 2))
+         besty1 <- which(letters[1:8] == substr(bestmove[[j]][1], 1, 1))
+         bestx2 <- as.numeric(substr(bestmove[[j]][1], 4, 4))
+         besty2 <- which(letters[1:8] == substr(bestmove[[j]][1], 3, 3))
+         if (flip) {
+            bestx1 <- 9 - bestx1
+            besty1 <- 9 - besty1
+            bestx2 <- 9 - bestx2
+            besty2 <- 9 - besty2
+         }
+         harrows <- rbind(harrows, c(bestx1, besty1, bestx2, besty2))
+      }
+      evalvals <- evalvals[!is.na(evalvals)]
+      bestmovetxt <- bestmovetxt[!is.na(bestmovetxt)]
+      .drawarrows(harrows, lwd=lwd, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
+      texttop <- .texttop(paste0(bestmovetxt, collapse="\n"), left=TRUE)
+      attr(texttop, "left") <- TRUE
+   } else {
+      if (sfrun) {
+         .texttop(.text("nobestmove"), sleep=1.5)
+      } else {
+         .texttop(.text("nomovewoutsf"), sleep=1.5)
+      }
+   }
+
+   return(list(harrows=harrows, texttop=texttop, evalvals=evalvals))
+
+}
+
 .erase <- function(x1, y1, x2, y2, steps=50) {
 
    col.bg <- .get("col.bg")

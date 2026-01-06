@@ -573,6 +573,12 @@
                          paste0("Verbose: ", ifelse(arg, "On", "Off"))
    ))}
 
+   if (x == "contanalysis") {
+      return(switch(lang,
+                    de = paste0("Kontinuierliche Analyse: ", ifelse(arg, "An", "Aus")),
+                         paste0("Continuous analysis: ", ifelse(arg, "On", "Off"))
+   ))}
+
    if (x == "eval") {
       return(switch(lang,
                     de = paste0("Bewertungsleiste: ", ifelse(arg, "An", "Aus")),

@@ -87,16 +87,16 @@
       "z and Z  - show moves (own/computer) on/off",
       "c        - add a comment to the current move",
       "e and E  - edit the comments / edit the sequence file",
-      "h and H  - show the best move according to Stockfish (fast / deep)",
+      "h and H  - show the best move according to Stockfish (fast / deep evaluation)",
+      "y        - continuous analysis on/off (also in analysis mode)",
       "t        - take back the last move",
-      "0        - make the current position the starting position",
+      "0        - make the current position the starting position for the sequence",
       "b        - start the board editor",
-      "g        - show the evaluation graph",
+      "g        - show the evaluation graph (also in play and analysis mode)",
       "s        - save the sequence")
 
       txt.play <- c(
       "Shortcuts for the play and analysis mode:",
-      "g        - show the evaluation graph",
       "t        - take back the last move (computer move and own move)",
       "\\ or #   - switch between the play and analysis mode",
       "0        - store the current moves and position as the main variation",
@@ -169,7 +169,7 @@
       "R        - Sequenzen nach Fehler automatisch wiederholen an/aus",
       "j        - springe zu einer Sequenznummer (f\U000000FCr sequenzielle Sequenzauswahlmodi)",
       "T        - Zielwert festlegen",
-      "g        - Fortschrittsdiagramm f\U000000FCr aktuelle Sequenz anzeigen",
+      "g        - Fortschrittsdiagramm f\U000000FCr die aktuelle Sequenz anzeigen",
       "G        - Fortschrittsdiagramm am Ende der Sequenzen anzeigen an/aus",
       "a        - aktuelle Sequenz mit Z\U000000FCgen erweitern (wechselt zum Hinzuf\U000000FCgen Modus)",
       "A        - aktuelle Stellung mit Z\U000000FCgen erweitern (wechselt zum Hinzuf\U000000FCgen Modus)",
@@ -182,17 +182,17 @@
       "z und Z  - Z\U000000FCge zeigen (eigene/Computer) an/aus",
       "c        - Kommentar zum aktuellen Zug hinzuf\U000000FCgen",
       "e und E  - Kommentare editieren / Sequenzfile editieren",
-      "h und H  - den besten Zug laut Stockfish anzeigen (schnell / tief)",
+      "h und H  - den besten Zug laut Stockfish anzeigen (schnelle / tiefe Analyse)",
+      "y        - kontinuierliche Analyse an/aus (auch im Analysemodus)",
       "t        - den letzten Zug zur\U000000FCcknehmen",
-      "0        - aktuelle Stellung zur Ausgangsstellung machen",
+      "0        - aktuelle Stellung zur Ausgangsstellung der Sequenz machen",
       "b        - Bretteditor starten",
-      "g        - Bewertungsdiagram anzeigen",
+      "g        - Bewertungsdiagram anzeigen (auch im Spiel- und Analysemodus)",
       "s        - Sequenz abspeichern"
       )
 
       txt.play <- c(
       "Tastenk\U000000FCrzel f\U000000FCr den Spiel- und Analysemodus:",
-      "g        - Bewertungsdiagram anzeigen",
       "t        - den letzten Zug zur\U000000FCcknehmen (Computerzug und eigener Zug)",
       "\\ oder # - zwischen dem Spiel- und Analysemodus wechseln",
       "0        - aktuelle Zugfolge und Stellung als Hauptvariante sichern",
