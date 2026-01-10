@@ -101,8 +101,13 @@
       # number = add number to num
 
       if (is.element(key, 0:9)) {
-         num <- paste0(num, key, collapse="")
-         num <- as.numeric(num)
+         newnum <- paste0(num, key, collapse="")
+         newnum <- as.numeric(newnum)
+         if (nchar(newnum) > nchar(length(bookmarks))) {
+            next
+         } else {
+            num <- newnum
+         }
          next
       }
 

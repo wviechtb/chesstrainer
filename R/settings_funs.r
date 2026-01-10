@@ -155,6 +155,7 @@
    lwd <- tab$lwd
 
    lang <- .get("lang")
+   tab$lang <- lang
 
    col.bg          <- .get("col.bg")
    col.help        <- .get("col.help")

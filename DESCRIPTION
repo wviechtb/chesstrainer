@@ -1,5 +1,5 @@
 Package: chesstrainer
-Version: 0.9-121
+Version: 0.9-122
 Date: 2026-01-10
 Title: Chess Training Program
 Authors@R: person(given = "Wolfgang", family = "Viechtbauer", role = c("aut","cre"), email = "wvb@wvbauer.com", comment = c(ORCID = "0000-0003-3463-4063"))
