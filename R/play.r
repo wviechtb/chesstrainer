@@ -747,7 +747,7 @@ play <- function(lang="en", sfpath="", ...) {
 
       if (selmode == "age_oldest") {
          probvals.selected <- rep(0, k)
-         if (any(is.na(age.selected))) {
+         if (anyNA(age.selected)) {
             probvals.selected[which(is.na(age.selected))[1]] <- 100
          } else {
             probvals.selected[which(age.selected == max(age.selected[scores.selected != 0]))[1]] <- 100
@@ -1391,7 +1391,7 @@ play <- function(lang="en", sfpath="", ...) {
                   }
                }
                if (mode %in% c("add","play","analysis")) {
-                  if (any(is.na(sub$moves$eval)) || i == 1)
+                  if (anyNA(sub$moves$eval) || i == 1)
                      next
                   tmp <- .evalgraph(sub$moves, i=i, flip=flip, lwd=lwd, mar=mar, mar2=mar2)
                   if (!identical(mar2, tmp$mar2)) {
@@ -2243,6 +2243,7 @@ play <- function(lang="en", sfpath="", ...) {
                   sub$moves <- sub$moves[numeric(0),]
                   sub$pos <- pos
                   .textbot(mode, zenmode, i=i, totalmoves=totalmoves, onlyi=TRUE)
+                  sidetoplaystart <- sidetoplay
                }
                next
             }

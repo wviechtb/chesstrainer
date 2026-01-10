@@ -215,24 +215,9 @@
    The sound volume can be decreased/increased with the \verb{<[>} and \verb{<]>} keys. Setting the volume to 0 disables the sound. This can also be useful if playing sounds adds too much lag.
 
 }
-\section{Resetting and Cleaning Up}{
+\section{Cleaning Up}{
 
-   If you would like to remove the config files (for the settings and colors), you can use the following two commands:
-
-\preformatted{file.remove(file.path(tools::R_user_dir(package="chesstrainer", which="config"), "settings.rds"))
-file.remove(file.path(tools::R_user_dir(package="chesstrainer", which="config"), "colors.rds"))}
-
-   This may be useful in case these files were corrupted with nonsensical settings. The files will be recreated (with default values) when restarting the trainer. If you would like to remove both of these files and the directory where these files are stored, you can use:
-
-\preformatted{unlink(tools::R_user_dir(package="chesstrainer", which="config"), recursive=TRUE)}
-
-   If you would like to remove the default directory where sequences are stored (and all files therein), you can use:
-
-\preformatted{unlink(file.path(tools::R_user_dir(package="chesstrainer", which="data"), "sequences"), recursive=TRUE)}
-
-   If you would like to remove the directory where the session history of all players is stored (and all files therein), you can use:
-
-\preformatted{unlink(file.path(tools::R_user_dir(package="chesstrainer", which="data"), "sessions"), recursive=TRUE)}
+   The package creates various files and directories. The \code{\link{cleanup}} function can be used to clean up files and directories created by the package.
 
 }
 \section{Backing Up Sequences}{
