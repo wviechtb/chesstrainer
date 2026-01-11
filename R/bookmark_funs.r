@@ -185,7 +185,7 @@
          text(1.8, 2, .text("rlydelallbookmarks"), pos=4, offset=0, cex=cex, family=font.mono, font=1, col=col.help)
          answer <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=.keyfun)
          if (.confirm(answer)) {
-            bookmarks <- c()
+            bookmarks <- NULL
             break
          }
       }

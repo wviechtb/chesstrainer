@@ -151,7 +151,7 @@
 
    # generate the piece placement data
 
-   fen <- c()
+   fen <- NULL
 
    for (j in 8:1) {
       fen[9-j] <- paste0(pos[j,], collapse="")

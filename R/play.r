@@ -608,7 +608,7 @@ play <- function(lang="en", sfpath="", ...) {
       circles <- matrix(nrow=0, ncol=2) # to store circles
       arrows  <- matrix(nrow=0, ncol=4) # to store arrows
       harrows <- matrix(nrow=0, ncol=4) # to store hint arrows
-      evalvals <- c()
+      evalvals <- NULL
 
       # start new game for Stockfish
 
@@ -1140,7 +1140,7 @@ play <- function(lang="en", sfpath="", ...) {
                   circles <- matrix(nrow=0, ncol=2)
                   arrows  <- matrix(nrow=0, ncol=4)
                   harrows <- matrix(nrow=0, ncol=4)
-                  evalvals <- c()
+                  evalvals <- NULL
                }
 
             }
@@ -1195,7 +1195,7 @@ play <- function(lang="en", sfpath="", ...) {
                circles <- matrix(nrow=0, ncol=2)
                arrows  <- matrix(nrow=0, ncol=4)
                harrows <- matrix(nrow=0, ncol=4)
-               evalvals <- c()
+               evalvals <- NULL
                next
             }
 
@@ -1479,7 +1479,7 @@ play <- function(lang="en", sfpath="", ...) {
                   circles <- matrix(nrow=0, ncol=2)
                   arrows  <- matrix(nrow=0, ncol=4)
                   harrows <- matrix(nrow=0, ncol=4)
-                  evalvals <- c()
+                  evalvals <- NULL
                }
                oldeval <- sub$moves$eval[i-1]
                posold <- pos
@@ -1577,7 +1577,7 @@ play <- function(lang="en", sfpath="", ...) {
                   circles <- matrix(nrow=0, ncol=2)
                   arrows  <- matrix(nrow=0, ncol=4)
                   harrows <- matrix(nrow=0, ncol=4)
-                  evalvals <- c()
+                  evalvals <- NULL
                }
                oldeval <- sub$moves$eval[i-1]
                posold <- pos
@@ -1677,7 +1677,7 @@ play <- function(lang="en", sfpath="", ...) {
                      circles <- matrix(nrow=0, ncol=2)
                      arrows  <- matrix(nrow=0, ncol=4)
                      harrows <- matrix(nrow=0, ncol=4)
-                     evalvals <- c()
+                     evalvals <- NULL
                   }
                   tmp <- .parsebestmove(bestmove[[1]][1], pos=pos, flip=flip, evalval=NA, i=i, sidetoplay=sidetoplay, rename=FALSE, returnline=FALSE, hintdepth=1)
                   pos <- .updateboard(pos, move=data.frame(x1=tmp$x1, y1=tmp$y1, x2=tmp$x2, y2=tmp$y2, show=TRUE, move=tmp$txt), flip=flip, autoprom=TRUE, volume=volume, verbose=verbose)
@@ -1750,7 +1750,7 @@ play <- function(lang="en", sfpath="", ...) {
                   circles <- matrix(nrow=0, ncol=2)
                   arrows  <- matrix(nrow=0, ncol=4)
                   harrows <- matrix(nrow=0, ncol=4)
-                  evalvals <- c()
+                  evalvals <- NULL
                }
                pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE, volume=volume, verbose=verbose)
                sub$moves$move[i] <- attr(pos,"move")
@@ -1825,7 +1825,7 @@ play <- function(lang="en", sfpath="", ...) {
                   circles <- matrix(nrow=0, ncol=2)
                   arrows  <- matrix(nrow=0, ncol=4)
                   harrows <- matrix(nrow=0, ncol=4)
-                  evalvals <- c()
+                  evalvals <- NULL
                }
                comment <- ""
                oldeval <- sub$moves$eval[i-1]
@@ -1915,7 +1915,7 @@ play <- function(lang="en", sfpath="", ...) {
                   circles <- matrix(nrow=0, ncol=2)
                   arrows  <- matrix(nrow=0, ncol=4)
                   harrows <- matrix(nrow=0, ncol=4)
-                  evalvals <- c()
+                  evalvals <- NULL
                }
                posold <- pos
                sub$moves <- savgame
@@ -2255,7 +2255,7 @@ play <- function(lang="en", sfpath="", ...) {
                      circles <- matrix(nrow=0, ncol=2)
                      arrows  <- matrix(nrow=0, ncol=4)
                      harrows <- matrix(nrow=0, ncol=4)
-                     evalvals <- c()
+                     evalvals <- NULL
                   }
 
                   .draweval(sub$moves$eval[i-1], NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
@@ -2283,7 +2283,7 @@ play <- function(lang="en", sfpath="", ...) {
                   circles <- matrix(nrow=0, ncol=2)
                   arrows  <- matrix(nrow=0, ncol=4)
                   harrows <- matrix(nrow=0, ncol=4)
-                  evalvals <- c()
+                  evalvals <- NULL
 
                   if (!identical(sub$moves$comment[1], "")) {
                      texttop <- .texttop(sub$moves$comment[1])
@@ -2360,7 +2360,7 @@ play <- function(lang="en", sfpath="", ...) {
                circles <- matrix(nrow=0, ncol=2)
                arrows  <- matrix(nrow=0, ncol=4)
                harrows <- matrix(nrow=0, ncol=4)
-               evalvals <- c()
+               evalvals <- NULL
                .redrawall(pos, flip, mode, zenmode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, timed, movestoplay, movesplayed, timetotal, timepermove, mar)
                .draweval(starteval, starteval, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                next
@@ -2505,7 +2505,7 @@ play <- function(lang="en", sfpath="", ...) {
                circles <- matrix(nrow=0, ncol=2)
                arrows  <- matrix(nrow=0, ncol=4)
                harrows <- matrix(nrow=0, ncol=4)
-               evalvals <- c()
+               evalvals <- NULL
                sub$moves <- sub$moves[numeric(0),]
                sub$flip <- flip
                .redrawall(pos, flip, mode, zenmode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, timed, movestoplay, movesplayed, timetotal, timepermove, mar)
@@ -3683,7 +3683,7 @@ play <- function(lang="en", sfpath="", ...) {
             circles <- matrix(nrow=0, ncol=2)
             arrows  <- matrix(nrow=0, ncol=4)
             harrows <- matrix(nrow=0, ncol=4)
-            evalvals <- c()
+            evalvals <- NULL
          }
 
          if (!islastmove) {
@@ -4170,17 +4170,28 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
+            if (!identical(matetype, "none")) {
+               .texttop(.text(matetype))
+               if (mode %in% c("play","analysis")) {
+                  playsound(system.file("sounds", "complete.ogg", package="chesstrainer"), volume=volume)
+                  mode <- "analysis"
+                  .textbot(mode, zenmode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
+                  next
+               }
+            }
+
             # check for threefold repetition
 
             threefold <- any(table(sapply(strsplit(sub$moves$fen, " "), function(x) paste(x[1:4], collapse = " "))) == 3L)
 
             if (threefold) {
                .texttop(.text("threefold"))
+               evalval <- 0
+               .draweval(evalval[1], evalvallast, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                if (mode %in% c("play","analysis")) {
                   playsound(system.file("sounds", "complete.ogg", package="chesstrainer"), volume=volume)
                   mode <- "analysis"
                   .textbot(mode, zenmode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
-                  .draweval(evalval[1], evalvallast, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                   next
                }
             }
@@ -4191,11 +4202,12 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (fifty) {
                .texttop(.text("fifty"))
+               evalval <- 0
+               .draweval(evalval[1], evalvallast, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                if (mode %in% c("play","analysis")) {
                   playsound(system.file("sounds", "complete.ogg", package="chesstrainer"), volume=volume)
                   mode <- "analysis"
                   .textbot(mode, zenmode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
-                  .draweval(evalval[1], evalvallast, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                   next
                }
             }
