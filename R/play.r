@@ -993,6 +993,14 @@ play <- function(lang="en", sfpath="", ...) {
          }
 
          input <- TRUE
+         islastmove <- FALSE
+
+         if (mode == "test" && i > nrow(sub$moves)) {
+            button <- 0
+            islastmove <- TRUE
+            #print(button)
+            input <- FALSE
+         }
 
          while (input) {
 
@@ -2417,10 +2425,11 @@ play <- function(lang="en", sfpath="", ...) {
             # s to save the sequence (only in add mode)
 
             if (mode == "add" && identical(click, "s")) {
-               if ((flip && sidetoplay == "b") || (!flip && sidetoplay == "w")) {
-                  .texttop(.text("lastmoveplayer"))
-                  next
-               }
+               # no longer necessary that a sequence ends with a move of the player
+               #if ((flip && sidetoplay == "b") || (!flip && sidetoplay == "w")) {
+               #   .texttop(.text("lastmoveplayer"))
+               #   next
+               #}
                if (all(sub$moves$show)) {
                   .texttop(.text("allmovesshown"))
                   next
@@ -3653,7 +3662,7 @@ play <- function(lang="en", sfpath="", ...) {
 
          # if using <right> all the way to the end of a sequence, then i > nrow(sub$moves) which causes an error when trying to move a piece
 
-         if (mode == "test" && i > nrow(sub$moves))
+         if (mode == "test" && i > nrow(sub$moves) && !islastmove)
             next
 
          drawcircles  <- TRUE
@@ -3677,59 +3686,63 @@ play <- function(lang="en", sfpath="", ...) {
             evalvals <- c()
          }
 
-         # check that the move is legal
+         if (!islastmove) {
 
-         islegal <- .islegal(click1.x, click1.y, click2.x, click2.y, pos, flip, sidetoplay)
+            # check that the move is legal
 
-         if (!islegal)
-            next
+            islegal <- .islegal(click1.x, click1.y, click2.x, click2.y, pos, flip, sidetoplay)
 
-         # check if the king is in check before the move
+            if (!islegal)
+               next
 
-         if (sidetoplay == "w") {
-            check.before <- .isattacked(pos, xy=c(which(pos=="WK", arr.ind=TRUE)), attackcolor="b")
-         } else {
-            check.before <- .isattacked(pos, xy=c(which(pos=="BK", arr.ind=TRUE)), attackcolor="w")
+            # check if the king is in check before the move
+
+            if (sidetoplay == "w") {
+               check.before <- .isattacked(pos, xy=c(which(pos=="WK", arr.ind=TRUE)), attackcolor="b")
+            } else {
+               check.before <- .isattacked(pos, xy=c(which(pos=="BK", arr.ind=TRUE)), attackcolor="w")
+            }
+
+            # try to make the move (note: using autoprom=TRUE and "=Q" to autopromote to queen, but this is only
+            # relevant if a pawn move for promotion would put the king in check, which would not be a legal move)
+
+            tmp <- .updateboard(pos, move=data.frame(click1.x, click1.y, click2.x, click2.y, NA, "=Q"), flip=flip, autoprom=TRUE, volume=0, verbose=verbose, draw=FALSE)
+
+            ischeck.after <- attr(tmp,"ischeck")
+
+            # checks to do if castling
+
+            if (startsWith(attr(tmp,"move"), "0-0")) {
+
+               # check if castling from a checked position (not a legal move)
+
+               if (check.before)
+                  islegal <- FALSE
+
+               # check that the king does not pass through an attacked square (not a legal move)
+
+               if (sidetoplay == "w" && attr(tmp,"move") == "0-0" && .isattacked(pos, xy=c(1,6), attackcolor="b"))
+                  islegal <- FALSE
+               if (sidetoplay == "w" && attr(tmp,"move") == "0-0-0" && .isattacked(pos, xy=c(1,4), attackcolor="b"))
+                  islegal <- FALSE
+               if (sidetoplay == "b" && attr(tmp,"move") == "0-0" && .isattacked(pos, xy=c(8,6), attackcolor="w"))
+                  islegal <- FALSE
+               if (sidetoplay == "b" && attr(tmp,"move") == "0-0-0" && .isattacked(pos, xy=c(8,4), attackcolor="w"))
+                  islegal <- FALSE
+
+            }
+
+            # check if the king is in check after the move (not a legal move)
+
+            if (sidetoplay == "w" && ischeck.after[1])
+               islegal <- FALSE
+            if (sidetoplay == "b" && ischeck.after[2])
+               islegal <- FALSE
+
+            if (!islegal)
+               next
+
          }
-
-         # try to make the move (note: using autoprom=TRUE and "=Q" to autopromote to queen, but this is only
-         # relevant if a pawn move for promotion would put the king in check, which would not be a legal move)
-
-         tmp <- .updateboard(pos, move=data.frame(click1.x, click1.y, click2.x, click2.y, NA, "=Q"), flip=flip, autoprom=TRUE, volume=0, verbose=verbose, draw=FALSE)
-
-         ischeck.after <- attr(tmp,"ischeck")
-
-         # checks to do if castling
-
-         if (startsWith(attr(tmp,"move"), "0-0")) {
-
-            # check if castling from a checked position (not a legal move)
-
-            if (check.before)
-               islegal <- FALSE
-
-            # check that the king does not pass through an attacked square (not a legal move)
-
-            if (sidetoplay == "w" && attr(tmp,"move") == "0-0" && .isattacked(pos, xy=c(1,6), attackcolor="b"))
-               islegal <- FALSE
-            if (sidetoplay == "w" && attr(tmp,"move") == "0-0-0" && .isattacked(pos, xy=c(1,4), attackcolor="b"))
-               islegal <- FALSE
-            if (sidetoplay == "b" && attr(tmp,"move") == "0-0" && .isattacked(pos, xy=c(8,6), attackcolor="w"))
-               islegal <- FALSE
-            if (sidetoplay == "b" && attr(tmp,"move") == "0-0-0" && .isattacked(pos, xy=c(8,4), attackcolor="w"))
-               islegal <- FALSE
-
-         }
-
-         # check if the king is in check after the move (not a legal move)
-
-         if (sidetoplay == "w" && ischeck.after[1])
-            islegal <- FALSE
-         if (sidetoplay == "b" && ischeck.after[2])
-            islegal <- FALSE
-
-         if (!islegal)
-            next
 
          if (mode %in% c("add","play","analysis")) {
 
@@ -3742,43 +3755,47 @@ play <- function(lang="en", sfpath="", ...) {
 
          if (mode == "test") {
 
-            domistake <- TRUE
+            if (!islastmove) {
 
-            # if in test mode, check that the move is correct (and also check that a promotion is made correctly)
+               domistake <- TRUE
 
-            if (all(c(click1.x == sub$moves$x1[i], click1.y == sub$moves$y1[i], click2.x == sub$moves$x2[i], click2.y == sub$moves$y2[i]))) {
-               tmp <- .updateboard(pos, move=data.frame(click1.x, click1.y, click2.x, click2.y, sub$moves[i,5:6]), flip=flip, autoprom=FALSE, volume=volume, verbose=verbose)
-               if (!identical(tmp, "prommistake")) {
-                  movesplayed <- movesplayed + 1
-                  timenow <- proc.time()[[3]]
-                  timetotal <- timetotal + (timenow - timestart)
-                  if (timed) .drawtimer(movestoplay, movesplayed, timetotal, timepermove)
-                  domistake <- FALSE
-                  pos <- tmp
-                  .draweval(sub$moves$eval[i], sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
-                  sub$moves$move[i] <- attr(pos,"move")
+               # if in test mode, check that the move is correct (and also check that a promotion is made correctly)
+
+               if (all(c(click1.x == sub$moves$x1[i], click1.y == sub$moves$y1[i], click2.x == sub$moves$x2[i], click2.y == sub$moves$y2[i]))) {
+                  tmp <- .updateboard(pos, move=data.frame(click1.x, click1.y, click2.x, click2.y, sub$moves[i,5:6]), flip=flip, autoprom=FALSE, volume=volume, verbose=verbose)
+                  if (!identical(tmp, "prommistake")) {
+                     movesplayed <- movesplayed + 1
+                     timenow <- proc.time()[[3]]
+                     timetotal <- timetotal + (timenow - timestart)
+                     if (timed) .drawtimer(movestoplay, movesplayed, timetotal, timepermove)
+                     domistake <- FALSE
+                     pos <- tmp
+                     .draweval(sub$moves$eval[i], sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
+                     sub$moves$move[i] <- attr(pos,"move")
+                  }
                }
-            }
 
-            # if the move was incorrect, adjust the score, and show that it was the wrong move
+               # if the move was incorrect, adjust the score, and show that it was the wrong move
 
-            if (domistake) {
-               mistake <- TRUE
-               if (score >= 1) {
-                  scoreadd <- min(adjustwrong, 100-score)
-                  score <- score + scoreadd
+               if (domistake) {
+                  mistake <- TRUE
+                  if (score >= 1) {
+                     scoreadd <- min(adjustwrong, 100-score)
+                     score <- score + scoreadd
+                  }
+                  .textbot(mode, zenmode, score=score, onlyscore=TRUE)
+                  .rmrect(click1.x, click1.y, lwd=lwd)
+                  .addrect(click2.x, click2.y, col=.get("col.wrong"), lwd=lwd)
+                  playsound(system.file("sounds", "error.ogg", package="chesstrainer"), volume=volume)
+                  Sys.sleep(sleep/2)
+                  .rmrect(click2.x, click2.y, lwd=lwd)
+                  next
                }
-               .textbot(mode, zenmode, score=score, onlyscore=TRUE)
-               .rmrect(click1.x, click1.y, lwd=lwd)
-               .addrect(click2.x, click2.y, col=.get("col.wrong"), lwd=lwd)
-               playsound(system.file("sounds", "error.ogg", package="chesstrainer"), volume=volume)
-               Sys.sleep(sleep/2)
-               .rmrect(click2.x, click2.y, lwd=lwd)
-               next
-            }
 
-            i <- i + 1
-            sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
+               i <- i + 1
+               sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
+
+            }
 
             if (i > nrow(sub$moves)) {
 
