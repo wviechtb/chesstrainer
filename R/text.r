@@ -58,8 +58,8 @@
 
    if (x == "seqsnomoves") {
       return(switch(lang,
-                    de = "Alle ausgew\U000000E4hlten Sequenzen haben keine Z\U000000FCge.\n",
-                         "All selected sequences have no moves.\n"
+                    de = "Alle (ausgew\U000000E4hlten) Sequenzen haben keine Z\U000000FCge.\n",
+                         "All (selected) sequences have no moves.\n"
    ))}
 
    if (x == "useseqdir") {

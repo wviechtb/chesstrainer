@@ -673,7 +673,7 @@ play <- function(lang="en", sfpath="", ...) {
 
       # if all selected sequences have no moves, then select all sequences and start over
 
-      if (all(sapply(dat, function(x) nrow(x$moves) == 0L))) {
+      if (k.all > 0L && all(sapply(dat, function(x) nrow(x$moves) == 0L))) {
          cat(.text("seqsnomoves"))
          cat(.text("allseqselected"))
          selected <- NULL
