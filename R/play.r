@@ -2810,7 +2810,7 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (identical(click, ">")) {
                bookmark <- .bookmarks(seqdir, seqdirpos, texttop, lwd) # returns NA if bookmark screen was not draw
-               if (isTRUE(bookmark != "")) { # only TRUE if bookmark is neither NA or ""
+               if (isTRUE(bookmark != "")) { # only TRUE if bookmark is neither NA nor ""
                   selected <- grepl(bookmark, files.all)
                   selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected]
                   run.rnd <- FALSE
@@ -2818,7 +2818,7 @@ play <- function(lang="en", sfpath="", ...) {
                   mode <- oldmode <- "add"
                   seqno <- 1
                } else {
-                  if (bookmark == "") {
+                  if (isTRUE(bookmark == "")) {
                      .redrawpos(pos, flip=flip)
                      .drawcircles(circles, lwd=lwd)
                      .drawarrows(arrows, lwd=lwd)
