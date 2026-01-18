@@ -108,10 +108,10 @@
 .calcsquare <- function(x, y, plt) {
    square.x <- floor((y - plt[3]) / (plt[4] - plt[3]) * 8 + 1)
    square.y <- floor((x - plt[1]) / (plt[2] - plt[1]) * 8 + 1)
-   square.x[square.x < 1] <- 1
-   square.x[square.x > 8] <- 8
-   square.y[square.y < 1] <- 1
-   square.y[square.y > 8] <- 8
+   #square.x[square.x < 1] <- 1
+   #square.x[square.x > 8] <- 8
+   #square.y[square.y < 1] <- 1
+   #square.y[square.y > 8] <- 8
    return(c(square.x, square.y))
 }
 

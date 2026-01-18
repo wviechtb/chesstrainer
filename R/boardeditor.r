@@ -46,7 +46,8 @@
          pos.x[pos.x > 10] <- 10
          if (isTRUE(pos.x != click2.x) || isTRUE(pos.y != click2.y)) {
             .boardeditor.rmrect(click2.x, click2.y, lwd=lwd)
-            .addrect(pos.x, pos.y, col=col.rect, lwd=lwd)
+            if (pos.y >= 2 && pos.y <= 9)
+               .addrect(pos.x, pos.y, col=col.rect, lwd=lwd)
          }
          click2.x <<- pos.x
          click2.y <<- pos.y
@@ -263,6 +264,8 @@
       }
 
       curfen <- .genfen(.shrinkpos(pos), flip, sidetoplay, i=1)
+
+      .drawsideindicator(sidetoplay, flip=flip, adj=1, clear=FALSE)
 
    }
 

@@ -85,6 +85,8 @@
 
    } else {
 
+      #.rmcheck(posold, flip=flip)
+
       if (flip) {
          for (i in 1:8) {
             for (j in 1:8) {
@@ -826,6 +828,8 @@
       }
    }
 
+   .rmcheck(pos, flip=flip)
+
    .redrawpos(pos, oldpos, flip=flip)
 
    ischeck <- attr(pos, "ischeck")
@@ -839,10 +843,8 @@
 
       xpos <- which(oldpos == "x", arr.ind=TRUE)
 
-      if (any(apply(xpos, 1, function(x) isTRUE(x[1] == checkpos[1] && x[2] == checkpos[2])))) {
-         .rmcheck(pos, flip=flip)
+      if (any(apply(xpos, 1, function(x) isTRUE(x[1] == checkpos[1] && x[2] == checkpos[2]))))
          .drawcheck(pos, flip=flip)
-      }
 
    }
 

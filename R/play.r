@@ -403,10 +403,12 @@ play <- function(lang="en", sfpath="", ...) {
    # create the getGraphicsEvent() functions
 
    mousedown <- function(buttons, x, y) {
-      click.num <<- ifelse(click.num == 0, 1, click.num)
       squares <- .calcsquare(x, y, plt)
       pos.x <- squares[1]
       pos.y <- squares[2]
+      if (pos.x < 1 || pos.x > 8 || pos.y < 1 || pos.y > 8)
+         return(NULL)
+      click.num <<- ifelse(click.num == 0, 1, click.num)
       square.sel <- ifelse(flip, pos[9-pos.x,9-pos.y], pos[pos.x,pos.y]) # get the value of the clicked square
       piece.color <- tolower(substr(square.sel, 1, 1)) # get the color of the piece on the clicked square (either w, b, or "" if the clicked square is empty)
       empty.square <- piece.color == ""
@@ -472,6 +474,8 @@ play <- function(lang="en", sfpath="", ...) {
       squares <- .calcsquare(x, y, plt)
       pos.x <- squares[1]
       pos.y <- squares[2]
+      if (pos.x < 1 || pos.x > 8 || pos.y < 1 || pos.y > 8)
+         return(NULL)
       new.square <- isTRUE(pos.x != click2.x) || isTRUE(pos.y != click2.y)
       if (new.square) {
          switched.square <<- TRUE
@@ -1464,6 +1468,13 @@ play <- function(lang="en", sfpath="", ...) {
                   harrows  <- tmp$harrows
                   texttop  <- tmp$texttop
                   evalvals <- tmp$evalvals
+                  # recalculate after showing the best move (not done at the moment)
+                  #res.sf   <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay, verbose)
+                  #evalval  <- res.sf$eval
+                  #bestmove <- res.sf$bestmove
+                  #matetype <- res.sf$matetype
+                  #sfproc   <- res.sf$sfproc
+                  #sfrun    <- res.sf$sfrun
                }
                next
             }
@@ -1473,7 +1484,6 @@ play <- function(lang="en", sfpath="", ...) {
             if (identical(click, "1") || identical(click, "Up")) {
                if (i == 1)
                   next
-               .rmcheck(pos, flip=flip)
                if (nrow(circles) >= 1L || nrow(arrows) >= 1L || nrow(harrows) >= 1L) {
                   .rmannot(pos, circles, rbind(arrows, harrows), flip)
                   circles <- matrix(nrow=0, ncol=2)
@@ -1481,6 +1491,7 @@ play <- function(lang="en", sfpath="", ...) {
                   harrows <- matrix(nrow=0, ncol=4)
                   evalvals <- NULL
                }
+               .rmcheck(pos, flip=flip)
                oldeval <- sub$moves$eval[i-1]
                posold <- pos
                if (is.null(sub$pos)) {
@@ -1571,7 +1582,6 @@ play <- function(lang="en", sfpath="", ...) {
                }
                if (i == 1)
                   next
-               .rmcheck(pos, flip=flip)
                if (nrow(circles) >= 1L || nrow(arrows) >= 1L || nrow(harrows) >= 1L) {
                   .rmannot(pos, circles, rbind(arrows, harrows), flip)
                   circles <- matrix(nrow=0, ncol=2)
@@ -1579,6 +1589,7 @@ play <- function(lang="en", sfpath="", ...) {
                   harrows <- matrix(nrow=0, ncol=4)
                   evalvals <- NULL
                }
+               .rmcheck(pos, flip=flip)
                oldeval <- sub$moves$eval[i-1]
                posold <- pos
                if (is.null(sub$pos)) {
@@ -1819,7 +1830,6 @@ play <- function(lang="en", sfpath="", ...) {
                   movnumber <- max(1, round(nrow(sub$moves) * 3/4))
                if (movnumber == i-1)
                   next
-               .rmcheck(pos, flip=flip)
                if (nrow(circles) >= 1L || nrow(arrows) >= 1L || nrow(harrows) >= 1L) {
                   .rmannot(pos, circles, rbind(arrows, harrows), flip)
                   circles <- matrix(nrow=0, ncol=2)
@@ -1827,6 +1837,7 @@ play <- function(lang="en", sfpath="", ...) {
                   harrows <- matrix(nrow=0, ncol=4)
                   evalvals <- NULL
                }
+               .rmcheck(pos, flip=flip)
                comment <- ""
                oldeval <- sub$moves$eval[i-1]
                posold <- pos
@@ -1908,7 +1919,6 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (mode %in% c("play","analysis") && identical(click, "9") && !is.null(savgame)) {
                .texttop(.text("retstoregame"), sleep=1)
-               .rmcheck(pos, flip=flip)
                oldeval <- sub$moves$eval[i-1]
                if (nrow(circles) >= 1L || nrow(arrows) >= 1L || nrow(harrows) >= 1L) {
                   .rmannot(pos, circles, rbind(arrows, harrows), flip)
@@ -1917,6 +1927,7 @@ play <- function(lang="en", sfpath="", ...) {
                   harrows <- matrix(nrow=0, ncol=4)
                   evalvals <- NULL
                }
+               .rmcheck(pos, flip=flip)
                posold <- pos
                sub$moves <- savgame
                if (is.null(sub$pos)) {
@@ -2217,6 +2228,8 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (identical(click, "a") || identical(click, "A")) {
 
+               k1A <- FALSE
+
                if (mode == "add") {
                   if (k == 1) {
                      sel <- 1
@@ -2227,6 +2240,8 @@ play <- function(lang="en", sfpath="", ...) {
                      rounds <- 0
                      totalmoves <- nrow(sub$moves)
                      flip <- sub$flip
+                     if (identical(click, "A"))
+                        k1A <- TRUE
                      click <- "a"
                   } else {
                      next
@@ -2292,22 +2307,26 @@ play <- function(lang="en", sfpath="", ...) {
 
                   sidetoplaystart <- sidetoplay
 
-                  for (i in 1:nrow(sub$moves)) {
-                     pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE, volume=volume, verbose=verbose)
-                     sub$moves$move[i] <- attr(pos,"move")
-                     if (identical(sub$moves$comment[i], "") && !identical(sub$moves$comment[i-1], "")) {
-                        texttop <- .texttop(sub$moves$comment[i-1])
-                     } else {
-                        texttop <- .texttop(sub$moves$comment[i])
+                  if (!k1A) {
+                     for (i in 1:nrow(sub$moves)) {
+                        pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE, volume=volume, verbose=verbose)
+                        sub$moves$move[i] <- attr(pos,"move")
+                        if (identical(sub$moves$comment[i], "") && !identical(sub$moves$comment[i-1], "")) {
+                           texttop <- .texttop(sub$moves$comment[i-1])
+                        } else {
+                           texttop <- .texttop(sub$moves$comment[i])
+                        }
+                        .textbot(mode, zenmode, i=i, totalmoves=totalmoves, onlyi=TRUE)
+                        .draweval(sub$moves$eval[i], sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
+                        sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
+                        Sys.sleep(sleep)
                      }
-                     .textbot(mode, zenmode, i=i, totalmoves=totalmoves, onlyi=TRUE)
-                     .draweval(sub$moves$eval[i], sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
-                     sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
-                     Sys.sleep(sleep)
+                     i <- i + 1
+                     show <- FALSE
+                  } else {
+                     i <- 1
+                     show <- sub$moves$show[i]
                   }
-
-                  i <- i + 1
-                  show <- FALSE
 
                }
 
@@ -3852,6 +3871,7 @@ play <- function(lang="en", sfpath="", ...) {
                   .drawarrows(arrows, lwd=lwd)
                }
 
+               #if (!wait && (!is.null(sub$commentend) || !is.null(sub$symbolend) || (sidetoplay == "w" && !flip) || (sidetoplay == "s" && flip))) # to also wait if not ending on a player move
                if (!wait && (!is.null(sub$commentend) || !is.null(sub$symbolend)))
                   .waitforclick()
 
