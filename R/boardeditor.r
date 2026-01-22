@@ -1,11 +1,11 @@
-.boardeditor <- function(pos, flip, sidetoplay, lwd, verbose, switch1, switch2) {
+.boardeditor <- function(pos, flip, sidetoplay, lwd, coords, verbose, switch1, switch2) {
 
    curfen <- .genfen(pos, flip, sidetoplay, i=1)
    oldfen <- curfen
 
    pos <- .expandpos(pos)
 
-   .boardeditor.drawboard(pos, flip, sidetoplay, lwd)
+   .boardeditor.drawboard(pos, flip, sidetoplay, lwd, coords)
 
    click1.x <- NULL
    click1.y <- NULL
@@ -45,7 +45,7 @@
          pos.x[pos.x < 1] <- 1
          pos.x[pos.x > 10] <- 10
          if (isTRUE(pos.x != click2.x) || isTRUE(pos.y != click2.y)) {
-            .boardeditor.rmrect(click2.x, click2.y, lwd=lwd)
+            .boardeditor.rmrect(click2.x, click2.y, lwd=lwd, flip=flip, coords=coords)
             if (pos.y >= 2 && pos.y <= 9)
                .addrect(pos.x, pos.y, col=col.rect, lwd=lwd)
          }
@@ -56,7 +56,7 @@
    }
 
    mouseup <- function(buttons, x, y) {
-      .boardeditor.rmrect(click2.x, click2.y, lwd=lwd)
+      .boardeditor.rmrect(click2.x, click2.y, lwd=lwd, flip=flip, coords=coords)
       empty.square <<- TRUE
       return(1)
    }
@@ -114,7 +114,7 @@
          pos <- .get("boardeditorpos")
          curfen <- .genfen(.shrinkpos(pos), flip, sidetoplay, i=1)
          oldfen <- curfen
-         .boardeditor.drawboard(pos, flip, sidetoplay, lwd)
+         .boardeditor.drawboard(pos, flip, sidetoplay, lwd, coords)
          text(6, 0.5, paste("FEN: ", curfen), col=col, cex=cex)
          next
       }
@@ -123,7 +123,7 @@
 
       if (identical(click, "f")) {
          flip <- !flip
-         .boardeditor.drawboard(pos, flip, sidetoplay, lwd)
+         .boardeditor.drawboard(pos, flip, sidetoplay, lwd, coords)
          text(6, 0.5, paste("FEN: ", curfen), col=col, cex=cex)
          next
       }
@@ -144,7 +144,7 @@
          pos[2:9,2:9] <- ""
          curfen <- .genfen(.shrinkpos(pos), flip, sidetoplay, i=1)
          oldfen <- curfen
-         .boardeditor.drawboard(pos, flip, sidetoplay, lwd)
+         .boardeditor.drawboard(pos, flip, sidetoplay, lwd, coords)
          text(6, 0.5, paste("FEN: ", curfen), col=col, cex=cex)
          next
       }
@@ -189,7 +189,7 @@
             }
             curfen <- .genfen(pos, flip, sidetoplay, i=1)
             pos <- .expandpos(pos)
-            .boardeditor.drawboard(pos, flip, sidetoplay, lwd)
+            .boardeditor.drawboard(pos, flip, sidetoplay, lwd, coords)
          } else {
             .texttop(.text("notvalidfen"), sleep=2, xadj=1, yadj=2)
          }
@@ -200,7 +200,7 @@
 
       if (identical(click, "F1")) {
          .showhelp.boardeditor(lwd=lwd)
-         .boardeditor.drawboard(pos, flip, sidetoplay, lwd)
+         .boardeditor.drawboard(pos, flip, sidetoplay, lwd, coords)
          text(6, 0.5, paste("FEN: ", curfen), col=col, cex=cex)
          next
       }
@@ -256,7 +256,7 @@
       oldpos <- pos
       oldfen <- .genfen(.shrinkpos(oldpos), flip, sidetoplay, i=1)
 
-      pos <- .boardeditor.updateboard(pos, move=c(click1.x, click1.y, click2.x, click2.y), flip=flip, button=button)
+      pos <- .boardeditor.updateboard(pos, move=c(click1.x, click1.y, click2.x, click2.y), flip=flip, button=button, coords=coords)
 
       if (!identical(oldpos[2:9,2:9], pos[2:9,2:9])) {
          attr(pos, "ispp") <- NULL

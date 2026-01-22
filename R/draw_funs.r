@@ -1,5 +1,24 @@
-.drawsquare <- function(x, y, col=ifelse(.is.even(x+y), .get("col.square.d"), .get("col.square.l")))
+.drawsquare <- function(x, y, flip, col=ifelse(.is.even(x+y), .get("col.square.d"), .get("col.square.l")), adj=0, coords=TRUE) {
    rect(y, x, y+1, x+1, col=col, border=NA)
+   .drawcoords(x=x, y=y, flip=flip, adj=adj, coords=coords)
+}
+
+.drawcoords <- function(x, y, flip, adj=0, coords=TRUE) {
+   if (coords) {
+      cex.coords <- .get("cex.coords")
+      if (flip) {
+         if (x == 1+adj)
+            text(y+0.08, 1.08+adj, letters[8:1][y-adj], col=ifelse(.is.even(y+adj), .get("col.square.d"), .get("col.square.l")), cex=cex.coords, font=2)
+         if (y == 8+adj)
+            text(8.92+adj, 1+x-0.08, (8:1)[x-adj],      col=ifelse(.is.even(x+adj), .get("col.square.l"), .get("col.square.d")), cex=cex.coords, font=2)
+      } else {
+         if (x == 1+adj)
+            text(y+0.08, 1.08+adj, letters[1:8][y-adj], col=ifelse(.is.even(y+adj), .get("col.square.d"), .get("col.square.l")), cex=cex.coords, font=2)
+         if (y == 8+adj)
+            text(8.92+adj, 1+x-0.08, (1:8)[x-adj],      col=ifelse(.is.even(x+adj), .get("col.square.l"), .get("col.square.d")), cex=cex.coords, font=2)
+      }
+   }
+}
 
 .drawpiece <- function(x, y, piece) {
    if (piece != "") {
@@ -9,7 +28,7 @@
    }
 }
 
-.drawboard <- function(pos, flip=FALSE, inhibit=FALSE, mar=rep(5.5,4)) {
+.drawboard <- function(pos, flip=FALSE, inhibit=FALSE, mar=rep(5.5,4), coords=TRUE) {
 
    col.bg <- .get("col.bg")
    col.fg <- .get("col.fg")
@@ -30,17 +49,22 @@
 
    image(1:8+0.5, 1:8+0.5, mat, col=c(col.square.l, col.square.d), xaxs="i", yaxs="i", xlab="", ylab="", xaxt="n", yaxt="n", bty="n", useRaster=TRUE)
 
-   if (flip) {
-      par(mgp=c(3,0.5,0))
-      axis(side=1, 1:8+0.5, rev(LETTERS[1:8]), las=1, tick=FALSE, col.axis=col.fg)
-      par(mgp=c(3,0.8,0))
-      axis(side=2, 1:8+0.5, rev(1:8),          las=1, tick=FALSE, col.axis=col.fg)
-   } else {
-      par(mgp=c(3,0.5,0))
-      axis(side=1, 1:8+0.5, LETTERS[1:8],      las=1, tick=FALSE, col.axis=col.fg)
-      par(mgp=c(3,0.8,0))
-      axis(side=2, 1:8+0.5, 1:8,               las=1, tick=FALSE, col.axis=col.fg)
+   if (coords) {
+      mapply(.drawcoords, rep(1,8), 1:8, MoreArgs=list(flip=flip))
+      mapply(.drawcoords, 1:8, rep(8,8), MoreArgs=list(flip=flip))
    }
+
+   #if (flip) {
+   #   par(mgp=c(3,0.5,0))
+   #   axis(side=1, 1:8+0.5, rev(LETTERS[1:8]), las=1, tick=FALSE, col.axis=col.fg)
+   #   par(mgp=c(3,0.8,0))
+   #   axis(side=2, 1:8+0.5, rev(1:8),          las=1, tick=FALSE, col.axis=col.fg)
+   #} else {
+   #   par(mgp=c(3,0.5,0))
+   #   axis(side=1, 1:8+0.5, LETTERS[1:8],      las=1, tick=FALSE, col.axis=col.fg)
+   #   par(mgp=c(3,0.8,0))
+   #   axis(side=2, 1:8+0.5, 1:8,               las=1, tick=FALSE, col.axis=col.fg)
+   #}
 
    if (flip) {
       for (i in 1:8) {
@@ -56,9 +80,11 @@
       }
    }
 
+   .drawmatdiff(pos, flip, force=TRUE)
+
 }
 
-.redrawpos <- function(pos, posold, flip=FALSE) {
+.redrawpos <- function(pos, posold, flip=FALSE, coords=TRUE) {
 
    if (missing(posold)) {
 
@@ -67,17 +93,20 @@
       image(1:8+0.5, 1:8+0.5, mat, col=c(.get("col.square.l"), .get("col.square.d")), xaxs="i", yaxs="i", xlab="", ylab="", xaxt="n", yaxt="n", bty="n", useRaster=TRUE)
       par(new=FALSE)
 
+      if (coords) {
+         mapply(.drawcoords, rep(1,8), 1:8, MoreArgs=list(flip=flip))
+         mapply(.drawcoords, 1:8, rep(8,8), MoreArgs=list(flip=flip))
+      }
+
       if (flip) {
          for (i in 1:8) {
             for (j in 1:8) {
-               #.drawsquare(i, j)
                .drawpiece(i, j, pos[9-i,9-j])
             }
          }
       } else {
          for (i in 1:8) {
             for (j in 1:8) {
-               #.drawsquare(i, j)
                .drawpiece(i, j, pos[i,j])
             }
          }
@@ -91,7 +120,7 @@
          for (i in 1:8) {
             for (j in 1:8) {
                if (pos[9-i,9-j] != posold[9-i,9-j]) {
-                  .drawsquare(i, j)
+                  .drawsquare(i, j, flip=flip, coords=coords)
                   .drawpiece(i, j, pos[9-i,9-j])
                }
             }
@@ -100,7 +129,7 @@
          for (i in 1:8) {
             for (j in 1:8) {
                if (pos[i,j] != posold[i,j]) {
-                  .drawsquare(i, j)
+                  .drawsquare(i, j, flip=flip, coords=coords)
                   .drawpiece(i, j, pos[i,j])
                }
             }
@@ -109,13 +138,14 @@
 
    }
 
+   .drawmatdiff(pos, flip)
    .drawcheck(pos, flip=flip)
 
 }
 
-.redrawall <- function(pos, flip, mode, zenmode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, timed, movestoplay, movesplayed, timetotal, timepermove, mar) {
+.redrawall <- function(pos, flip, mode, zenmode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, timed, movestoplay, movesplayed, timetotal, timepermove, mar, coords) {
 
-   .drawboard(pos, flip, mar=mar)
+   .drawboard(pos, flip, mar=mar, coords=coords)
    .textbot(mode, zenmode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
    .texttop(texttop)
    .drawcheck(pos, flip=flip)
@@ -125,11 +155,9 @@
       .drawsideindicator(sidetoplay, flip=flip)
    }
 
-   return()
-
 }
 
-.boardeditor.drawboard <- function(pos, flip=FALSE, sidetoplay, lwd) {
+.boardeditor.drawboard <- function(pos, flip, sidetoplay, lwd, coords) {
 
    col.bg <- .get("col.bg")
    col.fg <- .get("col.fg")
@@ -144,10 +172,15 @@
 
    image(1:10+0.5, 1:10+0.5, mat, col=c(col.bg, col.square.d, col.square.l), xaxs="i", yaxs="i", xlab="", ylab="", xaxt="n", yaxt="n", bty="n", useRaster=TRUE)
 
+   if (coords) {
+      mapply(.drawcoords, rep(2,8), 2:9, MoreArgs=list(flip=flip, adj=1))
+      mapply(.drawcoords, 2:9, rep(9,8), MoreArgs=list(flip=flip, adj=1))
+   }
+
    for (j in 3:8) {
-      .drawsquare(1, j, col=col.square.be)
+      .drawsquare(1, j, flip=flip, col=col.square.be, adj=100, coords=coords)
       .addrect(1, j, offset=0.028, col.bg, lwd+2)
-      .drawsquare(10, j, col=col.square.be)
+      .drawsquare(10, j, flip=flip, col=col.square.be, coords=coords)
       .addrect(10, j, offset=0.028, col.bg, lwd+2)
    }
 
@@ -169,7 +202,7 @@
 
 }
 
-.updateboard <- function(pos, move, flip, autoprom, volume, verbose, draw=TRUE) {
+.updateboard <- function(pos, move, flip, autoprom, volume, verbose, coords, draw=TRUE) {
 
    x1 <- unname(move[[1]])
    y1 <- unname(move[[2]])
@@ -185,7 +218,7 @@
       rochade <- rep(TRUE, 4)
 
    if (draw)
-      .rmcheck(pos, flip=flip)
+      .rmcheck(pos, flip=flip, coords=coords)
 
    # determine which piece is being moved
 
@@ -228,8 +261,8 @@
          pos[1,6] <- "WR"
          pos[1,8] <- ""
          if (draw) {
-            .drawsquare(8, 1)
-            .drawsquare(8, 3)
+            .drawsquare(8, 1, flip=flip, coords=coords)
+            .drawsquare(8, 3, flip=flip, coords=coords)
             .drawpiece(8, 3, "WR")
          }
       }
@@ -238,8 +271,8 @@
          pos[1,4] <- "WR"
          pos[1,1] <- ""
          if (draw) {
-            .drawsquare(8, 8)
-            .drawsquare(8, 5)
+            .drawsquare(8, 8, flip=flip, coords=coords)
+            .drawsquare(8, 5, flip=flip, coords=coords)
             .drawpiece(8, 5, "WR")
          }
       }
@@ -248,8 +281,8 @@
          pos[8,6] <- "BR"
          pos[8,8] <- ""
          if (draw) {
-            .drawsquare(1, 1)
-            .drawsquare(1, 3)
+            .drawsquare(1, 1, flip=flip, coords=coords)
+            .drawsquare(1, 3, flip=flip, coords=coords)
             .drawpiece(1, 3, "BR")
          }
       }
@@ -258,8 +291,8 @@
          pos[8,4] <- "BR"
          pos[8,1] <- ""
          if (draw) {
-            .drawsquare(1, 8)
-            .drawsquare(1, 5)
+            .drawsquare(1, 8, flip=flip, coords=coords)
+            .drawsquare(1, 5, flip=flip, coords=coords)
             .drawpiece(1, 5, "BR")
          }
       }
@@ -269,12 +302,12 @@
       if (identical(attr(pos,"ispp"), "b") && piece == "WP" && x1 == 4 && attr(pos,"y1") == y2) {
          isenpassant <- "w"
          pos[5,9-y2] <- ""
-         if (draw) .drawsquare(4, y2)
+         if (draw) .drawsquare(4, y2, flip=flip, coords=coords)
       }
       if (identical(attr(pos,"ispp"), "w") && piece == "BP" && x1 == 5 && attr(pos,"y1") == y2) {
          isenpassant <- "b"
          pos[4,9-y2] <- ""
-         if (draw) .drawsquare(5, y2)
+         if (draw) .drawsquare(5, y2, flip=flip, coords=coords)
       }
 
    } else {
@@ -286,8 +319,8 @@
          pos[1,6] <- "WR"
          pos[1,8] <- ""
          if (draw) {
-            .drawsquare(1, 8)
-            .drawsquare(1, 6)
+            .drawsquare(1, 8, flip=flip, coords=coords)
+            .drawsquare(1, 6, flip=flip, coords=coords)
             .drawpiece(1, 6, "WR")
          }
       }
@@ -296,8 +329,8 @@
          pos[1,4] <- "WR"
          pos[1,1] <- ""
          if (draw) {
-            .drawsquare(1, 1)
-            .drawsquare(1, 4)
+            .drawsquare(1, 1, flip=flip, coords=coords)
+            .drawsquare(1, 4, flip=flip, coords=coords)
             .drawpiece(1, 4, "WR")
          }
       }
@@ -306,8 +339,8 @@
          pos[8,6] <- "BR"
          pos[8,8] <- ""
          if (draw) {
-            .drawsquare(8, 8)
-            .drawsquare(8, 6)
+            .drawsquare(8, 8, flip=flip, coords=coords)
+            .drawsquare(8, 6, flip=flip, coords=coords)
             .drawpiece(8, 6, "BR")
          }
       }
@@ -316,8 +349,8 @@
          pos[8,4] <- "BR"
          pos[8,1] <- ""
          if (draw) {
-            .drawsquare(8, 1)
-            .drawsquare(8, 4)
+            .drawsquare(8, 1, flip=flip, coords=coords)
+            .drawsquare(8, 4, flip=flip, coords=coords)
             .drawpiece(8, 4, "BR")
          }
       }
@@ -327,12 +360,12 @@
       if (identical(attr(pos,"ispp"), "b") && piece == "WP" && x1 == 5 && attr(pos,"y1") == y2) {
          isenpassant <- "w"
          pos[5,y2] <- ""
-         if (draw) .drawsquare(5, y2)
+         if (draw) .drawsquare(5, y2, flip=flip, coords=coords)
       }
       if (identical(attr(pos,"ispp"), "w") && piece == "BP" && x1 == 4 && attr(pos,"y1") == y2) {
          isenpassant <- "b"
          pos[4,y2] <- ""
-         if (draw) .drawsquare(4, y2)
+         if (draw) .drawsquare(4, y2, flip=flip, coords=coords)
       }
 
    }
@@ -347,7 +380,7 @@
          if (autoprom) {
             promotionpiece <- paste0("B", strsplit(sub("+" ,"", move[[6]], fixed=TRUE), "=", fixed=TRUE)[[1]][2])
          } else {
-            sapply(8:5, function(x2) .drawsquare(x2, y2, col=col.square.be))
+            sapply(8:5, function(x2) .drawsquare(x2, y2, flip=flip, col=col.square.be, coords=coords))
             mapply(.drawpiece, x=8:5, y=rep(y2,4), piece=c("BQ","BN","BR","BB"))
             while (TRUE) {
                click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.pickpromotionpiece)
@@ -362,7 +395,7 @@
                if (promotionpiece != "")
                   break
             }
-            sapply(8:5, function(x2) .drawsquare(x2, y2))
+            sapply(8:5, function(x2) .drawsquare(x2, y2, flip=flip, coords=coords))
             mapply(.drawpiece, x=8:5, y=rep(y2,4), piece=pos[1:4,9-y2])
             if (!is.na(move[[6]]) && !identical(promotionpiece, paste0("B", strsplit(sub("+" ,"", move[[6]], fixed=TRUE), "=", fixed=TRUE)[[1]][2])))
                return("prommistake")
@@ -372,7 +405,7 @@
          if (autoprom) {
             promotionpiece <- paste0("W", strsplit(sub("+" ,"", move[[6]], fixed=TRUE), "=", fixed=TRUE)[[1]][2])
          } else {
-            sapply(1:4, function(x2) .drawsquare(x2, y2, col=col.square.be))
+            sapply(1:4, function(x2) .drawsquare(x2, y2, flip=flip,, col=col.square.be, coords=coords))
             mapply(.drawpiece, x=1:4, y=rep(y2,4), piece=c("WQ","WN","WR","WB"))
             while (TRUE) {
                click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.pickpromotionpiece)
@@ -387,7 +420,7 @@
                if (promotionpiece != "")
                   break
             }
-            sapply(1:4, function(x2) .drawsquare(x2, y2))
+            sapply(1:4, function(x2) .drawsquare(x2, y2, flip=flip, coords=coords))
             mapply(.drawpiece, x=1:4, y=rep(y2,4), piece=pos[8:5,9-y2])
             if (!is.na(move[[6]]) && !identical(promotionpiece, paste0("W", strsplit(sub("+" ,"", move[[6]], fixed=TRUE), "=", fixed=TRUE)[[1]][2])))
                return("prommistake")
@@ -398,7 +431,7 @@
          if (autoprom) {
             promotionpiece <- paste0("W", strsplit(sub("+" ,"", move[[6]], fixed=TRUE), "=", fixed=TRUE)[[1]][2])
          } else {
-            sapply(8:5, function(x2) .drawsquare(x2, y2, col=col.square.be))
+            sapply(8:5, function(x2) .drawsquare(x2, y2, flip=flip, col=col.square.be, coords=coords))
             mapply(.drawpiece, x=8:5, y=rep(y2,4), piece=c("WQ","WN","WR","WB"))
             while (TRUE) {
                click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.pickpromotionpiece)
@@ -413,7 +446,7 @@
                if (promotionpiece != "")
                   break
             }
-            sapply(8:5, function(x2) .drawsquare(x2, y2))
+            sapply(8:5, function(x2) .drawsquare(x2, y2, flip=flip, coords=coords))
             mapply(.drawpiece, x=8:5, y=rep(y2,4), piece=pos[8:5,y2])
             if (!is.na(move[[6]]) && !identical(promotionpiece, paste0("W", strsplit(sub("+" ,"", move[[6]], fixed=TRUE), "=", fixed=TRUE)[[1]][2])))
                return("prommistake")
@@ -423,7 +456,7 @@
          if (autoprom) {
             promotionpiece <- paste0("B", strsplit(sub("+" ,"", move[[6]], fixed=TRUE), "=", fixed=TRUE)[[1]][2])
          } else {
-            sapply(1:4, function(x2) .drawsquare(x2, y2, col=col.square.be))
+            sapply(1:4, function(x2) .drawsquare(x2, y2, flip=flip, col=col.square.be, coords=coords))
             mapply(.drawpiece, x=1:4, y=rep(y2,4), piece=c("BQ","BN","BR","BB"))
             while (TRUE) {
                click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.pickpromotionpiece)
@@ -438,7 +471,7 @@
                if (promotionpiece != "")
                   break
             }
-            sapply(1:4, function(x2) .drawsquare(x2, y2))
+            sapply(1:4, function(x2) .drawsquare(x2, y2, flip=flip, coords=coords))
             mapply(.drawpiece, x=1:4, y=rep(y2,4), piece=pos[1:4,y2])
             if (!is.na(move[[6]]) && !identical(promotionpiece, paste0("B", strsplit(sub("+" ,"", move[[6]], fixed=TRUE), "=", fixed=TRUE)[[1]][2])))
                return("prommistake")
@@ -447,8 +480,8 @@
    }
 
    if (draw) {
-      .drawsquare(x1, y1)
-      .drawsquare(x2, y2)
+      .drawsquare(x1, y1, flip=flip, coords=coords)
+      .drawsquare(x2, y2, flip=flip, coords=coords)
    }
 
    if (flip) {
@@ -470,7 +503,7 @@
       if (promotionpiece != "") {
          pos[9-x2,9-y2] <- promotionpiece
          if (draw) {
-            .drawsquare(x2, y2)
+            .drawsquare(x2, y2, flip=flip, coords=coords)
             .drawpiece(x2, y2, pos[9-x2,9-y2])
          }
       }
@@ -494,7 +527,7 @@
       if (promotionpiece != "") {
          pos[x2,y2] <- promotionpiece
          if (draw) {
-            .drawsquare(x2, y2)
+            .drawsquare(x2, y2, flip=flip, coords=coords)
             .drawpiece(x2, y2, pos[x2,y2])
          }
       }
@@ -578,11 +611,14 @@
       print(attribs)
    }
 
+   if (draw && (iscapture || promotionpiece != ""))
+      .drawmatdiff(pos, flip)
+
    return(pos)
 
 }
 
-.boardeditor.updateboard <- function(pos, move, flip, button) {
+.boardeditor.updateboard <- function(pos, move, flip, button, coords) {
 
    x1 <- unname(move[[1]])
    y1 <- unname(move[[2]])
@@ -592,7 +628,7 @@
    if (x1 == x2 && y1 == y2 && x1 > 1 && x1 < 10 && y1 > 1 && y1 < 10) {
 
       if (button == 2L) {
-         .drawsquare(x1, y1)
+         .drawsquare(x1, y1, flip=flip, adj=1, coords=coords)
          if (flip) {
             pos[11-x1,11-y1] <- ""
          } else {
@@ -603,9 +639,9 @@
    } else {
 
       if (button == 0L && x1 > 1 && x1 < 10 && y1 > 1 && y1 < 10)
-         .drawsquare(x1, y1)
+         .drawsquare(x1, y1, flip=flip, adj=1, coords=coords)
       if (x2 > 1 && x2 < 10 && y2 > 1 && y2 < 10)
-         .drawsquare(x2, y2)
+         .drawsquare(x2, y2, flip=flip, adj=1, coords=coords)
 
       if (flip) {
          if (x2 > 1 && x2 < 10 && y2 > 1 && y2 < 10) {
@@ -632,16 +668,23 @@
 .addrect <- function(x, y, offset=0.028, col, lwd)
    rect(y+offset, x+offset, y+1-offset, x+1-offset, lwd=lwd, border=col, ljoin=1)
 
-.rmrect <- function(x, y, offset=0.028, lwd)
+.rmrect <- function(x, y, offset=0.028, lwd, flip, coords) {
+   if (is.null(x) || is.null(y) || is.na(x) || is.na(y))
+      return()
    rect(y+offset, x+offset, y+1-offset, x+1-offset, lwd=lwd+2, border=ifelse(.is.even(x+y), .get("col.square.d"), .get("col.square.l")), ljoin=1)
+   if (coords)
+      .drawcoords(x, y, flip)
+}
 
-.boardeditor.rmrect <- function(x, y, offset=0.028, lwd) {
+.boardeditor.rmrect <- function(x, y, offset=0.028, lwd, flip, coords) {
    if (is.null(x) || is.null(y) || is.na(x) || is.na(y))
       return()
    if (x <= 1 || x >= 10 || y <= 1 || y >= 10) {
       rect(y+offset, x+offset, y+1-offset, x+1-offset, lwd=lwd+2, border=.get("col.bg"), ljoin=1)
    } else {
       rect(y+offset, x+offset, y+1-offset, x+1-offset, lwd=lwd+2, border=ifelse(.is.even(x+y), .get("col.square.d"), .get("col.square.l")), ljoin=1)
+      if (coords)
+         .drawcoords(x, y, flip, adj=1)
    }
 }
 
@@ -704,11 +747,9 @@
 
    assign("checkpos", xy, envir=.chesstrainer)
 
-   return()
-
 }
 
-.rmcheck <- function(pos, flip) {
+.rmcheck <- function(pos, flip, coords) {
 
    ischeck <- attr(pos, "ischeck")
 
@@ -728,10 +769,8 @@
    x <- xy[1]
    y <- xy[2]
 
-   .drawsquare(x, y, col=ifelse(.is.even(x+y), .get("col.square.d"), .get("col.square.l")))
+   .drawsquare(x, y, flip=flip, col=ifelse(.is.even(x+y), .get("col.square.d"), .get("col.square.l")), coords=coords)
    .drawpiece(x, y, piece)
-
-   return()
 
 }
 
@@ -804,7 +843,7 @@
    }
 }
 
-.rmannot <- function(pos, circles, arrows, flip) {
+.rmannot <- function(pos, circles, arrows, flip, coords) {
 
    oldpos <- pos
 
@@ -828,9 +867,9 @@
       }
    }
 
-   .rmcheck(pos, flip=flip)
+   .rmcheck(pos, flip=flip, coords=coords)
 
-   .redrawpos(pos, oldpos, flip=flip)
+   .redrawpos(pos, oldpos, flip=flip, coords=coords)
 
    ischeck <- attr(pos, "ischeck")
 
@@ -860,13 +899,14 @@
 
    xleft   <- 0 + xadj
    xright  <- 10 + xadj
-   ybottom <- 9.2 + yadj
-   ytop    <- grconvertY(dev.size()[2], from="inches", to="user")-0.2
+   ybottom <- 9.5 + yadj
+   ytop    <- grconvertY(dev.size()[2], from="inches", to="user") - 0.1
    xcenter <- (xleft + xright) / 2
+   ymargin <- 0.1
 
    srt <- ifelse(.get("upsidedown"), 180, 0)
 
-   rect(xleft, ybottom-0.2, xright, ytop+0.2, col=.get("col.bg"), border=NA)
+   rect(xleft, ybottom-ymargin, xright, ytop+ymargin, col=.get("col.bg"), border=NA)
 
    if (!identical(txt, "")) {
       txt <- gsub("\\n", "\n", txt, fixed=TRUE)
@@ -895,7 +935,7 @@
    Sys.sleep(sleep)
 
    if (sleep > 0)
-      rect(xleft, ybottom-0.2, xright, ytop+0.2, col=.get("col.bg"), border=NA)
+      rect(xleft, ybottom-ymargin, xright, ytop+ymargin, col=.get("col.bg"), border=NA)
 
    txt <- paste(txt, collapse="\n")
    return(txt)
@@ -1256,8 +1296,6 @@
 
    segments(xpos, 5, xpos+indsize, col=col.fg)
 
-   return()
-
 }
 
 .startcomment <- function(txt, lwd) {
@@ -1298,13 +1336,13 @@
 
 }
 
-.showbestmove <- function(pos, flip, sidetoplay, i, circles, arrows, harrows, lwd, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim, verbose) {
+.showbestmove <- function(pos, flip, sidetoplay, i, circles, arrows, harrows, lwd, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim, coords, verbose) {
 
    texttop <- ""
    evalvals <- NULL
 
    if (nrow(circles) >= 1L || nrow(arrows) >= 1L || nrow(harrows) >= 1L) {
-      .rmannot(pos, circles, rbind(arrows, harrows), flip)
+      .rmannot(pos, circles, rbind(arrows, harrows), flip, coords)
       .drawcircles(circles, lwd=lwd)
       .drawarrows(arrows, lwd=lwd)
    }
@@ -1354,6 +1392,79 @@
 
    return(list(harrows=harrows, texttop=texttop, evalvals=evalvals))
 
+}
+
+.drawmatdiff <- function(pos, flip, force=FALSE) {
+
+   oldscore <- .get("score")
+   col      <- .get("col.bot")
+   matdiff  <- .get("matdiff")
+   cex.matdiff <- .get("cex.matdiff")
+
+   p.p <- sum(pos == "WP") - sum(pos == "BP")
+   p.n <- sum(pos == "WN") - sum(pos == "BN")
+   p.b <- sum(pos == "WB") - sum(pos == "BB")
+   p.r <- sum(pos == "WR") - sum(pos == "BR")
+   p.q <- sum(pos == "WQ") - sum(pos == "BQ")
+
+   mdiff <- c(p=p.p, n=p.n, b=p.b, r=p.r, q=p.q)
+
+   #pieces <- c("P", "N", "B", "R", "Q")
+   pieces <- c("\U0000265F", "\U0000265E", "\U0000265D", "\U0000265C", "\U0000265B")
+   value  <- c(1, 3, 3, 5, 9)
+   score  <- sum(mdiff *  value)
+
+   assign("score", score, envir=.chesstrainer)
+
+   if (!force && (score == oldscore || !matdiff))
+      return()
+
+   .clearmatdiff()
+
+   xpos1 <- 9
+   xpos2 <- 9
+   shift <- 0.10
+   space <- 0.20
+   ypos  <- 0.82
+
+   if (score != 0) {
+
+      txt <- paste0("+", abs(score), collapse="")
+
+      if (score > 0) {
+         text(xpos1, ifelse(flip, 10-ypos, ypos), txt, pos=2, cex=cex.matdiff, col=col, offset=0)
+         xpos1 <- xpos1 - strwidth(txt, cex=cex.matdiff) - shift
+      } else {
+         text(xpos2, ifelse(flip, ypos, 10-ypos), txt, pos=2, cex=cex.matdiff, col=col, offset=0)
+         xpos2 <- xpos2 - strwidth(txt, cex=cex.matdiff) - shift
+      }
+
+   }
+
+   for (i in 1:5) {
+
+      if (mdiff[i] > 0) {
+         n <- mdiff[i]
+         xpos1 <- xpos1 - (0:(n-1)) * shift
+         text(xpos1, rep(ifelse(flip, 10-ypos, ypos), n) , pieces[i], pos=2, offset=0, cex=cex.matdiff, col=col)
+         xpos1 <- min(xpos1) - space
+      }
+
+      if (mdiff[i] < 0) {
+         n <- -mdiff[i]
+         xpos2 <- xpos2 - (0:(n-1)) * shift
+         text(xpos2, rep(ifelse(flip, ypos, 10-ypos), n) , pieces[i], pos=2, offset=0, cex=cex.matdiff, col=col)
+         xpos2 <- min(xpos2) - space
+      }
+
+   }
+
+}
+
+.clearmatdiff <- function() {
+   col.bg   <- .get("col.bg")
+   rect(5, 0.70, 9, 0.98, col=col.bg, border=NA)
+   rect(5, 9.02, 9, 9.30, col=col.bg, border=NA)
 }
 
 .erase <- function(x1, y1, x2, y2, steps=50) {

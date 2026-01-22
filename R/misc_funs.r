@@ -464,7 +464,7 @@
 
       # determine if the move results in a check
 
-      tmp.next <- .updateboard(tmp, move=data.frame(x1, y1, x2, y2, NA, ifelse(promotiontxt=="", NA, promotiontxt)), flip=flip, autoprom=TRUE, volume=0, verbose=FALSE, draw=FALSE)
+      tmp.next <- .updateboard(tmp, move=data.frame(x1, y1, x2, y2, NA, ifelse(promotiontxt=="", NA, promotiontxt)), flip=flip, autoprom=TRUE, volume=0, verbose=FALSE, coords=FALSE, draw=FALSE)
       ischeck <- any(attr(tmp.next,"ischeck"))
 
       # construct the move text in long algebraic notation

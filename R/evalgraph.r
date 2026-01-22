@@ -82,7 +82,7 @@
 
       click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.mousedownfun, onKeybd=.keyfun)
 
-      if (is.numeric(click) && click[[3]] == 2) # right mouse button exits
+      if (is.numeric(click) && (click[[3]] == 0 || click[[3]] == 2)) # left/right mouse button exits
          break
 
       if (identical(click, "{") || identical(click, "}")) {

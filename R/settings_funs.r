@@ -1,4 +1,4 @@
-.colorsettings <- function(cols.all, pos, flip, mode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop, lwd, sidetoplay, selmode, k, seqno, timed, movestoplay, movesplayed, timetotal, timepermove, mar) {
+.colorsettings <- function(cols.all, pos, flip, mode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop, lwd, sidetoplay, selmode, k, seqno, timed, movestoplay, movesplayed, timetotal, timepermove, mar, coords) {
 
    cat(.text("currentsettings"))
 
@@ -8,12 +8,12 @@
 
    cat("\n")
 
-   .redrawall(pos, flip, mode, zenmode=FALSE, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, timed=FALSE, movestoplay, movesplayed, timetotal, timepermove, mar)
+   .redrawall(pos, flip, mode, zenmode=FALSE, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, timed=FALSE, movestoplay, movesplayed, timetotal, timepermove, mar, coords)
    .addrect(4, 5, col=.get("col.hint"), lwd=lwd)
    .addrect(4, 3, col=.get("col.wrong"), lwd=lwd)
    .addrect(4, 4, col=.get("col.rect"), lwd=lwd)
-   .drawsquare(0, 4, col=.get("col.square.be"))
-   .drawsquare(0, 5, col=.get("col.square.be"))
+   .drawsquare(0, 4, flip, col=.get("col.square.be"))
+   .drawsquare(0, 5, flip, col=.get("col.square.be"))
    .addrect(0, 4, offset=0.028, .get("col.bg"), lwd+2)
    .addrect(0, 5, offset=0.028, .get("col.bg"), lwd+2)
    .drawcircle(4, 6, lwd=lwd)
@@ -37,12 +37,12 @@
             next
          assign(tab[colno,1], col, envir=.chesstrainer)
          tab[colno,2] <- col
-         .redrawall(pos, flip, mode, zenmode=FALSE, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, timed=FALSE, movestoplay, movesplayed, timetotal, timepermove, mar)
+         .redrawall(pos, flip, mode, zenmode=FALSE, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, timed=FALSE, movestoplay, movesplayed, timetotal, timepermove, mar, coords)
          .addrect(4, 5, col=.get("col.hint"), lwd=lwd)
          .addrect(4, 3, col=.get("col.wrong"), lwd=lwd)
          .addrect(4, 4, col=.get("col.rect"), lwd=lwd)
-         .drawsquare(0, 4, col=.get("col.square.be"))
-         .drawsquare(0, 5, col=.get("col.square.be"))
+         .drawsquare(0, 4, flip, col=.get("col.square.be"))
+         .drawsquare(0, 5, flip, col=.get("col.square.be"))
          .addrect(0, 4, offset=0.028, .get("col.bg"), lwd+2)
          .addrect(0, 5, offset=0.028, .get("col.bg"), lwd+2)
          .drawcircle(4, 6, lwd=lwd)
@@ -59,18 +59,18 @@
 
 }
 
-.cexsettings <- function(pos, flip, mode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop, lwd, sidetoplay, selmode, k, seqno, timed, movestoplay, movesplayed, timetotal, timepermove, mar) {
+.cexsettings <- function(pos, flip, mode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop, lwd, sidetoplay, selmode, k, seqno, timed, movestoplay, movesplayed, timetotal, timepermove, mar, coords) {
 
    cat(.text("currentsettings"))
 
-   tab <- data.frame(cex = c("cex.top", "cex.bot", "cex.eval"),
-                     val = c(.get("cex.top"), .get("cex.bot"), .get("cex.eval")))
+   tab <- data.frame(cex = c("cex.top", "cex.bot", "cex.eval", "cex.coords", "cex.matdiff"),
+                     val = c(.get("cex.top"), .get("cex.bot"), .get("cex.eval"), .get("cex.coords"), .get("cex.matdiff")))
    names(tab) <- c("", "")
    print(tab, right=FALSE, print.gap=3)
 
    cat("\n")
 
-   .redrawall(pos, flip, mode, zenmode=FALSE, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, timed, movestoplay, movesplayed, timetotal, timepermove, mar)
+   .redrawall(pos, flip, mode, zenmode=FALSE, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, timed, movestoplay, movesplayed, timetotal, timepermove, mar, coords=TRUE)
    .draweval(0.2, flip=flip)
 
    while (TRUE) {
@@ -88,7 +88,7 @@
          cex[cex < 0.1] <- 0.1
          assign(tab[cexno,1], cex, envir=.chesstrainer)
          tab[cexno,2] <- cex
-         .redrawall(pos, flip, mode, zenmode=FALSE, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, timed, movestoplay, movesplayed, timetotal, timepermove, mar)
+         .redrawall(pos, flip, mode, zenmode=FALSE, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, timed, movestoplay, movesplayed, timetotal, timepermove, mar, coords)
          .draweval(0.2, flip=flip)
       }
    }
