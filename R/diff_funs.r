@@ -1,4 +1,4 @@
-.diffset <- function(difffun, difflen, diffmin, lwd) {
+.diffset <- function(difffun, difflen, diffmin) {
 
    lang <- .get("lang")
 
@@ -43,7 +43,7 @@
 
    }
 
-   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=lwd+3)
+   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=.get("lwd")+3)
 
    cex <- .findcex(txt, font=font.mono, x1=1.5, x2=8.2, y1=3.5, y2=7.5)
 

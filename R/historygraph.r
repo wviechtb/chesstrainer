@@ -1,4 +1,4 @@
-.historygraph <- function(player, date.start, playtime, seqsplayed, lwd, mar, mar2) {
+.historygraph <- function(player, date.start, playtime, seqsplayed) {
 
    # load the session history for the player
    player.file <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "sessions", paste0(player, ".rds"))
@@ -19,6 +19,8 @@
    col.square.l    <- .get("col.square.l")
    col.square.d    <- .get("col.square.d")
    col.help.border <- .get("col.help.border")
+   mar             <- .get("mar")
+   mar2            <- .get("mar2")
 
    # collapse sessions that were played on the same day
    day <- as.Date(format(dat$date.start, format="%Y-%m-%d"))
@@ -35,7 +37,7 @@
    dat.week$weeknum <- as.integer(substr(dat.week$week, 6, 7))
    dat.week$week <- as.Date(paste0(dat.week$year, "-01-01")) + (dat.week$weeknum * 7) - as.integer(format(as.Date(paste0(dat.week$year, "-01-01")), "%u")) + 1
 
-   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=lwd+3)
+   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=.get("lwd")+3)
 
    usr <- NULL
 
@@ -128,6 +130,7 @@
             mar2 <- mar2 + 0.5
          }
          .texttop(.text("maradj", mar2), sleep=0.5)
+         assign("mar2", mar2, envir=.chesstrainer)
          next
       }
 

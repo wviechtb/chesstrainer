@@ -1,4 +1,4 @@
-.showhelp <- function(lwd, page=1) {
+.showhelp <- function(page=1) {
 
    #.clearsideindicator()
    #.drawtimer(clear=TRUE)
@@ -230,7 +230,7 @@
 
    while (TRUE) {
 
-      rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=lwd+3)
+      rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=.get("lwd")+3)
 
       text(1.5, ypos, txt, pos=4, offset=0, cex=cex, family=font.mono, font=ifelse(grepl(":", txt), 2, 1), col=col.help)
       text(8.6, 1.4, paste0(page, " / 2"), pos=2, offset=0, cex=cex, family=font.mono, col=col.help)
@@ -275,7 +275,7 @@
    }
 
    if (langswitch)
-      .showhelp(lwd=lwd, page=page)
+      .showhelp(page=page)
 
    #.erase(1, 1, 9, 9)
 

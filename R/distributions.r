@@ -1,4 +1,4 @@
-.distributions <- function(scores, rounds, age, difficulty, multiplier, target, lwd, mar) {
+.distributions <- function(scores, rounds, age, difficulty, multiplier, target) {
 
    n <- length(scores)
 
@@ -85,7 +85,7 @@
    #legend("topright", lty=c("dotted","solid"), lwd=c(1,1), col=col.top, legend=.text("plotlegend"), bg=col.bg, box.col=col.square.l)
    #box(which="figure", col=col.help.border, lwd=lwd)
 
-   par(mar=mar)
+   par(mar=.get("mar"))
 
    #########################################################################
 
@@ -103,7 +103,7 @@
    layout(1)
    par(pty="s")
 
-   box(which="figure", col=col.help.border, lwd=lwd+3)
+   box(which="figure", col=col.help.border, lwd=.get("lwd")+3)
 
    par(xpd=NA)
 

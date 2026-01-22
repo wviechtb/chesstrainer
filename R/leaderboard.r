@@ -1,4 +1,4 @@
-.leaderboard <- function(seqdir, files, lwd) {
+.leaderboard <- function(seqdir, files) {
 
    #.clearsideindicator()
    #.drawtimer(clear=TRUE)
@@ -46,7 +46,7 @@
       txt <- capture.output(print(tmp, print.gap=3))
       txt <- c(txt[1], "", txt[2:length(txt)], "")
 
-      rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=lwd+3)
+      rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=.get("lwd")+3)
 
       ypos1 <- min(8.5, 5+nplayers*0.35)
       ypos2 <- max(1.5, 5-nplayers*0.35)

@@ -1,11 +1,11 @@
-.boardeditor <- function(pos, flip, sidetoplay, lwd, coords, verbose, switch1, switch2) {
+.boardeditor <- function(pos, flip, sidetoplay) {
 
    curfen <- .genfen(pos, flip, sidetoplay, i=1)
    oldfen <- curfen
 
    pos <- .expandpos(pos)
 
-   .boardeditor.drawboard(pos, flip, sidetoplay, lwd, coords)
+   .boardeditor.drawboard(pos, flip, sidetoplay)
 
    click1.x <- NULL
    click1.y <- NULL
@@ -13,6 +13,8 @@
    click2.y <- NULL
    empty.square <- TRUE
    button <- 0L
+
+   verbose <- .get("verbose")
 
    mousedown <- function(buttons, x, y) {
       squares <- .calcsquarebe(x,y,plt)
@@ -33,7 +35,7 @@
          return(NULL)
       empty.square <<- FALSE
       if (identical(buttons, 0L))
-         .addrect(pos.x, pos.y, col=col.rect, lwd=lwd)
+         .addrect(pos.x, pos.y, col=col.rect)
       return(NULL)
    }
 
@@ -45,9 +47,9 @@
          pos.x[pos.x < 1] <- 1
          pos.x[pos.x > 10] <- 10
          if (isTRUE(pos.x != click2.x) || isTRUE(pos.y != click2.y)) {
-            .boardeditor.rmrect(click2.x, click2.y, lwd=lwd, flip=flip, coords=coords)
+            .boardeditor.rmrect(click2.x, click2.y, flip=flip)
             if (pos.y >= 2 && pos.y <= 9)
-               .addrect(pos.x, pos.y, col=col.rect, lwd=lwd)
+               .addrect(pos.x, pos.y, col=col.rect)
          }
          click2.x <<- pos.x
          click2.y <<- pos.y
@@ -56,7 +58,7 @@
    }
 
    mouseup <- function(buttons, x, y) {
-      .boardeditor.rmrect(click2.x, click2.y, lwd=lwd, flip=flip, coords=coords)
+      .boardeditor.rmrect(click2.x, click2.y, flip=flip)
       empty.square <<- TRUE
       return(1)
    }
@@ -64,6 +66,8 @@
    col      <- .get("col.bot")
    col.bg   <- .get("col.bg")
    col.rect <- .get("col.rect")
+   switch1  <- .get("switch1")
+   switch2  <- .get("switch2")
 
    cex <- .get("cex.top") * 0.8
 
@@ -114,7 +118,7 @@
          pos <- .get("boardeditorpos")
          curfen <- .genfen(.shrinkpos(pos), flip, sidetoplay, i=1)
          oldfen <- curfen
-         .boardeditor.drawboard(pos, flip, sidetoplay, lwd, coords)
+         .boardeditor.drawboard(pos, flip, sidetoplay)
          text(6, 0.5, paste("FEN: ", curfen), col=col, cex=cex)
          next
       }
@@ -123,7 +127,7 @@
 
       if (identical(click, "f")) {
          flip <- !flip
-         .boardeditor.drawboard(pos, flip, sidetoplay, lwd, coords)
+         .boardeditor.drawboard(pos, flip, sidetoplay)
          text(6, 0.5, paste("FEN: ", curfen), col=col, cex=cex)
          next
       }
@@ -144,7 +148,7 @@
          pos[2:9,2:9] <- ""
          curfen <- .genfen(.shrinkpos(pos), flip, sidetoplay, i=1)
          oldfen <- curfen
-         .boardeditor.drawboard(pos, flip, sidetoplay, lwd, coords)
+         .boardeditor.drawboard(pos, flip, sidetoplay)
          text(6, 0.5, paste("FEN: ", curfen), col=col, cex=cex)
          next
       }
@@ -189,7 +193,7 @@
             }
             curfen <- .genfen(pos, flip, sidetoplay, i=1)
             pos <- .expandpos(pos)
-            .boardeditor.drawboard(pos, flip, sidetoplay, lwd, coords)
+            .boardeditor.drawboard(pos, flip, sidetoplay)
          } else {
             .texttop(.text("notvalidfen"), sleep=2, xadj=1, yadj=2)
          }
@@ -199,8 +203,8 @@
       # F1 to show the help
 
       if (identical(click, "F1")) {
-         .showhelp.boardeditor(lwd=lwd)
-         .boardeditor.drawboard(pos, flip, sidetoplay, lwd, coords)
+         .showhelp.boardeditor()
+         .boardeditor.drawboard(pos, flip, sidetoplay)
          text(6, 0.5, paste("FEN: ", curfen), col=col, cex=cex)
          next
       }
@@ -256,7 +260,7 @@
       oldpos <- pos
       oldfen <- .genfen(.shrinkpos(oldpos), flip, sidetoplay, i=1)
 
-      pos <- .boardeditor.updateboard(pos, move=c(click1.x, click1.y, click2.x, click2.y), flip=flip, button=button, coords=coords)
+      pos <- .boardeditor.updateboard(pos, move=c(click1.x, click1.y, click2.x, click2.y), flip=flip, button=button)
 
       if (!identical(oldpos[2:9,2:9], pos[2:9,2:9])) {
          attr(pos, "ispp") <- NULL
@@ -350,7 +354,7 @@
 
 ############################################################################
 
-.showhelp.boardeditor <- function(lwd) {
+.showhelp.boardeditor <- function() {
 
    lang <- .get("lang")
 
@@ -399,7 +403,7 @@
 
    }
 
-   rect(2.2, 2.2, 9.8, 9.8, col=col.bg, border=col.help.border, lwd=lwd+3)
+   rect(2.2, 2.2, 9.8, 9.8, col=col.bg, border=col.help.border, lwd=.get("lwd")+3)
 
    cex <- .findcex(txt, font=font.mono, x1=1.8, x2=8, y1=4, y2=8, mincex=1.1)
    ypos <- seq(8, 4, length.out=length(txt))

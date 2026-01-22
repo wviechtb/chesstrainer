@@ -1,4 +1,4 @@
-.colorsettings <- function(cols.all, pos, flip, mode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop, lwd, sidetoplay, selmode, k, seqno, timed, movestoplay, movesplayed, timetotal, timepermove, mar, coords) {
+.colorsettings <- function(cols.all, pos, flip, mode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove) {
 
    cat(.text("currentsettings"))
 
@@ -8,17 +8,24 @@
 
    cat("\n")
 
-   .redrawall(pos, flip, mode, zenmode=FALSE, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, timed=FALSE, movestoplay, movesplayed, timetotal, timepermove, mar, coords)
-   .addrect(4, 5, col=.get("col.hint"), lwd=lwd)
-   .addrect(4, 3, col=.get("col.wrong"), lwd=lwd)
-   .addrect(4, 4, col=.get("col.rect"), lwd=lwd)
+   coords <- .get("coords")
+   timed <- .get("timed")
+   zenmode <- .get("zenmode")
+   assign("coords", TRUE, envir=.chesstrainer)
+   assign("timed", FALSE, envir=.chesstrainer)
+   assign("zenmode", FALSE, envir=.chesstrainer)
+
+   .redrawall(pos, flip, mode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
+   .addrect(4, 5, col=.get("col.hint"))
+   .addrect(4, 3, col=.get("col.wrong"))
+   .addrect(4, 4, col=.get("col.rect"))
    .drawsquare(0, 4, flip, col=.get("col.square.be"))
    .drawsquare(0, 5, flip, col=.get("col.square.be"))
-   .addrect(0, 4, offset=0.028, .get("col.bg"), lwd+2)
-   .addrect(0, 5, offset=0.028, .get("col.bg"), lwd+2)
-   .drawcircle(4, 6, lwd=lwd)
-   .drawarrow(3, 7, 6, 7, lwd=lwd)
-   .drawarrow(3, 8, 6, 8, lwd=lwd, col=adjustcolor(.get("col.best"), alpha.f=0.5))
+   .addrect(0, 4, offset=0.028, .get("col.bg"), lwdadj=2)
+   .addrect(0, 5, offset=0.028, .get("col.bg"), lwdadj=2)
+   .drawcircle(4, 6)
+   .drawarrow(3, 7, 6, 7)
+   .drawarrow(3, 8, 6, 8, col=adjustcolor(.get("col.best"), alpha.f=0.5))
    .drawsideindicator("w", flip=flip)
    .drawsideindicator("b", flip=flip, clear=FALSE)
    .draweval(0.2, flip=flip)
@@ -37,17 +44,17 @@
             next
          assign(tab[colno,1], col, envir=.chesstrainer)
          tab[colno,2] <- col
-         .redrawall(pos, flip, mode, zenmode=FALSE, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, timed=FALSE, movestoplay, movesplayed, timetotal, timepermove, mar, coords)
-         .addrect(4, 5, col=.get("col.hint"), lwd=lwd)
-         .addrect(4, 3, col=.get("col.wrong"), lwd=lwd)
-         .addrect(4, 4, col=.get("col.rect"), lwd=lwd)
+         .redrawall(pos, flip, mode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
+         .addrect(4, 5, col=.get("col.hint"))
+         .addrect(4, 3, col=.get("col.wrong"))
+         .addrect(4, 4, col=.get("col.rect"))
          .drawsquare(0, 4, flip, col=.get("col.square.be"))
          .drawsquare(0, 5, flip, col=.get("col.square.be"))
-         .addrect(0, 4, offset=0.028, .get("col.bg"), lwd+2)
-         .addrect(0, 5, offset=0.028, .get("col.bg"), lwd+2)
-         .drawcircle(4, 6, lwd=lwd)
-         .drawarrow(3, 7, 6, 7, lwd=lwd)
-         .drawarrow(3, 8, 6, 8, lwd=lwd, col=adjustcolor(.get("col.best"), alpha.f=0.5))
+         .addrect(0, 4, offset=0.028, .get("col.bg"), lwdadj=2)
+         .addrect(0, 5, offset=0.028, .get("col.bg"), lwdadj=2)
+         .drawcircle(4, 6)
+         .drawarrow(3, 7, 6, 7)
+         .drawarrow(3, 8, 6, 8, col=adjustcolor(.get("col.best"), alpha.f=0.5))
          .drawsideindicator("w", flip=flip)
          .drawsideindicator("b", flip=flip, clear=FALSE)
          .draweval(0.2, flip=flip)
@@ -55,11 +62,15 @@
       }
    }
 
+   assign("coords", coords, envir=.chesstrainer)
+   assign("timed", timed, envir=.chesstrainer)
+   assign("zenmode", zenmode, envir=.chesstrainer)
+
    return()
 
 }
 
-.cexsettings <- function(pos, flip, mode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop, lwd, sidetoplay, selmode, k, seqno, timed, movestoplay, movesplayed, timetotal, timepermove, mar, coords) {
+.cexsettings <- function(pos, flip, mode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove) {
 
    cat(.text("currentsettings"))
 
@@ -70,7 +81,14 @@
 
    cat("\n")
 
-   .redrawall(pos, flip, mode, zenmode=FALSE, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, timed, movestoplay, movesplayed, timetotal, timepermove, mar, coords=TRUE)
+   coords <- .get("coords")
+   timed <- .get("timed")
+   zenmode <- .get("zenmode")
+   assign("coords", TRUE, envir=.chesstrainer)
+   assign("timed", FALSE, envir=.chesstrainer)
+   assign("zenmode", FALSE, envir=.chesstrainer)
+
+   .redrawall(pos, flip, mode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
    .draweval(0.2, flip=flip)
 
    while (TRUE) {
@@ -88,10 +106,14 @@
          cex[cex < 0.1] <- 0.1
          assign(tab[cexno,1], cex, envir=.chesstrainer)
          tab[cexno,2] <- cex
-         .redrawall(pos, flip, mode, zenmode=FALSE, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, timed, movestoplay, movesplayed, timetotal, timepermove, mar, coords)
+         .redrawall(pos, flip, mode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
          .draweval(0.2, flip=flip)
       }
    }
+
+   assign("coords", coords, envir=.chesstrainer)
+   assign("timed", timed, envir=.chesstrainer)
+   assign("zenmode", zenmode, envir=.chesstrainer)
 
    return()
 

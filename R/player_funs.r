@@ -1,4 +1,4 @@
-.selectplayer <- function(current, seqdir, lwd, mustselect=FALSE) {
+.selectplayer <- function(current, seqdir, mustselect=FALSE) {
 
    col.bg          <- .get("col.bg")
    col.help        <- .get("col.help")
@@ -13,7 +13,7 @@
    players <- sort(unique(unlist(lapply(dat, function(x) names(x$player)))))
    nplayers <- length(players)
 
-   rect(1.2, 1.2, 8.8, 8.8, col=.get("col.bg"), border=.get("col.help.border"), lwd=lwd+3)
+   rect(1.2, 1.2, 8.8, 8.8, col=.get("col.bg"), border=.get("col.help.border"), lwd=.get("lwd")+3)
 
    if (nplayers == 0L) {
 

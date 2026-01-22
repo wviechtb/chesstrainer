@@ -1,4 +1,4 @@
-.bookmarks <- function(seqdir, seqdirpos, texttop, lwd) {
+.bookmarks <- function(seqdir, seqdirpos, texttop) {
 
    col.bg    <- .get("col.bg")
    col.help  <- .get("col.help")
@@ -46,7 +46,7 @@
    #.clearsideindicator()
    #.drawtimer(clear=TRUE)
 
-   tmp <- .drawbookmarks(bookmarks, lwd)
+   tmp <- .drawbookmarks(bookmarks)
    cex <- tmp$cex
    ypos <- tmp$ypos
    dist <- tmp$dist
@@ -93,8 +93,8 @@
       # F1 to show the help
 
       if (identical(key, "F1")) {
-         .showhelp.bookmarks(lwd=lwd)
-         .drawbookmarks(bookmarks, lwd)
+         .showhelp.bookmarks()
+         .drawbookmarks(bookmarks)
          next
       }
 
@@ -131,7 +131,7 @@
             num <- 0
             whichnum <- 1
             keymode <- "s"
-            tmp <- .drawbookmarks(bookmarks, lwd)
+            tmp <- .drawbookmarks(bookmarks)
             cex <- tmp$cex
             ypos <- tmp$ypos
             dist <- tmp$dist
@@ -152,7 +152,7 @@
                bookmarktomove <- bookmarks[posfrom]
                bookmarks <- bookmarks[-posfrom]
                bookmarks <- append(bookmarks, bookmarktomove, after=posto-1)
-               .drawbookmarks(bookmarks, lwd)
+               .drawbookmarks(bookmarks)
                next
             }
          }
@@ -213,14 +213,14 @@
 
 }
 
-.drawbookmarks <- function(bookmarks, lwd, cex) {
+.drawbookmarks <- function(bookmarks, cex) {
 
    col.bg          <- .get("col.bg")
    col.help        <- .get("col.help")
    col.help.border <- .get("col.help.border")
    font.mono       <- .get("font.mono")
 
-   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=lwd+3)
+   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=.get("lwd")+3)
 
    tab <- data.frame(sub("\\.rds$", "", bookmarks))
    names(tab) <- ""
@@ -245,7 +245,7 @@
 
 }
 
-.showhelp.bookmarks <- function(lwd) {
+.showhelp.bookmarks <- function() {
 
    lang <- .get("lang")
 
@@ -278,7 +278,7 @@
 
    }
 
-   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=lwd+3)
+   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=.get("lwd")+3)
 
    cex <- .findcex(txt, font=font.mono, x1=1.8, x2=8, y1=4.5, y2=7, mincex=1.1)
    ypos <- seq(7, 4.5, length.out=length(txt))

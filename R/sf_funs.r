@@ -80,7 +80,7 @@
 
 }
 
-.sf.eval <- function(sfproc, sfrun, depth, multipv, sflim, fen, sidetoplay, verbose, progbar=FALSE) {
+.sf.eval <- function(sfproc, sfrun, depth, multipv, sflim, fen, sidetoplay, progbar=FALSE) {
 
    sfout    <- NULL
    eval     <- rep(NA_real_, multipv)
@@ -92,6 +92,7 @@
 
    col.top <- .get("col.top")
    col.bg  <- .get("col.bg")
+   verbose <- .get("verbose")
 
    olddepth <- 0
 
