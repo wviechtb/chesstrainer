@@ -98,7 +98,7 @@ play <- function(lang="en", sfpath="", ...) {
       switch2 <- parse(text = ddd[["switch2"]])
    }
 
-   # ensure that some arguments are sensible
+   # ensure that argument values passed via ... are sensible
 
    if (!is.element(mode, c("add","test","play")))
       mode <- "add"

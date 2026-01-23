@@ -78,15 +78,14 @@
       "T        - set target score",
       "g        - show the progress graph for the current sequence",
       "G        - show the progress graph at the end of sequences on/off",
-      "a        - extend the current sequence with more moves (switches to add mode)",
-      "A        - extend the current position with more moves (switches to add mode)",
+      "a and A  - extend the current sequence / position (switches to add mode)",
       "Ctrl-c   - copy the name of the current sequence to the clipboard",
       "Ctrl-d   - delete the current sequence")
 
       txt.add <- c(
       "Shortcuts for the add mode:",
       "f        - flip the board",
-      "z and Z  - show moves (own/computer) on/off",
+      "z and Z  - show moves (own / computer) on/off",
       "c        - add a comment to the current move",
       "e and E  - edit the comments / edit the sequence file",
       "h and H  - show the best move according to Stockfish (fast / deep evaluation)",
@@ -175,15 +174,14 @@
       "T        - Zielwert festlegen",
       "g        - Fortschrittsdiagramm f\U000000FCr die aktuelle Sequenz anzeigen",
       "G        - Fortschrittsdiagramm am Ende der Sequenzen anzeigen an/aus",
-      "a        - aktuelle Sequenz mit Z\U000000FCgen erweitern (wechselt zum Hinzuf\U000000FCgen Modus)",
-      "A        - aktuelle Stellung mit Z\U000000FCgen erweitern (wechselt zum Hinzuf\U000000FCgen Modus)",
+      "a und A  - akutelle Sequenz / Stellung erweitern (wechselt zum Hinzuf\U000000FCgen Modus)",
       "Strg-c   - den Namen der aktuellen Sequenz in die Zwischenablage kopieren",
       "Strg-d   - aktuelle Sequenz l\U000000F6schen")
 
       txt.add <- c(
       "Tastenk\U000000FCrzel f\U000000FCr den Hinzuf\U000000FCgen Modus:",
       "f        - Brett umdrehen",
-      "z und Z  - Z\U000000FCge zeigen (eigene/Computer) an/aus",
+      "z und Z  - Z\U000000FCge zeigen (eigene / Computer) an/aus",
       "c        - Kommentar zum aktuellen Zug hinzuf\U000000FCgen",
       "e und E  - Kommentare editieren / Sequenzfile editieren",
       "h und H  - den besten Zug laut Stockfish anzeigen (schnelle / tiefe Analyse)",
@@ -226,14 +224,23 @@
    cex2 <- .findcex(page2, font=font.mono, x1=1.5, x2=8.2, y1=1.5, y2=8.5)
    cex <- min(cex1, cex2)
 
-   ypos <- seq(8.5, 1.5, length.out=length(txt))
+   ypos <- seq(8.5, 1.8, length.out=length(txt))
+
+   redraw <- TRUE
 
    while (TRUE) {
 
-      rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=.get("lwd")+3)
-
-      text(1.5, ypos, txt, pos=4, offset=0, cex=cex, family=font.mono, font=ifelse(grepl(":", txt), 2, 1), col=col.help)
-      text(8.6, 1.4, paste0(page, " / 2"), pos=2, offset=0, cex=cex, family=font.mono, col=col.help)
+      if (redraw) {
+         rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=.get("lwd")+3)
+         text(1.5, ypos, txt, pos=4, offset=0, cex=cex, family=font.mono, font=ifelse(grepl(":", txt), 2, 1), col=col.help)
+         text(8.6, 1.4, paste0(page, " / 2"), pos=2, offset=0, cex=cex, family=font.mono, col=col.help)
+         if (lang == "en")
+            text(1.5, 1.4, "\U00002190/\U00002192: next page; t: show manual; m: show manual online", pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+         if (lang == "de")
+            text(1.5, 1.4, "\U00002190/\U00002192: n\U000000E4chste Seite; t: Anleitung zeigen; m: Anleitung online zeigen", pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+      } else {
+         redraw <- TRUE
+      }
 
       click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.mousedownfun, onKeybd=.keyfun)
 
@@ -245,11 +252,13 @@
 
       if (identical(click, "m")) {
          browseURL("https://wviechtb.github.io/chesstrainer/reference/chesstrainer-package.html")
+         redraw <- FALSE
          next
       }
 
       if (identical(click, "t")) {
          print(help("chesstrainer", help_type="text"))
+         redraw <- FALSE
          next
       }
 
