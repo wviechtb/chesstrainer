@@ -76,8 +76,8 @@
 
    if (x == "enterplayer") {
       return(switch(lang,
-                    de = "Gib einen (neuen) Spielernamen oder die Spielernummer ein: ",
-                         "Enter a (new) player name or a player number: "
+                    de = "Gib einen (neuen) Namen oder die Nummer ein: ",
+                         "Enter a (new) name or a number: "
    ))}
 
    if (x == "foundplayers") {
@@ -1152,7 +1152,7 @@
    if (x == "selmodeinfo") {
       return(switch(lang,
                     de = "W\U000000E4hle mit den Zifferntasten 1-9, F1-F11, oder per Mausklick aus.",
-                         "Select via number keys 1-9, F1-F11, or mouse click."
+                         "Select via the number keys 1-9, F1-F11, or via mouse click."
    ))}
 
    if (x == "fliponlyatstart") {
