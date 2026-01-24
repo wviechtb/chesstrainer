@@ -180,9 +180,9 @@
 
    for (j in 3:8) {
       .drawsquare(1, j, flip=flip, col=col.square.be, adj=100)
-      .addrect(1, j, offset=0.028, col.bg, lwdadj=2)
+      .addrect(1, j, col.bg, lwdadj=2)
       .drawsquare(10, j, flip=flip, col=col.square.be)
-      .addrect(10, j, offset=0.028, col.bg, lwdadj=2)
+      .addrect(10, j, col.bg, lwdadj=2)
    }
 
    if (flip) {
@@ -670,23 +670,30 @@
 
 }
 
-.addrect <- function(x, y, offset=0.028, col, lwdadj=0)
-   rect(y+offset, x+offset, y+1-offset, x+1-offset, lwd=.get("lwd")+lwdadj, border=col, ljoin=1)
+.addrect <- function(x, y, col, lwdadj=0) {
+   lwd <- .get("lwd")
+   offset <- 0.028
+   rect(y+offset, x+offset, y+1-offset, x+1-offset, lwd=lwd+lwdadj, border=col, ljoin=1)
+}
 
-.rmrect <- function(x, y, offset=0.028, flip) {
+.rmrect <- function(x, y, flip) {
    if (is.null(x) || is.null(y) || is.na(x) || is.na(y))
       return()
-   rect(y+offset, x+offset, y+1-offset, x+1-offset, lwd=.get("lwd")+2, border=ifelse(.is.even(x+y), .get("col.square.d"), .get("col.square.l")), ljoin=1)
+   lwd <- .get("lwd")
+   offset <- 0.028
+   rect(y+offset, x+offset, y+1-offset, x+1-offset, lwd=lwd+2, border=ifelse(.is.even(x+y), .get("col.square.d"), .get("col.square.l")), ljoin=1)
    .drawcoords(x, y, flip)
 }
 
-.boardeditor.rmrect <- function(x, y, offset=0.028, flip) {
+.boardeditor.rmrect <- function(x, y, flip) {
    if (is.null(x) || is.null(y) || is.na(x) || is.na(y))
       return()
+   lwd <- .get("lwd")
+   offset <- 0.028
    if (x <= 1 || x >= 10 || y <= 1 || y >= 10) {
-      rect(y+offset, x+offset, y+1-offset, x+1-offset, lwd=.get("lwd")+2, border=.get("col.bg"), ljoin=1)
+      rect(y+offset, x+offset, y+1-offset, x+1-offset, lwd=lwd+2, border=.get("col.bg"), ljoin=1)
    } else {
-      rect(y+offset, x+offset, y+1-offset, x+1-offset, lwd=.get("lwd")+2, border=ifelse(.is.even(x+y), .get("col.square.d"), .get("col.square.l")), ljoin=1)
+      rect(y+offset, x+offset, y+1-offset, x+1-offset, lwd=lwd+2, border=ifelse(.is.even(x+y), .get("col.square.d"), .get("col.square.l")), ljoin=1)
       .drawcoords(x, y, flip, adj=1)
    }
 }

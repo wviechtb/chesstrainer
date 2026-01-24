@@ -68,6 +68,7 @@ play <- function(lang="en", sfpath="", ...) {
    cex.eval    <- ifelse(is.null(ddd[["cex.eval"]]),    0.5,            ddd[["cex.eval"]])
    cex.coords  <- ifelse(is.null(ddd[["cex.coords"]]),  0.85,           ddd[["cex.coords"]])
    cex.matdiff <- ifelse(is.null(ddd[["cex.matdiff"]]), 1.1,            ddd[["cex.matdiff"]])
+   cex.plots   <- ifelse(is.null(ddd[["cex.plots"]]),   1.0,            ddd[["cex.plots"]])
    depth1      <- ifelse(is.null(ddd[["depth1"]]),      14,             ddd[["depth1"]])
    depth2      <- ifelse(is.null(ddd[["depth2"]]),      24,             ddd[["depth2"]])
    depth3      <- ifelse(is.null(ddd[["depth3"]]),      6,              ddd[["depth3"]])
@@ -127,6 +128,7 @@ play <- function(lang="en", sfpath="", ...) {
    cex.eval[cex.eval < 0.1] <- 0.1
    cex.coords[cex.coords < 0.1] <- 0.1
    cex.matdiff[cex.matdiff < 0.1] <- 0.1
+   cex.plots[cex.plots < 0.1] <- 0.1
    depth1[depth1 < 1] <- 1
    depth2[depth2 < 1] <- 1
    depth3[depth3 < 1] <- 1
@@ -175,7 +177,7 @@ play <- function(lang="en", sfpath="", ...) {
       settings <- list(lang=lang, player=player, mode=mode, seqdir=seqdir, seqdirpos=seqdirpos,
                        selmode=selmode, timed=timed, timepermove=timepermove, expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint,
                        eval=eval, evalsteps=evalsteps, coords=coords, matdiff=matdiff, wait=wait, sleep=sleep, idletime=idletime, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
-                       cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff,
+                       cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth,
                        difffun=difffun, difflen=difflen, diffmin=diffmin, zenmode=zenmode, mar=mar, mar2=mar2)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
@@ -246,6 +248,8 @@ play <- function(lang="en", sfpath="", ...) {
             cex.coords <- settings[["cex.coords"]]
          if (is.null(mc[["cex.matdiff"]]))
             cex.matdiff <- settings[["cex.matdiff"]]
+         if (is.null(mc[["cex.plots"]]))
+            cex.plots <- settings[["cex.plots"]]
          if (is.null(mc[["sfpath"]]))
             sfpath <- settings[["sfpath"]]
          if (is.null(mc[["depth1"]]))
@@ -283,7 +287,7 @@ play <- function(lang="en", sfpath="", ...) {
       settings <- list(lang=lang, player=player, mode=mode, seqdir=seqdir, seqdirpos=seqdirpos,
                        selmode=selmode, timed=timed, timepermove=timepermove, expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint,
                        eval=eval, evalsteps=evalsteps, coords=coords, matdiff=matdiff, wait=wait, sleep=sleep, idletime=idletime, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
-                       cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff,
+                       cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth,
                        difffun=difffun, difflen=difflen, diffmin=diffmin, zenmode=zenmode, mar=mar, mar2=mar2)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
@@ -304,6 +308,7 @@ play <- function(lang="en", sfpath="", ...) {
    assign("cex.eval", cex.eval, envir=.chesstrainer)
    assign("cex.coords", cex.coords, envir=.chesstrainer)
    assign("cex.matdiff", cex.matdiff, envir=.chesstrainer)
+   assign("cex.plots", cex.plots, envir=.chesstrainer)
    assign("upsidedown", FALSE, envir=.chesstrainer)
    assign("volume", volume, envir=.chesstrainer)
    assign("lwd", lwd, envir=.chesstrainer)
@@ -1403,9 +1408,19 @@ play <- function(lang="en", sfpath="", ...) {
                answer <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=.keyfun)
                answer <- .confirm(answer)
                if (answer) {
+                  .texttop(.text("rlyrlydelplayer", player))
+                  answer <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=.keyfun)
+                  answer <- .confirm(answer)
+               }
+               if (answer) {
                   .texttop(.text("delplayer", player), sleep=1)
                   .removeplayer(player, seqdir[seqdirpos])
                   player <- .selectplayer(player, seqdir[seqdirpos], mustselect=TRUE)
+                  session.seqsplayed <- 0
+                  session.mean.scores <- list(NULL)
+                  session.length <- 1
+                  session.date.start <- Sys.time()
+                  session.time.start <- proc.time()[[3]]
                   run.rnd <- FALSE
                   input <- FALSE
                } else {
@@ -1428,8 +1443,11 @@ play <- function(lang="en", sfpath="", ...) {
                   }
                }
                if (mode %in% c("add","play","analysis")) {
-                  if (anyNA(sub$moves$eval) || i == 1)
+                  if (anyNA(sub$moves$eval) || i == 1) {
+                     .texttop(.text("noevalgraph"), sleep=1.5)
+                     .texttop(texttop)
                      next
+                  }
                   tmp <- .evalgraph(sub$moves, i=i, flip=flip)
                   if (!identical(mar2, tmp$mar2)) {
                      mar2 <- tmp$mar2
@@ -2679,7 +2697,7 @@ play <- function(lang="en", sfpath="", ...) {
                   lwd <- lwd + 1
                }
                assign("lwd", lwd, envir=.chesstrainer)
-               .texttop(.text("lwdadj", lwd), sleep=0.5)
+               .texttop(.text("lwd", lwd), sleep=0.5)
                .texttop(texttop)
                settings$lwd <- lwd
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
@@ -2781,6 +2799,12 @@ play <- function(lang="en", sfpath="", ...) {
             # y to toggle continuous analysis on/off (only in add and analysis mode)
 
             if (mode %in% c("add","analysis") && identical(click, "y")) {
+               if (!sfrun) {
+                  .texttop(.text("nomovewoutsf"), sleep=1.5)
+                  contanalysis <- FALSE
+                  .texttop(texttop)
+                  next
+               }
                contanalysis <- !contanalysis
                .texttop(.text("contanalysis", contanalysis), sleep=0.75)
                if (contanalysis) {
@@ -3374,7 +3398,8 @@ play <- function(lang="en", sfpath="", ...) {
             if (identical(click, "F3")) {
                tab <- list(lang=lang, player=player, mode=mode, seqdir=seqdir[seqdirpos], selmode=selmode, zenmode=zenmode, timed=timed, timepermove=timepermove, expval=expval,
                            multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, eval=eval, evalsteps=evalsteps, coords=coords, matdiff=matdiff, wait=wait, sleep=sleep, idletime=idletime, mar=mar, mar2=mar2, lwd=lwd,
-                           volume=volume, showgraph=showgraph, repmistake=repmistake, target=target, cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, difffun=difffun, difflen=difflen, diffmin=diffmin,
+                           volume=volume, showgraph=showgraph, repmistake=repmistake, target=target, cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots,
+                           difffun=difffun, difflen=difflen, diffmin=diffmin,
                            sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, contanalysis=contanalysis)
                .showsettings(tab)
                .redrawpos(pos, flip=flip)
@@ -3410,11 +3435,13 @@ play <- function(lang="en", sfpath="", ...) {
                cex.eval <- .get("cex.eval")
                cex.coords <- .get("cex.coords")
                cex.matdiff <- .get("cex.matdiff")
+               cex.plots <- .get("cex.plots")
                settings$cex.top <- cex.top
                settings$cex.bot <- cex.bot
                settings$cex.eval <- cex.eval
                settings$cex.coords <- cex.coords
                settings$cex.matdiff <- cex.matdiff
+               settings$cex.plots <- cex.plots
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
@@ -3495,6 +3522,7 @@ play <- function(lang="en", sfpath="", ...) {
                   useflip  <- TRUE
                   replast  <- FALSE
                   oldmode  <- ifelse(mode %in% c("play","analysis"), "add", mode)
+                  mode <- "add"
                   session.seqsplayed <- c(session.seqsplayed, 0)
                   session.mean.scores <- c(session.mean.scores, list(NULL))
                   session.length <- session.length + 1

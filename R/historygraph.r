@@ -19,6 +19,7 @@
    col.square.l    <- .get("col.square.l")
    col.square.d    <- .get("col.square.d")
    col.help.border <- .get("col.help.border")
+   cex.plots       <- .get("cex.plots")
    mar             <- .get("mar")
    mar2            <- .get("mar2")
 
@@ -52,12 +53,12 @@
          years <- ifelse(duplicated(years), "", years)
          labs <- paste0(months, "\n", years)
       }
-      axis(side=1, at=x, labels=labs, col.axis=col.top, padj=0.5)
+      axis(side=1, at=x, labels=labs, col.axis=col.top, padj=0.5, cex.axis=cex.plots)
    }
 
    plot.playtime <- function(x) {
       # make the line width a function of the number of lines
-      plotlwd <- max(0.2, 5 - 0.02*nrow(x))
+      plotlwd <- max(0.1, 5 - 0.02*nrow(x))
       total.playtime <- sum(x$playtime)
       x$playtime <- round(x$playtime / 60, 1)
       rect(1.3, 1.3, 8.7, 8.7, col=col.bg, border=NA)
@@ -76,7 +77,8 @@
       plot(x[[1]], yvals, type="h", lwd=plotlwd, col=col.square.l,
            xlim=xlim, ylim=c(0, max(yvals)), bty="l", las=1, xlab=.text(timeframe, FALSE),
            ylab=ifelse(yismins, .text("historyplaytime_mins"), .text("historyplaytime_hours")),
-           col.axis=col.top, col.lab=col.top, col.main=col.fg, xaxt="n")
+           col.axis=col.top, col.lab=col.top, col.main=col.fg, xaxt="n",
+           cex=cex.plots, cex.axis=cex.plots, cex.lab=cex.plots)
       xaxis(x[[1]])
       usr <<- par()$usr
       par(mar=mar, usr=c(1,9,1,9))
@@ -85,7 +87,7 @@
 
    plot.seqsplayed <- function(x) {
       # make the line width a function of the number of lines
-      plotlwd <- max(0.2, 5 - 0.02*nrow(x))
+      plotlwd <- max(0.1, 5 - 0.02*nrow(x))
       total.seqsplayed <- sum(x$seqsplayed)
       rect(1.3, 1.3, 8.7, 8.7, col=col.bg, border=NA)
       par(new=TRUE, mar=mar2)
@@ -97,7 +99,8 @@
       plot(x[[1]], x$seqsplayed, type="h", lwd=plotlwd, col=col.square.l,
            xlim=xlim, ylim=c(0, max(x$seqsplayed)), bty="l", las=1,
            xlab=.text(timeframe, FALSE), ylab=.text("historyseqsplayed"),
-           col.axis=col.top, col.lab=col.top, col.main=col.fg, xaxt="n")
+           col.axis=col.top, col.lab=col.top, col.main=col.fg, xaxt="n",
+           cex=cex.plots, cex.axis=cex.plots, cex.lab=cex.plots)
       xaxis(x[[1]])
       usr <<- par()$usr
       par(mar=mar, usr=c(1,9,1,9))

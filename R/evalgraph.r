@@ -5,6 +5,7 @@
    col.square.l    <- .get("col.square.l")
    col.square.d    <- .get("col.square.d")
    col.help.border <- .get("col.help.border")
+   cex.plots       <- .get("cex.plots")
    mar             <- .get("mar")
    mar2            <- .get("mar2")
 
@@ -57,9 +58,10 @@
          ys <- 50 + 50 * (2 / (1 + exp(-0.00368208 * ys*100)) - 1)
       }
       plot(NA, xlim=c(1,n), ylim=ylim, xlab=.text("evalgraph-x"), ylab=ylab,
-           bty="l", las=1, col.axis=col.top, col.lab=col.top, yaxt="n", xaxt="n")
-      axis(side=1, at=1:n, col.axis=col.top)
-      axis(side=2, at=yat, col.axis=col.top, las=1)
+           bty="l", las=1, col.axis=col.top, col.lab=col.top, yaxt="n", xaxt="n",
+           cex=cex.plots, cex.axis=cex.plots, cex.lab=cex.plots)
+      axis(side=1, at=1:n, col.axis=col.top, cex.axis=cex.plots)
+      axis(side=2, at=yat, col.axis=col.top, las=1, cex.axis=cex.plots)
       #lines(1:n, ys, type="o", pch=21, lwd=2, col=col.square.l, bg=col.square.d)
       xs <- 1:n
       if (n > 2) {
@@ -67,7 +69,7 @@
             shade_segment(xs[j], ys[j], xs[j+1], ys[j+1], evenval=evanval, invert=invert)
          }
       } else {
-         points(xs, ys, type="o", pch=21, lwd=2, col=col.square.l, bg=col.square.d)
+         points(xs, ys, type="o", pch=21, lwd=2, col=col.square.l, bg=col.square.d, cex=cex.plots)
       }
       segments(1, evanval, n, evanval, lty="dotted", col=col.top)
       lines(xs, ys, col="#d85000", lwd=3)
@@ -98,7 +100,7 @@
          next
       }
 
-      if (is.numeric(click) && click[[3]] == 1) {
+      if (identical(click, "Down") || identical(click, "Up") || (is.numeric(click) && click[[3]] == 1)) {
          if (yvalue == "cp") {
             yvalue <- "wp"
             next

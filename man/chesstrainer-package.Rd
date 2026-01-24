@@ -175,7 +175,7 @@
 
    If Stockfish is running, you can switch into \emph{play mode} at any time with the \verb{<\>} or \verb{<#>} key. This is especially useful at the end of a sequence, to continue playing further moves against the computer from the end position of a sequence (e.g., to practice holding an advantage gained during an opening sequence). In this mode, the computer chooses by default its move according to a search depth of 6 half-moves, but this can be adjusted via \verb{<F7>}. Here, you can also set a limit on the play strength of Stockfish (either as a skill level between 0 and 20 or as an approximate Elo value between 1320 and 3190).
 
-   Using the \verb{<g>} key in \emph{play mode} shows a graph of the position evaluations for the moves played so far (this also works in \emph{add mode}). By default, the y-axis shows the evaluation based on the centipawns (\eqn{cp}) divided by 100, but pressing the middle mouse shows the win percentage (computed with \eqn{50 + 50 \times (2 / (1 + \exp(-0.00368208 \times cp)) - 1)}; see here: \verb{https://lichess.org/page/accuracy}).
+   Using the \verb{<g>} key in \emph{play mode} shows a graph of the position evaluations for the moves played so far (this also works in \emph{add mode}). By default, the y-axis shows the evaluation based on the centipawns (\eqn{cp}) divided by 100, but pressing the \verb{<down>/<up>} arrow keys or the middle mouse button shows the win percentage (computed with \eqn{50 + 50 \times (2 / (1 + \exp(-0.00368208 \times cp)) - 1)}; see here: \verb{https://lichess.org/page/accuracy}).
 
    Using the \verb{<t>} key, you can take back the last move (i.e., the move played by the computer and your own move), so that it is again your move to play.
 
@@ -201,7 +201,7 @@
    \item With the \verb{<k>} key, you can be toggle whether the material difference is shown.
    }
 
-   The settings are stored across sessions and can be shown with \verb{<F3>}. With \verb{<F4>}, you can adjust the colors. With \verb{<F5>}, you can adjust the size of the text at the top, the text at the bottom, the size of the evaluation value in the evaluation bar (if it is shown), the size of the board coordinates, and the size of the material difference.
+   The settings are stored across sessions and can be shown with \verb{<F3>}. With \verb{<F4>}, you can adjust the colors. With \verb{<F5>}, you can adjust the size of the text at the top, the text at the bottom, the size of the evaluation value in the evaluation bar (if it is shown), the size of the board coordinates, the size of the material difference, and the size of plots (e.g., the progress graph).
 
    With \verb{<F6>}, you can adjust some miscellaneous settings, namely the multiplier for the score when completing a sequence without any mistakes (0.8 by default), the score penalty when making a wrong move (40 by default), the score penalty per hint (20 by default), the number of animation steps for the evaluation bar (5 by default), the time per move for the \emph{timed mode} (5 seconds by default), and the idle time (120 seconds by default; time without any inputs longer than this value is not counted towards the play time for the session history).
 

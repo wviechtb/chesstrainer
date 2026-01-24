@@ -21,8 +21,8 @@
    .addrect(4, 4, col=.get("col.rect"))
    .drawsquare(0, 4, flip, col=.get("col.square.be"))
    .drawsquare(0, 5, flip, col=.get("col.square.be"))
-   .addrect(0, 4, offset=0.028, .get("col.bg"), lwdadj=2)
-   .addrect(0, 5, offset=0.028, .get("col.bg"), lwdadj=2)
+   .addrect(0, 4, .get("col.bg"), lwdadj=2)
+   .addrect(0, 5, .get("col.bg"), lwdadj=2)
    .drawcircle(4, 6)
    .drawarrow(3, 7, 6, 7)
    .drawarrow(3, 8, 6, 8, col=adjustcolor(.get("col.best"), alpha.f=0.5))
@@ -50,8 +50,8 @@
          .addrect(4, 4, col=.get("col.rect"))
          .drawsquare(0, 4, flip, col=.get("col.square.be"))
          .drawsquare(0, 5, flip, col=.get("col.square.be"))
-         .addrect(0, 4, offset=0.028, .get("col.bg"), lwdadj=2)
-         .addrect(0, 5, offset=0.028, .get("col.bg"), lwdadj=2)
+         .addrect(0, 4, .get("col.bg"), lwdadj=2)
+         .addrect(0, 5, .get("col.bg"), lwdadj=2)
          .drawcircle(4, 6)
          .drawarrow(3, 7, 6, 7)
          .drawarrow(3, 8, 6, 8, col=adjustcolor(.get("col.best"), alpha.f=0.5))
@@ -74,8 +74,8 @@
 
    cat(.text("currentsettings"))
 
-   tab <- data.frame(cex = c("cex.top", "cex.bot", "cex.eval", "cex.coords", "cex.matdiff"),
-                     val = c(.get("cex.top"), .get("cex.bot"), .get("cex.eval"), .get("cex.coords"), .get("cex.matdiff")))
+   tab <- data.frame(cex = c("cex.top", "cex.bot", "cex.eval", "cex.coords", "cex.matdiff", "cex.plots"),
+                     val = c(.get("cex.top"), .get("cex.bot"), .get("cex.eval"), .get("cex.coords"), .get("cex.matdiff"), .get("cex.plots")))
    names(tab) <- c("", "")
    print(tab, right=FALSE, print.gap=3)
 
@@ -237,7 +237,7 @@
    sfpos <- grep("difffun", txt, fixed=TRUE)
    txt <- c(.text("generalsettings"), txt[1:(sfpos-1)], "", .text("seqdirsettings"), seqdir, "", .text("sfsettings"), txt[sfpos:length(txt)], "", .text("sfpathsettings"), sfpath)
 
-   cex <- .findcex(txt, font=font.mono, x1=1.5, x2=8.2, y1=1.5, y2=8.5)
+   cex <- .findcex(txt, font=font.mono, x1=1.5, x2=8.2, y1=2.0, y2=8.0)
 
    ypos <- seq(8.5, 1.5, length.out=length(txt))
 

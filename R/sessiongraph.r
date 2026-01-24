@@ -12,6 +12,7 @@
    col.square.l    <- .get("col.square.l")
    col.square.d    <- .get("col.square.d")
    col.help.border <- .get("col.help.border")
+   cex.plots       <- .get("cex.plots")
    mar             <- .get("mar")
    mar2            <- .get("mar2")
 
@@ -22,12 +23,13 @@
       par(new=TRUE, mar=mar2)
       ylim <- range(round(unlist(mean.scores))) + c(-1,1)
       plot(NA, xlim=c(1,seqsplayed.total), ylim=ylim, xlab=.text("round"), ylab=.text("meanscore"),
-           bty="l", las=1, col.axis=col.top, col.lab=col.top, xaxt="n")
-      axis(side=1, at=seq_len(seqsplayed.total), col.axis=col.top)
+           bty="l", las=1, col.axis=col.top, col.lab=col.top, xaxt="n",
+           cex=cex.plots, cex.axis=cex.plots, cex.lab=cex.plots)
+      axis(side=1, at=seq_len(seqsplayed.total), col.axis=col.top, cex.axis=cex.plots)
       start.pos <- 0
       for (j in 1:length(seqsplayed)) {
          segments(start.pos + 1, mean.scores[[j]][1], start.pos + seqsplayed[j], mean.scores[[j]][1], lty="dotted", col=col.top)
-         points(start.pos + seq_len(seqsplayed[j]), mean.scores[[j]], type="o", pch=21, lwd=2, col=col.square.l, bg=col.square.d)
+         points(start.pos + seq_len(seqsplayed[j]), mean.scores[[j]], type="o", pch=21, lwd=2, col=col.square.l, bg=col.square.d, cex=cex.plots)
          start.pos <- start.pos + max(seqsplayed[j])
       }
       par(mar=mar, usr=c(1,9,1,9))

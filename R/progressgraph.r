@@ -11,6 +11,7 @@
    col.square.l    <- .get("col.square.l")
    col.square.d    <- .get("col.square.d")
    col.help.border <- .get("col.help.border")
+   cex.plots       <- .get("cex.plots")
    mar             <- .get("mar")
    mar2            <- .get("mar2")
 
@@ -27,9 +28,10 @@
          xlim <- range(x$round)
       }
       plot(NA, xlim=xlim, ylim=c(0,100), xlab=.text("round"), ylab=.text("score"),
-           bty="l", las=1, col.axis=col.top, col.lab=col.top, xaxt="n")
-      axis(side=1, at=x$round, col.axis=col.top)
-      points(x$round, x$score, type="o", pch=21, lwd=2, col=col.square.l, bg=col.square.d)
+           bty="l", las=1, col.axis=col.top, col.lab=col.top, xaxt="n",
+           cex=cex.plots, cex.axis=cex.plots, cex.lab=cex.plots)
+      axis(side=1, at=x$round, col.axis=col.top, cex.axis=cex.plots)
+      points(x$round, x$score, type="o", pch=21, lwd=2, col=col.square.l, bg=col.square.d, cex=cex.plots)
       usr <<- par()$usr
       par(mar=mar, usr=c(1,9,1,9))
    }

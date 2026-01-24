@@ -47,7 +47,7 @@
 
    rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=.get("lwd")+3)
 
-   cex <- .findcex(txt, font=font.mono, x1=1.5, x2=8.2, y1=3.5, y2=7.5)
+   cex <- .findcex(c(txt,.text("selmodeinfo")), font=font.mono, x1=1.5, x2=8.2, y1=3.5, y2=7.5)
 
    selmodes <- c("score_random", "score_highest", "rounds_random", "rounds_lowest", "age_random", "age_oldest", "diff_random", "diff_highest", "sequential", "sequential_len", "sequential_mov")
 
