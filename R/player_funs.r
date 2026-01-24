@@ -63,8 +63,7 @@
       ypos1 <- 8
       ypos2 <- max(2.5, 8-0.5*length(players))
 
-      cex <- .findcex(paste0(rep("A",60), collapse=""), font=font.mono, x1=1.5, x2=8, y1=ypos1, y2=ypos2)
-      print(cex)
+      cex <- .findcex(paste0(rep("A",62), collapse=""), font=font.mono, x1=1.5, x2=8, y1=ypos1, y2=ypos2)
 
       ypos <- seq(ypos1, ypos2, length.out=length(txt))
       ypos.players <- ypos[-c(1:2,length(ypos))]
