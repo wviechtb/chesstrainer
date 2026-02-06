@@ -1,11 +1,12 @@
 Package: chesstrainer
-Version: 0.9-128
-Date: 2026-01-24
+Version: 0.9-129
+Date: 2026-02-06
 Title: Chess Training Program
 Authors@R: person(given = "Wolfgang", family = "Viechtbauer", role = c("aut","cre"), email = "wvb@wvbauer.com", comment = c(ORCID = "0000-0003-3463-4063"))
 Depends: R (>= 4.2.0), processx
 Imports: stats, graphics, grDevices, utils, png, clipr
 Description: An interactive graphical application that can be used to create chess lines (sequences of moves). These can then be replayed to test one's memory of the moves.
+Encoding: UTF-8
 License: GPL-3
 URL: https://github.com/wviechtb/chesstrainer https://www.wvbauer.com
 BugReports: https://github.com/wviechtb/chesstrainer/issues

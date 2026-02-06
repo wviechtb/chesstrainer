@@ -1,6 +1,6 @@
 playsound <- function(sound) {
 
-   volume <- .get("volume")
+   volume <- .get("volume") # volume between 0 and 100
 
    if (volume > 0) {
 

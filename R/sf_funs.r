@@ -97,8 +97,8 @@
    olddepth <- 0
 
    if (progbar) {
-      rect(1, 9.3, 9, 9.4, col=NA, border=col.top)
-      segments(seq(1,9,length.out=depth+1), 9.3, seq(1,9,length.out=depth+1), 9.4, col=adjustcolor(col.top, alpha.f=0.4))
+      rect(1, 9.6, 9, 9.7, col=NA, border=col.top)
+      segments(seq(1,9,length.out=depth+1), 9.6, seq(1,9,length.out=depth+1), 9.7, col=adjustcolor(col.top, alpha.f=0.4))
    }
 
    start.time <- proc.time()
@@ -141,7 +141,7 @@
                   curdepth <- strsplit(sfout[curdepth], " ", fixed=TRUE)[[1]][3] # get <number> from 'info depth <number> ...'
                   curdepth <- as.numeric(curdepth) - 1
                   if (curdepth > olddepth) {
-                     rect(1, 9.3, 1+curdepth/depth*8, 9.4, col=col.top, border=NA)
+                     rect(1, 9.6, 1+curdepth/depth*8, 9.7, col=col.top, border=NA)
                      olddepth <- curdepth
                   }
                }

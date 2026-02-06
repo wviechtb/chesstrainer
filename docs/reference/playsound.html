@@ -29,7 +29,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chesstrainer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-128</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-129</span>
       </span>
     </div>
 
@@ -84,7 +84,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">playsound</span><span class="op">(</span><span class="va">sound</span>, <span class="va">volume</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">playsound</span><span class="op">(</span><span class="va">sound</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -93,9 +93,6 @@
 <dl><dt id="arg-sound">sound<a class="anchor" aria-label="anchor" href="#arg-sound"></a></dt>
 <dd><p>the sound file (given as a full path).</p></dd>
 
-   <dt id="arg-volume">volume<a class="anchor" aria-label="anchor" href="#arg-volume"></a></dt>
-<dd><p>the volume (as a percentage between 0 and 100).</p></dd>
-
 </dl></div>
     <div id="details">
     <h2>Details</h2>
@@ -103,7 +100,7 @@
 
 <p>The function is used by the package to play sounds. This is done by invoking system commands via the <code><a href="https://rdrr.io/r/base/system.html" class="external-link">system</a></code> function. This may or may not work depending on your operating system and configuration.</p>
 <p>For Linux, the function uses <code>paplay</code>. For macOS, the function uses <code>afplay</code>. Note that these commands are assumed to be on the user path.</p>
-<p>Windows does not provide a simple way to play sound files from the command line by default. To make sounds work under Windows, download the lightweight and open-source mpg123 player from <code>https://www.mpg123.de</code> (click on ‘download’, go to ‘Win32 and Win64 binaries’, choose the link for the 64 bit binary, download the ‘static’ zip file, extract it to some directory on your computer, and then place this directory on your system path; if you do not know how to do this last step, see: <code>https://stackoverflow.com/q/9546324/2615367</code>). Note that the volume cannot be adjusted with this player, so the <code>volume</code> argument is ignored.</p>
+<p>Windows does not provide a simple way to play sound files from the command line by default. To make sounds work under Windows, download the lightweight and open-source mpg123 player from <code>https://www.mpg123.de</code> (click on ‘download’, go to ‘Win32 and Win64 binaries’, choose the link for the 64 bit binary, download the ‘static’ zip file, extract it to some directory on your computer, and then place this directory on your system path; if you do not know how to do this last step, see: <code>https://stackoverflow.com/q/9546324/2615367</code>).</p>
 <p><em>For advanced users:</em></p>
 <p>If the sound is not working, but you know what the appropriate command is that will work on your system, you can write your own <code>playsound</code> function (see the code for <code>playsound</code> to use as a template). Then use <code>assignInNamespace("playsound", playsound, ns="chesstrainer")</code> to replace the <code>playsound()</code> function with your own version. Then use the example code below to test if the sound is working.</p>
     </div>

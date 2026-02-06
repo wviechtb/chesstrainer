@@ -15,7 +15,7 @@
       txt.general1 <- c(
       "General shortcuts:",
       "<space>  - switch mode (test/add)",
-      "\\ or #   - switch to play mode",
+      "\\ or \U000000E4   - switch to play mode",
       "p        - select a player",
       "Ctrl-r   - remove a player",
       "n        - start new/next sequence",
@@ -26,7 +26,7 @@
       "* or 8   - select all sequences",
       "?        - select all sequences that start with the same moves",
       "'        - select all sequences that include the same position",
-      "\"        - select all sequences that end in the same position",
+      ";        - select all sequences that end in the same position",
       ".        - select the last saved sequence",
       ">        - select and manage bookmarks",
       "m        - choose a sequence selection mode",
@@ -99,7 +99,7 @@
       txt.play <- c(
       "Shortcuts for the play and analysis mode:",
       "t        - take back the last move (computer move and own move)",
-      "\\ or #   - switch between the play and analysis mode",
+      "\\ or \U000000E4   - switch between the play and analysis mode",
       "0        - store the current moves and position as the main variation",
       "9        - jump to the main variation",
       "a and A  - switch to add mode")
@@ -111,7 +111,7 @@
       txt.general1 <- c(
       "Allgemeine Tastenk\U000000FCrzel:",
       "<space>  - Modus wechseln (Test/Hinzuf\U000000FCgen)",
-      "\\ oder # - in den Spielmodus wechseln",
+      "\\ oder \U000000E4 - in den Spielmodus wechseln",
       "p        - Spieler ausw\U000000E4hlen",
       "Strg-r   - Spieler l\U000000F6schen",
       "n        - neue/n\U000000E4chste Sequenz starten",
@@ -122,7 +122,7 @@
       "* oder 8 - alle Sequenzen ausw\U000000E4hlen",
       "?        - alle Sequenzen ausw\U000000E4hlen, die mit den gleichen Z\U000000FCgen anfangen",
       "'        - alle Sequenzen ausw\U000000E4hlen, die die gleiche Stellung beinhalten",
-      "\"        - alle Sequenzen ausw\U000000E4hlen, die mit der gleichen Stellung enden",
+      ";        - alle Sequenzen ausw\U000000E4hlen, die mit der gleichen Stellung enden",
       ".        - zuletzt gespeicherte Sequenz ausw\U000000E4hlen",
       ">        - Lesezeichen ausw\U000000E4hlen und bearbeiten",
       "m        - Sequenzauswahlmodus ausw\U000000E4hlen",
@@ -196,7 +196,7 @@
       txt.play <- c(
       "Tastenk\U000000FCrzel f\U000000FCr den Spiel- und Analysemodus:",
       "t        - den letzten Zug zur\U000000FCcknehmen (Computerzug und eigener Zug)",
-      "\\ oder # - zwischen dem Spiel- und Analysemodus wechseln",
+      "\\ oder \U000000E4 - zwischen dem Spiel- und Analysemodus wechseln",
       "0        - aktuelle Zugfolge und Stellung als Hauptvariante sichern",
       "9        - zur Hauptvariante springen",
       "a und A  - in den Hinzuf\U000000FCgen Modus wechseln")

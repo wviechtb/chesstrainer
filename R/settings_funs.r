@@ -74,8 +74,8 @@
 
    cat(.text("currentsettings"))
 
-   tab <- data.frame(cex = c("cex.top", "cex.bot", "cex.eval", "cex.coords", "cex.matdiff", "cex.plots"),
-                     val = c(.get("cex.top"), .get("cex.bot"), .get("cex.eval"), .get("cex.coords"), .get("cex.matdiff"), .get("cex.plots")))
+   tab <- data.frame(cex = c("cex.top", "cex.bot", "cex.eval", "cex.coords", "cex.matdiff", "cex.plots", "cex.glyphs"),
+                     val = c(.get("cex.top"), .get("cex.bot"), .get("cex.eval"), .get("cex.coords"), .get("cex.matdiff"), .get("cex.plots"), .get("cex.glyphs")))
    names(tab) <- c("", "")
    print(tab, right=FALSE, print.gap=3)
 

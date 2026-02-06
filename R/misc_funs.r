@@ -383,6 +383,11 @@
 
 }
 
+.isglyph <- function(x) {
+   x2y2 <- .get("x2y2")
+   isTRUE(x != "") && !is.na(x2y2[1])
+}
+
 .parsebestmove <- function(move, pos, flip, evalval, i, sidetoplay, rename, returnline, hintdepth) {
 
    lang <- .get("lang")
@@ -464,7 +469,7 @@
 
       # determine if the move results in a check
 
-      tmp.next <- .updateboard(tmp, move=data.frame(x1, y1, x2, y2, NA, ifelse(promotiontxt=="", NA, promotiontxt)), flip=flip, autoprom=TRUE, draw=FALSE)
+      tmp.next <- .updateboard(tmp, move=data.frame(x1, y1, x2, y2, NA, ifelse(promotiontxt=="", NA, promotiontxt)), flip=flip, autoprom=TRUE, draw=FALSE, x2y2=FALSE)
       ischeck <- any(attr(tmp.next,"ischeck"))
 
       # construct the move text in long algebraic notation
@@ -545,7 +550,7 @@
 .printverbose <- function(selected, seqno, filename, lastseq, flip, useflip, replast, oldmode, i,
                           seqname, seqnum, score, rounds, totalmoves, show, showcomp, comment, bestmove, starteval,
                           evalval, texttop, scoreadd, sidetoplay, givehint1, givehint2, mistake,
-                          timetotal, movesplayed, movestoplay, drawcircles, drawarrows, showstartcom, pos) {
+                          timetotal, movesplayed, movestoplay, drawcircles, drawarrows, drawglyph, showstartcom, pos) {
 
    cat("\n")
    cat("selected:     ", selected, "\n")
@@ -579,6 +584,7 @@
    cat("movestoplay:  ", movestoplay, "\n")
    cat("drawcircles:  ", drawcircles, "\n")
    cat("drawarrows:   ", drawarrows, "\n")
+   cat("drawglyph:    ", drawglyph, "\n")
    cat("showstartcom: ", showstartcom, "\n")
    cat("\n")
 

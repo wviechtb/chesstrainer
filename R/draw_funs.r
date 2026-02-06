@@ -89,7 +89,7 @@
 
 }
 
-.redrawpos <- function(pos, posold, flip=FALSE) {
+.redrawpos <- function(pos, posold, flip=FALSE, drawcheck=TRUE) {
 
    if (missing(posold)) {
 
@@ -142,7 +142,9 @@
    }
 
    .drawmatdiff(pos, flip)
-   .drawcheck(pos, flip=flip)
+
+   if (drawcheck)
+      .drawcheck(pos, flip=flip)
 
 }
 
@@ -203,7 +205,7 @@
 
 }
 
-.updateboard <- function(pos, move, flip, autoprom, draw=TRUE) {
+.updateboard <- function(pos, move, flip, autoprom, draw=TRUE, x2y2=TRUE) {
 
    x1 <- unname(move[[1]])
    y1 <- unname(move[[2]])
@@ -619,6 +621,9 @@
    if (draw && (iscapture || promotionpiece != ""))
       .drawmatdiff(pos, flip)
 
+   if (x2y2)
+      assign("x2y2", c(x2,y2), envir=.chesstrainer)
+
    return(pos)
 
 }
@@ -855,22 +860,54 @@
    }
 }
 
-.drawannot <- function(circles, arrows, harrows, hint, evalvals, sidetoplay) {
+.drawglyph <- function(glyph) {
 
-   if (nrow(circles) >= 1L)
-      .drawcircles(circles)
-   if (nrow(arrows) >= 1L)
-      .drawarrows(arrows)
-   if (!missing(harrows) && nrow(harrows) >= 1L)
-      .drawarrows(harrows, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
+   if (!.isglyph(glyph))
+      return()
+
+   x2y2 <- .get("x2y2")
+
+   x <- x2y2[1]
+   y <- x2y2[2]
+
+   col <- switch(glyph,
+                 "!"  = "#22ac38",
+                 "!!" = "#168226",
+                 "?"  = "#e69f00",
+                 "??" = "#df5353",
+                 "!?" = "#ea45d8",
+                 "?!" = "#56b4e9"
+                 )
+
+   xoff   <-  0.940
+   yoff   <-  0.940
+   xsoff  <- -0.025
+   ysoff  <-  0.025
+   radius <-  0.200
+
+   symbols(y+yoff+ysoff, x+xoff+xsoff, circles=radius, inches=FALSE, lwd=1, fg=NA, bg="#666666", add=TRUE)
+   symbols(y+yoff, x+xoff, circles=radius, inches=FALSE, lwd=1, fg=NA, bg=col, add=TRUE)
+   text(y+yoff, x+xoff, glyph, font=2, col="white", offset=0, cex=.get("cex.glyphs"))
 
 }
 
-.rmannot <- function(pos, circles, arrows, flip) {
+.drawannot <- function(circles=NULL, arrows=NULL, harrows=NULL, glyph=NULL, hint, evalvals, sidetoplay) {
+
+   if (!is.null(circles) && nrow(circles) >= 1L)
+      .drawcircles(circles)
+   if (!is.null(arrows) && nrow(arrows) >= 1L)
+      .drawarrows(arrows)
+   if (!is.null(harrows) && nrow(harrows) >= 1L)
+      .drawarrows(harrows, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
+   .drawglyph(glyph)
+
+}
+
+.rmannot <- function(pos, circles=NULL, arrows=NULL, glyph=NULL, flip) {
 
    oldpos <- pos
 
-   if (nrow(circles) >= 1L) {
+   if (!is.null(circles) && nrow(circles) >= 1L) {
       if (flip) {
          oldpos[9-circles[,1], 9-circles[,2]] <- "x"
       } else {
@@ -878,7 +915,7 @@
       }
    }
 
-   if (nrow(arrows) >= 1L) {
+   if (!is.null(arrows) && nrow(arrows) >= 1L) {
       if (flip) {
          for (j in 1:nrow(arrows)) {
             oldpos[9-arrows[j,1]:arrows[j,3], 9-arrows[j,2]:arrows[j,4]] <- "x"
@@ -890,22 +927,54 @@
       }
    }
 
-   .rmcheck(pos, flip=flip)
-   .redrawpos(pos, oldpos, flip=flip)
+   if (.isglyph(glyph)) {
 
-   ischeck <- attr(pos, "ischeck")
+      x2y2 <- .get("x2y2")
 
-   if (any(ischeck)) {
+      x1 <- x2y2[1]
+      y1 <- x2y2[2]
+      x2 <- min(8, x1+1)
+      y2 <- min(8, y1+1)
 
-      checkpos <- as.numeric(.get("checkpos"))
+      if (flip) {
+         oldpos[9-(x1:x2), 9-(y1:y2)] <- "x"
+      } else {
+         oldpos[x1:x2, y1:y2] <- "x"
+      }
 
-      if (flip)
-         checkpos <- 9-checkpos
+   }
 
-      xpos <- which(oldpos == "x", arr.ind=TRUE)
+   if (any(oldpos == "x")) {
 
-      if (any(apply(xpos, 1, function(x) isTRUE(x[1] == checkpos[1] && x[2] == checkpos[2]))))
-         .drawcheck(pos, flip=flip)
+      .redrawpos(pos, oldpos, flip=flip, drawcheck=FALSE)
+
+      if (.isglyph(glyph)) {
+
+         if (x2 == 8) {
+            rect(1, 9, 9.22, 9.32, col=.get("col.bg"), border=NA)
+            .drawmatdiff(pos, flip, force=TRUE)
+         }
+         if (y2 == 8) {
+            rect(9, 1, 9.32, 9.22, col=.get("col.bg"), border=NA)
+         }
+
+      }
+
+      ischeck <- attr(pos, "ischeck")
+
+      if (any(ischeck)) {
+
+         checkpos <- as.numeric(.get("checkpos"))
+
+         if (flip)
+            checkpos <- 9-checkpos
+
+         xpos <- which(oldpos == "x", arr.ind=TRUE)
+
+         if (any(apply(xpos, 1, function(x) isTRUE(x[1] == checkpos[1] && x[2] == checkpos[2]))))
+            .drawcheck(pos, flip=flip)
+
+      }
 
    }
 
@@ -1358,14 +1427,14 @@
 
 }
 
-.showbestmove <- function(pos, flip, sidetoplay, i, circles, arrows, harrows, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim) {
+.showbestmove <- function(pos, flip, sidetoplay, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim) {
 
    texttop <- ""
    evalvals <- NULL
 
    if (nrow(circles) >= 1L || nrow(arrows) >= 1L || nrow(harrows) >= 1L) {
-      .rmannot(pos, circles, rbind(arrows, harrows), flip)
-      .drawannot(circles, arrows)
+      .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), flip=flip)
+      .drawannot(circles=circles, arrows=arrows)
    }
    harrows <- matrix(nrow=0, ncol=4)
    if (i == 1 && is.na(evalval[1])) {
@@ -1401,6 +1470,7 @@
       evalvals <- evalvals[!is.na(evalvals)]
       bestmovetxt <- bestmovetxt[!is.na(bestmovetxt)]
       .drawarrows(harrows, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
+      .drawglyph(glyph)
       texttop <- .texttop(paste0(bestmovetxt, collapse="\n"), left=TRUE)
       attr(texttop, "left") <- TRUE
    } else {
@@ -1484,7 +1554,7 @@
 
 .clearmatdiff <- function() {
 
-   col.bg   <- .get("col.bg")
+   col.bg <- .get("col.bg")
    rect(5, 0.70, 9, 0.98, col=col.bg, border=NA)
    rect(5, 9.02, 9, 9.30, col=col.bg, border=NA)
 
