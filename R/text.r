@@ -411,6 +411,12 @@
                          "\nSequences with the comment: \n"
    ))}
 
+   if (x == "seqsmatchpossquare") {
+      return(switch(lang,
+                    de = "Sequenzen mit der gleichen Figur auf dem gleichen Feld: \n",
+                         "Sequences with the same piece on the same square: \n"
+   ))}
+
    if (x == "selmatches") {
       return(switch(lang,
                     de = "\nDiese Sequenzen selektieren? (J/n): ",

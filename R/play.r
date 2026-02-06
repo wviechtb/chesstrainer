@@ -608,7 +608,7 @@ play <- function(lang="en", sfpath="", ...) {
              "r", "o", "u", "M", "B", "U", "j",
              "a", "A", "f", "z", "Z", "c", "!", "@", "\"", "e", "E", "s", "b", "k", "K", "C",
              "^", "6", "R", "G", "w", "-", "=", "+", "[", "]", "{", "}", "(", ")", "i", "x", "v", "ctrl-V",
-             "l", "<", ">", "ctrl-F", "ctrl-C", "ctrl-D", "/", ",", ".", "|", "*", "8", "?", "'", ";",
+             "l", "<", ">", "ctrl-F", "ctrl-C", "ctrl-D", "/", ",", ".", "|", "*", "8", "?", "'", ";", ":",
              "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "ctrl-!", "ctrl-@", "ctrl-E")
 
    run.all <- TRUE
@@ -2488,12 +2488,11 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (identical(click, "e")) {
                eval(expr=switch1)
-               tmp <- sub
-               tmp$moves$fen <- NULL
-               print(tmp)
-               eval(expr=switch2)
-               next
-               eval(expr=switch1)
+               #tmp <- sub
+               #tmp$moves$fen <- NULL
+               #print(tmp)
+               #eval(expr=switch2)
+               #next
                sub <- .editcomments(sub, seqdir[seqdirpos], seqname, mode) # note: directly saves after edit in test mode
                eval(expr=switch2)
                texttop <- sub$moves$comment[i-1]
@@ -3351,7 +3350,6 @@ play <- function(lang="en", sfpath="", ...) {
             if (identical(click, "'")) {
                if (.is.start.pos(pos))
                   next
-               eval(expr=switch1)
                searchterm <- .genfen(pos, flip, sidetoplay, i)
                searchterm <- paste(strsplit(searchterm, " ", fixed=TRUE)[[1]][1:3], collapse=" ")
                seqident <- sapply(dat.all, function(x) any(grepl(searchterm, x$moves$fen, fixed=TRUE)) && identical(flip, x$flip))
@@ -3384,13 +3382,93 @@ play <- function(lang="en", sfpath="", ...) {
             if (identical(click, ";")) {
                if (i == 1)
                   next
-               eval(expr=switch1)
                searchterm <- .genfen(pos, flip, sidetoplay, i)
                searchterm <- paste(strsplit(searchterm, " ", fixed=TRUE)[[1]][1:3], collapse=" ")
                seqident <- sapply(dat.all, function(x) grepl(searchterm, tail(x$moves$fen, 1), fixed=TRUE) && identical(flip, x$flip))
                if (any(seqident)) {
                   eval(expr=switch1)
                   cat(.text("seqsmatchfen"))
+                  tab <- data.frame(Name=files.all[seqident])
+                  tab$Name <- format(tab$Name, justify="left")
+                  names(tab)[1] <- ""
+                  rownames(tab) <- which(seqident)
+                  print(tab, print.gap=2)
+                  selmatches <- readline(prompt=.text("selmatches"))
+                  if (identical(selmatches, "") || .confirm(selmatches)) {
+                     cat(.text("selmatchesconfirm", sum(seqident)))
+                     selected <- files.all[seqident]
+                     run.rnd <- FALSE
+                     input <- FALSE
+                     seqno <- 1
+                  }
+                  eval(expr=switch2)
+               } else {
+                  .texttop(.text("noseqsfound"), sleep=1.5)
+                  .texttop(texttop)
+               }
+               next
+            }
+
+            # : to find all sequences where a particular piece is on a particular square
+
+            if (identical(click, ":")) {
+               if (i == 1)
+                  next
+               lastmove <- attr(pos,"move")
+               lastmove <- strsplit(lastmove, "[-x]")[[1]]
+               if (length(lastmove) == 3L) {
+                  piece <- "00"
+               } else {
+                  if (nchar(lastmove[[1]]) == 3L) {
+                     piece <- substr(lastmove[[1]], 1, 1)
+                  } else if (nchar(lastmove[[1]]) == 2L) {
+                     piece <- ""
+                  } else {
+                     piece <- "0"
+                  }
+               }
+               targetsquare <- substr(lastmove[[2]], 1, 2)
+               piececolor <- ifelse(sidetoplay == "w", "b", "w")
+               whattofind <- paste0(piece, targetsquare, piececolor, collapse="")
+               seqident <- sapply(dat.all, function(x) {
+                  if (nrow(x$moves) == 0L)
+                     return(FALSE)
+                  moves <- strsplit(x$moves$move, "[-x]")
+                  pieces <- sapply(moves, function(z) {
+                     if (length(z) == 3L) {
+                        piece <- "00"
+                     } else {
+                        if (nchar(z[[1]]) == 3L) {
+                           piece <- substr(z[[1]], 1, 1)
+                        } else if (nchar(z[[1]]) == 2L) {
+                           piece <- ""
+                        } else {
+                           piece <- "0"
+                        }
+                     }
+                     return(piece)
+                  })
+                  targetsquares <- sapply(moves, function(z) substr(z[[2]], 1, 2))
+                  if (is.null(x$pos)) {
+                     piececolors <- ifelse(.is.even(1:nrow(x$moves)), "b", "w")
+                  } else {
+                     if (flip) {
+                        piece <- x$pos[9-x$moves[1,1], 9-x$moves[1,2]]
+                     } else {
+                        piece <- x$pos[x$moves[1,1], x$moves[1,2]]
+                     }
+                     if (startsWith(piece, "W")) {
+                        piececolors <- ifelse(.is.even(1:nrow(x$moves)), "b", "w")
+                     } else {
+                        piececolors <- ifelse(.is.even(1:nrow(x$moves)), "w", "b")
+                     }
+                  }
+                  whattofinds <- paste0(pieces, targetsquares, piececolors)
+                  any(whattofind == whattofinds) && identical(flip, x$flip)
+               })
+               if (any(seqident)) {
+                  eval(expr=switch1)
+                  cat(.text("seqsmatchpossquare"))
                   tab <- data.frame(Name=files.all[seqident])
                   tab$Name <- format(tab$Name, justify="left")
                   names(tab)[1] <- ""
@@ -4221,7 +4299,9 @@ play <- function(lang="en", sfpath="", ...) {
                         .texttop(.text("finishedround"), sleep=2)
                      }
                   } else {
-                     if (!skipsave && selmode %in% c("score_random", "score_highest") && sum(scores.selected == target) >= 1L && score < target) {
+                     anyabove <- sum(scores.selected >= target)
+                     scores.selected[which(seqname == files)] <- score
+                     if (!skipsave && selmode %in% c("score_random", "score_highest") && all(scores.selected < target) && anyabove) {
                         playsound(system.file("sounds", "finished.ogg", package="chesstrainer"))
                         .texttop(.text("belowtarget", target), sleep=2)
                      }
