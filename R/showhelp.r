@@ -27,6 +27,7 @@
       "?        - select all sequences that start with the same moves",
       "'        - select all sequences that include the same position",
       ";        - select all sequences that end in the same position",
+      ":        - select all sequences with last-moved piece on current square",
       ".        - select the last saved sequence",
       ">        - select and manage bookmarks",
       "m        - choose a sequence selection mode",
@@ -61,8 +62,7 @@
       "\U00002190 and \U00002192  - go back / forward one move",
       "1 or \U00002191   - jump to the first player move or the beginning of the sequence/game",
       "2 or \U00002193   - jump to the end of the sequence/game",
-      "3, 4, 5  - jump to the 1st quarter, middle, 3rd quarter of the sequence/game",
-      "u        - recalculate the evaluations for the current sequence/game")
+      "3, 4, 5  - jump to the 1st quarter, middle, 3rd quarter of the sequence/game")
 
       txt.test <- c(
       "Shortcuts for the test mode:",
@@ -75,9 +75,10 @@
       "r        - repeat the last sequence",
       "R        - automatically repeat sequences after a mistake on/off",
       "j        - jump to a sequence number (for sequential sequence selection modes)",
-      "T        - set target score",
+      "s        - set a target score for the scores",
       "g        - show the progress graph for the current sequence",
       "G        - show the progress graph at the end of sequences on/off",
+      "u and U  - recalculate the evaluations for the current sequence / all sequences",
       "a and A  - extend the current sequence / position (switches to add mode)",
       "Ctrl-c   - copy the name of the current sequence to the clipboard",
       "Ctrl-d   - delete the current sequence")
@@ -94,6 +95,7 @@
       "0        - make the current position the starting position for the sequence",
       "b        - start the board editor",
       "g        - show the evaluation graph (also in play and analysis mode)",
+      "T        - show move transpositions on/off",
       "s        - save the sequence")
 
       txt.play <- c(
@@ -123,6 +125,7 @@
       "?        - alle Sequenzen ausw\U000000E4hlen, die mit den gleichen Z\U000000FCgen anfangen",
       "'        - alle Sequenzen ausw\U000000E4hlen, die die gleiche Stellung beinhalten",
       ";        - alle Sequenzen ausw\U000000E4hlen, die mit der gleichen Stellung enden",
+      ":        - alle Sequenzen ausw\U000000E4hlen, mit zuletzt bewegter Figur auf aktuellen Feld",
       ".        - zuletzt gespeicherte Sequenz ausw\U000000E4hlen",
       ">        - Lesezeichen ausw\U000000E4hlen und bearbeiten",
       "m        - Sequenzauswahlmodus ausw\U000000E4hlen",
@@ -157,8 +160,7 @@
       "\U00002190 und \U00002192  - einen Zug zur\U000000FCck / vorw\U000000E4rts gehen",
       "1 oder \U00002191 - zum ersten Spielerzug oder an den Anfang der Sequenz/Partie springen",
       "2 oder \U00002193 - zum Ende der Sequenz/Partie springen",
-      "3, 4, 5  - zum 1. Viertel, zur Mitte, zum 3. Viertel der Sequenz/Partie springen",
-      "u        - Bewertungen f\U000000FCr die aktuelle Sequenz/Partie neu berechnen")
+      "3, 4, 5  - zum 1. Viertel, zur Mitte, zum 3. Viertel der Sequenz/Partie springen")
 
       txt.test <- c(
       "Tastenk\U000000FCrzel f\U000000FCr den Test Modus:",
@@ -171,9 +173,10 @@
       "r        - letzte Sequenz wiederholen",
       "R        - Sequenzen nach Fehler automatisch wiederholen an/aus",
       "j        - springe zu einer Sequenznummer (f\U000000FCr sequenzielle Sequenzauswahlmodi)",
-      "T        - Zielwert festlegen",
+      "s        - einen Zielwert f\U000000FCr Punkte festlegen",
       "g        - Fortschrittsdiagramm f\U000000FCr die aktuelle Sequenz anzeigen",
       "G        - Fortschrittsdiagramm am Ende der Sequenzen anzeigen an/aus",
+      "u und U  - Bewertungen f\U000000FCr die aktuelle Sequenz / alle Sequenzen neu berechnen",
       "a und A  - akutelle Sequenz / Stellung erweitern (wechselt zum Hinzuf\U000000FCgen Modus)",
       "Strg-c   - den Namen der aktuellen Sequenz in die Zwischenablage kopieren",
       "Strg-d   - aktuelle Sequenz l\U000000F6schen")
@@ -190,6 +193,7 @@
       "0        - aktuelle Stellung zur Ausgangsstellung der Sequenz machen",
       "b        - Bretteditor starten",
       "g        - Bewertungsdiagram anzeigen (auch im Spiel- und Analysemodus)",
+      "T        - Zugumstellungen anzeigen an/aus",
       "s        - Sequenz abspeichern"
       )
 
@@ -232,7 +236,7 @@
 
       if (redraw) {
          rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=.get("lwd")+3)
-         text(1.5, ypos, txt, pos=4, offset=0, cex=cex, family=font.mono, font=ifelse(grepl(":", txt), 2, 1), col=col.help)
+         text(1.5, ypos, txt, pos=4, offset=0, cex=cex, family=font.mono, font=ifelse(grepl(" :", txt), 2, 1), col=col.help)
          text(8.6, 1.4, paste0(page, " / 2"), pos=2, offset=0, cex=cex, family=font.mono, col=col.help)
          if (lang == "en")
             text(1.5, 1.4, "\U00002190/\U00002192: next page; t: show manual; m: show manual online", pos=4, offset=0, cex=cex, family=font.mono, col=col.help)

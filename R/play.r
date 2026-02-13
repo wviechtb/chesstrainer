@@ -55,10 +55,12 @@ play <- function(lang="en", sfpath="", ...) {
    adjusthint  <- ifelse(is.null(ddd[["adjusthint"]]),  20,             ddd[["adjusthint"]])
    evalsteps   <- ifelse(is.null(ddd[["evalsteps"]]),   5,              ddd[["evalsteps"]])
    coords      <- ifelse(is.null(ddd[["coords"]]),      TRUE,           ddd[["coords"]])
+   showtransp  <- ifelse(is.null(ddd[["showtransp"]]),  TRUE,           ddd[["showtransp"]])
    matdiff     <- ifelse(is.null(ddd[["matdiff"]]),     TRUE,           ddd[["matdiff"]])
    wait        <- ifelse(is.null(ddd[["wait"]]),        TRUE,           ddd[["wait"]])
    sleep       <- ifelse(is.null(ddd[["sleep"]]),       0.5,            ddd[["sleep"]])
    idletime    <- ifelse(is.null(ddd[["idletime"]]),    120,            ddd[["idletime"]])
+   mintime     <- ifelse(is.null(ddd[["mintime"]]),     60,             ddd[["mintime"]])
    lwd         <- ifelse(is.null(ddd[["lwd"]]),         2,              ddd[["lwd"]])
    volume      <- ifelse(is.null(ddd[["volume"]]),      50,             ddd[["volume"]])
    showgraph   <- ifelse(is.null(ddd[["showgraph"]]),   FALSE,          ddd[["showgraph"]])
@@ -120,6 +122,7 @@ play <- function(lang="en", sfpath="", ...) {
    evalsteps <- round(evalsteps)
    sleep[sleep < 0] <- 0
    idletime[idletime < 1] <- 1
+   mintime[mintime < 1] <- 1
    lwd[lwd < 1] <- 1
    volume[volume < 0] <- 0
    volume[volume > 100] <- 100
@@ -178,7 +181,7 @@ play <- function(lang="en", sfpath="", ...) {
          stop(.text("dircreateerror"), call.=FALSE)
       settings <- list(lang=lang, player=player, mode=mode, seqdir=seqdir, seqdirpos=seqdirpos,
                        selmode=selmode, timed=timed, timepermove=timepermove, expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint,
-                       eval=eval, evalsteps=evalsteps, coords=coords, matdiff=matdiff, wait=wait, sleep=sleep, idletime=idletime, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
+                       eval=eval, evalsteps=evalsteps, coords=coords, showtransp=showtransp, matdiff=matdiff, wait=wait, sleep=sleep, idletime=idletime, mintime=mintime, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth,
                        difffun=difffun, difflen=difflen, diffmin=diffmin, zenmode=zenmode, mar=mar, mar2=mar2)
@@ -224,6 +227,8 @@ play <- function(lang="en", sfpath="", ...) {
             evalsteps <- settings[["evalsteps"]]
          if (is.null(mc[["coords"]]))
             coords <- settings[["coords"]]
+         if (is.null(mc[["showtransp"]]))
+            showtransp <- settings[["showtransp"]]
          if (is.null(mc[["matdiff"]]))
             matdiff <- settings[["matdiff"]]
          if (is.null(mc[["wait"]]))
@@ -232,6 +237,8 @@ play <- function(lang="en", sfpath="", ...) {
             sleep <- settings[["sleep"]]
          if (is.null(mc[["idletime"]]))
             idletime <- settings[["idletime"]]
+         if (is.null(mc[["mintime"]]))
+            mintime <- settings[["mintime"]]
          if (is.null(mc[["lwd"]]))
             lwd <- settings[["lwd"]]
          if (is.null(mc[["volume"]]))
@@ -290,7 +297,7 @@ play <- function(lang="en", sfpath="", ...) {
       sfpath <- suppressWarnings(normalizePath(sfpath))
       settings <- list(lang=lang, player=player, mode=mode, seqdir=seqdir, seqdirpos=seqdirpos,
                        selmode=selmode, timed=timed, timepermove=timepermove, expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint,
-                       eval=eval, evalsteps=evalsteps, coords=coords, matdiff=matdiff, wait=wait, sleep=sleep, idletime=idletime, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
+                       eval=eval, evalsteps=evalsteps, coords=coords, showtransp=showtransp, matdiff=matdiff, wait=wait, sleep=sleep, idletime=idletime, mintime=mintime, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth,
                        difffun=difffun, difflen=difflen, diffmin=diffmin, zenmode=zenmode, mar=mar, mar2=mar2)
@@ -422,6 +429,7 @@ play <- function(lang="en", sfpath="", ...) {
    oldmode  <- ifelse(mode == "play", "add", mode)
    .difffun <- eval(parse(text=paste0(".difffun", difffun)))
    contanalysis <- FALSE
+   updateall <- FALSE
 
    # session variables
 
@@ -605,11 +613,11 @@ play <- function(lang="en", sfpath="", ...) {
 
    keys <- c("q", "ctrl-Q", "\033", "ctrl-[", " ", "m", "d", "\\", "\U000000E4", "n", "N", "p", "ctrl-R",
              "g", "h", "H", "y", "Left", "Right", "Up", "Down", "t", "T", "0", "1", "2", "3", "4", "5", "9",
-             "r", "o", "u", "M", "B", "U", "j",
+             "r", "o", "u", "U", "ctrl-U", "M", "B", "j",
              "a", "A", "f", "z", "Z", "c", "!", "@", "\"", "e", "E", "s", "b", "k", "K", "C",
              "^", "6", "R", "G", "w", "-", "=", "+", "[", "]", "{", "}", "(", ")", "i", "x", "v", "ctrl-V",
              "l", "<", ">", "ctrl-F", "ctrl-C", "ctrl-D", "/", ",", ".", "|", "*", "8", "?", "'", ";", ":",
-             "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "ctrl-!", "ctrl-@", "ctrl-E")
+             "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "ctrl-!", "ctrl-@", "ctrl-E", "ctrl-T")
 
    run.all <- TRUE
 
@@ -936,7 +944,7 @@ play <- function(lang="en", sfpath="", ...) {
             # calculate starteval (in case this is missing) or get it
 
             if (is.null(attr(pos, "starteval"))) {
-               fen <- .genfen(pos, flip, sidetoplay, i)
+               fen <- .genfen(pos, flip, sidetoplay, sidetoplay, i)
                res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
                evalval  <- res.sf$eval
                bestmove <- res.sf$bestmove
@@ -1012,7 +1020,7 @@ play <- function(lang="en", sfpath="", ...) {
 
             # play shown moves
 
-            while (isTRUE(sub$moves$show[i])) {
+            while (!updateall && isTRUE(sub$moves$show[i])) {
                if (nrow(circles) >= 1L || nrow(arrows) >= 1L)
                   .waitforclick()
                .rmannot(pos, circles=circles, arrows=arrows, glyph=glyph, flip=flip)
@@ -1050,7 +1058,7 @@ play <- function(lang="en", sfpath="", ...) {
          }
 
          if (mode %in% c("add","analysis") && contanalysis && drawarrows) {
-            tmp <- .showbestmove(pos, flip, sidetoplay, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
+            tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
             harrows  <- tmp$harrows
             texttop  <- tmp$texttop
             evalvals <- tmp$evalvals
@@ -1111,7 +1119,7 @@ play <- function(lang="en", sfpath="", ...) {
                   # get the evaluation for the move made by the computer (based on depth1, not depth3) and the best move that can be made by the player
 
                   evalvallast <- evalval[1]
-                  fen <- .genfen(pos, flip, sidetoplay, i)
+                  fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                   res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
                   evalval  <- res.sf$eval
                   bestmove <- res.sf$bestmove
@@ -1174,22 +1182,16 @@ play <- function(lang="en", sfpath="", ...) {
 
             timestart <- proc.time()[[3]]
 
-            click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=mousemove, onMouseUp=mouseup, onKeybd=.keyfun)
+            if (updateall) { # see [u]
+               click <- "u"
+            } else {
+               click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=mousemove, onMouseUp=mouseup, onKeybd=.keyfun)
+            }
 
             idle.time <- proc.time()[[3]] - timestart
 
             if (idle.time > idletime)
                session.time.start <- session.time.start + idle.time
-
-            #if (mode == "test") {
-            #   if (seqname == "<lastsequence>.rds") {
-            #      click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=mousemove, onMouseUp=mouseup, onKeybd=.keyfun)
-            #   } else {
-            #      click <- "u"
-            #   }
-            #} else {
-            #   click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=mousemove, onMouseUp=mouseup, onKeybd=.keyfun)
-            #}
 
             if (remove.annotations) {
 
@@ -1350,7 +1352,7 @@ play <- function(lang="en", sfpath="", ...) {
                   timed <- FALSE
                }
                show <- FALSE
-               fen <- .genfen(pos, flip, sidetoplay, i)
+               fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                if ((flip && sidetoplay=="b") || (!flip && sidetoplay=="w")) {
                   res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
                } else {
@@ -1495,7 +1497,7 @@ play <- function(lang="en", sfpath="", ...) {
                   next
                }
                .texttop(.text("sfdeepeval"))
-               fen <- .genfen(pos, flip, sidetoplay, i)
+               fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                res.sf <- .sf.eval(sfproc, sfrun, depth2, multipv2, sflim=NA, fen, sidetoplay, progbar=TRUE)
                evalval  <- res.sf$eval
                bestmove <- res.sf$bestmove
@@ -1528,7 +1530,7 @@ play <- function(lang="en", sfpath="", ...) {
                   }
                   .textbot(mode, score=score, onlyscore=TRUE)
                } else {
-                  tmp <- .showbestmove(pos, flip, sidetoplay, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
+                  tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                   harrows  <- tmp$harrows
                   texttop  <- tmp$texttop
                   evalvals <- tmp$evalvals
@@ -1603,7 +1605,7 @@ play <- function(lang="en", sfpath="", ...) {
                .draweval(neweval, oldeval, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
                if (mode %in% c("add","analysis")) {
-                  fen <- .genfen(pos, flip, sidetoplay, i)
+                  fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                   res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
                   evalval  <- res.sf$eval
                   bestmove <- res.sf$bestmove
@@ -1611,7 +1613,7 @@ play <- function(lang="en", sfpath="", ...) {
                   sfproc   <- res.sf$sfproc
                   sfrun    <- res.sf$sfrun
                   if (mode %in% c("add","analysis") && contanalysis) {
-                     tmp <- .showbestmove(pos, flip, sidetoplay, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
+                     tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                      harrows  <- tmp$harrows
                      texttop  <- tmp$texttop
                      evalvals <- tmp$evalvals
@@ -1705,7 +1707,7 @@ play <- function(lang="en", sfpath="", ...) {
                if (mode == "add" && identical(click, "t")) # t in add mode removes all further moves
                   sub$moves <- sub$moves[seq_len(i-1),,drop=FALSE]
                if (mode %in% c("add","play","analysis")) {
-                  fen <- .genfen(pos, flip, sidetoplay, i)
+                  fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                   res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
                   evalval  <- res.sf$eval
                   bestmove <- res.sf$bestmove
@@ -1713,7 +1715,7 @@ play <- function(lang="en", sfpath="", ...) {
                   sfproc   <- res.sf$sfproc
                   sfrun    <- res.sf$sfrun
                   if (mode %in% c("add","analysis") && contanalysis) {
-                     tmp <- .showbestmove(pos, flip, sidetoplay, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
+                     tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                      harrows  <- tmp$harrows
                      texttop  <- tmp$texttop
                      evalvals <- tmp$evalvals
@@ -1756,7 +1758,7 @@ play <- function(lang="en", sfpath="", ...) {
                   sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                   .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
                   evalvallast <- evalval[1]
-                  fen <- .genfen(pos, flip, sidetoplay, i)
+                  fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                   if (mode %in% c("add","analysis")) {
                      res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
                   } else {
@@ -1807,7 +1809,7 @@ play <- function(lang="en", sfpath="", ...) {
                   }
                   .draweval(evalval[1], evalvallast, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                   if (contanalysis) {
-                     tmp <- .showbestmove(pos, flip, sidetoplay, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
+                     tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                      harrows  <- tmp$harrows
                      texttop  <- tmp$texttop
                      evalvals <- tmp$evalvals
@@ -1844,7 +1846,7 @@ play <- function(lang="en", sfpath="", ...) {
                .drawannot(circles=circles, arrows=arrows, glyph=glyph)
                .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
                if (mode %in% c("add","analysis")) {
-                  fen <- .genfen(pos, flip, sidetoplay, i)
+                  fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                   res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
                   evalval  <- res.sf$eval
                   bestmove <- res.sf$bestmove
@@ -1852,7 +1854,7 @@ play <- function(lang="en", sfpath="", ...) {
                   sfproc   <- res.sf$sfproc
                   sfrun    <- res.sf$sfrun
                   if (mode %in% c("add","analysis") && contanalysis) {
-                     tmp <- .showbestmove(pos, flip, sidetoplay, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
+                     tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                      harrows  <- tmp$harrows
                      texttop  <- tmp$texttop
                      evalvals <- tmp$evalvals
@@ -1939,7 +1941,7 @@ play <- function(lang="en", sfpath="", ...) {
                .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
                .draweval(sub$moves$eval[i-1], oldeval, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                if (mode %in% c("add","analysis")) {
-                  fen <- .genfen(pos, flip, sidetoplay, i)
+                  fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                   res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
                   evalval  <- res.sf$eval
                   bestmove <- res.sf$bestmove
@@ -1947,7 +1949,7 @@ play <- function(lang="en", sfpath="", ...) {
                   sfproc   <- res.sf$sfproc
                   sfrun    <- res.sf$sfrun
                   if (mode %in% c("add","analysis") && contanalysis) {
-                     tmp <- .showbestmove(pos, flip, sidetoplay, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
+                     tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                      harrows  <- tmp$harrows
                      texttop  <- tmp$texttop
                      evalvals <- tmp$evalvals
@@ -1997,7 +1999,7 @@ play <- function(lang="en", sfpath="", ...) {
                .draweval(sub$moves$eval[i-1], oldeval, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
                sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
-               fen <- .genfen(pos, flip, sidetoplay, i)
+               fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
                evalval  <- res.sf$eval
                bestmove <- res.sf$bestmove
@@ -2005,7 +2007,7 @@ play <- function(lang="en", sfpath="", ...) {
                sfproc   <- res.sf$sfproc
                sfrun    <- res.sf$sfrun
                if (mode %in% c("add","analysis") && contanalysis) {
-                  tmp <- .showbestmove(pos, flip, sidetoplay, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
+                  tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                   harrows  <- tmp$harrows
                   texttop  <- tmp$texttop
                   evalvals <- tmp$evalvals
@@ -2013,9 +2015,9 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # u to update the evaluations
+            # u to update the evaluations for the current sequence/game
 
-            if (identical(click, "u")) {
+            if (mode %in% c("test","play","analysis") && identical(click, "u")) {
 
                if (is.null(sfproc) || !sfrun) {
 
@@ -2025,7 +2027,11 @@ play <- function(lang="en", sfpath="", ...) {
 
                } else {
 
-                  eval(expr=switch1)
+                  if (mode == "play")
+                     mode <- "analysis"
+
+                  if (!updateall)
+                     eval(expr=switch1)
 
                   if (is.null(sub$pos)) {
                      pos <- start.pos
@@ -2033,7 +2039,8 @@ play <- function(lang="en", sfpath="", ...) {
                      pos <- sub$pos
                   }
 
-                  .drawboard(pos, flip=flip)
+                  if (!updateall)
+                     .drawboard(pos, flip=flip)
                   .drawcheck(pos, flip=flip)
                   .textbot(mode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
                   circles <- matrix(nrow=0, ncol=2)
@@ -2046,7 +2053,7 @@ play <- function(lang="en", sfpath="", ...) {
                   cat(.text("evalupdatestart"))
 
                   if (!is.null(sub$pos)) {
-                     fen <- .genfen(pos, flip, sidetoplay, i=1)
+                     fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i=1)
                      res.sf <- .sf.eval(sfproc, sfrun, depth2, multipv2, sflim=NA, fen, sidetoplay, progbar=TRUE)
                      evalval  <- res.sf$eval
                      bestmove <- res.sf$bestmove
@@ -2063,7 +2070,7 @@ play <- function(lang="en", sfpath="", ...) {
                      .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
                      sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                      sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
-                     fen <- .genfen(pos, flip, sidetoplay, i)
+                     fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i+1)
                      res.sf <- .sf.eval(sfproc, sfrun, depth2, multipv2, sflim=NA, fen, sidetoplay, progbar=TRUE)
                      evalval  <- res.sf$eval
                      bestmove <- res.sf$bestmove
@@ -2079,21 +2086,58 @@ play <- function(lang="en", sfpath="", ...) {
                   sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
                   cat(.text("evalupdatenew"))
                   print(sub$moves)
+                  cat("\n")
                   if (mode == "test")
                      saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
                   playsound(system.file("sounds", "complete.ogg", package="chesstrainer"))
-                  eval(expr=switch2)
+                  if (!updateall)
+                     eval(expr=switch2)
+                  if (updateall) { # [u]
+                     seqno <- seqno + 1
+                     if (seqno > k) {
+                        seqno <- 1
+                        mode <- "add"
+                        selmode <- selmodeold
+                        updateall <- FALSE
+                     }
+                     run.rnd <- FALSE
+                     input <- FALSE
+                  }
                   next
 
                }
 
             }
 
-            # U to toggle upsidedown
+            # U to update all (selected) sequences ([u])
 
-            if (identical(click, "U")) {
-               upsidedown <- !upsidedown
-               assign("upsidedown", upsidedown, envir=.chesstrainer)
+            if (mode == "test" && identical(click, "U")) {
+               if (is.null(sfproc) || !sfrun) {
+                  .texttop(.text("evalupdatenosf"), sleep=1.5)
+                  .texttop(texttop)
+                  next
+               } else {
+                  .texttop(.text("rlyevalupdateall"))
+                  answer <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=.keyfun)
+                  answer <- .confirm(answer)
+                  if (answer) {
+                     selmodeold <- selmode
+                     selmode <- "sequential"
+                     seqno <- 1
+                     updateall <- TRUE
+                  } else {
+                     .texttop(texttop)
+                  }
+               }
+               run.rnd <- FALSE
+               input <- FALSE
+               next
+            }
+
+            # ctrl-u to toggle upsidedown
+
+            if (identical(click, "ctrl-U")) {
+               assign("upsidedown", !.get("upsidedown"), envir=.chesstrainer)
                run.rnd <- FALSE
                input <- FALSE
                next
@@ -2119,9 +2163,9 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # T to set a target for points
+            # s to set a target for points (in test mode)
 
-            if (identical(click, "T")) {
+            if (mode == "test" && identical(click, "s")) {
                targetold <- target
                target <- .settarget(target)
                .redrawpos(pos, flip=flip)
@@ -2380,7 +2424,7 @@ play <- function(lang="en", sfpath="", ...) {
                .drawglyph(glyph)
                .textbot(mode, show=show, showcomp=showcomp, i=i, totalmoves=totalmoves, onlyshow=TRUE, onlyi=TRUE)
                sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
-               fen <- .genfen(pos, flip, sidetoplay, i)
+               fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
                evalval  <- res.sf$eval
                bestmove <- res.sf$bestmove
@@ -2388,7 +2432,7 @@ play <- function(lang="en", sfpath="", ...) {
                sfproc   <- res.sf$sfproc
                sfrun    <- res.sf$sfrun
                if (contanalysis) {
-                  tmp <- .showbestmove(pos, flip, sidetoplay, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
+                  tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                   harrows  <- tmp$harrows
                   texttop  <- tmp$texttop
                   evalvals <- tmp$evalvals
@@ -2490,6 +2534,10 @@ play <- function(lang="en", sfpath="", ...) {
                eval(expr=switch1)
                #tmp <- sub
                #tmp$moves$fen <- NULL
+               #tmp$moves$circles <- NULL
+               #tmp$moves$arrows <- NULL
+               #tmp$moves$glyphs <- NULL
+               #tmp$moves$comments <- NULL
                #print(tmp)
                #eval(expr=switch2)
                #next
@@ -2516,7 +2564,7 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # s to save the sequence (only in add mode)
+            # s to save the sequence (in add mode)
 
             if (mode == "add" && identical(click, "s")) {
                # no longer necessary that a sequence ends with a move of the player
@@ -2585,6 +2633,7 @@ play <- function(lang="en", sfpath="", ...) {
                flip <- out$flip
                sidetoplay <- out$sidetoplay
                i <- 1
+               sideindicator <- NA
                showcomp <- TRUE
                # show is FALSE unless the next move is made by the opposite side
                if (flip) {
@@ -2607,7 +2656,7 @@ play <- function(lang="en", sfpath="", ...) {
                .redrawall(pos, flip, mode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
                if (!.is.start.pos(pos)) {
                   sub$pos <- pos
-                  fen <- .genfen(pos, flip, sidetoplay, i)
+                  fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                   res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
                   evalval  <- res.sf$eval
                   bestmove <- res.sf$bestmove
@@ -2618,7 +2667,7 @@ play <- function(lang="en", sfpath="", ...) {
                   attr(sub$pos, "starteval") <- starteval
                   .draweval(starteval, NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                   if (mode %in% c("add","analysis") && contanalysis) {
-                     tmp <- .showbestmove(pos, flip, sidetoplay, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
+                     tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                      harrows  <- tmp$harrows
                      texttop  <- tmp$texttop
                      evalvals <- tmp$evalvals
@@ -2681,6 +2730,17 @@ play <- function(lang="en", sfpath="", ...) {
                .redrawpos(pos, flip=flip)
                .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
                settings$coords <- coords
+               saveRDS(settings, file=file.path(configdir, "settings.rds"))
+               next
+            }
+
+            # T to toggle showing move transpositions on/off
+
+            if (identical(click, "T")) {
+               showtransp <- !showtransp
+               .texttop(.text("showtransp", showtransp), sleep=0.75)
+               .texttop(texttop)
+               settings$showtransp <- showtransp
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
@@ -2866,7 +2926,7 @@ play <- function(lang="en", sfpath="", ...) {
                contanalysis <- !contanalysis
                .texttop(.text("contanalysis", contanalysis), sleep=0.75)
                if (contanalysis) {
-                  tmp <- .showbestmove(pos, flip, sidetoplay, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
+                  tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                   harrows  <- tmp$harrows
                   texttop  <- tmp$texttop
                   evalvals <- tmp$evalvals
@@ -2967,7 +3027,7 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (identical(click, "ctrl-F")) {
                eval(expr=switch1)
-               fen <- .genfen(pos, flip, sidetoplay, i)
+               fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                cat(fen, "\n")
                eval(expr=switch2)
                clipr::write_clip(fen, object_type="character")
@@ -3350,7 +3410,7 @@ play <- function(lang="en", sfpath="", ...) {
             if (identical(click, "'")) {
                if (.is.start.pos(pos))
                   next
-               searchterm <- .genfen(pos, flip, sidetoplay, i)
+               searchterm <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                searchterm <- paste(strsplit(searchterm, " ", fixed=TRUE)[[1]][1:3], collapse=" ")
                seqident <- sapply(dat.all, function(x) any(grepl(searchterm, x$moves$fen, fixed=TRUE)) && identical(flip, x$flip))
                if (any(seqident)) {
@@ -3382,7 +3442,7 @@ play <- function(lang="en", sfpath="", ...) {
             if (identical(click, ";")) {
                if (i == 1)
                   next
-               searchterm <- .genfen(pos, flip, sidetoplay, i)
+               searchterm <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                searchterm <- paste(strsplit(searchterm, " ", fixed=TRUE)[[1]][1:3], collapse=" ")
                seqident <- sapply(dat.all, function(x) grepl(searchterm, tail(x$moves$fen, 1), fixed=TRUE) && identical(flip, x$flip))
                if (any(seqident)) {
@@ -3532,7 +3592,7 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (identical(click, "F3")) {
                tab <- list(lang=lang, player=player, mode=mode, seqdir=seqdir[seqdirpos], selmode=selmode, zenmode=zenmode, timed=timed, timepermove=timepermove, expval=expval,
-                           multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, eval=eval, evalsteps=evalsteps, coords=coords, matdiff=matdiff, wait=wait, sleep=sleep, idletime=idletime, mar=mar, mar2=mar2, lwd=lwd,
+                           multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, eval=eval, evalsteps=evalsteps, coords=coords, showtransp=showtransp, matdiff=matdiff, wait=wait, sleep=sleep, idletime=idletime, mintime=mintime, mar=mar, mar2=mar2, lwd=lwd,
                            volume=volume, showgraph=showgraph, repmistake=repmistake, target=target, cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
                            difffun=difffun, difflen=difflen, diffmin=diffmin,
                            sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, contanalysis=contanalysis)
@@ -3585,7 +3645,7 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (identical(click, "F6")) {
                eval(expr=switch1)
-               tmp <- .miscsettings(multiplier, adjustwrong, adjusthint, evalsteps, timepermove, idletime)
+               tmp <- .miscsettings(multiplier, adjustwrong, adjusthint, evalsteps, timepermove, idletime, mintime)
                eval(expr=switch2)
                multiplier  <- tmp$multiplier
                adjustwrong <- tmp$adjustwrong
@@ -3593,12 +3653,14 @@ play <- function(lang="en", sfpath="", ...) {
                evalsteps   <- tmp$evalsteps
                timepermove <- tmp$timepermove
                idletime    <- tmp$idletime
+               mintime     <- tmp$mintime
                settings$multiplier  <- multiplier
                settings$adjustwrong <- adjustwrong
                settings$adjusthint  <- adjusthint
                settings$evalsteps   <- evalsteps
                settings$timepermove <- timepermove
                settings$idletime    <- idletime
+               settings$mintime     <- mintime
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
@@ -3675,7 +3737,7 @@ play <- function(lang="en", sfpath="", ...) {
 
             if (identical(click, "F9")) {
                eval(expr=switch1)
-               fen <- .genfen(pos, flip, sidetoplay, i)
+               fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                cat(fen, "\n")
                eval(expr=switch2)
                fen <- paste0("https://lichess.org/analysis/standard/", gsub(" ", "_", fen, fixed=TRUE))
@@ -4160,7 +4222,7 @@ play <- function(lang="en", sfpath="", ...) {
                         texttop <- .texttop("")
                         .draweval(sub$moves$eval[i-1], NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                         sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
-                        fen <- .genfen(pos, flip, sidetoplay, i)
+                        fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                         res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
                         evalval  <- res.sf$eval
                         bestmove <- res.sf$bestmove
@@ -4168,7 +4230,7 @@ play <- function(lang="en", sfpath="", ...) {
                         sfproc   <- res.sf$sfproc
                         sfrun    <- res.sf$sfrun
                         if (contanalysis) {
-                           tmp <- .showbestmove(pos, flip, sidetoplay, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
+                           tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                            harrows  <- tmp$harrows
                            texttop  <- tmp$texttop
                            evalvals <- tmp$evalvals
@@ -4190,7 +4252,7 @@ play <- function(lang="en", sfpath="", ...) {
                         texttop <- .texttop("")
                         .draweval(sub$moves$eval[i-1], NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                         sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
-                        fen <- .genfen(pos, flip, sidetoplay, i)
+                        fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                         if ((flip && sidetoplay=="b") || (!flip && sidetoplay=="w")) {
                            res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
                         } else {
@@ -4234,7 +4296,7 @@ play <- function(lang="en", sfpath="", ...) {
 
                      if (identical(click, "F9")) {
                         eval(expr=switch1)
-                        fen <- .genfen(pos, flip, sidetoplay, i)
+                        fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                         cat(fen, "\n")
                         eval(expr=switch2)
                         fen <- paste0("https://lichess.org/analysis/standard/", gsub(" ", "_", fen, fixed=TRUE))
@@ -4243,7 +4305,7 @@ play <- function(lang="en", sfpath="", ...) {
 
                      if (identical(click, "ctrl-F")) {
                         eval(expr=switch1)
-                        fen <- .genfen(pos, flip, sidetoplay, i+1)
+                        fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i+1)
                         cat(fen, "\n")
                         eval(expr=switch2)
                         clipr::write_clip(fen, object_type="character")
@@ -4325,7 +4387,7 @@ play <- function(lang="en", sfpath="", ...) {
             # after the move has been made, get the evaluation and the next bestmove, using depth1 in add/analysis mode and depth3 (with sflim) in play mode
 
             evalvallast <- evalval[1]
-            fen <- .genfen(pos, flip, sidetoplay, i)
+            fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
             if (mode %in% c("add","analysis")) {
                res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
             } else {
@@ -4387,6 +4449,23 @@ play <- function(lang="en", sfpath="", ...) {
             sub$moves <- rbind(sub$moves, data.frame(x1=click1.x, y1=click1.y, x2=click2.x, y2=click2.y, show=showval, move=attr(pos,"move"), eval=evalval[1], comment=comment, circles=circlesvar, arrows=arrowsvar, glyph="", fen=fen))
             comment <- ""
             glyph <- ""
+
+            # in add mode, check if there are sequences with the current position that occurred via a move transposition
+
+            if (mode == "add" && showtransp) {
+               fenshort <- paste(strsplit(fen, " ", fixed=TRUE)[[1]][1:3], collapse=" ")
+               seqident <- sapply(dat.all, function(x) any(grepl(fenshort, x$moves$fen, fixed=TRUE)) && identical(flip, x$flip) && !identical(x$moves$fen[1:(i-1)], sub$moves$fen[1:(i-1)]))
+               if (any(seqident)) {
+                  .texttop(.text("transpositions", length(seqident) == 1L))
+                  eval(expr=switch1)
+                  tab <- data.frame(Name=files.all[seqident])
+                  tab$Name <- format(tab$Name, justify="left")
+                  names(tab)[1] <- ""
+                  rownames(tab) <- which(seqident)
+                  print(tab, print.gap=2)
+                  eval(expr=switch2)
+               }
+            }
 
             # check for (stale)mate
 

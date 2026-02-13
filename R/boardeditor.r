@@ -1,6 +1,8 @@
 .boardeditor <- function(pos, flip, sidetoplay) {
 
-   curfen <- .genfen(pos, flip, sidetoplay, i=1)
+   attr(pos,"moves50") <- 0
+
+   curfen <- .genfen(pos, flip, sidetoplay, sidetoplay, i=1)
    oldfen <- curfen
 
    pos <- .expandpos(pos)
@@ -116,7 +118,8 @@
 
       if (identical(click, "n")) {
          pos <- .get("boardeditorpos")
-         curfen <- .genfen(.shrinkpos(pos), flip, sidetoplay, i=1)
+         sidetoplay <- "w"
+         curfen <- .genfen(.shrinkpos(pos), flip, sidetoplay, sidetoplay, i=1)
          oldfen <- curfen
          .boardeditor.drawboard(pos, flip, sidetoplay)
          text(6, 0.5, paste("FEN: ", curfen), col=col, cex=cex)
@@ -137,7 +140,7 @@
       if (identical(click, "s")) {
          oldfen <- curfen
          sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
-         curfen <- .genfen(.shrinkpos(pos), flip, sidetoplay, i=1)
+         curfen <- .genfen(.shrinkpos(pos), flip, sidetoplay, sidetoplay, i=1)
          .drawsideindicator(sidetoplay, flip=flip, adj=1)
          next
       }
@@ -146,7 +149,7 @@
 
       if (identical(click, "c")) {
          pos[2:9,2:9] <- ""
-         curfen <- .genfen(.shrinkpos(pos), flip, sidetoplay, i=1)
+         curfen <- .genfen(.shrinkpos(pos), flip, sidetoplay, sidetoplay, i=1)
          oldfen <- curfen
          .boardeditor.drawboard(pos, flip, sidetoplay)
          text(6, 0.5, paste("FEN: ", curfen), col=col, cex=cex)
@@ -161,7 +164,7 @@
          if (grepl("^K?Q?k?q?$", resp)) {
             oldfen <- curfen
             attr(pos, "rochade") <- c(grepl("K", resp), grepl("Q", resp), grepl("k", resp), grepl("q", resp))
-            curfen <- .genfen(.shrinkpos(pos), flip, sidetoplay, i=1)
+            curfen <- .genfen(.shrinkpos(pos), flip, sidetoplay, sidetoplay, i=1)
          } else {
             cat(.text("notcorrectrochade"))
          }
@@ -191,7 +194,7 @@
                             (pos[8,5] == "BK" && pos[8,8] == "BR"), (pos[8,5] == "BK" && pos[8,1] == "BR"))
                attr(pos, "rochade") <- rochade
             }
-            curfen <- .genfen(pos, flip, sidetoplay, i=1)
+            curfen <- .genfen(pos, flip, sidetoplay, sidetoplay, i=1)
             pos <- .expandpos(pos)
             .boardeditor.drawboard(pos, flip, sidetoplay)
          } else {
@@ -213,7 +216,7 @@
 
       if (identical(click, "F9")) {
          eval(expr=switch1)
-         fen <- .genfen(.shrinkpos(pos), flip, sidetoplay, i=1)
+         fen <- .genfen(.shrinkpos(pos), flip, sidetoplay, sidetoplay, i=1)
          cat(fen, "\n")
          eval(expr=switch2)
          clipr::write_clip(fen, object_type="character")
@@ -226,7 +229,7 @@
 
       if (identical(click, "ctrl-F")) {
          eval(expr=switch1)
-         fen <- .genfen(.shrinkpos(pos), flip, sidetoplay, i=1)
+         fen <- .genfen(.shrinkpos(pos), flip, sidetoplay, sidetoplay, i=1)
          cat(fen, "\n")
          eval(expr=switch2)
          clipr::write_clip(fen, object_type="character")
@@ -258,7 +261,7 @@
          next
 
       oldpos <- pos
-      oldfen <- .genfen(.shrinkpos(oldpos), flip, sidetoplay, i=1)
+      oldfen <- .genfen(.shrinkpos(oldpos), flip, sidetoplay, sidetoplay, i=1)
 
       pos <- .boardeditor.updateboard(pos, move=c(click1.x, click1.y, click2.x, click2.y), flip=flip, button=button)
 
@@ -267,7 +270,7 @@
          attr(pos, "y1") <- NULL
       }
 
-      curfen <- .genfen(.shrinkpos(pos), flip, sidetoplay, i=1)
+      curfen <- .genfen(.shrinkpos(pos), flip, sidetoplay, sidetoplay, i=1)
 
       .drawsideindicator(sidetoplay, flip=flip, adj=1, clear=FALSE)
 

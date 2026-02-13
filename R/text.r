@@ -110,6 +110,12 @@
                          paste0("coordinates: ", ifelse(arg, "on", "off"))
    ))}
 
+   if (x == "showtransp") {
+      return(switch(lang,
+                    de = paste0("Zugumstellungen anzeigen: ", ifelse(arg, "an", "aus")),
+                         paste0("Show move transpositions: ", ifelse(arg, "on", "off"))
+   ))}
+
    if (x == "matdiff") {
       return(switch(lang,
                     de = paste0("Materialunterschied anzeigen: ", ifelse(arg, "an", "aus")),
@@ -909,10 +915,16 @@
                          "Cannot recalculate evaluations without Stockfish.\n"
    ))}
 
+   if (x == "rlyevalupdateall") {
+      return(switch(lang,
+                    de = "Wirklich die Bewertungen aller (selektierten) Sequenzen neu berechnen? (j/N): ",
+                         "Really recalculate the evaluations for all (selected) sequences? (y/N): "
+   ))}
+
    if (x == "explsettings") {
       return(switch(lang,
-                    de = c("Sprache", "Spielername", "Modus", "Aktuelles Sequenzverzeichnis", "Selektionsmodus f\U000000FCr Sequenzen", "Zen Modus", "Zeitgesteuerter Modus", "Zeit pro Zug im zeitgesteuerten Modus (Sekunden)", "Exponentenwert", "Multiplikator f\U000000FCr abgeschlossene Sequenzen", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Bewertungsleiste (Hinzuf\U000000FCgen/Test/Spielen/Analyse)", "Animationsschritte f\U000000FCr die Bewertungsleiste", "Koordinaten anzeigen", "Materialunterschied anzeigen", "Warten zwischen Sequenzen", "Zeit zwischen den Z\U000000FCgen (Sekunden)", "Leerlaufzeit (Sekunden)", "Randbreite (unten/links/oben/rechts)", "Randbreite f\U000000FCr Inline-Diagramme", "Linienbreite", "Lautst\U000000E4rke (%)", "Fortschrittsdiagramm nach Sequenzen anzeigen", "Sequenzen nach Fehler wiederholen", "Zielwert", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Gr\U000000F6\U000000DFe f\U000000FCr die Koordinaten", "Gr\U000000F6\U000000DFe f\U000000FCr den Materialunterschied", "Gr\U000000F6\U000000DFe f\U000000FCr Diagramme", "Gr\U000000F6\U000000DFe f\U000000FCr Glyphen", "Schwierigkeitsberechnung (Methode)", "Schwierigkeitsberechnung (Anzahl der letzten Werte)", "Schwierigkeitsberechnung (Mindestanzahl der Werte)", "Stockfish Pfad", "Berechnungstiefe (schnell)", "Berechnungstiefe (tief)", "Berechnungstiefe (spielen)", "Spielmodus-St\U000000E4rke-Limit", "Anzahl der besten Zugvarianten (schnell)", "Anzahl der besten Zugvarianten (tief)", "Anzahl der Threads f\U000000FCr Stockfish", "Hashgr\U000000F6\U000000DFe f\U000000FCr Stockfish", "Hinweistiefe", "Kontinuierliche Analyse"),
-                         c("Language", "Player name", "Mode", "Current sequence directory", "Selection mode for sequences", "Zen mode", "Timed mode", "Time per move in timed mode (seconds)", "Exponent value", "Multiplier for completed sequences", "Score penalty for wrong moves", "Score penalty per hint", "Evaluation bar (add/test/play/analysis)", "Animation steps for the evaluation bar", "Show coordinates", "Show material difference", "Wait between sequences", "Time between moves (seconds)", "Idle time (seconds)", "Margin width (bottom/left/top/right)", "Margin width for inline graphs", "Line width", "Sound volume (%)", "Show progress graph after sequences", "Repeat sequences after mistake", "Target score", "Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Size of the coordinates", "Size of the material difference", "Size of plots", "Size of glyphs", "Difficulty calculation (method)", "Difficulty calculation (number of recent values)", "Difficulty calculation (minimum number of values)", "Stockfish path", "Calculation depth (fast)", "Calculation depth (deep)", "Calculation depth (play)", "Play mode strength limit", "Number of principal variations (fast)", "Number of principal variations (deep)", "Number of threads for Stockfish", "Hash size for Stockfish", "Hint depth", "Continuous analysis")
+                    de = c("Sprache", "Spielername", "Modus", "Aktuelles Sequenzverzeichnis", "Selektionsmodus f\U000000FCr Sequenzen", "Zen Modus", "Zeitgesteuerter Modus", "Zeit pro Zug im zeitgesteuerten Modus (Sekunden)", "Exponentenwert", "Multiplikator f\U000000FCr abgeschlossene Sequenzen", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Bewertungsleiste (Hinzuf\U000000FCgen/Test/Spielen/Analyse)", "Animationsschritte f\U000000FCr die Bewertungsleiste", "Koordinaten anzeigen", "Zugumstellungen anzeigen", "Materialunterschied anzeigen", "Warten zwischen Sequenzen", "Zeit zwischen den Z\U000000FCgen (Sekunden)", "Leerlaufzeit (Sekunden)", "Mindestdauer der Sitzung (Sekunden)", "Randbreite (unten/links/oben/rechts)", "Randbreite f\U000000FCr Inline-Diagramme", "Linienbreite", "Lautst\U000000E4rke (%)", "Fortschrittsdiagramm nach Sequenzen anzeigen", "Sequenzen nach Fehler wiederholen", "Zielwert", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Gr\U000000F6\U000000DFe f\U000000FCr die Koordinaten", "Gr\U000000F6\U000000DFe f\U000000FCr den Materialunterschied", "Gr\U000000F6\U000000DFe f\U000000FCr Diagramme", "Gr\U000000F6\U000000DFe f\U000000FCr Glyphen", "Schwierigkeitsberechnung (Methode)", "Schwierigkeitsberechnung (Anzahl der letzten Werte)", "Schwierigkeitsberechnung (Mindestanzahl der Werte)", "Stockfish Pfad", "Berechnungstiefe (schnell)", "Berechnungstiefe (tief)", "Berechnungstiefe (spielen)", "Spielmodus-St\U000000E4rke-Limit", "Anzahl der besten Zugvarianten (schnell)", "Anzahl der besten Zugvarianten (tief)", "Anzahl der Threads f\U000000FCr Stockfish", "Hashgr\U000000F6\U000000DFe f\U000000FCr Stockfish", "Hinweistiefe", "Kontinuierliche Analyse"),
+                         c("Language", "Player name", "Mode", "Current sequence directory", "Selection mode for sequences", "Zen mode", "Timed mode", "Time per move in timed mode (seconds)", "Exponent value", "Multiplier for completed sequences", "Score penalty for wrong moves", "Score penalty per hint", "Evaluation bar (add/test/play/analysis)", "Animation steps for the evaluation bar", "Show coordinates", "Show move transpositions", "Show material difference", "Wait between sequences", "Time between moves (seconds)", "Idle time (seconds)", "Minimum session duration (seconds)", "Margin width (bottom/left/top/right)", "Margin width for inline graphs", "Line width", "Sound volume (%)", "Show progress graph after sequences", "Repeat sequences after mistake", "Target score", "Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Size of the coordinates", "Size of the material difference", "Size of plots", "Size of glyphs", "Difficulty calculation (method)", "Difficulty calculation (number of recent values)", "Difficulty calculation (minimum number of values)", "Stockfish path", "Calculation depth (fast)", "Calculation depth (deep)", "Calculation depth (play)", "Play mode strength limit", "Number of principal variations (fast)", "Number of principal variations (deep)", "Number of threads for Stockfish", "Hash size for Stockfish", "Hint depth", "Continuous analysis")
    ))}
 
    if (x == "comment") {
@@ -1037,8 +1049,8 @@
 
    if (x == "rlydelallbookmarks") {
       return(switch(lang,
-                    de = paste0("Wirklich alle Lesezeichen l\U000000F6schen? (j/N): "),
-                         paste0("Really delete all bookmarks? (y/N): ")
+                    de = "Wirklich alle Lesezeichen l\U000000F6schen? (j/N): ",
+                         "Really delete all bookmarks? (y/N): "
    ))}
 
    if (x == "allmovesshown") {
@@ -1423,6 +1435,12 @@
       return(switch(lang,
                     de = "Das Springen zu einer Sequenznummer geht nur in sequenziellen Auswahlmodi.",
                          "Jumping to a sequence number is only possible in sequential selection modes."
+   ))}
+
+   if (x == "transpositions") {
+      return(switch(lang,
+                    de = paste0("Es gibt ", ifelse(arg, "eine Sequenz", "mehrere Sequenzen"), " mit Zugumstellungen."),
+                         paste0("There ", ifelse(arg, "is one sequence", "are sequences"), " with move transpositions.")
    ))}
 
 }

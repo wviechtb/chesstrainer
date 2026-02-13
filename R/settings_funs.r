@@ -119,12 +119,12 @@
 
 }
 
-.miscsettings <- function(multiplier, adjustwrong, adjusthint, evalsteps, timepermove, idletime) {
+.miscsettings <- function(multiplier, adjustwrong, adjusthint, evalsteps, timepermove, idletime, mintime) {
 
    cat(.text("currentsettings"))
 
-   tab <- data.frame(setting = c("multiplier", "adjustwrong", "adjusthint", "evalsteps", "timepermove", "idletime"),
-                     val     = c(multiplier, adjustwrong, adjusthint, evalsteps, timepermove, idletime))
+   tab <- data.frame(setting = c("multiplier", "adjustwrong", "adjusthint", "evalsteps", "timepermove", "idletime", "mintime"),
+                     val     = c(multiplier, adjustwrong, adjusthint, evalsteps, timepermove, idletime, mintime))
    names(tab) <- c("", "")
    print(tab, right=FALSE, print.gap=3)
 
@@ -134,7 +134,7 @@
       resp <- readline(prompt=.text("settingwhich"))
       if (identical(resp, ""))
          break
-      if (grepl("^[1-6]+$", resp)) {
+      if (grepl("^[1-7]+$", resp)) {
          setno <- round(as.numeric(resp))
          if (setno < 1 || setno > nrow(tab))
             next
@@ -154,7 +154,7 @@
             val[val < 2] <- 2
             val <- round(val)
          }
-         if (setno == 6) {
+         if (setno %in% c(6,7)) {
             val[val < 1] <- 1
             val <- round(val)
          }

@@ -1427,7 +1427,7 @@
 
 }
 
-.showbestmove <- function(pos, flip, sidetoplay, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim) {
+.showbestmove <- function(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim) {
 
    texttop <- ""
    evalvals <- NULL
@@ -1438,7 +1438,7 @@
    }
    harrows <- matrix(nrow=0, ncol=4)
    if (i == 1 && is.na(evalval[1])) {
-      fen <- .genfen(pos, flip, sidetoplay, i)
+      fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
       res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
       evalval  <- res.sf$eval
       bestmove <- res.sf$bestmove

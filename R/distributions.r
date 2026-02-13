@@ -22,6 +22,8 @@
 
    hist(scores, breaks=20, las=1, col.axis=col.top, col.lab=col.top, col.main=col.fg,
         xlab=.text("score"), col=col.square.d, border=col.square.l, main=paste0("Histogram: ", .text("score")), xlim=c(0,100))
+   if (target > 0)
+      abline(v=target, lty="dotted", col=col.top)
    #box(which="figure", col=col.help.border, lwd=lwd)
 
    #########################################################################

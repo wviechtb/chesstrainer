@@ -131,7 +131,7 @@
    return(c(pos.x,pos.y))
 }
 
-.genfen <- function(pos, flip, sidetoplay, i) {
+.genfen <- function(pos, flip, sidetoplay, sidetoplaystart, i) {
 
    # change piece abbreviations to those used by FEN
 
@@ -187,17 +187,34 @@
    if (identical(ispp, "")) {
       enpassant <- "-"
    } else {
+      y1 <- attr(pos,"y1")
       if (ispp == "w") {
          if (flip) {
-            enpassant <- paste0(letters[8:1][attr(pos,"y1")], 3, collapse="")
+            if (pos[4,max(1,9-y1-1)] == "p" || pos[4,min(8,9-y1+1)] == "p") {
+               enpassant <- paste0(letters[8:1][y1], 3, collapse="")
+            } else {
+               enpassant <- "-"
+            }
          } else {
-            enpassant <- paste0(letters[1:8][attr(pos,"y1")], 3, collapse="")
+            if (pos[4,max(1,y1-1)] == "p" || pos[4,min(8,y1+1)] == "p") {
+               enpassant <- paste0(letters[1:8][y1], 3, collapse="")
+            } else {
+               enpassant <- "-"
+            }
          }
       } else {
          if (flip) {
-            enpassant <- paste0(letters[8:1][attr(pos,"y1")], 6, collapse="")
+            if (pos[5,max(1,9-y1-1)] == "P" || pos[5,min(8,9-y1+1)] == "P") {
+               enpassant <- paste0(letters[8:1][y1], 6, collapse="")
+            } else {
+               enpassant <- "-"
+            }
          } else {
-            enpassant <- paste0(letters[1:8][attr(pos,"y1")], 6, collapse="")
+            if (pos[5,max(1,y1-1)] == "P" || pos[5,min(8,y1+1)] == "P") {
+               enpassant <- paste0(letters[1:8][y1], 6, collapse="")
+            } else {
+               enpassant <- "-"
+            }
          }
       }
    }
@@ -215,7 +232,7 @@
 
    # add fullmove number
 
-   fen <- paste(fen, (i+1) %/% 2)
+   fen <- paste(fen, (i + ifelse(sidetoplaystart=="b", 1, 0) + 1) %/% 2)
 
    return(fen)
 
@@ -550,7 +567,7 @@
 .printverbose <- function(selected, seqno, filename, lastseq, flip, useflip, replast, oldmode, i,
                           seqname, seqnum, score, rounds, totalmoves, show, showcomp, comment, bestmove, starteval,
                           evalval, texttop, scoreadd, sidetoplay, givehint1, givehint2, mistake,
-                          timetotal, movesplayed, movestoplay, drawcircles, drawarrows, drawglyph, showstartcom, pos) {
+                          timetotal, movesplayed, movestoplay, drawcircles, drawarrows, showstartcom, pos) {
 
    cat("\n")
    cat("selected:     ", selected, "\n")
@@ -584,7 +601,6 @@
    cat("movestoplay:  ", movestoplay, "\n")
    cat("drawcircles:  ", drawcircles, "\n")
    cat("drawarrows:   ", drawarrows, "\n")
-   cat("drawglyph:    ", drawglyph, "\n")
    cat("showstartcom: ", showstartcom, "\n")
    cat("\n")
 
