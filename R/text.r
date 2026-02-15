@@ -1439,8 +1439,20 @@
 
    if (x == "transpositions") {
       return(switch(lang,
-                    de = paste0("Es gibt ", ifelse(arg, "eine Sequenz", "mehrere Sequenzen"), " mit Zugumstellungen."),
-                         paste0("There ", ifelse(arg, "is one sequence", "are sequences"), " with move transpositions.")
+                    de = paste0("Es gibt ", ifelse(arg, "eine Sequenz", "mehrere Sequenzen"), " mit Zugumstellungen die zu dieser Stellung ", ifelse(arg, "f\U000000FChrt.", "f\U000000FChren.")),
+                         paste0("There ", ifelse(arg, "is one sequence", "are multiple sequences"), " with move transpositions that ", ifelse(arg, "leads", "lead"), "to this position.")
+   ))}
+
+   if (x == "transposseqs") {
+      return(switch(lang,
+                    de = paste0(ifelse(arg, "Sequenz", "Sequenzen"), " mit Zugumstellungen:\n\n"),
+                         paste0(ifelse(arg, "Sequence", "Sequences"), " with move transpositions:\n\n")
+   ))}
+
+   if (x == "transposcols") {
+      return(switch(lang,
+                    de = c("Sequenz", "N\U000000E4chster Zug", "Zug danach"),
+                         c("sequence", "next move", "move thereafter")
    ))}
 
 }

@@ -585,10 +585,16 @@
    if (draw)
       .drawcheck(pos, flip=flip)
 
-   if (pawnmove || iscapture) {
+   moves50 <- attr(pos,"moves50")
+
+   if (is.null(moves50) || length(moves50) == 0L) {
       attr(pos,"moves50") <- 0
    } else {
-      attr(pos,"moves50") <- attr(pos,"moves50") + 1
+      if (pawnmove || iscapture) {
+         attr(pos,"moves50") <- 0
+      } else {
+         attr(pos,"moves50") <- moves50 + 1
+      }
    }
 
    if (draw && .get("verbose")) {

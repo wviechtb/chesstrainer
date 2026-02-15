@@ -690,6 +690,13 @@ play <- function(lang="en", sfpath="", ...) {
       files.all <- list.files(seqdir[seqdirpos], pattern=".rds$")
       dat.all <- lapply(file.path(seqdir[seqdirpos], files.all), readRDS)
 
+      # copy of dat.all with short FENs for recognizing move transpositions
+
+      dat.all.transp <- lapply(dat.all, function(x) list(flip = x$flip,
+                                                         fen = x$moves$fen,
+                                                         fenshort = if (nrow(x$moves) == 0L) character(0) else sapply(strsplit(x$moves$fen, " ", fixed=TRUE), function(x) paste0(x[1:3], collapse=" ")),
+                                                         move = x$moves$move))
+
       k.all <- length(files.all)
 
       if (mode == "test" && k.all == 0L) {
@@ -986,7 +993,7 @@ play <- function(lang="en", sfpath="", ...) {
 
          ###### [b] ######
 
-         if (mode == "test" && i <= nrow(sub$moves)) {
+         if (mode == "test" && i <= max(1L,nrow(sub$moves)) && !updateall) { # need the max() for sequences that are just a start comment
 
             # show the start comment if there is one at move 1 (and showstartcom is TRUE)
             if (i == 1 && !is.null(sub$commentstart) && showstartcom) {
@@ -999,6 +1006,7 @@ play <- function(lang="en", sfpath="", ...) {
                # can have a sequence that is just a start comment
                .texttop("")
                run.rnd <- FALSE
+               seqno <- ifelse(seqno == k, 1, seqno + 1)
                next
             }
 
@@ -1020,7 +1028,7 @@ play <- function(lang="en", sfpath="", ...) {
 
             # play shown moves
 
-            while (!updateall && isTRUE(sub$moves$show[i])) {
+            while (isTRUE(sub$moves$show[i])) {
                if (nrow(circles) >= 1L || nrow(arrows) >= 1L)
                   .waitforclick()
                .rmannot(pos, circles=circles, arrows=arrows, glyph=glyph, flip=flip)
@@ -2030,78 +2038,91 @@ play <- function(lang="en", sfpath="", ...) {
                   if (mode == "play")
                      mode <- "analysis"
 
-                  if (!updateall)
+                  if (!updateall) {
+                     .sf.setoptions(sfproc, threads=1, hash)
                      eval(expr=switch1)
-
-                  if (is.null(sub$pos)) {
-                     pos <- start.pos
-                  } else {
-                     pos <- sub$pos
                   }
 
-                  if (!updateall)
-                     .drawboard(pos, flip=flip)
-                  .drawcheck(pos, flip=flip)
-                  .textbot(mode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
-                  circles <- matrix(nrow=0, ncol=2)
-                  arrows  <- matrix(nrow=0, ncol=4)
-                  glyph   <- ""
-                  sidetoplay <- sidetoplaystart
+                  if (nrow(sub$moves) >= 1L) {
 
-                  cat(.text("evalupdateold"))
-                  print(sub$moves)
-                  cat(.text("evalupdatestart"))
+                     if (is.null(sub$pos)) {
+                        pos <- start.pos
+                     } else {
+                        pos <- sub$pos
+                     }
 
-                  if (!is.null(sub$pos)) {
-                     fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i=1)
-                     res.sf <- .sf.eval(sfproc, sfrun, depth2, multipv2, sflim=NA, fen, sidetoplay, progbar=TRUE)
-                     evalval  <- res.sf$eval
-                     bestmove <- res.sf$bestmove
-                     matetype <- res.sf$matetype
-                     sfproc   <- res.sf$sfproc
-                     sfrun    <- res.sf$sfrun
-                     starteval <- evalval[1]
-                     attr(sub$pos, "starteval") <- starteval
-                  }
+                     if (!updateall) {
+                        .drawboard(pos, flip=flip)
+                        .drawcheck(pos, flip=flip)
+                     }
 
-                  for (i in 1:nrow(sub$moves)) {
-                     pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE)
-                     sub$moves$move[i] <- attr(pos,"move")
+                     .textbot(mode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
+                     circles <- matrix(nrow=0, ncol=2)
+                     arrows  <- matrix(nrow=0, ncol=4)
+                     glyph   <- ""
+                     sidetoplay <- sidetoplaystart
+
+                     cat(.text("evalupdateold"))
+                     print(sub$moves)
+                     cat(.text("evalupdatestart"))
+
+                     if (!is.null(sub$pos)) {
+                        fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i=1)
+                        res.sf <- .sf.eval(sfproc, sfrun, depth2, multipv=1, sflim=NA, fen, sidetoplay, progbar=TRUE)
+                        evalval  <- res.sf$eval
+                        bestmove <- res.sf$bestmove
+                        matetype <- res.sf$matetype
+                        sfproc   <- res.sf$sfproc
+                        sfrun    <- res.sf$sfrun
+                        starteval <- evalval[1]
+                        attr(sub$pos, "starteval") <- starteval
+                     }
+
+                     for (i in 1:nrow(sub$moves)) {
+                        pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE)
+                        sub$moves$move[i] <- attr(pos,"move")
+                        .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
+                        sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
+                        sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
+                        fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i+1)
+                        res.sf <- .sf.eval(sfproc, sfrun, depth2, multipv=1, sflim=NA, fen, sidetoplay, progbar=TRUE)
+                        evalval  <- res.sf$eval
+                        bestmove <- res.sf$bestmove
+                        matetype <- res.sf$matetype
+                        sfproc   <- res.sf$sfproc
+                        sfrun    <- res.sf$sfrun
+                        sub$moves$eval[i] <- evalval[1]
+                        sub$moves$fen[i] <- fen
+                        .draweval(sub$moves$eval[i], sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
+                     }
+                     i <- i + 1
                      .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
-                     sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                      sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
-                     fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i+1)
-                     res.sf <- .sf.eval(sfproc, sfrun, depth2, multipv2, sflim=NA, fen, sidetoplay, progbar=TRUE)
-                     evalval  <- res.sf$eval
-                     bestmove <- res.sf$bestmove
-                     matetype <- res.sf$matetype
-                     sfproc   <- res.sf$sfproc
-                     sfrun    <- res.sf$sfrun
-                     sub$moves$eval[i] <- evalval[1]
-                     sub$moves$fen[i] <- fen
-                     .draweval(sub$moves$eval[i], sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
+                     cat(.text("evalupdatenew"))
+                     print(sub$moves)
+                     cat("\n")
+                     if (mode == "test")
+                        saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
+                     playsound(system.file("sounds", "complete.ogg", package="chesstrainer"))
+
                   }
-                  i <- i + 1
-                  .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
-                  sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
-                  cat(.text("evalupdatenew"))
-                  print(sub$moves)
-                  cat("\n")
-                  if (mode == "test")
-                     saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
-                  playsound(system.file("sounds", "complete.ogg", package="chesstrainer"))
-                  if (!updateall)
-                     eval(expr=switch2)
+
                   if (updateall) { # [u]
                      seqno <- seqno + 1
                      if (seqno > k) {
                         seqno <- 1
                         mode <- "add"
                         selmode <- selmodeold
+                        wait <- waitold
+                        assign("volume", volumeold, envir=.chesstrainer)
                         updateall <- FALSE
+                        .sf.setoptions(sfproc, threads=threads, hash)
                      }
                      run.rnd <- FALSE
                      input <- FALSE
+                  } else {
+                     .sf.setoptions(sfproc, threads=threads, hash)
+                     eval(expr=switch2)
                   }
                   next
 
@@ -2122,9 +2143,14 @@ play <- function(lang="en", sfpath="", ...) {
                   answer <- .confirm(answer)
                   if (answer) {
                      selmodeold <- selmode
+                     waitold <- wait
+                     volumeold <- volume
                      selmode <- "sequential"
+                     wait <- FALSE
                      seqno <- 1
+                     assign("volume", 0, envir=.chesstrainer)
                      updateall <- TRUE
+                     .sf.setoptions(sfproc, threads=1, hash)
                   } else {
                      .texttop(texttop)
                   }
@@ -4181,6 +4207,11 @@ play <- function(lang="en", sfpath="", ...) {
                   .redrawpos(pos, flip=flip)
                }
 
+               #if (showtransp) {
+               #   fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
+               #   .findmovetransp(fen, flip, i, sub, dat.all.transp, files.all, texttop=FALSE)
+               #}
+
                skipsave <- FALSE
                contplay <- FALSE
 
@@ -4340,11 +4371,8 @@ play <- function(lang="en", sfpath="", ...) {
 
                } # end of 'if (wait) {}'
 
-               if (!replast) {
-                  seqno <- seqno + 1
-                  if (seqno > k)
-                     seqno <- 1
-               }
+               if (!replast)
+                  seqno <- ifelse(seqno == k, 1, seqno + 1)
 
                if (contplay)
                   next
@@ -4452,20 +4480,8 @@ play <- function(lang="en", sfpath="", ...) {
 
             # in add mode, check if there are sequences with the current position that occurred via a move transposition
 
-            if (mode == "add" && showtransp) {
-               fenshort <- paste(strsplit(fen, " ", fixed=TRUE)[[1]][1:3], collapse=" ")
-               seqident <- sapply(dat.all, function(x) any(grepl(fenshort, x$moves$fen, fixed=TRUE)) && identical(flip, x$flip) && !identical(x$moves$fen[1:(i-1)], sub$moves$fen[1:(i-1)]))
-               if (any(seqident)) {
-                  .texttop(.text("transpositions", length(seqident) == 1L))
-                  eval(expr=switch1)
-                  tab <- data.frame(Name=files.all[seqident])
-                  tab$Name <- format(tab$Name, justify="left")
-                  names(tab)[1] <- ""
-                  rownames(tab) <- which(seqident)
-                  print(tab, print.gap=2)
-                  eval(expr=switch2)
-               }
-            }
+            if (mode == "add" && showtransp)
+               .findmovetransp(fen, flip, i, sub, dat.all.transp, files.all)
 
             # check for (stale)mate
 

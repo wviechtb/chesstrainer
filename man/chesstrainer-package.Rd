@@ -135,7 +135,7 @@
 
    In \emph{add} or \emph{test mode}, you can bookmark a sequence with the \verb{<<>} key. In \emph{add mode}, the last saved sequence is bookmarked. In \emph{test mode}, the currently played sequence is bookmarked. With the \verb{<>>} key, you can select and manage bookmarks (use \verb{<F1>} while managing the bookmarks to obtain help). This is useful for creating multiple branching lines from the ending position of certain sequences or to remember sequences that you want to come back to at a later point.
 
-   When creating new sequences, the trainer automatically recognizes move transpositions (i.e., if there are sequences with the same position that were obtained via a different move order or via different moves). This check can be toggled on/off with the \verb{<T>} key.
+   When creating new sequences, the trainer automatically recognizes move transpositions (i.e., if there are sequences with the same position that were obtained via a different move order or via different moves). If such sequences are found, their names are printed to the console. This check can be toggled on/off with the \verb{<T>} key.
 
    Sequences are saved to and selected from the current sequence directory. You can add, remove, and select sequence directories with \verb{<F8>}. Removing a sequence directory simply removes it from being shown in the list of sequence directories (i.e., it does not delete the directory or any sequences therein). Bookmarks are specific to each sequence directory. Also, selecting a sequence directory switches to the sequence selection mode that was active when it was last selected.
 

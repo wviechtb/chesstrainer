@@ -169,7 +169,7 @@
 
    rochade <- attr(pos,"rochade")
 
-   if (identical(rochade, rep(FALSE,4)) || is.null(rochade)) {
+   if (is.null(rochade) || identical(rochade, rep(FALSE,4)) || length(rochade) == 0L) {
       rochade <- "-"
    } else {
       rochade <- paste0(c("K", "Q", "k", "q")[rochade], collapse="")
@@ -181,7 +181,7 @@
 
    ispp <- attr(pos,"ispp")
 
-   if (is.null(ispp))
+   if (is.null(ispp) || length(ispp) == 0L)
       ispp <- ""
 
    if (identical(ispp, "")) {
@@ -225,7 +225,7 @@
 
    moves50 <- attr(pos,"moves50")
 
-   if (is.null(moves50))
+   if (is.null(moves50) || length(moves50) == 0L)
       moves50 <- 0
 
    fen <- paste(fen, moves50)
@@ -926,5 +926,37 @@
    }
 
    return(isattacked)
+
+}
+
+.findmovetransp <- function(fen, flip, i, sub, dat, files, texttop=TRUE) {
+
+   fenshort <- paste(strsplit(fen, " ", fixed=TRUE)[[1]][1:3], collapse=" ")
+   seqident <- lapply(dat, function(x) {
+      if (any(fenshort == x$fenshort) && identical(flip, x$flip) && !identical(sub$moves$fen[1:(i-1)], x$fen[1:(i-1)])) {
+         pos <- min(which(fenshort == x$fenshort))
+         return(x$move[pos+c(1:2)])
+      } else {
+         return(NULL)
+      }
+   })
+   istransp <- !sapply(seqident, is.null)
+   seqident <- seqident[istransp]
+   if (any(istransp)) {
+      if (texttop)
+         .texttop(.text("transpositions", length(seqident) == 1L))
+      #eval(expr=switch1)
+      cat(.text("transposseqs", length(seqident) == 1L))
+      tab <- data.frame(sequence=files[istransp])
+      tab$sequence <- format(tab$sequence, justify="left")
+      tab$nextmove1 <- sapply(seqident, function(x) x[1])
+      tab$nextmove1[is.na(tab$nextmove1)] <- "---"
+      tab$nextmove2 <- sapply(seqident, function(x) x[2])
+      tab$nextmove2[is.na(tab$nextmove2)] <- "---"
+      colnames(tab) <- .text("transposcols")
+      rownames(tab) <- which(istransp)
+      print(tab, print.gap=2)
+      #eval(expr=switch2)
+   }
 
 }
