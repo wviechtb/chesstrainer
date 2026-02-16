@@ -192,7 +192,7 @@
 
    Clicking the right mouse button on a square adds a circle to the square. Dragging the mouse from one square to another while pressing the right mouse button draws an arrow. Those familiar with the \url{https://lichess.org} website will recognize these visualizations. Clicking with the left mouse button on a square, \verb{<escape>}, or making a move removes these visualizations. When adding a sequence, circles and arrows that are drawn are also saved and will be shown when replaying the sequence in \emph{test mode}. When such annotations are shown as part of a move that is made by the trainer, the sequence will only proceed after a click.
 
-   Similarly, with the \verb{<!>} and \verb{<@>} (or \verb{<">}) keys, one can add (and remove) annotation glyphs (i.e., exclamation and question marks) to moves (note that adding glyphs is only possible in \emph{add mode}). Such annotations are also shown in \emph{test mode}.
+   Similarly, with the \verb{<!>} and \verb{<@>} (or \verb{<">}) keys, one can add (and remove) annotation glyphs (i.e., exclamation and question marks) to moves. Such annotations are also shown in \emph{test mode}.
 
    Various other settings can be adjusted while the trainer is running:
 

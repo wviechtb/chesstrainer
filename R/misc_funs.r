@@ -935,28 +935,40 @@
    seqident <- lapply(dat, function(x) {
       if (any(fenshort == x$fenshort) && identical(flip, x$flip) && !identical(sub$moves$fen[1:(i-1)], x$fen[1:(i-1)])) {
          pos <- min(which(fenshort == x$fenshort))
-         return(x$move[pos+c(1:2)])
+         nextmoves <- x$move[pos+c(1:5)]
+         nextmoves[is.na(nextmoves)] <- ""
+         return(nextmoves)
       } else {
          return(NULL)
       }
    })
-   istransp <- !sapply(seqident, is.null)
-   seqident <- seqident[istransp]
-   if (any(istransp)) {
+   notnull <- !sapply(seqident, is.null)
+   seqident <- seqident[notnull]
+   if (any(notnull)) {
       if (texttop)
          .texttop(.text("transpositions", length(seqident) == 1L))
       #eval(expr=switch1)
       cat(.text("transposseqs", length(seqident) == 1L))
-      tab <- data.frame(sequence=files[istransp])
-      tab$sequence <- format(tab$sequence, justify="left")
-      tab$nextmove1 <- sapply(seqident, function(x) x[1])
-      tab$nextmove1[is.na(tab$nextmove1)] <- "---"
-      tab$nextmove2 <- sapply(seqident, function(x) x[2])
-      tab$nextmove2[is.na(tab$nextmove2)] <- "---"
-      colnames(tab) <- .text("transposcols")
-      rownames(tab) <- which(istransp)
-      print(tab, print.gap=2)
+      tab <- data.frame(files[notnull])
+      colnames(tab) <- .text("sequence")
+      nextmoves <- do.call(rbind, seqident)
+      tab <- cbind(tab, nextmoves)
+      rownames(tab) <- which(notnull)
+      .printdf(tab, align=c("l",rep("r",5)))
       #eval(expr=switch2)
    }
+
+}
+
+.printdf <- function(df, align=NULL, print.gap=2) {
+
+   align <- match.arg(align, c("left","right"), several.ok=TRUE)
+
+   for (j in 1:ncol(df)) {
+      df[[j]] <- format(df[[j]], justify=align[j])
+      names(df)[j] <- format(c(names(df)[j], df[[j]]), justify=align[j])[1]
+   }
+
+   print(df, print.gap=print.gap)
 
 }

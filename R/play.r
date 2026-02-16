@@ -690,12 +690,13 @@ play <- function(lang="en", sfpath="", ...) {
       files.all <- list.files(seqdir[seqdirpos], pattern=".rds$")
       dat.all <- lapply(file.path(seqdir[seqdirpos], files.all), readRDS)
 
-      # copy of dat.all with short FENs for recognizing move transpositions
+      # copy of dat.all with short FENs
 
-      dat.all.transp <- lapply(dat.all, function(x) list(flip = x$flip,
-                                                         fen = x$moves$fen,
-                                                         fenshort = if (nrow(x$moves) == 0L) character(0) else sapply(strsplit(x$moves$fen, " ", fixed=TRUE), function(x) paste0(x[1:3], collapse=" ")),
-                                                         move = x$moves$move))
+      dat.all.short <- lapply(dat.all, function(x) list(moves    = x$moves[1:4],
+                                                        flip     = x$flip,
+                                                        fen      = x$moves$fen,
+                                                        fenshort = if (nrow(x$moves) == 0L) character(0) else sapply(strsplit(x$moves$fen, " ", fixed=TRUE), function(x) paste0(x[1:3], collapse=" ")),
+                                                        move     = x$moves$move))
 
       k.all <- length(files.all)
 
@@ -2537,7 +2538,7 @@ play <- function(lang="en", sfpath="", ...) {
 
             # ! and @ (or ") to add glyphs with exclamation and question marks
 
-            if (mode == "add" && (identical(click, "!") || identical(click, "@") || identical(click, "\""))) {
+            if (identical(click, "!") || identical(click, "@") || identical(click, "\"")) {
                if (i == 1 || identical(.get("x2y2"), c(NA,NA)))
                   next
                glyphchar <- ifelse(identical(click, "!"), "!", "?")
@@ -2983,10 +2984,10 @@ play <- function(lang="en", sfpath="", ...) {
                   bars <- sapply(bars, function(x) paste0(rep("*", x), collapse=""))
                   tab <- data.frame(files, rounds.selected, formatC(age.selected, format="f", digits=1), scores.selected, formatC(difficulty.selected, format="f", digits=1), formatC(probvals.selected, format="f", digits=1), bars)
                   tab$bars <- format(tab$bars, justify="left")
-                  names(tab) <- c("Name", .text("rounds"), .text("age"), .text("score"), .text("diff"), .text("prob"), "")
-                  tab$Name <- substr(tab$Name, 1, nchar(tab$Name)-4) # remove .rds from name
-                  tab$Name <- format(tab$Name, justify="left")
-                  names(tab)[1] <- ""
+                  names(tab) <- c(.text("sequence"), .text("rounds"), .text("age"), .text("score"), .text("diff"), .text("prob"), "")
+                  tab[[1]] <- substr(tab[[1]], 1, nchar(tab[[1]])-4) # remove .rds from name
+                  tab[[1]] <- format(tab[[1]], justify="left")
+                  names(tab)[1] <- format(c(names(tab)[1], tab[[1]]), justify="left")[1]
                   if (!is.null(selected))
                      rownames(tab) <- which(files.all %in% selected)
                   txt <- capture.output(print(tab, print.gap=2))
@@ -3154,18 +3155,30 @@ play <- function(lang="en", sfpath="", ...) {
 
                if (grepl("^([rnbqkpRNBQKP1-8]+/){7}[rnbqkpRNBQKP1-8]+ [wb] (-|[KQkq]{1,4}) (-|[a-h][36]) \\d+ \\d+$", searchterm)) {
                   searchterm <- paste(strsplit(searchterm, " ", fixed=TRUE)[[1]][1:3], collapse=" ")
-                  seqident <- sapply(dat.all, function(x) any(grepl(searchterm, x$moves$fen, fixed=TRUE)))
-                  if (any(seqident)) {
+                  seqident <- lapply(dat.all.short, function(x) {
+                     if (any(searchterm == x$fenshort) && identical(flip, x$flip)) {
+                        pos <- min(which(searchterm == x$fenshort))
+                        nextmoves <- x$move[pos+c(0:4)]
+                        nextmoves[is.na(nextmoves)] <- ""
+                        return(nextmoves)
+                     } else {
+                        return(NULL)
+                     }
+                  })
+                  notnull <- !sapply(seqident, is.null)
+                  seqident <- seqident[notnull]
+                  if (any(notnull)) {
                      cat(.text("seqsmatchfen"))
-                     tab <- data.frame(Name=files.all[seqident])
-                     tab$Name <- format(tab$Name, justify="left")
-                     names(tab)[1] <- ""
-                     rownames(tab) <- which(seqident)
-                     print(tab, print.gap=2)
+                     tab <- data.frame(files.all[notnull])
+                     colnames(tab) <- .text("sequence")
+                     nextmoves <- do.call(rbind, seqident)
+                     tab <- cbind(tab, nextmoves)
+                     rownames(tab) <- which(notnull)
+                     .printdf(tab, align=c("l",rep("r",5)))
                      selmatches <- readline(prompt=.text("selmatches"))
                      if (identical(selmatches, "") || .confirm(selmatches)) {
-                        cat(.text("selmatchesconfirm", sum(seqident)))
-                        selected <- files.all[seqident]
+                        cat(.text("selmatchesconfirm", sum(notnull)))
+                        selected <- files.all[notnull]
                         run.rnd <- FALSE
                         input <- FALSE
                         mode <- oldmode <- "add"
@@ -3182,7 +3195,7 @@ play <- function(lang="en", sfpath="", ...) {
 
                if (grepl("^[CcKk]:\\s.*$", searchterm)) {
                   searchterm <- tolower(trimws(strsplit(searchterm, ":")[[1]][2]))
-                  seqident <- sapply(dat.all, function(x) any(grepl(searchterm, tolower(x$moves$comment), fixed=TRUE)))
+                  seqident <- sapply(dat.all, function(x) any(grepl(searchterm, tolower(c(x$moves$comment, x$commentend)), fixed=TRUE)))
                   if (any(seqident)) {
                      cat(.text("seqsmatchcomment"))
                      tab <- data.frame(Name=files.all[seqident])
@@ -3401,24 +3414,35 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # ? to find all sequences that start with the same moves
+            # ? to find sequences that start with the same moves
 
             if (identical(click, "?")) {
                if (i == 1)
                   next
-               seqident <- sapply(dat.all, function(x) identical(sub$moves[1:(i-1),1:4], x$moves[1:(i-1),1:4]) && identical(flip, x$flip))
-               if (any(seqident)) {
+               seqident <- lapply(dat.all.short, function(x) {
+                  if (identical(sub$moves[1:(i-1),1:4], x$moves[1:(i-1),1:4]) && identical(flip, x$flip)) {
+                     nextmoves <- x$move[i+c(0:4)]
+                     nextmoves[is.na(nextmoves)] <- ""
+                     return(nextmoves)
+                  } else {
+                     return(NULL)
+                  }
+               })
+               notnull <- !sapply(seqident, is.null)
+               seqident <- seqident[notnull]
+               if (any(notnull)) {
                   eval(expr=switch1)
                   cat(.text("seqsmatchstart"))
-                  tab <- data.frame(Name=files.all[seqident])
-                  tab$Name <- format(tab$Name, justify="left")
-                  names(tab)[1] <- ""
-                  rownames(tab) <- which(seqident)
-                  print(tab, print.gap=2)
+                  tab <- data.frame(files.all[notnull])
+                  colnames(tab) <- .text("sequence")
+                  nextmoves <- do.call(rbind, seqident)
+                  tab <- cbind(tab, nextmoves)
+                  rownames(tab) <- which(notnull)
+                  .printdf(tab, align=c("l",rep("r",5)))
                   selmatches <- readline(prompt=.text("selmatches"))
                   if (identical(selmatches, "") || .confirm(selmatches)) {
-                     cat(.text("selmatchesconfirm", sum(seqident)))
-                     selected <- files.all[seqident]
+                     cat(.text("selmatchesconfirm", sum(notnull)))
+                     selected <- files.all[notnull]
                      run.rnd <- FALSE
                      input <- FALSE
                      seqno <- 1
@@ -3431,26 +3455,38 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # ' to find all sequences that include the same FEN
+            # ' to find sequences that include the same position
 
             if (identical(click, "'")) {
                if (.is.start.pos(pos))
                   next
                searchterm <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                searchterm <- paste(strsplit(searchterm, " ", fixed=TRUE)[[1]][1:3], collapse=" ")
-               seqident <- sapply(dat.all, function(x) any(grepl(searchterm, x$moves$fen, fixed=TRUE)) && identical(flip, x$flip))
-               if (any(seqident)) {
+               seqident <- lapply(dat.all.short, function(x) {
+                  if (any(searchterm == x$fenshort) && identical(flip, x$flip)) {
+                     pos <- min(which(searchterm == x$fenshort))
+                     nextmoves <- x$move[pos+c(0:4)]
+                     nextmoves[is.na(nextmoves)] <- ""
+                     return(nextmoves)
+                  } else {
+                     return(NULL)
+                  }
+               })
+               notnull <- !sapply(seqident, is.null)
+               seqident <- seqident[notnull]
+               if (any(notnull)) {
                   eval(expr=switch1)
-                  cat(.text("seqsmatchfen"))
-                  tab <- data.frame(Name=files.all[seqident])
-                  tab$Name <- format(tab$Name, justify="left")
-                  names(tab)[1] <- ""
-                  rownames(tab) <- which(seqident)
-                  print(tab, print.gap=2)
+                  cat(.text("seqsinclpos"))
+                  tab <- data.frame(files.all[notnull])
+                  colnames(tab) <- .text("sequence")
+                  nextmoves <- do.call(rbind, seqident)
+                  tab <- cbind(tab, nextmoves)
+                  rownames(tab) <- which(notnull)
+                  .printdf(tab, align=c("l",rep("r",5)))
                   selmatches <- readline(prompt=.text("selmatches"))
                   if (identical(selmatches, "") || .confirm(selmatches)) {
-                     cat(.text("selmatchesconfirm", sum(seqident)))
-                     selected <- files.all[seqident]
+                     cat(.text("selmatchesconfirm", sum(notnull)))
+                     selected <- files.all[notnull]
                      run.rnd <- FALSE
                      input <- FALSE
                      seqno <- 1
@@ -3463,7 +3499,7 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # ; to find all sequences that end on the same FEN
+            # ; to find sequences that end in the same position
 
             if (identical(click, ";")) {
                if (i == 1)
@@ -3473,12 +3509,11 @@ play <- function(lang="en", sfpath="", ...) {
                seqident <- sapply(dat.all, function(x) grepl(searchterm, tail(x$moves$fen, 1), fixed=TRUE) && identical(flip, x$flip))
                if (any(seqident)) {
                   eval(expr=switch1)
-                  cat(.text("seqsmatchfen"))
-                  tab <- data.frame(Name=files.all[seqident])
-                  tab$Name <- format(tab$Name, justify="left")
-                  names(tab)[1] <- ""
+                  cat(.text("seqsendpos"))
+                  tab <- data.frame(files.all[seqident])
+                  colnames(tab) <- .text("sequence")
                   rownames(tab) <- which(seqident)
-                  print(tab, print.gap=2)
+                  .printdf(tab, align="l")
                   selmatches <- readline(prompt=.text("selmatches"))
                   if (identical(selmatches, "") || .confirm(selmatches)) {
                      cat(.text("selmatchesconfirm", sum(seqident)))
@@ -3495,7 +3530,7 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # : to find all sequences where a particular piece is on a particular square
+            # : to find sequences where a particular piece is on a particular square
 
             if (identical(click, ":")) {
                if (i == 1)
@@ -3555,11 +3590,10 @@ play <- function(lang="en", sfpath="", ...) {
                if (any(seqident)) {
                   eval(expr=switch1)
                   cat(.text("seqsmatchpossquare"))
-                  tab <- data.frame(Name=files.all[seqident])
-                  tab$Name <- format(tab$Name, justify="left")
-                  names(tab)[1] <- ""
+                  tab <- data.frame(files.all[seqident])
+                  colnames(tab) <- .text("sequence")
                   rownames(tab) <- which(seqident)
-                  print(tab, print.gap=2)
+                  .printdf(tab, align="l")
                   selmatches <- readline(prompt=.text("selmatches"))
                   if (identical(selmatches, "") || .confirm(selmatches)) {
                      cat(.text("selmatchesconfirm", sum(seqident)))
@@ -4209,7 +4243,7 @@ play <- function(lang="en", sfpath="", ...) {
 
                #if (showtransp) {
                #   fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
-               #   .findmovetransp(fen, flip, i, sub, dat.all.transp, files.all, texttop=FALSE)
+               #   .findmovetransp(fen, flip, i, sub, dat.all.short, files.all, texttop=FALSE)
                #}
 
                skipsave <- FALSE
@@ -4481,7 +4515,7 @@ play <- function(lang="en", sfpath="", ...) {
             # in add mode, check if there are sequences with the current position that occurred via a move transposition
 
             if (mode == "add" && showtransp)
-               .findmovetransp(fen, flip, i, sub, dat.all.transp, files.all)
+               .findmovetransp(fen, flip, i, sub, dat.all.short, files.all)
 
             # check for (stale)mate
 

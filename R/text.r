@@ -200,6 +200,12 @@
                          "Round"
    ))}
 
+   if (x == "sequence") {
+      return(switch(lang,
+                    de = "Sequenz",
+                         "Sequence"
+   ))}
+
    if (x == "rounds") {
       return(switch(lang,
                     de = "Runden",
@@ -209,7 +215,7 @@
    if (x == "age") {
       return(switch(lang,
                     de = "Alter",
-                         "age"
+                         "Age"
    ))}
 
    if (x == "lastsession") {
@@ -401,26 +407,38 @@
 
    if (x == "seqsmatchstart") {
       return(switch(lang,
-                    de = "Sequenzen mit dem gleichen Anfang: \n",
-                         "Sequences with the same beginning: \n"
+                    de = "Sequenzen, die mit den gleichen Z\U000000FCgen anfangen: \n\n",
+                         "Sequences that start with the same moves: \n\n"
+   ))}
+
+   if (x == "seqsinclpos") {
+      return(switch(lang,
+                    de = "Sequenzen, die die gleiche Stellung beinhalten: \n\n",
+                         "Sequences that contain the same position: \n\n"
+   ))}
+
+   if (x == "seqsendpos") {
+      return(switch(lang,
+                    de = "Sequenzen, die mit der gleichen Stellung enden: \n\n",
+                         "Sequences that end on the same position: \n\n"
    ))}
 
    if (x == "seqsmatchfen") {
       return(switch(lang,
-                    de = "\nSequenzen mit der gleichen FEN: \n",
-                         "\nSequences with the same FEN: \n"
+                    de = "\nSequenzen mit der gleichen FEN: \n\n",
+                         "\nSequences with the same FEN: \n\n"
    ))}
 
    if (x == "seqsmatchcomment") {
       return(switch(lang,
-                    de = "\nSequenzen mit dem Kommentar: \n",
-                         "\nSequences with the comment: \n"
+                    de = "\nSequenzen mit dem Kommentar: \n\n",
+                         "\nSequences with the comment: \n\n"
    ))}
 
    if (x == "seqsmatchpossquare") {
       return(switch(lang,
-                    de = "Sequenzen mit der gleichen Figur auf dem gleichen Feld: \n",
-                         "Sequences with the same piece on the same square: \n"
+                    de = "Sequenzen mit der gleichen Figur auf dem gleichen Feld: \n\n",
+                         "Sequences with the same piece on the same square: \n\n"
    ))}
 
    if (x == "selmatches") {
@@ -1447,12 +1465,6 @@
       return(switch(lang,
                     de = paste0(ifelse(arg, "Sequenz", "Sequenzen"), " mit Zugumstellungen:\n\n"),
                          paste0(ifelse(arg, "Sequence", "Sequences"), " with move transpositions:\n\n")
-   ))}
-
-   if (x == "transposcols") {
-      return(switch(lang,
-                    de = c("Sequenz", "N\U000000E4chster Zug", "Zug danach"),
-                         c("sequence", "next move", "move thereafter")
    ))}
 
 }
