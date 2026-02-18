@@ -75,7 +75,7 @@
       "r        - repeat the last sequence",
       "R        - automatically repeat sequences after a mistake on/off",
       "j        - jump to a sequence number (for sequential sequence selection modes)",
-      "s        - set a target score for the scores",
+      "s        - set a target value for the scores",
       "g        - show the progress graph for the current sequence",
       "G        - show the progress graph at the end of sequences on/off",
       "u and U  - recalculate the evaluations for the current sequence / all sequences",

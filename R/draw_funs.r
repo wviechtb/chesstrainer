@@ -148,10 +148,10 @@
 
 }
 
-.redrawall <- function(pos, flip, mode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove) {
+.redrawall <- function(pos, flip, mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove) {
 
    .drawboard(pos, flip)
-   .textbot(mode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
+   .textbot(mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
    .texttop(texttop)
    .drawcheck(pos, flip=flip)
    if (mode == "test" && .get("timed")) {
@@ -1040,7 +1040,7 @@
 
 }
 
-.textbot <- function(mode, show, showcomp, player, seqname, seqnum, score, rounds, age=NA, difficulty=NA, i, totalmoves, selmode="default", k, seqno, onlyshow=FALSE, onlyi=FALSE, onlyscore=FALSE) {
+.textbot <- function(mode, show, showcomp, player, seqname, seqnum, opening="", score, rounds, age=NA, difficulty=NA, i, totalmoves, selmode="default", k, seqno, onlyshow=FALSE, onlyi=FALSE, onlyscore=FALSE, onlyeco=FALSE) {
 
    lang    <- .get("lang")
    cex     <- .get("cex.bot")
@@ -1063,7 +1063,7 @@
       xright <- 9.00
    }
 
-   redraw <- !any(onlyi, onlyshow, onlyscore)
+   redraw <- !any(onlyi, onlyshow, onlyscore, onlyeco)
 
    if (redraw)
       rect(-2, -1, 12, 0.6, col=col.bg, border=NA)
@@ -1091,10 +1091,15 @@
             text(xleft, 0.15, paste0("      ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2, srt=srt)
             text(xleft, 0.15, paste0("      ", i), pos=4, cex=cex, family=font, col=col, srt=srt)
          }
+         if (onlyeco) {
+            text(xleft, 0.00, paste0("        ", paste0(rep("\U00002588",140), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2, srt=srt)
+            text(xleft, 0.00, paste0("        ", opening), pos=4, cex=cex, family=font, col=col, srt=srt)
+         }
          if (redraw) {
             text(xleft, 0.45, paste0("Mode: ", "Add"), pos=4, cex=cex, family=font, col=col, srt=srt)
             text(xleft, 0.30, paste0("Show: ", ifelse(show, "Yes", "No"), ifelse(showcomp, "", " / No")), pos=4, cex=cex, family=font, col=col, srt=srt)
             text(xleft, 0.15, paste0("Move: ", i), pos=4, cex=cex, family=font, col=col, srt=srt)
+            text(xleft, 0.00, paste0("ECO:    ", opening), pos=4, cex=cex, family=font, col=col, srt=srt)
          }
       }
 
@@ -1159,10 +1164,15 @@
             text(xleft, 0.15, paste0("        ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2, srt=srt)
             text(xleft, 0.15, paste0("        ", i), pos=4, cex=cex, family=font, col=col, srt=srt)
          }
+         if (onlyeco) {
+            text(xleft, 0.00, paste0("        ", paste0(rep("\U00002588",140), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2, srt=srt)
+            text(xleft, 0.00, paste0("        ", opening), pos=4, cex=cex, family=font, col=col, srt=srt)
+         }
          if (redraw) {
             text(xleft, 0.45, paste0("Modus:  ", "Hinzuf\U000000FCgen"), pos=4, cex=cex, family=font, col=col, srt=srt)
             text(xleft, 0.30, paste0("Zeigen: ", ifelse(show, "Ja", "Nein"), ifelse(showcomp, "", " / Nein")), pos=4, cex=cex, family=font, col=col, srt=srt)
             text(xleft, 0.15, paste0("Zug:    ", i), pos=4, cex=cex, family=font, col=col, srt=srt)
+            text(xleft, 0.00, paste0("ECO:    ", opening), pos=4, cex=cex, family=font, col=col, srt=srt)
          }
       }
 
@@ -1519,6 +1529,10 @@
 
    .clearmatdiff()
 
+   upsidedown <- .get("upsidedown")
+   srt <- ifelse(upsidedown, 180, 0)
+   textpos <- ifelse(upsidedown, 4, 2)
+
    xpos1 <- 9
    xpos2 <- 9
    shift <- 0.10
@@ -1530,10 +1544,10 @@
       txt <- paste0("+", abs(score), collapse="")
 
       if (score > 0) {
-         text(xpos1, ifelse(flip, 10-ypos, ypos), txt, pos=2, cex=cex.matdiff*0.9, col=col, offset=0)
+         text(xpos1, ifelse(flip, 10-ypos, ypos), txt, pos=textpos, cex=cex.matdiff*0.9, col=col, offset=0, srt=srt)
          xpos1 <- xpos1 - strwidth(txt, cex=cex.matdiff) - shift
       } else {
-         text(xpos2, ifelse(flip, ypos, 10-ypos), txt, pos=2, cex=cex.matdiff*0.9, col=col, offset=0)
+         text(xpos2, ifelse(flip, ypos, 10-ypos), txt, pos=textpos, cex=cex.matdiff*0.9, col=col, offset=0, srt=srt)
          xpos2 <- xpos2 - strwidth(txt, cex=cex.matdiff) - shift
       }
 
@@ -1544,14 +1558,14 @@
       if (mdiff[i] > 0) {
          n <- mdiff[i]
          xpos1 <- xpos1 - (0:(n-1)) * shift
-         text(xpos1, rep(ifelse(flip, 10-ypos, ypos), n) , pieces[i], pos=2, offset=0, cex=cex.matdiff*1.1, col=col)
+         text(xpos1, rep(ifelse(flip, 10-ypos, ypos), n) , pieces[i], pos=textpos, offset=0, cex=cex.matdiff*1.1, col=col, srt=srt)
          xpos1 <- min(xpos1) - space
       }
 
       if (mdiff[i] < 0) {
          n <- -mdiff[i]
          xpos2 <- xpos2 - (0:(n-1)) * shift
-         text(xpos2, rep(ifelse(flip, ypos, 10-ypos), n) , pieces[i], pos=2, offset=0, cex=cex.matdiff*1.1, col=col)
+         text(xpos2, rep(ifelse(flip, ypos, 10-ypos), n) , pieces[i], pos=textpos, offset=0, cex=cex.matdiff*1.1, col=col, srt=srt)
          xpos2 <- min(xpos2) - space
       }
 

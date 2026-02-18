@@ -929,11 +929,24 @@
 
 }
 
-.findmovetransp <- function(fen, flip, i, sub, dat, files, texttop=TRUE) {
+.printdf <- function(df, align=NULL, print.gap=2) {
+
+   align <- match.arg(align, c("left","right"), several.ok=TRUE)
+
+   for (j in 1:ncol(df)) {
+      df[[j]] <- format(df[[j]], justify=align[j])
+      names(df)[j] <- format(c(names(df)[j], df[[j]]), justify=align[j])[1]
+   }
+
+   print(df, print.gap=print.gap)
+
+}
+
+.findmovetransp <- function(fen, flip, i, sub, dat, files, pos, texttop=TRUE) {
 
    fenshort <- paste(strsplit(fen, " ", fixed=TRUE)[[1]][1:3], collapse=" ")
    seqident <- lapply(dat, function(x) {
-      if (any(fenshort == x$fenshort) && identical(flip, x$flip) && !identical(sub$moves$fen[1:(i-1)], x$fen[1:(i-1)])) {
+      if (any(fenshort == x$fenshort) && identical(flip, x$flip) && !identical(sub$moves$fen[1:(i-1)], x$fen[1:(i-1)]) && identical(pos, x$pos)) {
          pos <- min(which(fenshort == x$fenshort))
          nextmoves <- x$move[pos+c(1:5)]
          nextmoves[is.na(nextmoves)] <- ""
@@ -960,15 +973,37 @@
 
 }
 
-.printdf <- function(df, align=NULL, print.gap=2) {
+.findopening <- function(x, flip, opening, openings, mode, posnull, draw=TRUE) {
 
-   align <- match.arg(align, c("left","right"), several.ok=TRUE)
+   nrows <- nrow(x)
+   oldopening <- opening
 
-   for (j in 1:ncol(df)) {
-      df[[j]] <- format(df[[j]], justify=align[j])
-      names(df)[j] <- format(c(names(df)[j], df[[j]]), justify=align[j])[1]
+   if (posnull && nrows >= 1L) {
+
+      if (flip) {
+         ucimoves <- paste(paste0(letters[9-x[,2]], 9-x[,1], letters[9-x[,4]], 9-x[,3]), collapse=" ")
+      } else {
+         ucimoves <- paste(paste0(letters[x[,2]], x[,1], letters[x[,4]], x[,3]), collapse=" ")
+      }
+
+      #print(ucimoves)
+
+      openingmatch <- which(ucimoves == openings$uci)
+
+      if (length(openingmatch) >= 1L) {
+         opening <- openings[openingmatch[1],1:2]
+         opening <- paste0(opening[1], " (", substr(opening[2], 1, 120), ")", collapse="")
+         if (!identical(opening, oldopening))
+            .textbot(mode, opening=opening, onlyeco=TRUE)
+      }
+
+   } else {
+
+      .textbot(mode, opening=" ", onlyeco=TRUE)
+      opening <- ""
+
    }
 
-   print(df, print.gap=print.gap)
+   return(opening)
 
 }

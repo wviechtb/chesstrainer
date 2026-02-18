@@ -135,7 +135,7 @@
 
    In \emph{add} or \emph{test mode}, you can bookmark a sequence with the \verb{<<>} key. In \emph{add mode}, the last saved sequence is bookmarked. In \emph{test mode}, the currently played sequence is bookmarked. With the \verb{<>>} key, you can select and manage bookmarks (use \verb{<F1>} while managing the bookmarks to obtain help). This is useful for creating multiple branching lines from the ending position of certain sequences or to remember sequences that you want to come back to at a later point.
 
-   When creating new sequences, the trainer automatically recognizes move transpositions (i.e., if there are sequences with the same position that were obtained via a different move order or via different moves). If such sequences are found, their names are printed to the console. This check can be toggled on/off with the \verb{<T>} key.
+   When creating new opening sequences, the trainer tries to recognize the opening played and indicates the ECO code and opening name at the bottom right. Also, when creating new sequences, the trainer automatically recognizes move transpositions (i.e., if there are sequences with the same position that were obtained via a different move order or via different moves). If such sequences are found, their names are printed to the console. This check can be toggled on/off with the \verb{<T>} key.
 
    Sequences are saved to and selected from the current sequence directory. You can add, remove, and select sequence directories with \verb{<F8>}. Removing a sequence directory simply removes it from being shown in the list of sequence directories (i.e., it does not delete the directory or any sequences therein). Bookmarks are specific to each sequence directory. Also, selecting a sequence directory switches to the sequence selection mode that was active when it was last selected.
 
@@ -236,6 +236,8 @@
    The chess pieces used in the package were obtained from \verb{https://commons.wikimedia.org/wiki/Category:SVG_chess_pieces} where they are available under the Creative Commons Attribution-Share Alike 3.0 Unported License.
 
    The sound files used in the package were obtained from \verb{https://github.com/lichess-org/lila/tree/master} where they are available under the GNU Affero General Public License.
+
+   The opening database was obtained from \verb{https://github.com/lichess-org/chess-openings} where it is available under the CC0 Public Domain Dedication.
 
 }
 \note{

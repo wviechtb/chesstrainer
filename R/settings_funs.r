@@ -1,4 +1,4 @@
-.colorsettings <- function(cols.all, pos, flip, mode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove) {
+.colorsettings <- function(cols.all, pos, flip, mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove) {
 
    cat(.text("currentsettings"))
 
@@ -15,7 +15,7 @@
    assign("timed", FALSE, envir=.chesstrainer)
    assign("zenmode", FALSE, envir=.chesstrainer)
 
-   .redrawall(pos, flip, mode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
+   .redrawall(pos, flip, mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
    .addrect(4, 5, col=.get("col.hint"))
    .addrect(4, 3, col=.get("col.wrong"))
    .addrect(4, 4, col=.get("col.rect"))
@@ -44,7 +44,7 @@
             next
          assign(tab[colno,1], col, envir=.chesstrainer)
          tab[colno,2] <- col
-         .redrawall(pos, flip, mode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
+         .redrawall(pos, flip, mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
          .addrect(4, 5, col=.get("col.hint"))
          .addrect(4, 3, col=.get("col.wrong"))
          .addrect(4, 4, col=.get("col.rect"))
@@ -70,7 +70,7 @@
 
 }
 
-.cexsettings <- function(pos, flip, mode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove) {
+.cexsettings <- function(pos, flip, mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove) {
 
    cat(.text("currentsettings"))
 
@@ -88,7 +88,7 @@
    assign("timed", FALSE, envir=.chesstrainer)
    assign("zenmode", FALSE, envir=.chesstrainer)
 
-   .redrawall(pos, flip, mode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
+   .redrawall(pos, flip, mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
    .draweval(0.2, flip=flip)
 
    while (TRUE) {
@@ -106,7 +106,7 @@
          cex[cex < 0.1] <- 0.1
          assign(tab[cexno,1], cex, envir=.chesstrainer)
          tab[cexno,2] <- cex
-         .redrawall(pos, flip, mode, show, showcomp, player, seqname, seqnum, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
+         .redrawall(pos, flip, mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
          .draweval(0.2, flip=flip)
       }
    }
