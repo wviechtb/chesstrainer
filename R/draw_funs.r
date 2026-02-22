@@ -1099,7 +1099,7 @@
             text(xleft, 0.45, paste0("Mode: ", "Add"), pos=4, cex=cex, family=font, col=col, srt=srt)
             text(xleft, 0.30, paste0("Show: ", ifelse(show, "Yes", "No"), ifelse(showcomp, "", " / No")), pos=4, cex=cex, family=font, col=col, srt=srt)
             text(xleft, 0.15, paste0("Move: ", i), pos=4, cex=cex, family=font, col=col, srt=srt)
-            text(xleft, 0.00, paste0("ECO:    ", opening), pos=4, cex=cex, family=font, col=col, srt=srt)
+            text(xleft, 0.00, paste0("ECO:  ", opening), pos=4, cex=cex, family=font, col=col, srt=srt)
          }
       }
 
@@ -1470,7 +1470,7 @@
       for (j in 1:nmoves) {
          if (bestmove[[j]][1] == "")
             next
-         bestmovetxt[j] <- .parsebestmove(bestmove[[j]], pos=pos, flip=flip, evalval=evalval[j], i=i, sidetoplay=sidetoplay, rename=TRUE, returnline=TRUE, hintdepth=hintdepth)$txt
+         bestmovetxt[j] <- .parsemove(bestmove[[j]], pos=pos, flip=flip, evalval=evalval[j], i=i, sidetoplay=sidetoplay, rename=TRUE, returnline=TRUE, hintdepth=hintdepth)$txt
          evalvals[j] <- evalval[j]
          bestx1 <- as.numeric(substr(bestmove[[j]][1], 2, 2))
          besty1 <- which(letters[1:8] == substr(bestmove[[j]][1], 1, 1))

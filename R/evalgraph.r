@@ -41,14 +41,14 @@
          ylim <- c(-9, 9)
          yat <- seq(-8, 8, by=2)
          evanval <- 0
-         ylab <- .text("evalgraph-y-cp")
+         ylab <- .text("evaluation")
          invert <- FALSE
       }
       if (yvalue == "wp") {
          ylim <- c(0, 100)
          yat <- seq(0, 90, by=10)
          evanval <- 50
-         ylab <- .text("evalgraph-y-wp")
+         ylab <- .text("winperc")
          if (flip) {
             ys <- -ys
             invert <- TRUE
@@ -57,7 +57,7 @@
          }
          ys <- 50 + 50 * (2 / (1 + exp(-0.00368208 * ys*100)) - 1)
       }
-      plot(NA, xlim=c(1,n), ylim=ylim, xlab=.text("evalgraph-x"), ylab=ylab,
+      plot(NA, xlim=c(1,n), ylim=ylim, xlab=.text("move"), ylab=ylab,
            bty="l", las=1, col.axis=col.top, col.lab=col.top, yaxt="n", xaxt="n",
            cex=cex.plots, cex.axis=cex.plots, cex.lab=cex.plots)
       axis(side=1, at=1:n, col.axis=col.top, cex.axis=cex.plots)

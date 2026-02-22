@@ -20,15 +20,17 @@ The main purpose of the `chesstrainer` package is to create sequences of moves (
 - a timed mode can be used to practice sequences under time pressure
 - a board editor allows quickly setting up advanced starting positions or chess puzzles
 - can be used with multiple players (performance is tracked separately for each player)
+- recognizes known openings with their ECO code and name
+- recognizes move transpositions
 - when [Stockfish](https://stockfishchess.org) is installed:
   - automatically obtain and show position evaluations for each move in a sequence
   - show the best move(s) for a given position
   - can play against Stockfish in 'play mode'
-- adjust colors, text sizes, and various other settings
-- manage multiple sequence directories
-- toggle the language (English or German)
-- plays move and capture sounds
-- keeps track of session history
+- can adjust colors, text sizes, and various other settings
+- can manage multiple sequence directories
+- can toggle the language (English or German)
+- trainer plays move and capture sounds
+- and keeps track of your session history
 
 ## Installation
 
@@ -48,7 +50,7 @@ If you are not an R user, but still would like to use the trainer, you will firs
 
 ## Why R?!?
 
-It is indeed unusual to write such an application in R, which is primarily a programming language for statistical computing and data visualization (you can read more about R on the [R project homepage](https://www.r-project.org) or on [Wikipedia](https://en.wikipedia.org/wiki/R_(programming_language))). While interactive applications have already been developed with R using external frameworks such as [Shiny](https://en.wikipedia.org/wiki/Shiny_(web_framework)) and [Tcl/Tk](https://en.wikipedia.org/wiki/Tcl_(programming_language)), the chess trainer started as a proof-of-concept study to explore whether full-featured interactive applications could be built using 'base R' alone (i.e., relying exclusively on R's built-in capabilities.)
+It is indeed unusual to write such an application in R, which is primarily a programming language for statistical computing and data visualization (you can read more about R on the [R project homepage](https://www.r-project.org) or on [Wikipedia](https://en.wikipedia.org/wiki/R_(programming_language))). While interactive applications have already been developed with R using external frameworks such as [Shiny](https://en.wikipedia.org/wiki/Shiny_(web_framework)) and [Tcl/Tk](https://en.wikipedia.org/wiki/Tcl_(programming_language)), the chess trainer started as a proof-of-concept study to explore whether full-featured interactive applications could be built using 'base R' alone (i.e., relying exclusively on R's built-in capabilities).
 
 After developing an early prototype and recognizing its potential, the project quickly spiraled out of control, eventually evolving into the current package, whose functionality is comparable to that of similar commercial offerings.
 

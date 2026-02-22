@@ -42,51 +42,56 @@ play <- function(lang="en", sfpath="", ...) {
       mar2 <- ddd[["mar2"]]
    }
 
-   player      <- ifelse(is.null(ddd[["player"]]),      "",             ddd[["player"]])
-   seqdirpos   <- ifelse(is.null(ddd[["seqdirpos"]]),   1,              ddd[["seqdirpos"]])
-   mode        <- ifelse(is.null(ddd[["mode"]]),        "add",          ddd[["mode"]])
-   selmode     <- ifelse(is.null(ddd[["selmode"]]),     "score_random", ddd[["selmode"]])
-   timed       <- ifelse(is.null(ddd[["timed"]]),       FALSE,          ddd[["timed"]])
-   timepermove <- ifelse(is.null(ddd[["timepermove"]]), 5,              ddd[["timepermove"]])
-   expval      <- ifelse(is.null(ddd[["expval"]]),      2,              ddd[["expval"]])
-   target      <- ifelse(is.null(ddd[["target"]]),      1,              ddd[["target"]])
-   multiplier  <- ifelse(is.null(ddd[["multiplier"]]),  0.8,            ddd[["multiplier"]])
-   adjustwrong <- ifelse(is.null(ddd[["adjustwrong"]]), 40,             ddd[["adjustwrong"]])
-   adjusthint  <- ifelse(is.null(ddd[["adjusthint"]]),  20,             ddd[["adjusthint"]])
-   evalsteps   <- ifelse(is.null(ddd[["evalsteps"]]),   5,              ddd[["evalsteps"]])
-   coords      <- ifelse(is.null(ddd[["coords"]]),      TRUE,           ddd[["coords"]])
-   showtransp  <- ifelse(is.null(ddd[["showtransp"]]),  TRUE,           ddd[["showtransp"]])
-   matdiff     <- ifelse(is.null(ddd[["matdiff"]]),     TRUE,           ddd[["matdiff"]])
-   wait        <- ifelse(is.null(ddd[["wait"]]),        TRUE,           ddd[["wait"]])
-   sleep       <- ifelse(is.null(ddd[["sleep"]]),       0.5,            ddd[["sleep"]])
-   idletime    <- ifelse(is.null(ddd[["idletime"]]),    120,            ddd[["idletime"]])
-   mintime     <- ifelse(is.null(ddd[["mintime"]]),     60,             ddd[["mintime"]])
-   lwd         <- ifelse(is.null(ddd[["lwd"]]),         2,              ddd[["lwd"]])
-   volume      <- ifelse(is.null(ddd[["volume"]]),      50,             ddd[["volume"]])
-   showgraph   <- ifelse(is.null(ddd[["showgraph"]]),   FALSE,          ddd[["showgraph"]])
-   repmistake  <- ifelse(is.null(ddd[["repmistake"]]),  FALSE,          ddd[["repmistake"]])
-   cex.top     <- ifelse(is.null(ddd[["cex.top"]]),     1.4,            ddd[["cex.top"]])
-   cex.bot     <- ifelse(is.null(ddd[["cex.bot"]]),     0.7,            ddd[["cex.bot"]])
-   cex.eval    <- ifelse(is.null(ddd[["cex.eval"]]),    0.5,            ddd[["cex.eval"]])
-   cex.coords  <- ifelse(is.null(ddd[["cex.coords"]]),  0.85,           ddd[["cex.coords"]])
-   cex.matdiff <- ifelse(is.null(ddd[["cex.matdiff"]]), 1.1,            ddd[["cex.matdiff"]])
-   cex.plots   <- ifelse(is.null(ddd[["cex.plots"]]),   1.0,            ddd[["cex.plots"]])
-   cex.glyphs  <- ifelse(is.null(ddd[["cex.glyphs"]]),  1.6,            ddd[["cex.glyphs"]])
-   depth1      <- ifelse(is.null(ddd[["depth1"]]),      14,             ddd[["depth1"]])
-   depth2      <- ifelse(is.null(ddd[["depth2"]]),      24,             ddd[["depth2"]])
-   depth3      <- ifelse(is.null(ddd[["depth3"]]),      6,              ddd[["depth3"]])
-   sflim       <- ifelse(is.null(ddd[["sflim"]]),       NA,             ddd[["sflim"]])
-   multipv1    <- ifelse(is.null(ddd[["multipv1"]]),    1,              ddd[["multipv1"]])
-   multipv2    <- ifelse(is.null(ddd[["multipv2"]]),    1,              ddd[["multipv2"]])
-   threads     <- ifelse(is.null(ddd[["threads"]]),     1,              ddd[["threads"]])
-   hash        <- ifelse(is.null(ddd[["hash"]]),        256,            ddd[["hash"]])
-   hintdepth   <- ifelse(is.null(ddd[["hintdepth"]]),   10,             ddd[["hintdepth"]])
-   difffun     <- ifelse(is.null(ddd[["difffun"]]),     1,              ddd[["difffun"]])
-   difflen     <- ifelse(is.null(ddd[["difflen"]]),     15,             ddd[["difflen"]])
-   diffmin     <- ifelse(is.null(ddd[["diffmin"]]),     5,              ddd[["diffmin"]])
-   zenmode     <- ifelse(is.null(ddd[["zenmode"]]),     FALSE,          ddd[["zenmode"]])
-   quitanim    <- ifelse(is.null(ddd[["quitanim"]]),    TRUE,           ddd[["quitanim"]])
-   inhibit     <- ifelse(is.null(ddd[["inhibit"]]),     FALSE,          ddd[["inhibit"]])
+   player      <- ifelse(is.null(ddd[["player"]]),      "",                      ddd[["player"]])
+   seqdirpos   <- ifelse(is.null(ddd[["seqdirpos"]]),   1,                       ddd[["seqdirpos"]])
+   mode        <- ifelse(is.null(ddd[["mode"]]),        "add",                   ddd[["mode"]])
+   selmode     <- ifelse(is.null(ddd[["selmode"]]),     "score_random",          ddd[["selmode"]])
+   timed       <- ifelse(is.null(ddd[["timed"]]),       FALSE,                   ddd[["timed"]])
+   timepermove <- ifelse(is.null(ddd[["timepermove"]]), 5,                       ddd[["timepermove"]])
+   expval      <- ifelse(is.null(ddd[["expval"]]),      2,                       ddd[["expval"]])
+   target      <- ifelse(is.null(ddd[["target"]]),      1,                       ddd[["target"]])
+   multiplier  <- ifelse(is.null(ddd[["multiplier"]]),  0.8,                     ddd[["multiplier"]])
+   adjustwrong <- ifelse(is.null(ddd[["adjustwrong"]]), 40,                      ddd[["adjustwrong"]])
+   adjusthint  <- ifelse(is.null(ddd[["adjusthint"]]),  20,                      ddd[["adjusthint"]])
+   evalsteps   <- ifelse(is.null(ddd[["evalsteps"]]),   5,                       ddd[["evalsteps"]])
+   coords      <- ifelse(is.null(ddd[["coords"]]),      TRUE,                    ddd[["coords"]])
+   showtransp  <- ifelse(is.null(ddd[["showtransp"]]),  TRUE,                    ddd[["showtransp"]])
+   matdiff     <- ifelse(is.null(ddd[["matdiff"]]),     TRUE,                    ddd[["matdiff"]])
+   wait        <- ifelse(is.null(ddd[["wait"]]),        TRUE,                    ddd[["wait"]])
+   sleep       <- ifelse(is.null(ddd[["sleep"]]),       0.5,                     ddd[["sleep"]])
+   idletime    <- ifelse(is.null(ddd[["idletime"]]),    120,                     ddd[["idletime"]])
+   mintime     <- ifelse(is.null(ddd[["mintime"]]),     60,                      ddd[["mintime"]])
+   lwd         <- ifelse(is.null(ddd[["lwd"]]),         2,                       ddd[["lwd"]])
+   volume      <- ifelse(is.null(ddd[["volume"]]),      50,                      ddd[["volume"]])
+   showgraph   <- ifelse(is.null(ddd[["showgraph"]]),   FALSE,                   ddd[["showgraph"]])
+   repmistake  <- ifelse(is.null(ddd[["repmistake"]]),  FALSE,                   ddd[["repmistake"]])
+   cex.top     <- ifelse(is.null(ddd[["cex.top"]]),     1.4,                     ddd[["cex.top"]])
+   cex.bot     <- ifelse(is.null(ddd[["cex.bot"]]),     0.7,                     ddd[["cex.bot"]])
+   cex.eval    <- ifelse(is.null(ddd[["cex.eval"]]),    0.5,                     ddd[["cex.eval"]])
+   cex.coords  <- ifelse(is.null(ddd[["cex.coords"]]),  0.85,                    ddd[["cex.coords"]])
+   cex.matdiff <- ifelse(is.null(ddd[["cex.matdiff"]]), 1.1,                     ddd[["cex.matdiff"]])
+   cex.plots   <- ifelse(is.null(ddd[["cex.plots"]]),   1.0,                     ddd[["cex.plots"]])
+   cex.glyphs  <- ifelse(is.null(ddd[["cex.glyphs"]]),  1.6,                     ddd[["cex.glyphs"]])
+   depth1      <- ifelse(is.null(ddd[["depth1"]]),      12,                      ddd[["depth1"]])
+   depth2      <- ifelse(is.null(ddd[["depth2"]]),      20,                      ddd[["depth2"]])
+   depth3      <- ifelse(is.null(ddd[["depth3"]]),      6,                       ddd[["depth3"]])
+   sflim       <- ifelse(is.null(ddd[["sflim"]]),       NA,                      ddd[["sflim"]])
+   multipv1    <- ifelse(is.null(ddd[["multipv1"]]),    1,                       ddd[["multipv1"]])
+   multipv2    <- ifelse(is.null(ddd[["multipv2"]]),    1,                       ddd[["multipv2"]])
+   threads     <- ifelse(is.null(ddd[["threads"]]),     1,                       ddd[["threads"]])
+   hash        <- ifelse(is.null(ddd[["hash"]]),        256,                     ddd[["hash"]])
+   hintdepth   <- ifelse(is.null(ddd[["hintdepth"]]),   10,                      ddd[["hintdepth"]])
+   difffun     <- ifelse(is.null(ddd[["difffun"]]),     1,                       ddd[["difffun"]])
+   difflen     <- ifelse(is.null(ddd[["difflen"]]),     15,                      ddd[["difflen"]])
+   diffmin     <- ifelse(is.null(ddd[["diffmin"]]),     5,                       ddd[["diffmin"]])
+   zenmode     <- ifelse(is.null(ddd[["zenmode"]]),     FALSE,                   ddd[["zenmode"]])
+   speeds      <- ifelse(is.null(ddd[["speeds"]]),      "blitz,rapid,classical", ddd[["speeds"]])
+   ratings     <- ifelse(is.null(ddd[["ratings"]]),     "1200,1400,1600,1800",   ddd[["ratings"]])
+   barlen      <- ifelse(is.null(ddd[["barlen"]]),      50,                      ddd[["barlen"]])
+   invertbar   <- ifelse(is.null(ddd[["invertbar"]]),   FALSE,                   ddd[["invertbar"]])
+   lichessdb   <- ifelse(is.null(ddd[["lichessdb"]]),   "players",               ddd[["lichessdb"]])
+   quitanim    <- ifelse(is.null(ddd[["quitanim"]]),    TRUE,                    ddd[["quitanim"]])
+   inhibit     <- ifelse(is.null(ddd[["inhibit"]]),     FALSE,                   ddd[["inhibit"]])
 
    # get switch1/switch2 functions if they are specified via ...
 
@@ -184,7 +189,7 @@ play <- function(lang="en", sfpath="", ...) {
                        eval=eval, evalsteps=evalsteps, coords=coords, showtransp=showtransp, matdiff=matdiff, wait=wait, sleep=sleep, idletime=idletime, mintime=mintime, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth,
-                       difffun=difffun, difflen=difflen, diffmin=diffmin, zenmode=zenmode, mar=mar, mar2=mar2)
+                       difffun=difffun, difflen=difflen, diffmin=diffmin, zenmode=zenmode, speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb, mar=mar, mar2=mar2)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       cols <- sapply(cols.all, function(x) .get(x))
       saveRDS(cols, file=file.path(configdir, "colors.rds"))
@@ -289,6 +294,16 @@ play <- function(lang="en", sfpath="", ...) {
             diffmin <- settings[["diffmin"]]
          if (is.null(mc[["zenmode"]]))
             zenmode <- settings[["zenmode"]]
+         if (is.null(mc[["speeds"]]))
+            speeds <- settings[["speeds"]]
+         if (is.null(mc[["ratings"]]))
+            ratings <- settings[["ratings"]]
+         if (is.null(mc[["barlen"]]))
+            barlen <- settings[["barlen"]]
+         if (is.null(mc[["invertbar"]]))
+            invertbar <- settings[["invertbar"]]
+         if (is.null(mc[["lichessdb"]]))
+            lichessdb <- settings[["lichessdb"]]
          if (is.null(mc[["mar"]]))
             mar <- settings[["mar"]]
          if (is.null(mc[["mar2"]]))
@@ -300,7 +315,7 @@ play <- function(lang="en", sfpath="", ...) {
                        eval=eval, evalsteps=evalsteps, coords=coords, showtransp=showtransp, matdiff=matdiff, wait=wait, sleep=sleep, idletime=idletime, mintime=mintime, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth,
-                       difffun=difffun, difflen=difflen, diffmin=diffmin, zenmode=zenmode, mar=mar, mar2=mar2)
+                       difffun=difffun, difflen=difflen, diffmin=diffmin, zenmode=zenmode, speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb, mar=mar, mar2=mar2)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       if (file.exists(file.path(configdir, "colors.rds"))) {
          cols <- readRDS(file.path(configdir, "colors.rds"))
@@ -617,10 +632,10 @@ play <- function(lang="en", sfpath="", ...) {
 
    keys <- c("q", "ctrl-Q", "\033", "ctrl-[", " ", "m", "d", "\\", "\U000000E4", "n", "N", "B", "p", "ctrl-R",
              "g", "h", "H", "y", "Left", "Right", "Up", "Down", "t", "T", "0", "1", "2", "3", "4", "5", "9",
-             "r", "o", "u", "U", "ctrl-U", "M", "j",
+             "r", "o", "u", "U", "ctrl-U", "M", "j", "%",
              "a", "A", "f", "z", "Z", "c", "!", "@", "\"", "e", "E", "s", "b", "k", "K", "C",
              "^", "6", "R", "G", "w", "-", "=", "+", "[", "]", "{", "}", "(", ")", "i", "x", "v", "ctrl-V",
-             "l", "<", ">", "ctrl-F", "ctrl-C", "ctrl-D", "/", ",", ".", "|", "*", "8", "?", "'", ";", ":",
+             "l", "L", "<", ">", "ctrl-F", "ctrl-C", "ctrl-D", "/", ",", ".", "|", "*", "8", "?", "'", ";", ":",
              "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "ctrl-!", "ctrl-@", "ctrl-E", "ctrl-T")
 
    run.all <- TRUE
@@ -1123,7 +1138,7 @@ play <- function(lang="en", sfpath="", ...) {
                      next
                   }
 
-                  tmp <- .parsebestmove(bestmove[[1]][1], pos=pos, flip=flip, evalval=NA, i=i, sidetoplay=sidetoplay, rename=FALSE, returnline=FALSE, hintdepth=1)
+                  tmp <- .parsemove(bestmove[[1]][1], pos=pos, flip=flip, evalval=NA, i=i, sidetoplay=sidetoplay, rename=FALSE, returnline=FALSE, hintdepth=1)
                   sub$moves <- rbind(sub$moves, data.frame(x1=tmp$x1, y1=tmp$y1, x2=tmp$x2, y2=tmp$y2, show=TRUE, move=tmp$txt, eval=NA_real_, comment="", circles="", arrows="", glyph="", fen=""))
                   pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE)
 
@@ -1774,7 +1789,7 @@ play <- function(lang="en", sfpath="", ...) {
                      glyph   <- ""
                      evalvals <- NULL
                   }
-                  tmp <- .parsebestmove(bestmove[[1]][1], pos=pos, flip=flip, evalval=NA, i=i, sidetoplay=sidetoplay, rename=FALSE, returnline=FALSE, hintdepth=1)
+                  tmp <- .parsemove(bestmove[[1]][1], pos=pos, flip=flip, evalval=NA, i=i, sidetoplay=sidetoplay, rename=FALSE, returnline=FALSE, hintdepth=1)
                   pos <- .updateboard(pos, move=data.frame(x1=tmp$x1, y1=tmp$y1, x2=tmp$x2, y2=tmp$y2, show=TRUE, move=tmp$txt), flip=flip, autoprom=TRUE)
                   texttop <- .texttop("")
                   i <- i + 1
@@ -2247,9 +2262,9 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # o to edit the score for the current sequence (only in test mode)
+            # % to edit the score for the current sequence (only in test mode)
 
-            if (mode == "test" && identical(click, "o")) {
+            if (mode == "test" && identical(click, "%")) {
                score <- .setscore(score)
                #sub$player[[player]]$score[length(sub$player[[player]]$score)] <- score
                #saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
@@ -2716,6 +2731,78 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
+            # L to get data from the lichess games database
+
+            if (identical(click, "L")) {
+
+               #if (flip) {
+               #   ucimoves <- paste(paste0(letters[9-sub$moves[,2]], 9-sub$moves[,1], letters[9-sub$moves[,4]], 9-sub$moves[,3]), collapse=",")
+               #} else {
+               #   ucimoves <- paste(paste0(letters[sub$moves[,2]], sub$moves[,1], letters[sub$moves[,4]], sub$moves[,3]), collapse=",")
+               #}
+
+               if (lichessdb == "players") {
+                  url <- paste0("https://explorer.lichess.ovh/lichess?speeds=", speeds, "&ratings=", ratings, "&topGames=0&recentGames=0&")
+               } else {
+                  url <- paste0("https://explorer.lichess.ovh/masters?topGames=0&")
+               }
+               fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
+               fen <- gsub(" ", "%20", fen, fixed=TRUE)
+               url <- paste0(url, "fen=", fen)
+
+               #if (!is.null(sub$pos)) {
+               #   tmp <- "w"
+               #   if (nrow(sub$moves) > 0L) {
+               #      if (flip) {
+               #         piece <- sub$pos[9-sub$moves[1,1], 9-sub$moves[1,2]]
+               #      } else {
+               #         piece <- sub$pos[sub$moves[1,1], sub$moves[1,2]]
+               #      }
+               #      tmp <- ifelse(startsWith(piece, "W"), "w", "b")
+               #   }
+               #   startfen <- .genfen(sub$pos, flip=flip, sidetoplay=tmp, sidetoplaystart=tmp, i=1)
+               #   startfen <- gsub(" ", "%20", startfen, fixed=TRUE)
+               #   url <- paste0(url, "fen=", startfen, "&")
+               #}
+
+               #url <- paste0(url, "play=", ucimoves)
+
+               out <- try(VERB("GET", url, content_type("application/octet-stream"), timeout=1), silent=TRUE)
+
+               if (!inherits(out, "try-error")) {
+                  if (out$status == 429) {
+                     .texttop(.text("ratelimit"))
+                     next
+                  }
+                  out <- do.call(rbind, lapply(content(out)$moves, function(x) data.frame(move=x$uci, white=x$white, draw=x$draws, black=x$black)))
+                  if (is.null(out)) {
+                     .texttop(.text("posnotfound"), sleep=1.5)
+                     .texttop(texttop)
+                  } else {
+                     eval(expr=switch1)
+                     out$total <- rowSums(out[2:4])
+                     totals <- colSums(out[2:5])
+                     percs <- .percent(totals[1:3])
+                     out$perc <- .percent(out$total)
+                     out$bar <- apply(out[2:4], 1, .percbar, len=barlen, invert=invertbar)
+                     out[2:4] <- t(apply(out[2:4], 1, .percent))
+                     out[1] <- sapply(out[[1]], function(x) .parsemove(x, pos=pos, flip=flip, evalval="", i=NULL, sidetoplay=sidetoplay, rename=FALSE, returnline=TRUE, hintdepth=1)$txt)
+                     out <- out[c(1,6,5,2:4,7)]
+                     out <- rbind(out, data.frame(move="total", perc=100, total=totals[[4]], white=percs[[1]], draws=percs[[2]], black=percs[[3]], bar=.percbar(totals[1:3], len=barlen, invert=invertbar)))
+                     out$total <- .numshort(out$total)
+                     colnames(out)[c(2,4:7)] <- c(.text("perc"), "white%", "draw%", "black%", "")
+                     print(out, print.gap=2)
+                     eval(expr=switch2)
+                  }
+               } else {
+                  .texttop(.text("noconnect"), sleep=1.5)
+                  .texttop(texttop)
+               }
+
+               next
+
+            }
+
             ################################################################
 
             ### toggles and keys related to adjusting settings
@@ -2995,7 +3082,7 @@ play <- function(lang="en", sfpath="", ...) {
                   bars <- sapply(bars, function(x) paste0(rep("*", x), collapse=""))
                   tab <- data.frame(files, rounds.selected, formatC(age.selected, format="f", digits=1), scores.selected, formatC(difficulty.selected, format="f", digits=1), formatC(probvals.selected, format="f", digits=1), bars)
                   tab$bars <- format(tab$bars, justify="left")
-                  names(tab) <- c(.text("sequence"), .text("rounds"), .text("age"), .text("score"), .text("diff"), .text("prob"), "")
+                  names(tab) <- c(.text("sequence"), .text("rounds"), .text("age"), .text("score"), .text("diff"), .text("perc"), "")
                   tab[[1]] <- substr(tab[[1]], 1, nchar(tab[[1]])-4) # remove .rds from name
                   tab[[1]] <- format(tab[[1]], justify="left")
                   names(tab)[1] <- format(c(names(tab)[1], tab[[1]]), justify="left")[1]
@@ -3664,9 +3751,10 @@ play <- function(lang="en", sfpath="", ...) {
             if (identical(click, "F3")) {
                tab <- list(lang=lang, player=player, mode=mode, seqdir=seqdir[seqdirpos], selmode=selmode, zenmode=zenmode, timed=timed, timepermove=timepermove, expval=expval,
                            multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, eval=eval, evalsteps=evalsteps, coords=coords, showtransp=showtransp, matdiff=matdiff, wait=wait, sleep=sleep, idletime=idletime, mintime=mintime, mar=mar, mar2=mar2, lwd=lwd,
-                           volume=volume, showgraph=showgraph, repmistake=repmistake, target=target, cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
+                           volume=volume, showgraph=showgraph, repmistake=repmistake, target=target, # cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
                            difffun=difffun, difflen=difflen, diffmin=diffmin,
                            sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, contanalysis=contanalysis)
+                           #speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb)
                .showsettings(tab)
                .redrawpos(pos, flip=flip)
                .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
@@ -3768,9 +3856,29 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # F8 to select / manage sequence directories
+            # F8 to adjust the Lichess database settings
 
             if (identical(click, "F8")) {
+               eval(expr=switch1)
+               tmp <- .lichesssettings(speeds, ratings, lichessdb, barlen, invertbar)
+               eval(expr=switch2)
+               speeds    <- tmp$speeds
+               ratings   <- tmp$ratings
+               lichessdb <- tmp$lichessdb
+               barlen    <- tmp$barlen
+               invertbar <- tmp$invertbar
+               settings$speeds    <- speeds
+               settings$ratings   <- ratings
+               settings$lichessdb <- lichessdb
+               settings$barlen    <- barlen
+               settings$invertbar <- invertbar
+               saveRDS(settings, file=file.path(configdir, "settings.rds"))
+               next
+            }
+
+            # F9 to select / manage sequence directories
+
+            if (identical(click, "F9")) {
                eval(expr=switch1)
                tmp <- .seqdirsettings(seqdir, seqdirpos)
                eval(expr=switch2)
@@ -3804,9 +3912,9 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # F9 to print the FEN and open the position on lichess.org
+            # o to print the FEN and open the position on lichess.org
 
-            if (identical(click, "F9")) {
+            if (identical(click, "o")) {
                eval(expr=switch1)
                fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                cat(fen, "\n")
@@ -3991,12 +4099,20 @@ play <- function(lang="en", sfpath="", ...) {
          # if the right button was used for the move, draw an arrow and jump back to [b]
 
          if (identical(button, 2L)) {
-            .drawarrow(click1.x, click1.y, click2.x, click2.y)
-            arrows <- rbind(arrows, c(click1.x, click1.y, click2.x, click2.y))
+            tmp <- apply(arrows, 1, function(x) identical(x, c(click1.x, click1.y, click2.x, click2.y)))
+            if (any(tmp)) { # but if the arrow already exists, remove it
+               .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), flip=flip)
+               arrows <- arrows[!tmp,,drop=FALSE]
+               .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
+               next
+            } else {
+               .drawarrow(click1.x, click1.y, click2.x, click2.y)
+               arrows <- rbind(arrows, c(click1.x, click1.y, click2.x, click2.y))
+               .drawglyph(glyph) # redraw the glyph so it is always on top
+            }
             drawcircles  <- FALSE # to prevent circles from being redrawn
             drawarrows   <- FALSE # to prevent arrows from being redrawn
             showstartcom <- FALSE # to prevent the start comment from being shown again
-            .drawglyph(glyph) # redraw the glyph so it is always on top
             next
          }
 
@@ -4341,7 +4457,7 @@ play <- function(lang="en", sfpath="", ...) {
                         break
                      }
 
-                     if (identical(click, "o")) {
+                     if (identical(click, "%")) {
                         score <- .setscore(score)
                         .redrawpos(pos, flip=flip)
                         .textbot(mode, score=score, onlyscore=TRUE)
@@ -4367,7 +4483,7 @@ play <- function(lang="en", sfpath="", ...) {
                         .texttop(.text("bookmarked", bookmark), sleep=1.5)
                      }
 
-                     if (identical(click, "F9")) {
+                     if (identical(click, "o")) {
                         eval(expr=switch1)
                         fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                         cat(fen, "\n")

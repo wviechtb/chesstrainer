@@ -405,7 +405,7 @@
    isTRUE(x != "") && !is.na(x2y2[1])
 }
 
-.parsebestmove <- function(move, pos, flip, evalval, i, sidetoplay, rename, returnline, hintdepth) {
+.parsemove <- function(move, pos, flip, evalval, i, sidetoplay, rename, returnline, hintdepth) {
 
    lang <- .get("lang")
 
@@ -521,20 +521,24 @@
 
       if (returnline) {
 
-         movenum <- (i+j) %/% 2
+         if (!is.null(i)) {
 
-         if (j == 1) {
-            if (sidetoplay=="w") {
-               txt.move <- paste0(movenum, ". ", txt.move, collapse="")
+            movenum <- (i+j) %/% 2
+
+            if (j == 1) {
+               if (sidetoplay=="w") {
+                  txt.move <- paste0(movenum, ". ", txt.move, collapse="")
+               } else {
+                  txt.move <- paste0(movenum, "... ", txt.move, collapse="")
+               }
             } else {
-               txt.move <- paste0(movenum, "... ", txt.move, collapse="")
+               if (.is.even(i+j)) {
+                  txt.move <- paste0(" ", movenum, ". ", txt.move, collapse="")
+               } else {
+                  txt.move <- txt.move
+               }
             }
-         } else {
-            if (.is.even(i+j)) {
-               txt.move <- paste0(" ", movenum, ". ", txt.move, collapse="")
-            } else {
-               txt.move <- txt.move
-            }
+
          }
 
          if (is.na(evalval)) {
@@ -1006,4 +1010,48 @@
 
    return(opening)
 
+}
+
+.numshort <- function(x, digits=1) {
+
+   abs.x <- abs(x)
+
+   suffix <- ifelse(abs.x >= 1e9, "B",
+             ifelse(abs.x >= 1e6, "M",
+             ifelse(abs.x >= 1e3, "K", "")))
+
+   divisor <- ifelse(abs.x >= 1e9, 1e9,
+              ifelse(abs.x >= 1e6, 1e6,
+              ifelse(abs.x >= 1e3, 1e3, 1)))
+
+   value <- round(x / divisor, digits)
+   out <- paste0(value, suffix)
+
+   out[divisor == 1] <- as.character(x[divisor == 1])
+   return(out)
+
+}
+
+.percent <- function(x, total=100) {
+
+   x <- x / sum(x) * total
+   xfloor <- floor(x)
+   remainder <- total - sum(xfloor)
+   frac.part <- x - xfloor
+   if (remainder > 0) {
+      add.to <- order(frac.part, decreasing=TRUE)[1:remainder]
+      xfloor[add.to] <- xfloor[add.to] + 1
+   }
+   return(xfloor)
+
+}
+
+.percbar <- function(x, len=50, invert=FALSE) {
+   times <- .percent(x, total=len)
+   if (invert) {
+      bar <- paste0(rep(c("\U00002593","\U00002592","\U00002591"), times=times), collapse="")
+   } else {
+      bar <- paste0(rep(c("\U00002591","\U00002592","\U00002593"), times=times), collapse="")
+   }
+   return(bar)
 }

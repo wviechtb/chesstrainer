@@ -53,7 +53,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">chesstrainer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-134</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-135</span>
       </span>
     </div>
 
@@ -128,17 +128,19 @@
 <li>a timed mode can be used to practice sequences under time pressure</li>
 <li>a board editor allows quickly setting up advanced starting positions or chess puzzles</li>
 <li>can be used with multiple players (performance is tracked separately for each player)</li>
+<li>recognizes known openings with their ECO code and name</li>
+<li>recognizes move transpositions</li>
 <li>when <a href="https://stockfishchess.org" class="external-link">Stockfish</a> is installed:<ul>
 <li>automatically obtain and show position evaluations for each move in a sequence</li>
 <li>show the best move(s) for a given position</li>
 <li>can play against Stockfish in ‘play mode’</li>
 </ul>
 </li>
-<li>adjust colors, text sizes, and various other settings</li>
-<li>manage multiple sequence directories</li>
-<li>toggle the language (English or German)</li>
-<li>plays move and capture sounds</li>
-<li>keeps track of session history</li>
+<li>can adjust colors, text sizes, and various other settings</li>
+<li>can manage multiple sequence directories</li>
+<li>can toggle the language (English or German)</li>
+<li>trainer plays move and capture sounds</li>
+<li>and keeps track of your session history</li>
 </ul>
 </div>
 <div class="section level2">
@@ -162,7 +164,7 @@
 <div class="section level2">
 <h2 id="why-r">Why R?!?<a class="anchor" aria-label="anchor" href="#why-r"></a>
 </h2>
-<p>It is indeed unusual to write such an application in R, which is primarily a programming language for statistical computing and data visualization (you can read more about R on the <a href="https://www.r-project.org" class="external-link">R project homepage</a> or on <a href="https://en.wikipedia.org/wiki/R_(programming_language)" class="external-link">Wikipedia</a>). While interactive applications have already been developed with R using external frameworks such as <a href="https://en.wikipedia.org/wiki/Shiny_(web_framework)" class="external-link">Shiny</a> and <a href="https://en.wikipedia.org/wiki/Tcl_(programming_language)" class="external-link">Tcl/Tk</a>, the chess trainer started as a proof-of-concept study to explore whether full-featured interactive applications could be built using ‘base R’ alone (i.e., relying exclusively on R’s built-in capabilities.)</p>
+<p>It is indeed unusual to write such an application in R, which is primarily a programming language for statistical computing and data visualization (you can read more about R on the <a href="https://www.r-project.org" class="external-link">R project homepage</a> or on <a href="https://en.wikipedia.org/wiki/R_(programming_language)" class="external-link">Wikipedia</a>). While interactive applications have already been developed with R using external frameworks such as <a href="https://en.wikipedia.org/wiki/Shiny_(web_framework)" class="external-link">Shiny</a> and <a href="https://en.wikipedia.org/wiki/Tcl_(programming_language)" class="external-link">Tcl/Tk</a>, the chess trainer started as a proof-of-concept study to explore whether full-featured interactive applications could be built using ‘base R’ alone (i.e., relying exclusively on R’s built-in capabilities).</p>
 <p>After developing an early prototype and recognizing its potential, the project quickly spiraled out of control, eventually evolving into the current package, whose functionality is comparable to that of similar commercial offerings.</p>
 </div>
 <div class="section level2">

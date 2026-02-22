@@ -76,10 +76,8 @@
 
    tab <- data.frame(cex = c("cex.top", "cex.bot", "cex.eval", "cex.coords", "cex.matdiff", "cex.plots", "cex.glyphs"),
                      val = c(.get("cex.top"), .get("cex.bot"), .get("cex.eval"), .get("cex.coords"), .get("cex.matdiff"), .get("cex.plots"), .get("cex.glyphs")))
-   names(tab) <- c("", "")
-   print(tab, right=FALSE, print.gap=3)
-
-   cat("\n")
+   tab$explanation <- .text("cexsetexpl")
+   names(tab) <- c("", "", "")
 
    coords <- .get("coords")
    timed <- .get("timed")
@@ -92,6 +90,8 @@
    .draweval(0.2, flip=flip)
 
    while (TRUE) {
+      print(tab, right=FALSE, print.gap=3)
+      cat("\n")
       resp <- readline(prompt=.text("cexwhich"))
       if (identical(resp, ""))
          break
@@ -125,12 +125,12 @@
 
    tab <- data.frame(setting = c("multiplier", "adjustwrong", "adjusthint", "evalsteps", "timepermove", "idletime", "mintime"),
                      val     = c(multiplier, adjustwrong, adjusthint, evalsteps, timepermove, idletime, mintime))
-   names(tab) <- c("", "")
-   print(tab, right=FALSE, print.gap=3)
-
-   cat("\n")
+   tab$explanation <- .text("miscsetexpl")
+   names(tab) <- c("", "", "")
 
    while (TRUE) {
+      print(tab, right=FALSE, print.gap=3)
+      cat("\n")
       resp <- readline(prompt=.text("settingwhich"))
       if (identical(resp, ""))
          break
@@ -163,6 +163,76 @@
    }
 
    out <- as.list(tab[[2]])
+   names(out) <- tab[[1]]
+
+   return(out)
+
+}
+
+.lichesssettings <- function(speeds, ratings, lichessdb, barlen, invertbar) {
+
+   cat(.text("currentsettings"))
+
+   tab <- data.frame(setting = c("speeds", "ratings", "lichessdb", "barlen", "invertbar"),
+                     val     = c(speeds, ratings, lichessdb, barlen, invertbar))
+   names(tab) <- c("", "")
+
+   while (TRUE) {
+      print(tab, right=FALSE, print.gap=3)
+      cat("\n")
+      resp <- readline(prompt=.text("settingwhich"))
+      if (identical(resp, ""))
+         break
+      if (grepl("^[1-7]+$", resp)) {
+         setno <- round(as.numeric(resp))
+         if (setno < 1 || setno > nrow(tab))
+            next
+         if (setno == 1) {
+            tmp <- readline(prompt=.text("setspeeds"))
+            if (identical(tmp, "") || is.na(tmp))
+               next
+            tmp <- gsub(" ", "", tmp, fixed=TRUE)
+            vals <- strsplit(tmp, ",")[[1]]
+            if (any(!is.element(vals, c("ultraBullet","bullet","blitz","rapid","classical","correspondence"))))
+               next
+         }
+         if (setno == 2) {
+            tmp <- readline(prompt=.text("setratings"))
+            if (identical(tmp, "") || is.na(tmp))
+               next
+            tmp <- gsub(" ", "", tmp, fixed=TRUE)
+            vals <- strsplit(tmp, ",")[[1]]
+            if (any(!is.element(vals, c(0,1000,1200,1400,1600,1800,2000,2200,2500))))
+               next
+         }
+         if (setno == 3) {
+            tmp <- readline(prompt=.text("setlichessdb"))
+            if (identical(tmp, "") || is.na(tmp))
+               next
+            if (!is.element(tmp, c("players","masters")))
+               next
+         }
+         if (setno == 4) {
+            tmp <- readline(prompt=.text("settingval", tab[setno,2]))
+            if (identical(tmp, "") || is.na(tmp))
+               next
+            tmp <- as.numeric(tmp)
+            tmp[tmp < 10] <- 10
+            tmp[tmp > 100] <- 100
+            tmp <- round(tmp)
+         }
+         if (setno == 5) {
+            tmp <- readline(prompt=.text("setinvertbar"))
+            if (identical(tmp, "") || is.na(tmp))
+               next
+         }
+         tab[setno,2] <- tmp
+      }
+   }
+
+   out <- as.list(tab[[2]])
+   out[[4]] <- as.numeric(out[[4]])
+   out[[5]] <- as.logical(out[[5]])
    names(out) <- tab[[1]]
 
    return(out)
