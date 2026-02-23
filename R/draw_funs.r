@@ -1092,8 +1092,8 @@
             text(xleft, 0.15, paste0("      ", i), pos=4, cex=cex, family=font, col=col, srt=srt)
          }
          if (onlyeco) {
-            text(xleft, 0.00, paste0("        ", paste0(rep("\U00002588",140), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2, srt=srt)
-            text(xleft, 0.00, paste0("        ", opening), pos=4, cex=cex, family=font, col=col, srt=srt)
+            text(xleft, 0.00, paste0("      ", paste0(rep("\U00002588",140), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2, srt=srt)
+            text(xleft, 0.00, paste0("      ", opening), pos=4, cex=cex, family=font, col=col, srt=srt)
          }
          if (redraw) {
             text(xleft, 0.45, paste0("Mode: ", "Add"), pos=4, cex=cex, family=font, col=col, srt=srt)

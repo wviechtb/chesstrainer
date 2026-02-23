@@ -477,14 +477,14 @@ play <- function(lang="en", sfpath="", ...) {
       square.sel <- ifelse(flip, pos[9-pos.x,9-pos.y], pos[pos.x,pos.y]) # get the value of the clicked square
       piece.color <- tolower(substr(square.sel, 1, 1)) # get the color of the piece on the clicked square (either w, b, or "" if the clicked square is empty)
       empty.square <- piece.color == ""
-      button <<- buttons
+      button <<- buttons[1]
       if (click.num == 1) {
          # if this is the first click
          click1.x <<- pos.x
          click1.y <<- pos.y
          click2.x <<- pos.x
          click2.y <<- pos.y
-         if (identical(buttons, 0L)) { # if the click is made with the left mouse button
+         if (identical(buttons[1], 0L)) { # if the click is made with the left mouse button
             if (givehint1) {
                .rmrect(hintx1, hinty1, flip=flip)
                givehint1 <<- FALSE
@@ -506,7 +506,7 @@ play <- function(lang="en", sfpath="", ...) {
          # if we are here, then (click1.x, click1.y) is the selected square, is not empty, and has a piece of the correct color
          click2.x <<- pos.x
          click2.y <<- pos.y
-         if (identical(buttons, 0L)) {
+         if (identical(buttons[1], 0L)) {
             # if the second click was with the left mouse button
             if (empty.square || piece.color != sidetoplay) { # if the second clicked square is empty or has a piece of the opposite color
                .rmrect(click1.x, click1.y, flip=flip) # remove the highlight from the starting square
@@ -544,7 +544,7 @@ play <- function(lang="en", sfpath="", ...) {
       new.square <- isTRUE(pos.x != click2.x) || isTRUE(pos.y != click2.y)
       if (new.square) {
          switched.square <<- TRUE
-         if (identical(buttons, 0L) || click.num == 2) {
+         if (identical(buttons[1], 0L) || click.num == 2) {
             if (isTRUE(pos.x == click1.x) && isTRUE(pos.y == click1.y)) {
                ###.drawsquare(click2.x, click2.y, flip=flip, col=ifelse(.is.even(click2.x+click2.y), .get("col.square.d"), .get("col.square.l")))
                ###.drawpiece(click2.x, click2.y, pos[click2.x,click2.y])
@@ -574,7 +574,8 @@ play <- function(lang="en", sfpath="", ...) {
    mouseup <- function(buttons, x, y) {
       if (click.num == 0) # need this in case we start over but the mouse button is still pressed and then released, so nothing happens
          return(NULL)
-      button <<- buttons
+      buttons <- button
+      #button <<- buttons # under Windows, the mouseup handler does *not* return the button
       if (click.num == 1) {
          if (isTRUE(click1.x != click2.x) || isTRUE(click1.y != click2.y)) {
             # if we are here, then a starting square was clicked, the button was held, the mouse was moved to another square, and the button was released
@@ -1099,7 +1100,7 @@ play <- function(lang="en", sfpath="", ...) {
          islastmove <- FALSE
 
          if (mode == "test" && i > nrow(sub$moves)) {
-            button <- 0
+            button <- 0L
             islastmove <- TRUE
             input <- FALSE
          }
@@ -2775,6 +2776,7 @@ play <- function(lang="en", sfpath="", ...) {
                      next
                   }
                   out <- do.call(rbind, lapply(content(out)$moves, function(x) data.frame(move=x$uci, white=x$white, draw=x$draws, black=x$black)))
+
                   if (is.null(out)) {
                      .texttop(.text("posnotfound"), sleep=1.5)
                      .texttop(texttop)
@@ -2788,7 +2790,7 @@ play <- function(lang="en", sfpath="", ...) {
                      out[2:4] <- t(apply(out[2:4], 1, .percent))
                      out[1] <- sapply(out[[1]], function(x) .parsemove(x, pos=pos, flip=flip, evalval="", i=NULL, sidetoplay=sidetoplay, rename=FALSE, returnline=TRUE, hintdepth=1)$txt)
                      out <- out[c(1,6,5,2:4,7)]
-                     out <- rbind(out, data.frame(move="total", perc=100, total=totals[[4]], white=percs[[1]], draws=percs[[2]], black=percs[[3]], bar=.percbar(totals[1:3], len=barlen, invert=invertbar)))
+                     out <- rbind(out, data.frame(move="total", perc=100, total=totals[[4]], white=percs[[1]], draw=percs[[2]], black=percs[[3]], bar=.percbar(totals[1:3], len=barlen, invert=invertbar)))
                      out$total <- .numshort(out$total)
                      colnames(out)[c(2,4:7)] <- c(.text("perc"), "white%", "draw%", "black%", "")
                      print(out, print.gap=2)
