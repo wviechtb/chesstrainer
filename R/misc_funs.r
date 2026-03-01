@@ -970,7 +970,7 @@
    if (any(notnull)) {
       if (texttop)
          .texttop(.text("transpositions", length(seqident) == 1L))
-      #eval(expr=switch1)
+      #eval(expr=.get("switch1"))
       cat(.text("transposseqs", length(seqident) == 1L))
       tab <- data.frame(files[notnull])
       colnames(tab) <- .text("sequence")
@@ -978,7 +978,7 @@
       tab <- cbind(tab, nextmoves)
       rownames(tab) <- which(notnull)
       .printdf(tab, align=c("l",rep("r",5)))
-      #eval(expr=switch2)
+      #eval(expr=.get("switch2"))
    }
 
 }
@@ -1038,7 +1038,13 @@
 
 }
 
-.liquery <- function(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, speeds, ratings, barlen, invertbar, contliquery, texttop, switch1, switch2) {
+.liquery <- function(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, token, speeds, ratings, barlen, invertbar, contliquery, texttop) {
+
+   if (is.null(token) || token == "") {
+      .texttop(.text("needtoken"), sleep=2)
+      .texttop(texttop)
+      return()
+   }
 
    fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
    fen <- gsub(" ", "%20", fen, fixed=TRUE)
@@ -1059,12 +1065,13 @@
       #}
 
       if (lichessdb == "lichess") {
-         url <- paste0("https://explorer.lichess.ovh/lichess?topGames=0&recentGames=0&speeds=", speeds, "&ratings=", ratings, "&")
+         url <- paste0("https://explorer.lichess.org/lichess?topGames=0&recentGames=0&speeds=", speeds, "&ratings=", ratings, "&")
       } else {
-         url <- paste0("https://explorer.lichess.ovh/masters?topGames=0&")
+         url <- paste0("https://explorer.lichess.org/masters?topGames=0&")
       }
 
       url <- paste0(url, "fen=", fen)
+      url <- paste(url, paste0("--header 'Authorization: Bearer ", token, "'"))
 
       #if (!is.null(pos)) {
       #   tmp <- "w"
@@ -1116,7 +1123,7 @@
    if (!is.null(out)) {
 
       if (!contliquery)
-         eval(expr=switch1)
+         eval(expr=.get("switch1"))
       .flush()
       out$total <- rowSums(out[2:4])
       totals    <- colSums(out[2:5])
@@ -1141,7 +1148,7 @@
          cat("\n\n")
       }
       if (!contliquery)
-         eval(expr=switch2)
+         eval(expr=.get("switch2"))
 
    }
 

@@ -15,7 +15,7 @@
       txt.general1 <- c(
       "General shortcuts:",
       "<space>  - switch mode (test/add)",
-      "\\ or \U000000E4   - switch to play mode",
+      "\\        - switch to play mode",
       "p        - select a player",
       "Ctrl-r   - remove a player",
       "n        - start new/next sequence",
@@ -104,7 +104,7 @@
       txt.play <- c(
       "Shortcuts for the play and analysis mode:",
       "t        - take back the last move (computer move and own move)",
-      "\\ or \U000000E4   - switch between the play and analysis mode",
+      "\\        - switch between the play and analysis mode",
       "0        - store the current moves and position as the main variation",
       "9        - jump to the main variation",
       "a and A  - switch to add mode")

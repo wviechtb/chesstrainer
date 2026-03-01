@@ -1499,8 +1499,8 @@
 
    if (x == "ratelimit") {
       return(switch(lang,
-                    de = "Die Durchsatzbegrenzung von Lichess wurde erreicht.\nMindestens eine Minute vor dem n\U000000E4chsten Versuch warten.",
-                         "Hit the rate limit for Lichess.\nWait at least a minute before trying again."
+                    de = "Die Durchsatzbegrenzung von Lichess wurde erreicht.\nBitte eine Minute vor dem n\U000000E4chsten Versuch warten.",
+                         "Hit the rate limit for Lichess.\nPlease wait a minute before trying again."
    ))}
 
    if (x == "noconnect") {
@@ -1545,28 +1545,22 @@
                          "Invert bar"
    ))}
 
-   if (x == "setspeeds") {
+   if (x == "entertoken") {
       return(switch(lang,
-                    de = "Bedenkzeiten eingeben (ultraBullet,bullet,blitz,rapid,classical,correspondence): ",
-                         "Enter time controls (ultraBullet,bullet,blitz,rapid,classical,correspondence): "
+                    de = "API-token eingeben",
+                         "Enter API token"
    ))}
 
-   if (x == "setratings") {
+   if (x == "token") {
       return(switch(lang,
-                    de = "Wertungen eingeben (0,1000,1200,1400,1600,1800,2000,2200,2500): ",
-                         "Enter ratings (0,1000,1200,1400,1600,1800,2000,2200,2500): "
+                    de = "API-token: ",
+                         "API token: "
    ))}
 
-   if (x == "setlichessdb") {
+   if (x == "needtoken") {
       return(switch(lang,
-                    de = "Lichess Datenbank ausw\U000000E4hlen (players oder masters): ",
-                         "Choose Lichess database (players or masters): "
-   ))}
-
-   if (x == "setinvertbar") {
-      return(switch(lang,
-                    de = "Prozentbalken invertieren (TRUE,FALSE): ",
-                         "Invert percentage bar (TRUE,FALSE): "
+                    de = "F\U000000FCr diese Funktion muss ein API-token festgelegt werden (via F8).",
+                         "Need to set API token for this function (via F8)."
    ))}
 
    if (x == "rlydelcache") {

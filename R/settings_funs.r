@@ -1,12 +1,7 @@
 .colorsettings <- function(cols.all, pos, flip, mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove) {
 
-   cat(.text("currentsettings"))
-
    tab <- data.frame(col=cols.all, val=unname(sapply(cols.all, function(x) .get(x))))
    names(tab) <- c("", "")
-   print(tab, right=FALSE, print.gap=3)
-
-   cat("\n")
 
    coords <- .get("coords")
    timed <- .get("timed")
@@ -32,6 +27,10 @@
    .drawtimer(settings=TRUE)
 
    while (TRUE) {
+      .flush()
+      cat(.text("currentsettings"))
+      print(tab, right=FALSE, print.gap=3)
+      cat("\n")
       resp <- readline(prompt=.text("colwhich"))
       if (identical(resp, ""))
          break
@@ -72,8 +71,6 @@
 
 .cexsettings <- function(pos, flip, mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove) {
 
-   cat(.text("currentsettings"))
-
    tab <- data.frame(cex = c("cex.top", "cex.bot", "cex.eval", "cex.coords", "cex.matdiff", "cex.plots", "cex.glyphs"),
                      val = c(.get("cex.top"), .get("cex.bot"), .get("cex.eval"), .get("cex.coords"), .get("cex.matdiff"), .get("cex.plots"), .get("cex.glyphs")))
    tab$explanation <- .text("cexsetexpl")
@@ -90,6 +87,8 @@
    .draweval(0.2, flip=flip)
 
    while (TRUE) {
+      .flush()
+      cat(.text("currentsettings"))
       print(tab, right=FALSE, print.gap=3)
       cat("\n")
       resp <- readline(prompt=.text("cexwhich"))
@@ -121,14 +120,14 @@
 
 .miscsettings <- function(multiplier, adjustwrong, adjusthint, evalsteps, timepermove, idletime, mintime, sleepadj) {
 
-   cat(.text("currentsettings"))
-
    tab <- data.frame(setting = c("multiplier", "adjustwrong", "adjusthint", "evalsteps", "timepermove", "idletime", "mintime", "sleepadj"),
                      val     = c(multiplier, adjustwrong, adjusthint, evalsteps, timepermove, idletime, mintime, sleepadj))
    tab$explanation <- .text("miscsetexpl")
    names(tab) <- c("", "", "")
 
    while (TRUE) {
+      .flush()
+      cat(.text("currentsettings"))
       print(tab, right=FALSE, print.gap=3)
       cat("\n")
       resp <- readline(prompt=.text("settingwhich"))
@@ -169,12 +168,15 @@
 
 }
 
-.lichesssettings <- function(speeds, ratings, lichessdb, barlen, invertbar, cachedir) {
+.lichesssettings <- function(speeds, ratings, lichessdb, barlen, invertbar, token, cachedir) {
 
    col.bg          <- .get("col.bg")
    col.help        <- .get("col.help")
    col.help.border <- .get("col.help.border")
    font.mono       <- .get("font.mono")
+   col.text        <- .get("col.square.d")
+   switch1         <- .get("switch1")
+   switch2         <- .get("switch2")
 
    rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=.get("lwd")+3)
 
@@ -188,6 +190,7 @@
    text(5, title.ypos[3], .text("delcache"), pos=4, cex=cex, family=font.mono, col=col.help, font=2)
    text(title.xpos, title.ypos[4], .text("barlen"),    pos=4, cex=cex, family=font.mono, col=col.help, font=2)
    text(title.xpos, title.ypos[5], .text("invertbar"), pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(5, title.ypos[5], .text("entertoken"), pos=4, cex=cex, family=font.mono, col=col.help, font=2)
 
    speeds.opts <- c("ultraBullet", "bullet", "blitz", "rapid", "classical", "correspondence")
    speeds.xpos <- 2.2 + 1.1 * (seq_along(speeds.opts) - 1)
@@ -243,6 +246,8 @@
    for (i in seq_along(invertbar.txt)) {
       invertbar.box[[i]] <- .drawbutton(invertbar.xpos[i], invertbar.ypos, text=invertbar.txt[i], len=max(nchar(invertbar.txt)), on=invertbar.on[i], cex=cex)
    }
+
+   text(5, invertbar.ypos, paste0(rep("*", nchar(token)), collapse=""), pos=4, cex=cex, family=font.mono, col=col.text, font=2)
 
    while (TRUE) {
 
@@ -322,9 +327,21 @@
             next
          }
 
+         hit <- xy[1] >= 5 & xy[2] >= invertbar.box[[1]][2] & xy[1] <= 7 & xy[2] <= (title.ypos[5]+0.2)
+         if (hit) {
+            eval(expr=switch1)
+            token <- readline(prompt=.text("token"))
+            eval(expr=switch2)
+            if (identical(token , ""))
+               next
+            rect(4.8, invertbar.ypos-0.3, 8.5, invertbar.ypos+0.3, col=col.bg, border=NA)
+            text(5, invertbar.ypos, paste0(rep("*", nchar(token)), collapse=""), pos=4, cex=cex, family=font.mono, col=col.text, font=2)
+            next
+         }
+
       }
 
-      if (identical(resp, "q") || identical(resp, "\033") || identical(resp, "ctrl-["))
+      if (identical(resp, "F8") || identical(resp, "\r") || identical(resp, "ctrl-J") || identical(resp, "q") || identical(resp, "\033") || identical(resp, "ctrl-[") || identical(resp, " "))
          break
 
    }
@@ -334,7 +351,7 @@
    lichessdb <- lichessdb.opts[lichessdb.on]
    invertbar <- invertbar.on[2]
 
-   out <- list(speeds=speeds, ratings=ratings, lichessdb=lichessdb, barlen=barlen, invertbar=invertbar)
+   out <- list(speeds=speeds, ratings=ratings, lichessdb=lichessdb, barlen=barlen, invertbar=invertbar, token=token)
 
    #.erase(1, 1, 9, 9)
 

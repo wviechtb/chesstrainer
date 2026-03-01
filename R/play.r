@@ -91,6 +91,7 @@ play <- function(lang="en", sfpath="", ...) {
    barlen      <- ifelse(is.null(ddd[["barlen"]]),      50,                      ddd[["barlen"]])
    invertbar   <- ifelse(is.null(ddd[["invertbar"]]),   FALSE,                   ddd[["invertbar"]])
    lichessdb   <- ifelse(is.null(ddd[["lichessdb"]]),   "lichess",               ddd[["lichessdb"]])
+   token       <- ifelse(is.null(ddd[["token"]]),       "",                      ddd[["token"]])
    quitanim    <- ifelse(is.null(ddd[["quitanim"]]),    TRUE,                    ddd[["quitanim"]])
    inhibit     <- ifelse(is.null(ddd[["inhibit"]]),     FALSE,                   ddd[["inhibit"]])
    flush       <- ifelse(is.null(ddd[["flush"]]),       FALSE,                   ddd[["flush"]])
@@ -192,7 +193,7 @@ play <- function(lang="en", sfpath="", ...) {
                        eval=eval, evalsteps=evalsteps, coords=coords, showtransp=showtransp, matdiff=matdiff, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth,
-                       difffun=difffun, difflen=difflen, diffmin=diffmin, zenmode=zenmode, speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb, mar=mar, mar2=mar2)
+                       difffun=difffun, difflen=difflen, diffmin=diffmin, zenmode=zenmode, speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb, token=token, mar=mar, mar2=mar2)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       cols <- sapply(cols.all, function(x) .get(x))
       saveRDS(cols, file=file.path(configdir, "colors.rds"))
@@ -309,6 +310,8 @@ play <- function(lang="en", sfpath="", ...) {
             invertbar <- settings[["invertbar"]]
          if (is.null(mc[["lichessdb"]]))
             lichessdb <- settings[["lichessdb"]]
+         if (is.null(mc[["token"]]))
+            token <- settings[["token"]]
          if (is.null(mc[["mar"]]))
             mar <- settings[["mar"]]
          if (is.null(mc[["mar2"]]))
@@ -320,7 +323,7 @@ play <- function(lang="en", sfpath="", ...) {
                        eval=eval, evalsteps=evalsteps, coords=coords, showtransp=showtransp, matdiff=matdiff, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth,
-                       difffun=difffun, difflen=difflen, diffmin=diffmin, zenmode=zenmode, speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb, mar=mar, mar2=mar2)
+                       difffun=difffun, difflen=difflen, diffmin=diffmin, zenmode=zenmode, speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb, token=token, mar=mar, mar2=mar2)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       if (file.exists(file.path(configdir, "colors.rds"))) {
          cols <- readRDS(file.path(configdir, "colors.rds"))
@@ -2122,8 +2125,9 @@ play <- function(lang="en", sfpath="", ...) {
                      glyph   <- ""
                      sidetoplay <- sidetoplaystart
 
+                     .flush()
                      cat(.text("evalupdateold"))
-                     print(sub$moves)
+                     print(sub$moves[1:7])
                      cat(.text("evalupdatestart"))
 
                      if (!is.null(sub$pos)) {
@@ -2159,7 +2163,7 @@ play <- function(lang="en", sfpath="", ...) {
                      .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
                      sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
                      cat(.text("evalupdatenew"))
-                     print(sub$moves)
+                     print(sub$moves[1:7])
                      cat("\n")
                      if (mode == "test")
                         saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
@@ -2756,7 +2760,7 @@ play <- function(lang="en", sfpath="", ...) {
             # i to query the lichess games database for the current position
 
             if (identical(click, "i")) {
-               .liquery(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, speeds, ratings, barlen, invertbar, contliquery, texttop, switch1, switch2)
+               .liquery(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, token, speeds, ratings, barlen, invertbar, contliquery, texttop)
                next
             }
 
@@ -3763,7 +3767,7 @@ play <- function(lang="en", sfpath="", ...) {
                            volume=volume, showgraph=showgraph, repmistake=repmistake, target=target, # cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
                            difffun=difffun, difflen=difflen, diffmin=diffmin,
                            sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, contanalysis=contanalysis)
-                           #speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb)
+                           #speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb, token="*****")
                .showsettings(tab)
                .redrawpos(pos, flip=flip)
                .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
@@ -3871,7 +3875,7 @@ play <- function(lang="en", sfpath="", ...) {
             # F8 to adjust the Lichess database settings
 
             if (identical(click, "F8")) {
-               tmp <- .lichesssettings(speeds, ratings, lichessdb, barlen, invertbar, cachedir)
+               tmp <- .lichesssettings(speeds, ratings, lichessdb, barlen, invertbar, token, cachedir)
                .redrawpos(pos, flip=flip)
                .textbot(mode, score=score, onlyscore=TRUE)
                .drawannot(circles=circles, arrows=arrows, glyph=glyph)
@@ -3880,11 +3884,13 @@ play <- function(lang="en", sfpath="", ...) {
                lichessdb <- tmp$lichessdb
                barlen    <- tmp$barlen
                invertbar <- tmp$invertbar
+               token     <- tmp$token
                settings$speeds    <- speeds
                settings$ratings   <- ratings
                settings$lichessdb <- lichessdb
                settings$barlen    <- barlen
                settings$invertbar <- invertbar
+               settings$token     <- token
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
@@ -4533,7 +4539,7 @@ play <- function(lang="en", sfpath="", ...) {
                      }
 
                      if (identical(click, "i")) {
-                        .liquery(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, speeds, ratings, barlen, invertbar, contliquery, texttop, switch1, switch2)
+                        .liquery(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, token, speeds, ratings, barlen, invertbar, contliquery, texttop, switch1, switch2)
                      }
 
                      if (identical(click, "ctrl-V")) {

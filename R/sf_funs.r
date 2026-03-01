@@ -239,6 +239,8 @@
 
    while (TRUE) {
 
+      .flush()
+
       cat("\n")
       cat(.text("sfrunning", sfrun))
       cat(.text("sfpath",    sfpath))

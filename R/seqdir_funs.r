@@ -2,6 +2,7 @@
 
    while (TRUE) {
 
+      .flush()
       cat("\n")
       tab <- data.frame(seqdir=seqdir, selected="( )")
       tab$selected[seqdirpos] <- "(*)"
