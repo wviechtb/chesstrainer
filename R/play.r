@@ -362,7 +362,7 @@ play <- function(lang="en", sfpath="", ...) {
    cachedir <- tools::R_user_dir(package="chesstrainer", which="cache")
 
    if (!dir.exists(cachedir)) {
-      cat(.text("createcachedir", configdir))
+      cat(.text("createcachedir", cachedir))
       success <- dir.create(cachedir, recursive=TRUE)
       if (!success)
          stop(.text("dircreateerror"), call.=FALSE)
@@ -658,7 +658,7 @@ play <- function(lang="en", sfpath="", ...) {
              "a", "A", "f", "z", "Z", "c", "!", "@", "\"", "e", "E", "s", "b", "k", "K", "C",
              "^", "6", "R", "G", "w", "-", "=", "_", "+", "[", "{", "}", "(", ")", "i", "I", "x", "v", "ctrl-V",
              "l", "<", ">", "ctrl-L", "ctrl-F", "ctrl-C", "ctrl-D", "/", ",", ".", "|", "*", "8", "?", "'", ";", ":",
-             "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "ctrl-!", "ctrl-@", "ctrl-E")
+             "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "ctrl-S", "ctrl-H", "ctrl-E")
 
    run.all <- TRUE
 
@@ -3957,9 +3957,9 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # F11 (or ctrl-1) to show the session info
+            # F11 (or ctrl-s) to show the session info
 
-            if (identical(click, "F11") || identical(click, "ctrl-!")) {
+            if (identical(click, "F11") || identical(click, "ctrl-S")) {
                if (sum(session.seqsplayed) <= 1) {
                   .texttop(.text("toofewseqsplayed"), sleep=1.5)
                   .texttop(texttop)
@@ -3978,9 +3978,9 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # F12 (or ctrl-2) to show the session history graph
+            # F12 (or ctrl-h) to show the session history graph
 
-            if (identical(click, "F12") || identical(click, "ctrl-@")) {
+            if (identical(click, "F12") || identical(click, "ctrl-H")) {
                player.file <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "sessions", paste0(player, ".rds"))
                if (file.exists(player.file)) {
                   session.playtime <- round(proc.time()[[3]] - session.time.start)

@@ -1613,7 +1613,7 @@
    x2 <- x + width  / 1.6
    y2 <- y + height / 0.8
 
-   rect(x1, y1, x2, y2, col=col.box, border=col.border, lwd=4)
+   rect(x1, y1, x2, y2, col=col.box, border=col.border, lwd=2)
    text(x, y, text, family=font.mono, cex=cex, col=col.text, adj=c(0.5,0.5))
 
    return(c(x1,y1,x2,y2))
@@ -1627,9 +1627,9 @@
 
    height <- strheight("A", family=font.mono, cex=cex)
 
-   segments(x[1], y, x[2], y, col=col.line)
-   segments(x[1], y-0.06, x[1], y+0.06, col=col.line)
-   segments(x[2], y-0.06, x[2], y+0.06, col=col.line)
+   segments(x[1], y, x[2], y, col=col.line, lend=2)
+   segments(x[1], y-0.06, x[1], y+0.06, col=col.line, lend=2)
+   segments(x[2], y-0.06, x[2], y+0.06, col=col.line, lend=2)
    text(x[1], y - 1.6 * height, xlab[1], family=font.mono, cex=cex, col=col.line, adj=c(0.5,0.5))
    text(x[2], y - 1.6 * height, xlab[2], family=font.mono, cex=cex, col=col.line, adj=c(0.5,0.5))
 
@@ -1655,9 +1655,9 @@
    } else {
       rect(xold-0.1, y-0.12, xold+0.1, y+0.12, col=col.bg, border=col.bg)
       rect(max(1.25, xold-1), y+0.05, min(8.75,xold+1), y+3 * height, col=col.bg, border=col.bg)
-      segments(max(xlim[1], xold-0.1), y, min(xlim[2], xold+0.1), y, col=col.line)
-      segments(xlim[1], y-0.06, xlim[1], y+0.06, col=col.line)
-      segments(xlim[2], y-0.06, xlim[2], y+0.06, col=col.line)
+      segments(max(xlim[1], xold-0.1), y, min(xlim[2], xold+0.1), y, col=col.line, lend=2)
+      segments(xlim[1], y-0.06, xlim[1], y+0.06, col=col.line, lend=2)
+      segments(xlim[2], y-0.06, xlim[2], y+0.06, col=col.line, lend=2)
    }
 
    rect(x-0.03, y-0.08, x+0.03, y+0.08, col=col.slider, border=col.slider)
