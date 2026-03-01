@@ -658,7 +658,7 @@ play <- function(lang="en", sfpath="", ...) {
              "a", "A", "f", "z", "Z", "c", "!", "@", "\"", "e", "E", "s", "b", "k", "K", "C",
              "^", "6", "R", "G", "w", "-", "=", "_", "+", "[", "{", "}", "(", ")", "i", "I", "x", "v", "ctrl-V",
              "l", "<", ">", "ctrl-L", "ctrl-F", "ctrl-C", "ctrl-D", "/", ",", ".", "|", "*", "8", "?", "'", ";", ":",
-             "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "ctrl-S", "ctrl-H", "ctrl-P", "ctrl-E")
+             "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "ctrl-S", "ctrl-H", "ctrl-I", "ctrl-E")
 
    run.all <- TRUE
 
@@ -3939,7 +3939,7 @@ play <- function(lang="en", sfpath="", ...) {
 
             # F10 (or ctrl-p) to show the histograms / scatterplot
 
-            if (identical(click, "F10") || identical(click, "ctrl-P")) {
+            if (identical(click, "F10") || identical(click, "ctrl-S")) {
                if (k <= 1L) {
                   .texttop(.text("toofewscores"), sleep=1.5)
                   .texttop(texttop)
@@ -3957,9 +3957,9 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # F11 (or ctrl-s) to show the session info
+            # F11 (or ctrl-i) to show the session info
 
-            if (identical(click, "F11") || identical(click, "ctrl-S")) {
+            if (identical(click, "F11") || identical(click, "ctrl-I")) {
                if (sum(session.seqsplayed) <= 1) {
                   .texttop(.text("toofewseqsplayed"), sleep=1.5)
                   .texttop(texttop)
