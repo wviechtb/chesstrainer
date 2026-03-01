@@ -20,6 +20,12 @@
                          paste0("Creating directory for settings: ", arg, "\n")
    ))}
 
+   if (x == "createcachedir") {
+      return(switch(lang,
+                    de = paste0("Erstelle Verzeichnis f\U000000FCr den Cache: ", arg, "\n"),
+                         paste0("Creating directory for the cache: ", arg, "\n")
+   ))}
+
    if (x == "createseqdir") {
       return(switch(lang,
                     de = paste0("Erstelle Standardverzeichnis f\U000000FCr Sequenzen: ", arg, "\n"),
@@ -279,12 +285,6 @@
                          "Difficulty"
    ))}
 
-   if (x == "perc") {
-      return(switch(lang,
-                    de = "%",
-                         "%"
-   ))}
-
    if (x == "player") {
       return(switch(lang,
                     de = "Spieler",
@@ -331,6 +331,12 @@
       return(switch(lang,
                     de = "Keine passende Sequenz gefunden.\n",
                          "No matching sequence found.\n"
+   ))}
+
+   if (x == "noseqsfurthermoves") {
+      return(switch(lang,
+                    de = "Keine Sequenzen mit weiteren Z\U000000FCgen gefunden.\n",
+                         "No sequences with further moves found.\n"
    ))}
 
    if (x == "selseq12") {
@@ -453,7 +459,7 @@
                          paste0(arg, " sequence", ifelse(arg > 1, "s", ""), " selected.\n")
    ))}
 
-   if (x == "sleeptime") {
+   if (x == "delaytime") {
       return(switch(lang,
                     de = paste0("Zeit zwischen den Z\U000000FCgen: ", arg),
                          paste0("Time between moves: ", arg)
@@ -599,8 +605,8 @@
 
    if (x == "miscsetexpl") {
       return(switch(lang,
-                    de = c("Punktemultiplikator beim fehlerfreien Abschlie\U000000DFen einer Sequenz", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Anzahl der Animationsschritte f\U000000FCr die Bewertungsleiste", "Zeit pro Zug im zeitgesteuerten Modus (Sekunden)", "Leerlaufzeit (Sekunden)", "Mindestdauer der Sitzung (Sekunden)"),
-                         c("Score multiplier when completing a sequences without any mistakes", "Score penalty for wrong moves", "Score penalty per hint", "Number of animation steps for the evaluation bar", "Time per move in timed mode (seconds)", "Idle time (seconds)", "Minimum session time (seconds)")
+                    de = c("Punktemultiplikator beim fehlerfreien Abschlie\U000000DFen einer Sequenz", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Anzahl der Animationsschritte f\U000000FCr die Bewertungsleiste", "Zeit pro Zug im zeitgesteuerten Modus (Sekunden)", "Leerlaufzeit (Sekunden)", "Mindestdauer der Sitzung (Sekunden)", "Pausenanpassung (Sekunden)"),
+                         c("Score multiplier when completing a sequences without any mistakes", "Score penalty for wrong moves", "Score penalty per hint", "Number of animation steps for the evaluation bar", "Time per move in timed mode (seconds)", "Idle time (seconds)", "Minimum session time (seconds)", "Pause adjustment (seconds)")
    ))}
 
    if (x == "cexwhich") {
@@ -637,6 +643,12 @@
       return(switch(lang,
                     de = paste0("Kontinuierliche Analyse: ", ifelse(arg, "An", "Aus")),
                          paste0("Continuous analysis: ", ifelse(arg, "On", "Off"))
+   ))}
+
+   if (x == "contliquery") {
+      return(switch(lang,
+                    de = paste0("Kontinuierliche Abfrage der Lichess Datenbank: ", ifelse(arg, "An", "Aus")),
+                         paste0("Continuous query of the Lichess database: ", ifelse(arg, "On", "Off"))
    ))}
 
    if (x == "eval") {
@@ -953,8 +965,8 @@
 
    if (x == "explsettings") {
       return(switch(lang,
-                    de = c("Sprache", "Spielername", "Modus", "Aktuelles Sequenzverzeichnis", "Selektionsmodus f\U000000FCr Sequenzen", "Zen Modus", "Zeitgesteuerter Modus", "Zeit pro Zug im zeitgesteuerten Modus (Sekunden)", "Exponentenwert", "Multiplikator f\U000000FCr abgeschlossene Sequenzen", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Bewertungsleiste (Hinzuf\U000000FCgen/Test/Spielen/Analyse)", "Animationsschritte f\U000000FCr die Bewertungsleiste", "Koordinaten anzeigen", "Zugumstellungen anzeigen", "Materialunterschied anzeigen", "Warten zwischen Sequenzen", "Zeit zwischen den Z\U000000FCgen (Sekunden)", "Leerlaufzeit (Sekunden)", "Mindestdauer der Sitzung (Sekunden)", "Randbreite (unten/links/oben/rechts)", "Randbreite f\U000000FCr Inline-Diagramme", "Linienbreite", "Lautst\U000000E4rke (%)", "Fortschrittsdiagramm nach Sequenzen anzeigen", "Sequenzen nach Fehler wiederholen", "Zielwert f\U000000FCr Punkte", "Schwierigkeitsberechnung (Methode)", "Schwierigkeitsberechnung (Anzahl der letzten Werte)", "Schwierigkeitsberechnung (Mindestanzahl der Werte)", "Stockfish Pfad", "Berechnungstiefe (schnell)", "Berechnungstiefe (tief)", "Berechnungstiefe (spielen)", "Spielmodus-St\U000000E4rke-Limit", "Anzahl der besten Zugvarianten (schnell)", "Anzahl der besten Zugvarianten (tief)", "Anzahl der Threads f\U000000FCr Stockfish", "Hashgr\U000000F6\U000000DFe f\U000000FCr Stockfish", "Hinweistiefe", "Kontinuierliche Analyse"),
-                         c("Language", "Player name", "Mode", "Current sequence directory", "Selection mode for sequences", "Zen mode", "Timed mode", "Time per move in timed mode (seconds)", "Exponent value", "Multiplier for completed sequences", "Score penalty for wrong moves", "Score penalty per hint", "Evaluation bar (add/test/play/analysis)", "Animation steps for the evaluation bar", "Show coordinates", "Show move transpositions", "Show material difference", "Wait between sequences", "Time between moves (seconds)", "Idle time (seconds)", "Minimum session duration (seconds)", "Margin width (bottom/left/top/right)", "Margin width for inline graphs", "Line width", "Sound volume (%)", "Show progress graph after sequences", "Repeat sequences after mistake", "Target value for scores", "Difficulty calculation (method)", "Difficulty calculation (number of recent values)", "Difficulty calculation (minimum number of values)", "Stockfish path", "Calculation depth (fast)", "Calculation depth (deep)", "Calculation depth (play)", "Play mode strength limit", "Number of principal variations (fast)", "Number of principal variations (deep)", "Number of threads for Stockfish", "Hash size for Stockfish", "Hint depth", "Continuous analysis")
+                    de = c("Sprache", "Spielername", "Modus", "Aktuelles Sequenzverzeichnis", "Selektionsmodus f\U000000FCr Sequenzen", "Zen Modus", "Zeitgesteuerter Modus", "Zeit pro Zug im zeitgesteuerten Modus (Sekunden)", "Exponentenwert", "Multiplikator f\U000000FCr abgeschlossene Sequenzen", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Bewertungsleiste (Hinzuf\U000000FCgen/Test/Spielen/Analyse)", "Animationsschritte f\U000000FCr die Bewertungsleiste", "Koordinaten anzeigen", "Zugumstellungen anzeigen", "Materialunterschied anzeigen", "Warten zwischen Sequenzen", "Verz\U000000F6gerung zwischen den Z\U000000FCgen (Sekunden)", "Leerlaufzeit (Sekunden)", "Mindestdauer der Sitzung (Sekunden)", "Pausenanpassung (Sekunden)", "Randbreite (unten/links/oben/rechts)", "Randbreite f\U000000FCr Inline-Diagramme", "Linienbreite", "Lautst\U000000E4rke (%)", "Fortschrittsdiagramm nach Sequenzen anzeigen", "Sequenzen nach Fehler wiederholen", "Zielwert f\U000000FCr Punkte", "Schwierigkeitsberechnung (Methode)", "Schwierigkeitsberechnung (Anzahl der letzten Werte)", "Schwierigkeitsberechnung (Mindestanzahl der Werte)", "Stockfish Pfad", "Berechnungstiefe (schnell)", "Berechnungstiefe (tief)", "Berechnungstiefe (spielen)", "Spielmodus-St\U000000E4rke-Limit", "Anzahl der besten Zugvarianten (schnell)", "Anzahl der besten Zugvarianten (tief)", "Anzahl der Threads f\U000000FCr Stockfish", "Hashgr\U000000F6\U000000DFe f\U000000FCr Stockfish", "Hinweistiefe", "Kontinuierliche Analyse"),
+                         c("Language", "Player name", "Mode", "Current sequence directory", "Selection mode for sequences", "Zen mode", "Timed mode", "Time per move in timed mode (seconds)", "Exponent value", "Multiplier for completed sequences", "Score penalty for wrong moves", "Score penalty per hint", "Evaluation bar (add/test/play/analysis)", "Animation steps for the evaluation bar", "Show coordinates", "Show move transpositions", "Show material difference", "Wait between sequences", "Delay between moves (seconds)", "Idle time (seconds)", "Minimum session duration (seconds)", "Pause adjustment (seconds)", "Margin width (bottom/left/top/right)", "Margin width for inline graphs", "Line width", "Sound volume (%)", "Show progress graph after sequences", "Repeat sequences after mistake", "Target value for scores", "Difficulty calculation (method)", "Difficulty calculation (number of recent values)", "Difficulty calculation (minimum number of values)", "Stockfish path", "Calculation depth (fast)", "Calculation depth (deep)", "Calculation depth (play)", "Play mode strength limit", "Number of principal variations (fast)", "Number of principal variations (deep)", "Number of threads for Stockfish", "Hash size for Stockfish", "Hint depth", "Continuous analysis")
    ))}
 
    if (x == "comment") {
@@ -1395,10 +1407,10 @@
                          "Jumping back to the main variation."
    ))}
 
-   if (x == "missingkings") {
+   if (x == "kingswrong") {
       return(switch(lang,
-                    de = "Illegale Stellung (beide K\U000000F6nige m\U000000FCssen auf dem Brett sein)",
-                         "Illegal position (both kings must be on the board)"
+                    de = "Illegale Stellung (zu wenige oder zu viele K\U000000F6nige auf dem Brett)",
+                         "Illegal position (too few or many kings on the board)"
    ))}
 
    if (x == "doublecheck") {
@@ -1409,8 +1421,8 @@
 
    if (x == "wrongsidecheck") {
       return(switch(lang,
-                    de = "Illegale Stellung (K\U000000F6nige im Schach, aber die andere Seite zieht)",
-                         "Illegal position (king in check but other side moves)"
+                    de = "Illegale Stellung (K\U000000F6nig im Schach, aber die andere Seite zieht)",
+                         "Illegal position (king in check but the other side moves)"
    ))}
 
    if (x == "threefold") {
@@ -1497,27 +1509,33 @@
                          "Could not connect to the Lichess database."
    ))}
 
-   if (x == "speeds") {
+   if (x == "speed") {
       return(switch(lang,
-                    de = "Bedenkzeiten",
-                         "Time controls"
+                    de = "Bedenkzeit",
+                         "Time control"
    ))}
 
-   if (x == "ratings") {
+   if (x == "rating") {
       return(switch(lang,
-                    de = "Wertungen",
-                         "Ratings"
+                    de = "Durchschnittswertung",
+                         "Average Rating"
    ))}
 
    if (x == "lichessdb") {
       return(switch(lang,
-                    de = "Lichess Datenbank",
-                         "Lichess database"
+                    de = "Datenbank",
+                         "Database"
+   ))}
+
+   if (x == "delcache") {
+      return(switch(lang,
+                    de = "Cache l\U000000F6schen",
+                         "Delete cache"
    ))}
 
    if (x == "barlen") {
       return(switch(lang,
-                    de = "Balken L\U000000E4nge",
+                    de = "Balkenl\U000000E4nge",
                          "Bar length"
    ))}
 
@@ -1549,6 +1567,18 @@
       return(switch(lang,
                     de = "Prozentbalken invertieren (TRUE,FALSE): ",
                          "Invert percentage bar (TRUE,FALSE): "
+   ))}
+
+   if (x == "rlydelcache") {
+      return(switch(lang,
+                    de = paste0("Wirklich den ", arg, " Cache l\U000000F6schen? (j/N)"),
+                         paste0("Really delete the ", arg, " cache? (y/N)")
+   ))}
+
+   if (x == "deletingcache") {
+      return(switch(lang,
+                    de = "L\U000000F6sche den Cache ...",
+                         "Deleting the cache ..."
    ))}
 
 }

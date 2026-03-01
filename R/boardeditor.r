@@ -30,7 +30,7 @@
       click1.y <<- pos.y
       click2.x <<- pos.x
       click2.y <<- pos.y
-      button <<- buttons
+      button <<- buttons[1]
       if (flip && pos[11-pos.x, 11-pos.y] == "")
          return(NULL)
       if (!flip && pos[pos.x, pos.y] == "")
@@ -98,7 +98,7 @@
       if (identical(click, "q") || identical(click, "\033") || identical(click, "ctrl-[")) {
          tmp <- pos[2:9,2:9]
          if (sum(tmp == "WK") != 1L || sum(tmp == "BK") != 1L) {
-            .texttop(.text("missingkings"), sleep=2, xadj=1, yadj=2)
+            .texttop(.text("kingswrong"), sleep=2, xadj=1, yadj=2)
             next
          }
          ischeck <- c(.isattacked(tmp, xy=c(which(tmp=="WK", arr.ind=TRUE)), attackcolor="b"),

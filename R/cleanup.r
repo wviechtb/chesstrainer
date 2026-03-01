@@ -1,8 +1,8 @@
-cleanup <- function(config=FALSE, colors=FALSE, seqdir=FALSE, history=FALSE) {
+cleanup <- function(config=FALSE, colors=FALSE, seqdir=FALSE, history=FALSE, cache=FALSE) {
 
    interactive <- TRUE
 
-   if (config || colors || seqdir || history)
+   if (config || colors || seqdir || history || cache)
       interactive <- FALSE
 
    cat("\n")
@@ -116,6 +116,34 @@ cleanup <- function(config=FALSE, colors=FALSE, seqdir=FALSE, history=FALSE) {
 
       if (dorm) {
          res <- unlink(dir.history, recursive=TRUE)
+         if (res == 0) {
+            cat("Directory removed successfully.\n")
+         } else {
+            cat("Directory could not be removed.\n")
+         }
+      }
+
+      cat("\n")
+
+   }
+
+   # remove the cache directory (and all files therein)
+
+   dir.cache <- file.path(tools::R_user_dir(package="chesstrainer", which="cache"))
+
+   if (file.exists(dir.cache)) {
+
+      cat("Directory for the cache found at:", dir.cache, "\n")
+
+      if (interactive) {
+         resp <- readline(prompt="Remove the cache directory (y/N)? ")
+         dorm <- identical(resp, "y")
+      } else {
+         dorm <- isTRUE(cache)
+      }
+
+      if (dorm) {
+         res <- unlink(dir.cache, recursive=TRUE)
          if (res == 0) {
             cat("Directory removed successfully.\n")
          } else {

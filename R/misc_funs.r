@@ -4,16 +4,16 @@
 .mousedownfun <- function(button,x,y) {
    if (length(button) == 0L)
       button <- 3
-   return(c(x,y,button))
+   return(c(x,y,button[1]))
 }
 
 .keyfun <- function(key)
    return(key)
 
-.print <- function(x) {
+.print <- function(x, addn=FALSE) {
    n <- length(x)
    for (i in 1:n) {
-      cat(x[i], "\n")
+      cat(x[i], ifelse(addn, "\n\n", "\n"))
    }
    return()
 }
@@ -113,6 +113,12 @@
    #square.y[square.y < 1] <- 1
    #square.y[square.y > 8] <- 8
    return(c(square.x, square.y))
+}
+
+.calcxy <- function(x, y, plt) {
+   x <- (x - plt[1]) / (plt[2] - plt[1]) * 8 + 1
+   y <- (y - plt[3]) / (plt[4] - plt[3]) * 8 + 1
+   return(c(x, y))
 }
 
 .calcsquarebe <- function(x, y, plt) {
@@ -956,7 +962,7 @@
          nextmoves[is.na(nextmoves)] <- ""
          return(nextmoves)
       } else {
-         return(NULL)
+         return()
       }
    })
    notnull <- !sapply(seqident, is.null)
@@ -1032,6 +1038,117 @@
 
 }
 
+.liquery <- function(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, speeds, ratings, barlen, invertbar, contliquery, texttop, switch1, switch2) {
+
+   fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
+   fen <- gsub(" ", "%20", fen, fixed=TRUE)
+   filename <- paste0(gsub("/", "_", fen, fixed=TRUE), ".rds")
+
+   files <- list.files(file.path(cachedir, lichessdb), pattern=".rds$")
+
+   if (filename %in% files) {
+
+      out <- readRDS(file.path(cachedir, lichessdb, filename))
+
+   } else {
+
+      #if (flip) {
+      #   ucimoves <- paste(paste0(letters[9-sub$moves[,2]], 9-sub$moves[,1], letters[9-sub$moves[,4]], 9-sub$moves[,3]), collapse=",")
+      #} else {
+      #   ucimoves <- paste(paste0(letters[sub$moves[,2]], sub$moves[,1], letters[sub$moves[,4]], sub$moves[,3]), collapse=",")
+      #}
+
+      if (lichessdb == "lichess") {
+         url <- paste0("https://explorer.lichess.ovh/lichess?topGames=0&recentGames=0&speeds=", speeds, "&ratings=", ratings, "&")
+      } else {
+         url <- paste0("https://explorer.lichess.ovh/masters?topGames=0&")
+      }
+
+      url <- paste0(url, "fen=", fen)
+
+      #if (!is.null(pos)) {
+      #   tmp <- "w"
+      #   if (nrow(sub$moves) > 0L) {
+      #      if (flip) {
+      #         piece <- sub$pos[9-sub$moves[1,1], 9-sub$moves[1,2]]
+      #      } else {
+      #         piece <- sub$pos[sub$moves[1,1], sub$moves[1,2]]
+      #      }
+      #      tmp <- ifelse(startsWith(piece, "W"), "w", "b")
+      #   }
+      #   startfen <- .genfen(pos, flip=flip, sidetoplay=tmp, sidetoplaystart=tmp, i=1)
+      #   startfen <- gsub(" ", "%20", startfen, fixed=TRUE)
+      #   url <- paste0(url, "fen=", startfen, "&")
+      #}
+
+      #url <- paste0(url, "play=", ucimoves)
+
+      out <- try(VERB("GET", url, content_type("application/octet-stream"), timeout=1), silent=TRUE)
+
+      if (inherits(out, "try-error")) {
+
+         .texttop(.text("noconnect"), sleep=1.5)
+         .texttop(texttop)
+         return()
+
+      } else {
+
+         if (out$status == 429) {
+            .texttop(.text("ratelimit"))
+            return()
+         }
+
+         out <- do.call(rbind, lapply(content(out)$moves, function(x) data.frame(move=x$uci, white=x$white, draw=x$draws, black=x$black)))
+
+         if (is.null(out)) {
+            if (!contliquery) {
+               .texttop(.text("posnotfound"), sleep=1.5)
+               .texttop(texttop)
+            }
+         }
+
+         saveRDS(out, file=file.path(cachedir, lichessdb, filename))
+
+      }
+
+   }
+
+   if (!is.null(out)) {
+
+      if (!contliquery)
+         eval(expr=switch1)
+      .flush()
+      out$total <- rowSums(out[2:4])
+      totals    <- colSums(out[2:5])
+      percs     <- .percent(totals[1:3])
+      out$perc  <- .percent(out$total)
+      bars      <- apply(out[2:4], 1, .percbar, len=barlen, invert=invertbar)
+      out[2:4]  <- t(apply(out[2:4], 1, .percent))
+      out[1]    <- sapply(out[[1]], function(x) .parsemove(x, pos=pos, flip=flip, evalval="", i=NULL, sidetoplay=sidetoplay, rename=FALSE, returnline=TRUE, hintdepth=1)$txt)
+      out       <- out[c(1,6,5,2:4)]
+      out       <- rbind(out, data.frame(move="total", perc=100, total=totals[[4]], white=percs[[1]], draw=percs[[2]], black=percs[[3]]))
+      bars      <- c(bars, .percbar(totals[1:3], len=barlen, invert=invertbar))
+      out$total <- .numshort(out$total)
+      colnames(out)[c(2,4:6)] <- c("%", "white%", "draw%", "black%")
+      ncols <- num_ansi_colors()
+      if (ncols >= 256)
+         out <- out[-c(4:6)]
+      txt <- capture.output(print(out, print.gap=2))
+      for (i in 1:length(txt)) {
+         cat(txt[i], "  ")
+         if (i > 1)
+            cat(bars[i-1])
+         cat("\n\n")
+      }
+      if (!contliquery)
+         eval(expr=switch2)
+
+   }
+
+   return()
+
+}
+
 .percent <- function(x, total=100) {
 
    x <- x / sum(x) * total
@@ -1047,11 +1164,44 @@
 }
 
 .percbar <- function(x, len=50, invert=FALSE) {
+   percent <- .percent(x)
    times <- .percent(x, total=len)
-   if (invert) {
-      bar <- paste0(rep(c("\U00002593","\U00002592","\U00002591"), times=times), collapse="")
+   ncols <- num_ansi_colors()
+   if (ncols >= 256) {
+      if (invert) {
+         w <- function(x) make_ansi_style("gray80", bg=TRUE)(make_ansi_style("gray15")(x))
+         b <- function(x) make_ansi_style("gray15", bg=TRUE)(make_ansi_style("gray80")(x))
+      } else {
+         w <- function(x) make_ansi_style("gray15", bg=TRUE)(make_ansi_style("gray80")(x))
+         b <- function(x) make_ansi_style("gray80", bg=TRUE)(make_ansi_style("gray15")(x))
+      }
+      d <- function(x) make_ansi_style("gray40", bg=TRUE)(make_ansi_style("gray80")(x))
+      white <- .center_text(times[1], ifelse(nchar(percent[1])+3 < times[1], paste0(percent[1], "%", collapse=""), ""))
+      draw  <- .center_text(times[2], ifelse(nchar(percent[2])+3 < times[2], paste0(percent[2], "%", collapse=""), ""))
+      black <- .center_text(times[3], ifelse(nchar(percent[3])+3 < times[3], paste0(percent[3], "%", collapse=""), ""))
+      bar <- paste0(w(white), d(draw), b(black), collapse="")
    } else {
-      bar <- paste0(rep(c("\U00002591","\U00002592","\U00002593"), times=times), collapse="")
+      if (invert) {
+         w <- "\U00002593"
+         b <- "\U00002591"
+      } else {
+         w <- "\U00002591"
+         b <- "\U00002593"
+      }
+      d <- "\U00002592"
+      white <- paste0(rep(w, times[1]), collapse="")
+      draw  <- paste0(rep(d, times[2]), collapse="")
+      black <- paste0(rep(b, times[3]), collapse="")
+      bar <- paste0(white, draw, black, collapse="")
    }
    return(bar)
+}
+
+.center_text <- function(width, text)
+   sprintf("%*s%s%*s", floor((width - nchar(text)) / 2), "", text, ceiling((width - nchar(text)) / 2), "")
+
+.flush <- function() {
+   if (isTRUE(.get("flush")))
+      cat(c("\033[2J","\033[0;0H"))
+   return()
 }

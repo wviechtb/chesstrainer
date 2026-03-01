@@ -119,12 +119,12 @@
 
 }
 
-.miscsettings <- function(multiplier, adjustwrong, adjusthint, evalsteps, timepermove, idletime, mintime) {
+.miscsettings <- function(multiplier, adjustwrong, adjusthint, evalsteps, timepermove, idletime, mintime, sleepadj) {
 
    cat(.text("currentsettings"))
 
-   tab <- data.frame(setting = c("multiplier", "adjustwrong", "adjusthint", "evalsteps", "timepermove", "idletime", "mintime"),
-                     val     = c(multiplier, adjustwrong, adjusthint, evalsteps, timepermove, idletime, mintime))
+   tab <- data.frame(setting = c("multiplier", "adjustwrong", "adjusthint", "evalsteps", "timepermove", "idletime", "mintime", "sleepadj"),
+                     val     = c(multiplier, adjustwrong, adjusthint, evalsteps, timepermove, idletime, mintime, sleepadj))
    tab$explanation <- .text("miscsetexpl")
    names(tab) <- c("", "", "")
 
@@ -134,7 +134,7 @@
       resp <- readline(prompt=.text("settingwhich"))
       if (identical(resp, ""))
          break
-      if (grepl("^[1-7]+$", resp)) {
+      if (grepl("^[1-8]+$", resp)) {
          setno <- round(as.numeric(resp))
          if (setno < 1 || setno > nrow(tab))
             next
@@ -148,7 +148,7 @@
             val[val < 0] <- 0
             val[val > 1] <- 1
          }
-         if (setno %in% c(2,3,5))
+         if (setno %in% c(2,3,5,8))
             val[val < 0] <- 0
          if (setno == 4) {
             val[val < 2] <- 2
@@ -169,71 +169,174 @@
 
 }
 
-.lichesssettings <- function(speeds, ratings, lichessdb, barlen, invertbar) {
+.lichesssettings <- function(speeds, ratings, lichessdb, barlen, invertbar, cachedir) {
 
-   cat(.text("currentsettings"))
+   col.bg          <- .get("col.bg")
+   col.help        <- .get("col.help")
+   col.help.border <- .get("col.help.border")
+   font.mono       <- .get("font.mono")
 
-   tab <- data.frame(setting = c("speeds", "ratings", "lichessdb", "barlen", "invertbar"),
-                     val     = c(speeds, ratings, lichessdb, barlen, invertbar))
-   names(tab) <- c("", "")
+   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=.get("lwd")+3)
 
-   while (TRUE) {
-      print(tab, right=FALSE, print.gap=3)
-      cat("\n")
-      resp <- readline(prompt=.text("settingwhich"))
-      if (identical(resp, ""))
-         break
-      if (grepl("^[1-7]+$", resp)) {
-         setno <- round(as.numeric(resp))
-         if (setno < 1 || setno > nrow(tab))
-            next
-         if (setno == 1) {
-            tmp <- readline(prompt=.text("setspeeds"))
-            if (identical(tmp, "") || is.na(tmp))
-               next
-            tmp <- gsub(" ", "", tmp, fixed=TRUE)
-            vals <- strsplit(tmp, ",")[[1]]
-            if (any(!is.element(vals, c("ultraBullet","bullet","blitz","rapid","classical","correspondence"))))
-               next
-         }
-         if (setno == 2) {
-            tmp <- readline(prompt=.text("setratings"))
-            if (identical(tmp, "") || is.na(tmp))
-               next
-            tmp <- gsub(" ", "", tmp, fixed=TRUE)
-            vals <- strsplit(tmp, ",")[[1]]
-            if (any(!is.element(vals, c(0,1000,1200,1400,1600,1800,2000,2200,2500))))
-               next
-         }
-         if (setno == 3) {
-            tmp <- readline(prompt=.text("setlichessdb"))
-            if (identical(tmp, "") || is.na(tmp))
-               next
-            if (!is.element(tmp, c("players","masters")))
-               next
-         }
-         if (setno == 4) {
-            tmp <- readline(prompt=.text("settingval", tab[setno,2]))
-            if (identical(tmp, "") || is.na(tmp))
-               next
-            tmp <- as.numeric(tmp)
-            tmp[tmp < 10] <- 10
-            tmp[tmp > 100] <- 100
-            tmp <- round(tmp)
-         }
-         if (setno == 5) {
-            tmp <- readline(prompt=.text("setinvertbar"))
-            if (identical(tmp, "") || is.na(tmp))
-               next
-         }
-         tab[setno,2] <- tmp
-      }
+   cex <- 1
+
+   title.xpos <- 1.5
+   title.ypos <- 8 - 1.4 * c(0:4)
+   text(title.xpos, title.ypos[1], .text("speed"),     pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(title.xpos, title.ypos[2], .text("rating"),    pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(title.xpos, title.ypos[3], .text("lichessdb"), pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(5, title.ypos[3], .text("delcache"), pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(title.xpos, title.ypos[4], .text("barlen"),    pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(title.xpos, title.ypos[5], .text("invertbar"), pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+
+   speeds.opts <- c("ultraBullet", "bullet", "blitz", "rapid", "classical", "correspondence")
+   speeds.xpos <- 2.2 + 1.1 * (seq_along(speeds.opts) - 1)
+   speeds.ypos <- title.ypos[1] - 0.4 * (title.ypos[1]-title.ypos[2])
+   speeds.txt  <- c("ultra", "bullet", "blitz", "rapid", "classic", "corresp")
+   speeds.on   <- speeds.opts %in% strsplit(speeds, ",", fixed=TRUE)[[1]]
+   speeds.box  <- list()
+   for (i in seq_along(speeds.txt)) {
+      speeds.box[[i]] <- .drawbutton(speeds.xpos[i], speeds.ypos, text=speeds.txt[i], len=max(nchar(speeds.txt)), on=speeds.on[i], cex=cex)
    }
 
-   out <- as.list(tab[[2]])
-   out[[4]] <- as.numeric(out[[4]])
-   out[[5]] <- as.logical(out[[5]])
-   names(out) <- tab[[1]]
+   ratings.opts <- c(0, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2500)
+   ratings.xpos <- 2 + 0.74 * (seq_along(ratings.opts) - 1)
+   ratings.ypos <- title.ypos[2] - 0.4 * (title.ypos[1]-title.ypos[2])
+   ratings.txt  <- ratings.opts
+   ratings.on   <- ratings.opts %in% strsplit(ratings, ",", fixed=TRUE)[[1]]
+   ratings.box  <- list()
+   for (i in seq_along(ratings.txt)) {
+      ratings.box[[i]] <- .drawbutton(ratings.xpos[i], ratings.ypos, text=ratings.txt[i], len=max(nchar(ratings.txt)), on=ratings.on[i], cex=cex)
+   }
+
+   lichessdb.opts <- c("lichess", "masters")
+   lichessdb.xpos <- 2.2 + 1.2 * (seq_along(lichessdb.opts) - 1)
+   lichessdb.ypos <- title.ypos[3] - 0.4 * (title.ypos[1]-title.ypos[2])
+   lichessdb.txt  <- c("players", "masters")
+   lichessdb.on   <- lichessdb.opts == lichessdb
+   lichessdb.box  <- list()
+   for (i in seq_along(lichessdb.txt)) {
+      lichessdb.box[[i]] <- .drawbutton(lichessdb.xpos[i], lichessdb.ypos, text=lichessdb.txt[i], len=max(nchar(lichessdb.txt)), on=lichessdb.on[i], cex=cex)
+   }
+
+   delcache.opts <- c("players", "masters")
+   delcache.xpos <- 5.7 + 1.2 * (seq_along(delcache.opts) - 1)
+   delcache.ypos <- title.ypos[3] - 0.4 * (title.ypos[1]-title.ypos[2])
+   delcache.txt  <- delcache.opts
+   delcache.on   <- c(FALSE, FALSE)
+   delcache.box  <- list()
+   for (i in seq_along(delcache.txt)) {
+      delcache.box[[i]] <- .drawbutton(delcache.xpos[i], delcache.ypos, text=delcache.txt[i], len=max(nchar(delcache.txt)), on=delcache.on[i], cex=cex)
+   }
+
+   barlen.xpos <- c(2,8)
+   barlen.ypos <- title.ypos[4] - 0.4 * (title.ypos[1]-title.ypos[2])
+   barlen.box  <- .drawslider(x=barlen.xpos, barlen.ypos, xlab=c(10,100), cex=cex)
+   .updateslider(NULL, barlen.ypos, oldval=barlen, xlim=barlen.xpos, range=c(10,100), round=TRUE, cex=cex)
+
+   invertbar.opts <- c("No", "Yes")
+   invertbar.xpos <- 2 + 0.8 * (seq_along(invertbar.opts) - 1)
+   invertbar.ypos <- title.ypos[5] - 0.4 * (title.ypos[1]-title.ypos[2])
+   invertbar.txt  <- invertbar.opts
+   invertbar.on   <- c(!invertbar, invertbar)
+   invertbar.box  <- list()
+   for (i in seq_along(invertbar.txt)) {
+      invertbar.box[[i]] <- .drawbutton(invertbar.xpos[i], invertbar.ypos, text=invertbar.txt[i], len=max(nchar(invertbar.txt)), on=invertbar.on[i], cex=cex)
+   }
+
+   while (TRUE) {
+
+      plt <- par("plt")
+
+      resp <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.mousedownfun, onKeybd=.keyfun)
+
+      if (is.numeric(resp)) {
+
+         xy <- .calcxy(resp[1], resp[2], plt)
+
+         hit <- sapply(speeds.box, function(coords) xy[1] >= coords[1] & xy[2] >= coords[2] & xy[1] <= coords[3] & xy[2] <= coords[4])
+         if (any(hit)) {
+            i <- which(hit)
+            speeds.on[i] <- !speeds.on[i]
+            if (all(!speeds.on)) {
+               speeds.on[i] <- !speeds.on[i]
+               next
+            }
+            .drawbutton(speeds.xpos[i], speeds.ypos, text=speeds.txt[i], len=max(nchar(speeds.txt)), on=speeds.on[i], cex=cex)
+            next
+         }
+
+         hit <- sapply(ratings.box, function(coords) xy[1] >= coords[1] & xy[2] >= coords[2] & xy[1] <= coords[3] & xy[2] <= coords[4])
+         if (any(hit)) {
+            i <- which(hit)
+            if (all(!ratings.on)) {
+               ratings.on[i] <- !ratings.on[i]
+               next
+            }
+            ratings.on[i] <- !ratings.on[i]
+            .drawbutton(ratings.xpos[i], ratings.ypos, text=ratings.txt[i], len=max(nchar(ratings.txt)), on=ratings.on[i], cex=cex)
+            next
+         }
+
+         hit <- sapply(lichessdb.box, function(coords) xy[1] >= coords[1] & xy[2] >= coords[2] & xy[1] <= coords[3] & xy[2] <= coords[4])
+         if (any(hit)) {
+            i <- which(hit)
+            if (lichessdb.on[i])
+               next
+            lichessdb.on <- !lichessdb.on
+            for (i in seq_along(lichessdb.txt)) {
+               .drawbutton(lichessdb.xpos[i], lichessdb.ypos, text=lichessdb.txt[i], len=max(nchar(lichessdb.txt)), on=lichessdb.on[i], cex=cex)
+            }
+            next
+         }
+
+         hit <- sapply(delcache.box, function(coords) xy[1] >= coords[1] & xy[2] >= coords[2] & xy[1] <= coords[3] & xy[2] <= coords[4])
+         if (any(hit)) {
+            i <- which(hit)
+            .texttop(.text("rlydelcache", lichessdb.txt[i]))
+            answer <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=.keyfun)
+            answer <- .confirm(answer)
+            if (answer) {
+               .texttop(.text("deletingcache"), sleep=1)
+               unlink(file.path(cachedir, lichessdb.opts[i], "*"))
+            }
+            .texttop("")
+            next
+         }
+
+         hit <- xy[1] >= barlen.box[1] & xy[2] >= barlen.box[2] & xy[1] <= barlen.box[3] & xy[2] <= barlen.box[4]
+         if (hit) {
+            barlen <- .updateslider(xy[1], barlen.ypos, oldval=barlen, xlim=barlen.xpos, range=c(10,100), round=TRUE, cex=cex)
+            next
+         }
+
+         hit <- sapply(invertbar.box, function(coords) xy[1] >= coords[1] & xy[2] >= coords[2] & xy[1] <= coords[3] & xy[2] <= coords[4])
+         if (any(hit)) {
+            i <- which(hit)
+            if (invertbar.on[i])
+               next
+            invertbar.on <- !invertbar.on
+            for (i in seq_along(invertbar.txt)) {
+               .drawbutton(invertbar.xpos[i], invertbar.ypos, text=invertbar.txt[i], len=max(nchar(invertbar.txt)), on=invertbar.on[i], cex=cex)
+            }
+            next
+         }
+
+      }
+
+      if (identical(resp, "q") || identical(resp, "\033") || identical(resp, "ctrl-["))
+         break
+
+   }
+
+   speeds    <- paste0(speeds.opts[speeds.on],   collapse=",")
+   ratings   <- paste0(ratings.opts[ratings.on], collapse=",")
+   lichessdb <- lichessdb.opts[lichessdb.on]
+   invertbar <- invertbar.on[2]
+
+   out <- list(speeds=speeds, ratings=ratings, lichessdb=lichessdb, barlen=barlen, invertbar=invertbar)
+
+   #.erase(1, 1, 9, 9)
 
    return(out)
 
@@ -319,7 +422,7 @@
 
    click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.mousedownfun, onKeybd=.keyfun)
 
-   if (identical(click, "i")) {
+   if (identical(click, "ctrl-L")) {
       if (lang == "de") {
          lang <- "en"
       } else {

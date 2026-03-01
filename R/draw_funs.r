@@ -1030,7 +1030,7 @@
       }
    }
 
-   Sys.sleep(sleep)
+   Sys.sleep(sleep + .get("sleepadj"))
 
    if (sleep > 0)
       rect(xleft, ybottom-ymargin, xright, ytop+ymargin, col=.get("col.bg"), border=NA)
@@ -1060,7 +1060,7 @@
    } else {
       srt <- 0
       xleft  <- 0.00
-      xright <- 9.00
+      xright <- 8.95
    }
 
    redraw <- !any(onlyi, onlyshow, onlyscore, onlyeco)
@@ -1595,6 +1595,81 @@
 
    for (j in 1:steps)
       rect(x1pos[j], y1pos[j], x2pos[j], y2pos[j], col=col.bg, border=NA)
+
+}
+
+.drawbutton <- function(x, y, text, len, cex, on) {
+
+   font.mono  <- .get("font.mono")
+   col.text   <- .get("col.bg")
+   col.box    <- ifelse(on, .get("col.square.l"), .get("col.square.d"))
+   col.border <- .get("col.top")
+
+   height <- strheight("A", family=font.mono, cex=cex)
+   width  <- strwidth(paste0(rep("A",len), collapse=""), family=font.mono, cex=cex)
+
+   x1 <- x - width  / 1.6
+   y1 <- y - height / 0.8
+   x2 <- x + width  / 1.6
+   y2 <- y + height / 0.8
+
+   rect(x1, y1, x2, y2, col=col.box, border=col.border, lwd=4)
+   text(x, y, text, family=font.mono, cex=cex, col=col.text, adj=c(0.5,0.5))
+
+   return(c(x1,y1,x2,y2))
+
+}
+
+.drawslider <- function(x, y, xlab, cex) {
+
+   font.mono <- .get("font.mono")
+   col.line  <- .get("col.square.d")
+
+   height <- strheight("A", family=font.mono, cex=cex)
+
+   segments(x[1], y, x[2], y, col=col.line)
+   segments(x[1], y-0.06, x[1], y+0.06, col=col.line)
+   segments(x[2], y-0.06, x[2], y+0.06, col=col.line)
+   text(x[1], y - 1.6 * height, xlab[1], family=font.mono, cex=cex, col=col.line, adj=c(0.5,0.5))
+   text(x[2], y - 1.6 * height, xlab[2], family=font.mono, cex=cex, col=col.line, adj=c(0.5,0.5))
+
+   return(c(x[1], y-height, x[2], y+height))
+
+}
+
+.updateslider <- function(x, y, oldval, xlim, range, round, cex) {
+
+   font.mono  <- .get("font.mono")
+   col.slider <- .get("col.square.l")
+   col.line   <- .get("col.square.d")
+   col.bg     <- .get("col.bg")
+
+   height <- strheight("A", family=font.mono, cex=cex)
+
+   xold <- xlim[1] + (oldval - range[1]) / (range[2] - range[1]) * (xlim[2] - xlim[1])
+
+   if (is.null(x)) {
+      rect(xold-0.03, y-0.08, xold+0.03, y+0.08, col=col.slider, border=col.slider)
+      text(xold, y + 1.6 * height, oldval, family=font.mono, cex=cex, col=col.line, adj=c(0.5,0.5))
+      return()
+   } else {
+      rect(xold-0.1, y-0.12, xold+0.1, y+0.12, col=col.bg, border=col.bg)
+      rect(max(1.25, xold-1), y+0.05, min(8.75,xold+1), y+3 * height, col=col.bg, border=col.bg)
+      segments(max(xlim[1], xold-0.1), y, min(xlim[2], xold+0.1), y, col=col.line)
+      segments(xlim[1], y-0.06, xlim[1], y+0.06, col=col.line)
+      segments(xlim[2], y-0.06, xlim[2], y+0.06, col=col.line)
+   }
+
+   rect(x-0.03, y-0.08, x+0.03, y+0.08, col=col.slider, border=col.slider)
+
+   newval <- range[1] + (x - xlim[1]) / (xlim[2] - xlim[1]) * (range[2] - range[1])
+
+   if (round)
+      newval <- round(newval)
+
+   text(x, y + 1.6 * height, newval, family=font.mono, cex=cex, col=col.line, adj=c(0.5,0.5))
+
+   return(newval)
 
 }
 
