@@ -1251,8 +1251,8 @@ play <- function(lang="en", sfpath="", ...) {
                click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=mousemove, onMouseUp=mouseup, onKeybd=.keyfun)
             }
 
-            if (iswin)
-               Sys.sleep(0.1)
+            #if (iswin)
+            #   Sys.sleep(0.1)
 
             idle.time <- proc.time()[[3]] - timestart
 
