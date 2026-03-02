@@ -95,6 +95,7 @@ play <- function(lang="en", sfpath="", ...) {
    quitanim    <- ifelse(is.null(ddd[["quitanim"]]),    TRUE,                    ddd[["quitanim"]])
    inhibit     <- ifelse(is.null(ddd[["inhibit"]]),     FALSE,                   ddd[["inhibit"]])
    flush       <- ifelse(is.null(ddd[["flush"]]),       FALSE,                   ddd[["flush"]])
+   raster      <- ifelse(is.null(ddd[["raster"]]),      TRUE,                    ddd[["raster"]])
 
    # get switch1/switch2 functions if they are specified via ...
 
@@ -356,6 +357,7 @@ play <- function(lang="en", sfpath="", ...) {
    assign("verbose", verbose, envir=.chesstrainer)
    assign("inhibit", inhibit, envir=.chesstrainer)
    assign("flush", flush, envir=.chesstrainer)
+   assign("raster", raster, envir=.chesstrainer)
    assign("sleepadj", sleepadj, envir=.chesstrainer)
    assign("switch1", switch1, envir=.chesstrainer)
    assign("switch2", switch2, envir=.chesstrainer)

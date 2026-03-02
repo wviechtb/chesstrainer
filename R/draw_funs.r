@@ -54,7 +54,7 @@
 
    mat <- outer(1:8, 1:8, function(x,y) .is.even(x+y))
 
-   image(1:8+0.5, 1:8+0.5, mat, col=c(col.square.l, col.square.d), xaxs="i", yaxs="i", xlab="", ylab="", xaxt="n", yaxt="n", bty="n", useRaster=TRUE)
+   image(1:8+0.5, 1:8+0.5, mat, col=c(col.square.l, col.square.d), xaxs="i", yaxs="i", xlab="", ylab="", xaxt="n", yaxt="n", bty="n", useRaster=.get("raster"))
 
    mapply(.drawcoords, rep(1,8), 1:8, MoreArgs=list(flip=flip))
    mapply(.drawcoords, 1:8, rep(8,8), MoreArgs=list(flip=flip))
@@ -95,7 +95,7 @@
 
       mat <- outer(1:8, 1:8, function(x,y) .is.even(x+y))
       par(new=TRUE)
-      image(1:8+0.5, 1:8+0.5, mat, col=c(.get("col.square.l"), .get("col.square.d")), xaxs="i", yaxs="i", xlab="", ylab="", xaxt="n", yaxt="n", bty="n", useRaster=TRUE)
+      image(1:8+0.5, 1:8+0.5, mat, col=c(.get("col.square.l"), .get("col.square.d")), xaxs="i", yaxs="i", xlab="", ylab="", xaxt="n", yaxt="n", bty="n", useRaster=.get("raster"))
       par(new=FALSE)
 
       mapply(.drawcoords, rep(1,8), 1:8, MoreArgs=list(flip=flip))
@@ -175,7 +175,7 @@
    mat <- matrix(1, nrow=10, ncol=10)
    mat[2:9,2:9] <- outer(1:8, 1:8, function(x,y) ifelse(.is.even(x+y), 2, 3))
 
-   image(1:10+0.5, 1:10+0.5, mat, col=c(col.bg, col.square.d, col.square.l), xaxs="i", yaxs="i", xlab="", ylab="", xaxt="n", yaxt="n", bty="n", useRaster=TRUE)
+   image(1:10+0.5, 1:10+0.5, mat, col=c(col.bg, col.square.d, col.square.l), xaxs="i", yaxs="i", xlab="", ylab="", xaxt="n", yaxt="n", bty="n", useRaster=.get("raster"))
 
    mapply(.drawcoords, rep(2,8), 2:9, MoreArgs=list(flip=flip, adj=1))
    mapply(.drawcoords, 2:9, rep(9,8), MoreArgs=list(flip=flip, adj=1))
