@@ -172,6 +172,8 @@ play <- function(lang="en", sfpath="", ...) {
    if (length(mar2) == 1L)
       mar2 <- rep(mar2,4)
    mar2 <- pmax(mar2,1)
+   if (is.null(token))
+      token <- ""
 
    verbose <- isTRUE(ddd$verbose)
 
@@ -1279,6 +1281,8 @@ play <- function(lang="en", sfpath="", ...) {
             }
 
             ##################################################################
+
+            if (!is.numeric(click)) {
 
             ### general keys
 
@@ -4061,6 +4065,8 @@ play <- function(lang="en", sfpath="", ...) {
             }
 
             ##################################################################
+
+            }
 
             # if click is an actual click (and drag) on the board
 
