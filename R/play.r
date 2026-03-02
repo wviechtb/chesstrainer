@@ -12,6 +12,8 @@ play <- function(lang="en", sfpath="", ...) {
    options(warn=1)
    on.exit(options(warn=owarn))
 
+   iswin <- .Platform$OS.type == "windows"
+
    assign("lang", lang, envir=.chesstrainer)
 
    # get arguments passed via ...
@@ -1249,6 +1251,9 @@ play <- function(lang="en", sfpath="", ...) {
                click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=mousemove, onMouseUp=mouseup, onKeybd=.keyfun)
             }
 
+            if (iswin)
+               Sys.sleep(0.1)
+
             idle.time <- proc.time()[[3]] - timestart
 
             if (idle.time > idletime)
@@ -1281,8 +1286,6 @@ play <- function(lang="en", sfpath="", ...) {
             }
 
             ##################################################################
-
-            if (!is.numeric(click)) {
 
             ### general keys
 
@@ -4065,8 +4068,6 @@ play <- function(lang="en", sfpath="", ...) {
             }
 
             ##################################################################
-
-            }
 
             # if click is an actual click (and drag) on the board
 
