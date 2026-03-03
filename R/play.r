@@ -12,7 +12,8 @@ play <- function(lang="en", sfpath="", ...) {
    options(warn=1)
    on.exit(options(warn=owarn))
 
-   iswin <- .Platform$OS.type == "windows"
+   iswin <- tolower(.Platform$OS.type == "windows")
+   gui <- tolower(.Platform$GUI)
 
    assign("lang", lang, envir=.chesstrainer)
 
@@ -94,24 +95,14 @@ play <- function(lang="en", sfpath="", ...) {
    invertbar   <- ifelse(is.null(ddd[["invertbar"]]),   FALSE,                   ddd[["invertbar"]])
    lichessdb   <- ifelse(is.null(ddd[["lichessdb"]]),   "lichess",               ddd[["lichessdb"]])
    token       <- ifelse(is.null(ddd[["token"]]),       "",                      ddd[["token"]])
+   switch1     <- ifelse(is.null(ddd[["switch1"]]), ifelse(isTRUE(iswin) && identical(gui, "rgui"), "bringToTop(-1)",        "invisible()"), ddd[["switch1"]])
+   switch2     <- ifelse(is.null(ddd[["switch2"]]), ifelse(isTRUE(iswin) && identical(gui, "rgui"), "bringToTop(dev.cur())", "invisible()"), ddd[["switch2"]])
+
+   # these are not saved as part of the settings
    quitanim    <- ifelse(is.null(ddd[["quitanim"]]),    TRUE,                    ddd[["quitanim"]])
    inhibit     <- ifelse(is.null(ddd[["inhibit"]]),     FALSE,                   ddd[["inhibit"]])
    flush       <- ifelse(is.null(ddd[["flush"]]),       FALSE,                   ddd[["flush"]])
    raster      <- ifelse(is.null(ddd[["raster"]]),      TRUE,                    ddd[["raster"]])
-
-   # get switch1/switch2 functions if they are specified via ...
-
-   if (is.null(ddd[["switch1"]])) {
-      switch1 <- parse(text="invisible()")
-   } else {
-      switch1 <- parse(text = ddd[["switch1"]])
-   }
-
-   if (is.null(ddd[["switch2"]])) {
-      switch2 <- parse(text="invisible()")
-   } else {
-      switch2 <- parse(text = ddd[["switch2"]])
-   }
 
    # ensure that argument values passed via ... are sensible
 
@@ -198,7 +189,8 @@ play <- function(lang="en", sfpath="", ...) {
                        eval=eval, evalsteps=evalsteps, coords=coords, showtransp=showtransp, matdiff=matdiff, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth,
-                       difffun=difffun, difflen=difflen, diffmin=diffmin, zenmode=zenmode, speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb, token=token, mar=mar, mar2=mar2)
+                       difffun=difffun, difflen=difflen, diffmin=diffmin, zenmode=zenmode, speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb, token=token,
+                       mar=mar, mar2=mar2, switch1=switch1, switch2=switch2)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       cols <- sapply(cols.all, function(x) .get(x))
       saveRDS(cols, file=file.path(configdir, "colors.rds"))
@@ -321,6 +313,10 @@ play <- function(lang="en", sfpath="", ...) {
             mar <- settings[["mar"]]
          if (is.null(mc[["mar2"]]))
             mar2 <- settings[["mar2"]]
+         if (is.null(mc[["switch1"]]))
+            switch1 <- settings[["switch1"]]
+         if (is.null(mc[["switch2"]]))
+            switch2 <- settings[["switch2"]]
       }
       sfpath <- suppressWarnings(normalizePath(sfpath))
       settings <- list(lang=lang, player=player, mode=mode, seqdir=seqdir, seqdirpos=seqdirpos,
@@ -328,7 +324,8 @@ play <- function(lang="en", sfpath="", ...) {
                        eval=eval, evalsteps=evalsteps, coords=coords, showtransp=showtransp, matdiff=matdiff, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth,
-                       difffun=difffun, difflen=difflen, diffmin=diffmin, zenmode=zenmode, speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb, token=token, mar=mar, mar2=mar2)
+                       difffun=difffun, difflen=difflen, diffmin=diffmin, zenmode=zenmode, speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb, token=token,
+                       mar=mar, mar2=mar2, switch1=switch1, switch2=switch2, firstrun=settings$firstrun)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       if (file.exists(file.path(configdir, "colors.rds"))) {
          cols <- readRDS(file.path(configdir, "colors.rds"))
@@ -340,6 +337,16 @@ play <- function(lang="en", sfpath="", ...) {
          saveRDS(cols, file=file.path(configdir, "colors.rds"))
       }
    }
+
+   #if (is.null(settings$firstrun)) {
+   #   settings$firstrun <- FALSE
+   #   saveRDS(settings, file=file.path(configdir, "settings.rds"))
+   #}
+
+   # parse switch1/switch2 text
+
+   switch1 <- parse(text=switch1)
+   switch2 <- parse(text=switch2)
 
    assign("lang", lang, envir=.chesstrainer)
    assign("cex.top", cex.top, envir=.chesstrainer)
@@ -3776,7 +3783,7 @@ play <- function(lang="en", sfpath="", ...) {
                            volume=volume, showgraph=showgraph, repmistake=repmistake, target=target, # cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
                            difffun=difffun, difflen=difflen, diffmin=diffmin,
                            sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, contanalysis=contanalysis)
-                           #speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb, token="*****")
+                           #speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb, token=paste0(rep("*", nchar(token), collapse=""))
                .showsettings(tab)
                .redrawpos(pos, flip=flip)
                .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
@@ -4548,7 +4555,7 @@ play <- function(lang="en", sfpath="", ...) {
                      }
 
                      if (identical(click, "i")) {
-                        .liquery(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, token, speeds, ratings, barlen, invertbar, contliquery, texttop, switch1, switch2)
+                        .liquery(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, token, speeds, ratings, barlen, invertbar, contliquery, texttop)
                      }
 
                      if (identical(click, "ctrl-V")) {

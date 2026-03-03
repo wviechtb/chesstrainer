@@ -1071,7 +1071,7 @@
       }
 
       url <- paste0(url, "fen=", fen)
-      url <- paste(url, paste0("--header 'Authorization: Bearer ", token, "'"))
+      header <- paste("Bearer", token)
 
       #if (!is.null(pos)) {
       #   tmp <- "w"
@@ -1090,7 +1090,7 @@
 
       #url <- paste0(url, "play=", ucimoves)
 
-      out <- try(VERB("GET", url, content_type("application/octet-stream"), timeout=1), silent=TRUE)
+      out <- try(VERB("GET", url, add_headers('Authorization' = header), content_type("application/octet-stream"), timeout=1), silent=TRUE)
 
       if (inherits(out, "try-error")) {
 
