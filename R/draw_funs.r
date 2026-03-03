@@ -1653,6 +1653,13 @@
       text(xold, y + 1.6 * height, oldval, family=font.mono, cex=cex, col=col.line, adj=c(0.5,0.5))
       return()
    } else {
+      x[x < xlim[1]] <- xlim[1]
+      x[x > xlim[2]] <- xlim[2]
+      newval <- range[1] + (x - xlim[1]) / (xlim[2] - xlim[1]) * (range[2] - range[1])
+      if (round)
+         newval <- round(newval)
+      if (oldval == newval)
+         return(newval)
       rect(xold-0.1, y-0.12, xold+0.1, y+0.12, col=col.bg, border=col.bg)
       rect(max(1.25, xold-1), y+0.05, min(8.75,xold+1), y+3 * height, col=col.bg, border=col.bg)
       segments(max(xlim[1], xold-0.1), y, min(xlim[2], xold+0.1), y, col=col.line, lend=2)
@@ -1661,12 +1668,6 @@
    }
 
    rect(x-0.03, y-0.08, x+0.03, y+0.08, col=col.slider, border=col.slider)
-
-   newval <- range[1] + (x - xlim[1]) / (xlim[2] - xlim[1]) * (range[2] - range[1])
-
-   if (round)
-      newval <- round(newval)
-
    text(x, y + 1.6 * height, newval, family=font.mono, cex=cex, col=col.line, adj=c(0.5,0.5))
 
    return(newval)

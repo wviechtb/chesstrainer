@@ -178,6 +178,8 @@
    switch1         <- .get("switch1")
    switch2         <- .get("switch2")
 
+   cat(paste0(rep("\n ", 200), collapse=""))
+
    rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=.get("lwd")+3)
 
    cex <- 1
@@ -249,11 +251,40 @@
 
    text(5, invertbar.ypos, paste0(rep("*", nchar(token)), collapse=""), pos=4, cex=cex, family=font.mono, col=col.text, font=2)
 
+   .mousedownfun <- function(button,x,y) {
+      xy <- .calcxy(x, y, plt)
+      isslider <<- xy[1] >= barlen.box[1] & xy[2] >= barlen.box[2] & xy[1] <= barlen.box[3] & xy[2] <= barlen.box[4]
+      if (isslider) {
+         barlen <<- .updateslider(xy[1], barlen.ypos, oldval=barlen, xlim=barlen.xpos, range=c(10,100), round=TRUE, cex=cex)
+         return(NULL)
+      } else {
+         if (length(button) == 0L)
+            button <- 3
+         return(c(x,y,button[1]))
+      }
+   }
+
+   .mousemove <- function(buttons, x, y) {
+      if (isslider) {
+         xy <- .calcxy(x, y, plt)
+         barlen <<- .updateslider(xy[1], barlen.ypos, oldval=barlen, xlim=barlen.xpos, range=c(10,100), round=TRUE, cex=cex)
+         return(NULL)
+      }
+      return(1)
+   }
+
+   .mouseup <- function(buttons, x, y) {
+      isslider <<- FALSE
+      return(1)
+   }
+
+   isslider <- FALSE
+
    while (TRUE) {
 
       plt <- par("plt")
 
-      resp <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.mousedownfun, onKeybd=.keyfun)
+      resp <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.mousedownfun, onMouseMove=.mousemove, onMouseUp=.mouseup, onKeybd=.keyfun)
 
       if (is.numeric(resp)) {
 
@@ -309,11 +340,11 @@
             next
          }
 
-         hit <- xy[1] >= barlen.box[1] & xy[2] >= barlen.box[2] & xy[1] <= barlen.box[3] & xy[2] <= barlen.box[4]
-         if (hit) {
-            barlen <- .updateslider(xy[1], barlen.ypos, oldval=barlen, xlim=barlen.xpos, range=c(10,100), round=TRUE, cex=cex)
-            next
-         }
+         #hit <- xy[1] >= barlen.box[1] & xy[2] >= barlen.box[2] & xy[1] <= barlen.box[3] & xy[2] <= barlen.box[4]
+         #if (hit) {
+         #   barlen <- .updateslider(xy[1], barlen.ypos, oldval=barlen, xlim=barlen.xpos, range=c(10,100), round=TRUE, cex=cex)
+         #   next
+         #}
 
          hit <- sapply(invertbar.box, function(coords) xy[1] >= coords[1] & xy[2] >= coords[2] & xy[1] <= coords[3] & xy[2] <= coords[4])
          if (any(hit)) {
@@ -330,10 +361,11 @@
          hit <- xy[1] >= 5 & xy[2] >= invertbar.box[[1]][2] & xy[1] <= 7 & xy[2] <= (title.ypos[5]+0.2)
          if (hit) {
             eval(expr=switch1)
-            token <- readline(prompt=.text("token"))
+            tmp <- readline(prompt=.text("token"))
             eval(expr=switch2)
-            if (identical(token , ""))
+            if (identical(tmp, ""))
                next
+            token <- tmp
             rect(4.8, invertbar.ypos-0.3, 8.5, invertbar.ypos+0.3, col=col.bg, border=NA)
             text(5, invertbar.ypos, paste0(rep("*", nchar(token)), collapse=""), pos=4, cex=cex, family=font.mono, col=col.text, font=2)
             next
