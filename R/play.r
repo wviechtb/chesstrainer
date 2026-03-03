@@ -480,8 +480,8 @@ play <- function(lang="en", sfpath="", ...) {
    oldmode  <- ifelse(mode == "play", "add", mode)
    .difffun <- eval(parse(text=paste0(".difffun", difffun)))
    contanalysis <- FALSE
-   contliquery <- FALSE
-   updateall <- FALSE
+   contliquery  <- FALSE
+   updateall    <- FALSE
 
    # session variables
 
@@ -1133,6 +1133,9 @@ play <- function(lang="en", sfpath="", ...) {
             evalvals <- tmp$evalvals
          }
 
+         if (mode %in% c("add","analysis") && contliquery)
+            .liquery(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, token, speeds, ratings, barlen, invertbar, contliquery, texttop)
+
          input <- TRUE
          islastmove <- FALSE
 
@@ -1694,6 +1697,8 @@ play <- function(lang="en", sfpath="", ...) {
                      texttop  <- tmp$texttop
                      evalvals <- tmp$evalvals
                   }
+                  if (mode %in% c("add","analysis") && contliquery)
+                     .liquery(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, token, speeds, ratings, barlen, invertbar, contliquery, texttop)
                }
 
                next
@@ -1799,6 +1804,8 @@ play <- function(lang="en", sfpath="", ...) {
                      texttop  <- tmp$texttop
                      evalvals <- tmp$evalvals
                   }
+                  if (mode %in% c("add","analysis") && contliquery)
+                     .liquery(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, token, speeds, ratings, barlen, invertbar, contliquery, texttop)
                }
                next
             }
@@ -1894,6 +1901,8 @@ play <- function(lang="en", sfpath="", ...) {
                      texttop  <- tmp$texttop
                      evalvals <- tmp$evalvals
                   }
+                  if (contliquery)
+                     .liquery(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, token, speeds, ratings, barlen, invertbar, contliquery, texttop)
                   next
                }
                comment <- ""
@@ -1934,12 +1943,14 @@ play <- function(lang="en", sfpath="", ...) {
                   matetype <- res.sf$matetype
                   sfproc   <- res.sf$sfproc
                   sfrun    <- res.sf$sfrun
-                  if (mode %in% c("add","analysis") && contanalysis) {
+                  if (contanalysis) {
                      tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                      harrows  <- tmp$harrows
                      texttop  <- tmp$texttop
                      evalvals <- tmp$evalvals
                   }
+                  if (contliquery)
+                     .liquery(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, token, speeds, ratings, barlen, invertbar, contliquery, texttop)
                }
                next
             }
@@ -2032,12 +2043,14 @@ play <- function(lang="en", sfpath="", ...) {
                   matetype <- res.sf$matetype
                   sfproc   <- res.sf$sfproc
                   sfrun    <- res.sf$sfrun
-                  if (mode %in% c("add","analysis") && contanalysis) {
+                  if (contanalysis) {
                      tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                      harrows  <- tmp$harrows
                      texttop  <- tmp$texttop
                      evalvals <- tmp$evalvals
                   }
+                  if (contliquery)
+                     .liquery(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, token, speeds, ratings, barlen, invertbar, contliquery, texttop)
                }
                next
             }
@@ -2099,6 +2112,8 @@ play <- function(lang="en", sfpath="", ...) {
                   texttop  <- tmp$texttop
                   evalvals <- tmp$evalvals
                }
+               if (mode %in% c("add","analysis") && contliquery)
+                  .liquery(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, token, speeds, ratings, barlen, invertbar, contliquery, texttop)
                next
             }
 
@@ -2531,6 +2546,8 @@ play <- function(lang="en", sfpath="", ...) {
                   texttop  <- tmp$texttop
                   evalvals <- tmp$evalvals
                }
+               if (contliquery)
+                  .liquery(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, token, speeds, ratings, barlen, invertbar, contliquery, texttop)
                next
 
             }
@@ -2768,6 +2785,8 @@ play <- function(lang="en", sfpath="", ...) {
                      evalvals <- tmp$evalvals
                   }
                }
+               if (mode %in% c("add","analysis") && contliquery)
+                  .liquery(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, token, speeds, ratings, barlen, invertbar, contliquery, texttop)
                if (verbose)
                   print(pos)
                next
@@ -2782,11 +2801,18 @@ play <- function(lang="en", sfpath="", ...) {
 
             # I to toggle continuous querying on/off (only in add and analysis mode)
 
-            #if (mode %in% c("add","analysis") && identical(click, "I")) {
-            #   contliquery <- !contliquery
-            #   .texttop(.text("contliquery", contliquery), sleep=0.75)
-            #   next
-            #}
+            if (mode %in% c("add","analysis","play") && identical(click, "I")) {
+               if (is.null(token) || token == "") {
+                  .texttop(.text("needtoken"), sleep=2)
+                  .texttop(texttop)
+                  next
+               }
+               contliquery <- !contliquery
+               .texttop(.text("contliquery", contliquery), sleep=0.75)
+               if (contliquery)
+                  .liquery(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, token, speeds, ratings, barlen, invertbar, contliquery, texttop)
+               next
+            }
 
             ################################################################
 
@@ -4459,6 +4485,8 @@ play <- function(lang="en", sfpath="", ...) {
                            texttop  <- tmp$texttop
                            evalvals <- tmp$evalvals
                         }
+                        if (contliquery)
+                           .liquery(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, token, speeds, ratings, barlen, invertbar, contliquery, texttop)
                         .textbot(mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
                         contplay <- TRUE
                         break

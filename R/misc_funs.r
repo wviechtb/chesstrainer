@@ -1120,7 +1120,12 @@
 
    }
 
-   if (!is.null(out)) {
+   if (is.null(out)) {
+
+      if (contliquery)
+         cat("\n", .text("posnotfound"), "\n\n", sep="")
+
+   } else {
 
       if (!contliquery)
          eval(expr=.get("switch1"))
