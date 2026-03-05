@@ -12,7 +12,7 @@ play <- function(lang="en", sfpath="", ...) {
    options(warn=1)
    on.exit(options(warn=owarn))
 
-   iswin <- tolower(.Platform$OS.type == "windows")
+   iswin <- .Platform$OS.type == "windows"
    gui <- tolower(.Platform$GUI)
 
    assign("lang", lang, envir=.chesstrainer)
