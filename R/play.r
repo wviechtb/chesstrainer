@@ -1,4 +1,4 @@
-play <- function(lang="en", sfpath="", ...) {
+play <- function(lang="en", ...) {
 
    if (!interactive())
       return(.text("interactive"))
@@ -95,6 +95,7 @@ play <- function(lang="en", sfpath="", ...) {
    invertbar   <- ifelse(is.null(ddd[["invertbar"]]),   FALSE,                   ddd[["invertbar"]])
    lichessdb   <- ifelse(is.null(ddd[["lichessdb"]]),   "lichess",               ddd[["lichessdb"]])
    token       <- ifelse(is.null(ddd[["token"]]),       "",                      ddd[["token"]])
+   sfpath      <- ifelse(is.null(ddd[["sfpath"]]),      "",                      ddd[["sfpath"]])
    switch1     <- ifelse(is.null(ddd[["switch1"]]), ifelse(isTRUE(iswin) && identical(gui, "rgui"), "bringToTop(-1)",        "invisible()"), ddd[["switch1"]])
    switch2     <- ifelse(is.null(ddd[["switch2"]]), ifelse(isTRUE(iswin) && identical(gui, "rgui"), "bringToTop(dev.cur())", "invisible()"), ddd[["switch2"]])
 
@@ -167,6 +168,8 @@ play <- function(lang="en", sfpath="", ...) {
    mar2 <- pmax(mar2,1)
    if (is.null(token))
       token <- ""
+   if (is.null(sfpath))
+      sfpath <- ""
 
    verbose <- isTRUE(ddd$verbose)
 

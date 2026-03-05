@@ -5,11 +5,10 @@
    Function to start the chess trainer.
 }
 \usage{
-play(lang="en", sfpath="", \dots)
+play(lang="en", \dots)
 }
 \arguments{
    \item{lang}{character string to specify the language (either \code{"en"} for English or \code{"de"} for German).}
-   \item{sfpath}{character string giving the path (including the executable) to Stockfish. If blank, Stockfish is not used for position evaluations.}
    \item{\dots}{other arguments}
 }
 \details{
