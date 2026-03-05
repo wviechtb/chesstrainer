@@ -256,26 +256,37 @@
       cat("\n\n")
 
       resp <- readline(prompt=.text("sfoptionwhich"))
+
       if (identical(resp, ""))
          break
+
       if (grepl("^[1-9]$", resp)) {
+
          resp <- round(as.numeric(resp))
+
          if (resp < 1 || resp > 9)
             next
+
          if (identical(resp, 1)) {
             # (re)start Stockfish
             cat("\n")
             tmp <- .sf.start(sfproc, sfrun, sfpath, threads, hash)
             sfproc <- tmp$sfproc
             sfrun  <- tmp$sfrun
+            Sys.sleep(2)
+            next
          }
+
          if (identical(resp, 2)) {
             # stop Stockfish
             cat("\n")
             tmp <- .sf.stop(sfproc, sfrun)
             sfproc <- tmp$sfproc
             sfrun  <- tmp$sfrun
+            Sys.sleep(2)
+            next
          }
+
          if (identical(resp, 3)) {
             # change path to Stockfish executable
             oldpath <- sfpath
@@ -304,7 +315,10 @@
                sfproc <- tmp$sfproc
                sfrun  <- tmp$sfrun
             }
+            Sys.sleep(2)
+            next
          }
+
          if (identical(resp, 4)) {
             # set depth1/depth2
             cat("\n")
@@ -326,10 +340,12 @@
                   cat(.text("depthsetsuccess"))
                } else {
                   cat(.text("depthsetfail"))
-                  next
                }
             }
+            Sys.sleep(2)
+            next
          }
+
          if (identical(resp, 5)) {
             # set sflim
             cat("\n")
@@ -344,6 +360,7 @@
                      newsflim <- round(as.numeric(newsflim))
                      if (newsflim > 20 && newsflim < 1320) {
                         cat(.text("sflimsetfail"))
+                        Sys.sleep(2)
                         next
                      }
                      newsflim[newsflim > 3190] <- 3190
@@ -352,10 +369,12 @@
                   cat(.text("sflimsetsuccess"))
                } else {
                   cat(.text("sflimsetfail"))
-                  next
                }
             }
+            Sys.sleep(2)
+            next
          }
+
          if (identical(resp, 6)) {
             # set multipv1/multipv2
             cat("\n")
@@ -375,10 +394,12 @@
                   .sf.setoptions(sfproc, threads, hash)
                } else {
                   cat(.text("multipvsetfail"))
-                  next
                }
             }
+            Sys.sleep(2)
+            next
          }
+
          if (identical(resp, 7)) {
             # set threads
             cat("\n")
@@ -394,9 +415,10 @@
                   .sf.setoptions(sfproc, threads, hash)
                } else {
                   cat(.text("threadssetfail"))
-                  next
                }
             }
+            Sys.sleep(2)
+            next
          }
          if (identical(resp, 8)) {
             # set hash
@@ -413,10 +435,12 @@
                   .sf.setoptions(sfproc, threads, hash)
                } else {
                   cat(.text("hashsetfail"))
-                  next
                }
             }
+            Sys.sleep(2)
+            next
          }
+
          if (identical(resp, 9)) {
             # set hintdepth
             cat("\n")
@@ -428,15 +452,19 @@
                   newhintdepth <- round(as.numeric(newhintdepth))
                   newhintdepth <- max(2, newhintdepth)
                   hintdepth <- newhintdepth
-                  cat(.text("hintdepthsuccess"))
+                  cat(.text("hintdepthsetsuccess"))
                   .sf.setoptions(sfproc, threads, hash)
                } else {
                   cat(.text("hintdepthsetfail"))
-                  next
+
                }
             }
+            Sys.sleep(2)
+            next
          }
+
       }
+
    }
 
    return(list(sfproc=sfproc, sfrun=sfrun, sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth))

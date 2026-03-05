@@ -1,8 +1,8 @@
-cleanup <- function(config=FALSE, colors=FALSE, seqdir=FALSE, history=FALSE, cache=FALSE) {
+cleanup <- function(config=FALSE, colors=FALSE, seqdir=FALSE, history=FALSE, mpg123=FALSE, cache=FALSE) {
 
    interactive <- TRUE
 
-   if (config || colors || seqdir || history || cache)
+   if (config || colors || seqdir || history || mpg123 || cache)
       interactive <- FALSE
 
    cat("\n")
@@ -116,6 +116,34 @@ cleanup <- function(config=FALSE, colors=FALSE, seqdir=FALSE, history=FALSE, cac
 
       if (dorm) {
          res <- unlink(dir.history, recursive=TRUE)
+         if (res == 0) {
+            cat("Directory removed successfully.\n")
+         } else {
+            cat("Directory could not be removed.\n")
+         }
+      }
+
+      cat("\n")
+
+   }
+
+   # remove the directory where mpg123 is stored (and all files therein)
+
+   dir.mpg123 <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "mpg123")
+
+   if (file.exists(dir.mpg123)) {
+
+      cat("Directory for mpg123 found at:", dir.mpg123, "\n")
+
+      if (interactive) {
+         resp <- readline(prompt="Remove the mpg123 directory (y/N)? ")
+         dorm <- identical(resp, "y")
+      } else {
+         dorm <- isTRUE(mpg123)
+      }
+
+      if (dorm) {
+         res <- unlink(dir.mpg123, recursive=TRUE)
          if (res == 0) {
             cat("Directory removed successfully.\n")
          } else {
