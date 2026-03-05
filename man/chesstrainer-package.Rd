@@ -177,7 +177,7 @@
 }
 \section{Play and Analysis Mode}{
 
-   If Stockfish is running, you can switch into \emph{play mode} at any time with the \verb{<\>} (or \verb{<ä>}) key. This is especially useful at the end of a sequence, to continue playing further moves against the computer from the end position of a sequence (e.g., to practice holding an advantage gained during an opening sequence). In this mode, the computer chooses by default its move according to a search depth of 6 half-moves, but this can be adjusted via \verb{<F7>}. Here, you can also set a limit on the play strength of Stockfish (either as a skill level between 0 and 20 or as an approximate Elo value between 1320 and 3190).
+   If Stockfish is running, you can switch into \emph{play mode} at any time with the \verb{<\>} (or \verb{<ä>}) key. This is especially useful at the end of a sequence, to continue playing further moves against the computer from the end position of a sequence (e.g., to practice holding an advantage gained during an opening sequence). In this mode, the computer chooses by default its move according to a search depth of 8 half-moves, but this can be adjusted via \verb{<F7>}. Here, you can also set a limit on the play strength of Stockfish (either as a skill level between 0 and 20 or as an approximate Elo value between 1320 and 3190).
 
    Using the \verb{<g>} key in \emph{play mode} shows a graph of the position evaluations for the moves played so far (this also works in \emph{add mode}). By default, the y-axis shows the evaluation based on the centipawns (\eqn{cp}) divided by 100, but pressing the \verb{<down>/<up>} arrows or the middle mouse button shows the win percentage (computed with \eqn{50 + 50 \times (2 / (1 + \exp(-0.00368208 \times cp)) - 1)}; see here: \verb{https://lichess.org/page/accuracy}).
 
@@ -207,9 +207,9 @@
    \item With the \verb{<k>} key, you can be toggle whether the material difference is shown.
    }
 
-   The settings are stored across sessions and can be shown with \verb{<F3>}. With \verb{<F4>}, you can adjust the colors. With \verb{<F5>}, you can adjust the size of the text at the top, the text at the bottom, the size of the evaluation value in the evaluation bar (if it is shown), the size of the board coordinates, the size of the material difference, the size of plots (e.g., the progress graph), and the size of annotations glyphs.
+   The settings are stored across sessions and can be shown with \verb{<F3>}.
 
-   With \verb{<F6>}, you can adjust some miscellaneous settings, namely the multiplier for the score when completing a sequence without any mistakes (0.8 by default), the score penalty when making a wrong move (40 by default), the score penalty per hint (20 by default), the number of animation steps for the evaluation bar (5 by default), the time per move for the \emph{timed mode} (5 seconds by default), the idle time (120 seconds by default; time without any inputs longer than this value is not counted towards the play time for the session history), the minimum session time (60 seconds by default; sessions shorter than this are not actually saved as sessions), and a pause adjustment (in case that text shown at the top of the screen disappears too quickly; this seems to be an issue especially under Windows, in which case setting this to something like 0.25 should fix the issue).
+   With \verb{<F5>}, you can adjust the colors and text sizes. With \verb{<F6>}, you can adjust some miscellaneous settings, namely the multiplier for the score when completing a sequence without any mistakes (0.8 by default), the score penalty when making a wrong move (40 by default), the score penalty per hint (20 by default), the number of animation steps for the evaluation bar (5 by default), the time per move for the \emph{timed mode} (5 seconds by default), the idle time (120 seconds by default; time without any inputs longer than this value is not counted towards the play time for the session history), the minimum session time (60 seconds by default; sessions shorter than this are not actually saved as sessions), and a pause adjustment (in case that text shown at the top of the screen disappears too quickly; this seems to be an issue especially under Windows, in which case setting this to something like 0.25 should fix the issue).
 
    With the \verb{<o>} key, the FEN of the current position is printed to the console and the position is opened on the Lichess (\url{https://lichess.org}) website for analysis. With \verb{<Ctrl-f>}, the FEN is printed and copied to the clipboard (this makes use of the \code{\link[clipr]{write_clip}} function from the \pkg{clipr} package). With \verb{<Ctrl-c>}, the current sequence name is printed and copied to the clipboard in \emph{test mode}.
 
@@ -228,11 +228,15 @@
    The package creates various files and directories. The \code{\link{cleanup}} function can be used to clean up files and directories created by the package.
 
 }
-\section{Note for Windows Users}{
+\section{Notes for Windows Users}{
 
-   The trainer also runs under Windows, but note that the \code{RStudioGD} graphics device that is used by RStudio does not support event handling (see the \sQuote{Note} section below). Running \code{windows()} before starting the trainer with \code{play()} should work. Alternatively, just run R via RGui, which uses the windows plotting device by default.
+   The trainer also runs under Windows, but the \code{RStudioGD} graphics device that is used by RStudio does not support event handling (see the \sQuote{Note} section below). Running \code{windows()} before starting the trainer with \code{play()} should work. Alternatively, just run R via RGui, which uses the windows plotting device by default (this is actually the recommended way to run the trainer under Windows).
 
    If the graphics look fuzzy under RGui, then this might be related to high DPI scaling (under high resolutions, it is common to scale apps by 150\% or 200\% so that text and graphical elements are not tiny; see the display settings under Windows). To avoid this issue, go the the properties of RGui, select Compatibility, Change high DPI settings, High DPI scaling override, and select \sQuote{Application}. After restarting RGui, the graphics should look sharper.
+
+   The \verb{<F10>} function key is registered under Windows, but is also the operating system key for activating the menu bar, which is annoying. You can use the \verb{<Ctrl-s>} keyboard shortcut instead. For some reason, the \verb{<F11>} and \verb{<F12>} function keys are not registered at all. You can use \verb{<Ctrl-i>} and \verb{<Ctrl-h>} respectively instead.
+
+   Occasionally, the graphics window flickers under Windows, especially when making rapid updates to the graphics being shown. The exact cause of this is unknown.
 
 }
 \section{Backing Up Sequences}{

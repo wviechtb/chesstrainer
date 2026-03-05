@@ -32,24 +32,24 @@
 
    # set default colors
 
-   assign("col.bg",          "#211b12",       envir=.chesstrainer)
-   assign("col.fg",          "#7a6d59",       envir=.chesstrainer)
-   assign("col.square.l",    "#f0d9b5",       envir=.chesstrainer)
-   assign("col.square.d",    "#b58863",       envir=.chesstrainer)
-   assign("col.square.be",   "#6b6b6b",       envir=.chesstrainer)
-   assign("col.top",         "#b09d7f",       envir=.chesstrainer)
-   assign("col.bot",         "#b09d7f",       envir=.chesstrainer)
-   assign("col.help",        "#b09d7f",       envir=.chesstrainer)
-   assign("col.help.border", "#63462e",       envir=.chesstrainer)
-   assign("col.hint",        "yellow",        envir=.chesstrainer)
-   assign("col.best",        "#747a88",       envir=.chesstrainer)
-   assign("col.wrong",       "red",           envir=.chesstrainer)
-   assign("col.rect",        "darkseagreen4", envir=.chesstrainer)
-   assign("col.annot",       "#00800080",     envir=.chesstrainer)
-   assign("col.side.w",      "white",         envir=.chesstrainer)
-   assign("col.side.b",      "black",         envir=.chesstrainer)
-   assign("col.time.fast",   "#008000",       envir=.chesstrainer)
-   assign("col.time.slow",   "#800000",       envir=.chesstrainer)
+   assign("col.bg",        "#211b12",       envir=.chesstrainer)
+   assign("col.fg",        "#7a6d59",       envir=.chesstrainer)
+   assign("col.square.l",  "#f0d9b5",       envir=.chesstrainer)
+   assign("col.square.d",  "#b58863",       envir=.chesstrainer)
+   assign("col.square.be", "#6b6b6b",       envir=.chesstrainer)
+   assign("col.top",       "#b09d7f",       envir=.chesstrainer)
+   assign("col.bot",       "#b09d7f",       envir=.chesstrainer)
+   assign("col.help",      "#b09d7f",       envir=.chesstrainer)
+   assign("col.border",    "#63462e",       envir=.chesstrainer)
+   assign("col.hint",      "yellow",        envir=.chesstrainer)
+   assign("col.best",      "#747a88",       envir=.chesstrainer)
+   assign("col.wrong",     "red",           envir=.chesstrainer)
+   assign("col.rect",      "darkseagreen4", envir=.chesstrainer)
+   assign("col.annot",     "#00800080",     envir=.chesstrainer)
+   assign("col.side.w",    "white",         envir=.chesstrainer)
+   assign("col.side.b",    "black",         envir=.chesstrainer)
+   assign("col.time.fast", "#008000",       envir=.chesstrainer)
+   assign("col.time.slow", "#800000",       envir=.chesstrainer)
 
    # set default font
 
@@ -85,6 +85,8 @@
    pos[10,3:8] <- c("BK","BQ","BR","BB","BN","BP")
    attr(pos, "rochade") <- rep(TRUE, 4)
    assign("boardeditorpos", pos, envir=.chesstrainer)
+
+   assign("volume", 50, envir=.chesstrainer)
 
    # welcome message
 

@@ -361,10 +361,10 @@
 
    lang <- .get("lang")
 
-   col.bg          <- .get("col.bg")
-   col.help        <- .get("col.help")
-   col.help.border <- .get("col.help.border")
-   font.mono       <- .get("font.mono")
+   col.bg     <- .get("col.bg")
+   col.help   <- .get("col.help")
+   col.border <- .get("col.border")
+   font.mono  <- .get("font.mono")
 
    if (lang == "en") {
 
@@ -406,7 +406,7 @@
 
    }
 
-   rect(2.2, 2.2, 9.8, 9.8, col=col.bg, border=col.help.border, lwd=.get("lwd")+3)
+   rect(2.2, 2.2, 9.8, 9.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
 
    cex <- .findcex(txt, font=font.mono, x1=1.8, x2=8, y1=4, y2=8, mincex=1.1)
    ypos <- seq(8, 4, length.out=length(txt))

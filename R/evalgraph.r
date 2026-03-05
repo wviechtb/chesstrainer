@@ -1,13 +1,13 @@
 .evalgraph <- function(x, i, flip) {
 
-   col.top         <- .get("col.top")
-   col.bg          <- .get("col.bg")
-   col.square.l    <- .get("col.square.l")
-   col.square.d    <- .get("col.square.d")
-   col.help.border <- .get("col.help.border")
-   cex.plots       <- .get("cex.plots")
-   mar             <- .get("mar")
-   mar2            <- .get("mar2")
+   col.top      <- .get("col.top")
+   col.bg       <- .get("col.bg")
+   col.square.l <- .get("col.square.l")
+   col.square.d <- .get("col.square.d")
+   col.border   <- .get("col.border")
+   cex.plots    <- .get("cex.plots")
+   mar          <- .get("mar")
+   mar2         <- .get("mar2")
 
    shade_segment <- function(x0, y0, x1, y1, evenval, invert) {
       if (y0 >= evenval & y1 >= evenval) {
@@ -31,7 +31,7 @@
 
    n <- nrow(x)
 
-   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=.get("lwd")+3)
+   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
 
    plot.eval <- function(x) {
       rect(1.3, 1.3, 8.7, 8.7, col=col.bg, border=NA)

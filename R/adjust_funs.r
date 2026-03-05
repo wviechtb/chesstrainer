@@ -1,13 +1,13 @@
 .setscore <- function(score) {
 
-   col.bg          <- .get("col.bg")
-   col.help        <- .get("col.help")
-   col.help.border <- .get("col.help.border")
-   font.mono       <- .get("font.mono")
+   col.bg     <- .get("col.bg")
+   col.help   <- .get("col.help")
+   col.border <- .get("col.border")
+   font.mono  <- .get("font.mono")
 
    scoreold <- score
 
-   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=.get("lwd")+3)
+   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
 
    cex <- 1.2
 
@@ -80,14 +80,14 @@
 
 .setexpval <- function(expval) {
 
-   col.bg          <- .get("col.bg")
-   col.help        <- .get("col.help")
-   col.help.border <- .get("col.help.border")
-   font.mono       <- .get("font.mono")
+   col.bg     <- .get("col.bg")
+   col.help   <- .get("col.help")
+   col.border <- .get("col.border")
+   font.mono  <- .get("font.mono")
 
    expvalold <- expval
 
-   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=.get("lwd")+3)
+   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
 
    cex <- 1.2
 
@@ -159,14 +159,14 @@
 
 .setseqno <- function(seqno, k) {
 
-   col.bg          <- .get("col.bg")
-   col.help        <- .get("col.help")
-   col.help.border <- .get("col.help.border")
-   font.mono       <- .get("font.mono")
+   col.bg     <- .get("col.bg")
+   col.help   <- .get("col.help")
+   col.border <- .get("col.border")
+   font.mono  <- .get("font.mono")
 
    seqnoold <- seqno
 
-   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=.get("lwd")+3)
+   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
 
    cex <- 1.2
 
@@ -244,14 +244,14 @@
 
 .settarget <- function(target) {
 
-   col.bg          <- .get("col.bg")
-   col.help        <- .get("col.help")
-   col.help.border <- .get("col.help.border")
-   font.mono       <- .get("font.mono")
+   col.bg     <- .get("col.bg")
+   col.help   <- .get("col.help")
+   col.border <- .get("col.border")
+   font.mono  <- .get("font.mono")
 
    targetold <- target
 
-   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=.get("lwd")+3)
+   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
 
    cex <- 1.2
 

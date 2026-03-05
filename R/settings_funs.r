@@ -1,118 +1,107 @@
-.colorsettings <- function(cols.all, pos, flip, mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove) {
+.vizsettings <- function(cols.all, pos, flip=FALSE, mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove) {
 
-   tab <- data.frame(col=cols.all, val=unname(sapply(cols.all, function(x) .get(x))))
-   names(tab) <- c("", "")
+   pos <- .get("pos")
+   pos[7:8,1:2] <- ""
+
+   tab1 <- data.frame(x=cols.all, val=unname(sapply(cols.all, function(x) .get(x))))
+   tab1$explanation <- .text("colsetexpl")
+   ncols <- nrow(tab1)
+
+   tab2 <- data.frame(x = c("cex.top", "cex.bot", "cex.eval", "cex.coords", "cex.matdiff", "cex.plots", "cex.glyphs"),
+                      val = c(.get("cex.top"), .get("cex.bot"), .get("cex.eval"), .get("cex.coords"), .get("cex.matdiff"), .get("cex.plots"), .get("cex.glyphs")))
+   tab2$explanation <- .text("cexsetexpl")
+
+   tab <- rbind(tab1, tab2)
+   names(tab) <- c("", "", "")
 
    coords <- .get("coords")
    timed <- .get("timed")
    zenmode <- .get("zenmode")
+   x2y2 <- .get("x2y2")
+   score <- .get("score")
    assign("coords", TRUE, envir=.chesstrainer)
    assign("timed", FALSE, envir=.chesstrainer)
    assign("zenmode", FALSE, envir=.chesstrainer)
+   assign("x2y2", c(2,5), envir=.chesstrainer)
 
    .redrawall(pos, flip, mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
    .addrect(4, 5, col=.get("col.hint"))
    .addrect(4, 3, col=.get("col.wrong"))
    .addrect(4, 4, col=.get("col.rect"))
+   .drawmatdiff(pos, flip=FALSE, force=TRUE)
    .drawsquare(0, 4, flip, col=.get("col.square.be"))
    .drawsquare(0, 5, flip, col=.get("col.square.be"))
    .addrect(0, 4, .get("col.bg"), lwdadj=2)
    .addrect(0, 5, .get("col.bg"), lwdadj=2)
    .drawcircle(4, 6)
    .drawarrow(3, 7, 6, 7)
-   .drawarrow(3, 8, 6, 8, col=adjustcolor(.get("col.best"), alpha.f=0.5))
+   .drawarrow(3, 8, 6, 8, col=adjustcolor(.get("col.best"), alpha.f=0.7))
    .drawsideindicator("w", flip=flip)
    .drawsideindicator("b", flip=flip, clear=FALSE)
    .draweval(0.2, flip=flip)
    .drawtimer(settings=TRUE)
+   .drawglyph("!!")
+   rect(1.2, 1.2, 3.8, 3.8, col=.get("col.bg"), border=.get("col.border"), lwd=.get("lwd")+3)
 
    while (TRUE) {
       .flush()
       cat(.text("currentsettings"))
       print(tab, right=FALSE, print.gap=3)
       cat("\n")
-      resp <- readline(prompt=.text("colwhich"))
+      resp <- readline(prompt=.text("colcexwhich"))
       if (identical(resp, ""))
          break
       if (grepl("^[0-9]+$", resp)) {
-         colno <- round(as.numeric(resp))
-         if (colno < 1 || colno > nrow(tab))
+         number <- round(as.numeric(resp))
+         if (number < 1 || number > nrow(tab))
             next
-         col <- readline(prompt=.text("colval", tab[colno,2]))
-         if (identical(col, ""))
+         if (number >= 1 && number <= ncols) {
+            val <- readline(prompt=.text("colval", tab[number,2]))
+         } else {
+            val <- readline(prompt=.text("cexval", tab[number,2]))
+         }
+         val <- trimws(val)
+         if (identical(val, ""))
             next
-         assign(tab[colno,1], col, envir=.chesstrainer)
-         tab[colno,2] <- col
+         if (number >= 1 && number <= ncols) {
+            if (!(is.element(val, colors()) || !grepl(val, "^#(?:[0-9A-Fa-f]{6}|[0-9A-Fa-f]{2})$")))
+               next
+            assign(tab[number,1], val, envir=.chesstrainer)
+            tab[number,2] <- val
+         } else {
+            if (!grepl("^[0-9.]+$", val))
+               next
+            cex <- as.numeric(val)
+            cex[cex < 0.1] <- 0.1
+            assign(tab[number,1], cex, envir=.chesstrainer)
+            tab[number,2] <- cex
+         }
          .redrawall(pos, flip, mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
          .addrect(4, 5, col=.get("col.hint"))
          .addrect(4, 3, col=.get("col.wrong"))
          .addrect(4, 4, col=.get("col.rect"))
+         .drawmatdiff(pos, flip=FALSE, force=TRUE)
          .drawsquare(0, 4, flip, col=.get("col.square.be"))
          .drawsquare(0, 5, flip, col=.get("col.square.be"))
          .addrect(0, 4, .get("col.bg"), lwdadj=2)
          .addrect(0, 5, .get("col.bg"), lwdadj=2)
          .drawcircle(4, 6)
          .drawarrow(3, 7, 6, 7)
-         .drawarrow(3, 8, 6, 8, col=adjustcolor(.get("col.best"), alpha.f=0.5))
+         .drawarrow(3, 8, 6, 8, col=adjustcolor(.get("col.best"), alpha.f=0.7))
          .drawsideindicator("w", flip=flip)
          .drawsideindicator("b", flip=flip, clear=FALSE)
          .draweval(0.2, flip=flip)
          .drawtimer(settings=TRUE)
+         .drawglyph("!!")
+         rect(1.2, 1.2, 3.8, 3.8, col=.get("col.bg"), border=.get("col.border"), lwd=.get("lwd")+3)
       }
    }
 
    assign("coords", coords, envir=.chesstrainer)
    assign("timed", timed, envir=.chesstrainer)
    assign("zenmode", zenmode, envir=.chesstrainer)
-
-   return()
-
-}
-
-.cexsettings <- function(pos, flip, mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove) {
-
-   tab <- data.frame(cex = c("cex.top", "cex.bot", "cex.eval", "cex.coords", "cex.matdiff", "cex.plots", "cex.glyphs"),
-                     val = c(.get("cex.top"), .get("cex.bot"), .get("cex.eval"), .get("cex.coords"), .get("cex.matdiff"), .get("cex.plots"), .get("cex.glyphs")))
-   tab$explanation <- .text("cexsetexpl")
-   names(tab) <- c("", "", "")
-
-   coords <- .get("coords")
-   timed <- .get("timed")
-   zenmode <- .get("zenmode")
-   assign("coords", TRUE, envir=.chesstrainer)
-   assign("timed", FALSE, envir=.chesstrainer)
-   assign("zenmode", FALSE, envir=.chesstrainer)
-
-   .redrawall(pos, flip, mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
-   .draweval(0.2, flip=flip)
-
-   while (TRUE) {
-      .flush()
-      cat(.text("currentsettings"))
-      print(tab, right=FALSE, print.gap=3)
-      cat("\n")
-      resp <- readline(prompt=.text("cexwhich"))
-      if (identical(resp, ""))
-         break
-      if (grepl("^[0-9]+$", resp)) {
-         cexno <- round(as.numeric(resp))
-         if (cexno < 1 || cexno > nrow(tab))
-            next
-         cex <- readline(prompt=.text("cexval", tab[cexno,2]))
-         if (identical(cex, ""))
-            next
-         cex <- as.numeric(cex)
-         cex[cex < 0.1] <- 0.1
-         assign(tab[cexno,1], cex, envir=.chesstrainer)
-         tab[cexno,2] <- cex
-         .redrawall(pos, flip, mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
-         .draweval(0.2, flip=flip)
-      }
-   }
-
-   assign("coords", coords, envir=.chesstrainer)
-   assign("timed", timed, envir=.chesstrainer)
-   assign("zenmode", zenmode, envir=.chesstrainer)
+   assign("x2y2", x2y2, envir=.chesstrainer)
+   assign("score", score, envir=.chesstrainer)
 
    return()
 
@@ -170,15 +159,15 @@
 
 .lichesssettings <- function(speeds, ratings, lichessdb, barlen, invertbar, token, cachedir) {
 
-   col.bg          <- .get("col.bg")
-   col.help        <- .get("col.help")
-   col.help.border <- .get("col.help.border")
-   font.mono       <- .get("font.mono")
-   col.text        <- .get("col.square.d")
-   switch1         <- .get("switch1")
-   switch2         <- .get("switch2")
+   col.bg     <- .get("col.bg")
+   col.help   <- .get("col.help")
+   col.border <- .get("col.border")
+   font.mono  <- .get("font.mono")
+   col.text   <- .get("col.square.d")
+   switch1    <- .get("switch1")
+   switch2    <- .get("switch2")
 
-   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=.get("lwd")+3)
+   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
 
    cex <- 1
 
@@ -370,10 +359,10 @@
    lang <- .get("lang")
    tab$lang <- lang
 
-   col.bg          <- .get("col.bg")
-   col.help        <- .get("col.help")
-   col.help.border <- .get("col.help.border")
-   font.mono       <- .get("font.mono")
+   col.bg     <- .get("col.bg")
+   col.help   <- .get("col.help")
+   col.border <- .get("col.border")
+   font.mono  <- .get("font.mono")
 
    seqdir <- tab$seqdir
    sfpath <- tab$sfpath
@@ -434,7 +423,7 @@
 
    langswitch <- FALSE
 
-   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=lwd+3)
+   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=lwd+3)
 
    text(1.5, ypos, txt, pos=4, offset=0, cex=cex, family=font.mono, font=ifelse(grepl(":", txt), 2, 1), col=col.help)
 

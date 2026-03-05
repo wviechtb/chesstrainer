@@ -32,6 +32,6 @@ playsound(sound)
 \examples{
 # test if the sound is working
 \dontrun{
-playsound(system.file("sounds", "complete.ogg", package="chesstrainer"), 50)
+playsound(system.file("sounds", "complete.ogg", package="chesstrainer"))
 }
 }

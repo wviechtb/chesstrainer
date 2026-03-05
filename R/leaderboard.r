@@ -10,10 +10,10 @@
 
    if (nplayers >= 1) {
 
-      col.bg          <- .get("col.bg")
-      col.help        <- .get("col.help")
-      col.help.border <- .get("col.help.border")
-      font.mono       <- .get("font.mono")
+      col.bg     <- .get("col.bg")
+      col.help   <- .get("col.help")
+      col.border <- .get("col.border")
+      font.mono  <- .get("font.mono")
 
       tmp.scores <- lapply(players, function(player) {
          x <- lapply(tmp, function(x) tail(x$player[[player]]$score,1))
@@ -46,7 +46,7 @@
       txt <- capture.output(print(tmp, print.gap=3))
       txt <- c(txt[1], "", txt[2:length(txt)], "")
 
-      rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=.get("lwd")+3)
+      rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
 
       ypos1 <- min(8.5, 5+nplayers*0.35)
       ypos2 <- max(1.5, 5-nplayers*0.35)

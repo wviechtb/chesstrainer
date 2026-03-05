@@ -579,6 +579,12 @@
                          paste0("Line Width: ", arg)
    ))}
 
+   if (x == "colcexwhich") {
+      return(switch(lang,
+                    de = "Farbe oder Gr\U000000F6\U000000DFe \U000000E4ndern (<Nummer> oder <Enter> zum Verlassen): ",
+                         "Change color or size (<number> or <enter> to quit): "
+   ))}
+
    if (x == "colwhich") {
       return(switch(lang,
                     de = "Farbe \U000000E4ndern (<Nummer> oder <Enter> zum Verlassen): ",
@@ -597,10 +603,16 @@
                          "Current settings:\n"
    ))}
 
+   if (x == "colsetexpl") {
+      return(switch(lang,
+                    de = c("Hintergrundfarbe", "Vordergrundfarbe", "Farbe f\U000000FCr helle Felder", "Farbe f\U000000FCr dunkle Felder", "Farbe der zus\U000000E4tzlichen Felder im Brett-Editor", "Farbe f\U000000FCr Text oben", "Farbe f\U000000FCr Text unten", "Farbe des Hilfetext", "Farbe der Fensterrahmen", "Farbe f\U000000FCr Hinweise", "Farbe f\U000000FCr Pfeile f\U000000FCr den besten Zug", "Farbe f\U000000FCr falsche Z\U000000FCge", "Farbe f\U000000FCr die Felder Rechtecke", "Farbe f\U000000FCr Annotationen", "Farbe f\U000000FCr den Seitenindikator (wei\U000000DF)", "Farbe f\U000000FCr den Seitenindikator (schwarz)", "Farbe f\U000000FCr schnelle Zeiten im Zeitmodus", "Farbe f\U000000FCr langsame Zeiten im Zeitmodus"),
+                         c("Background color", "Foreground color", "Color of light squares", "Color of dark squares", "Color of the extra squares in the board editor", "Color for text at the top", "Color for text at the bottom", "Color of help text", "Color of window borders", "Color for hints", "Color for best move arrows", "Color for wrong moves", "Color for the square rectangles", "Color for annotations", "Color for the side indicator (white)", "Color for the side indicator (black)", "Color for fast times in timed mode", "Color for slow times in timed mode")
+   ))}
+
    if (x == "cexsetexpl") {
       return(switch(lang,
-                    de = c("Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Gr\U000000F6\U000000DFe f\U000000FCr die Koordinaten", "Gr\U000000F6\U000000DFe f\U000000FCr den Materialunterschied", "Gr\U000000F6\U000000DFe f\U000000FCr Diagramme", "Gr\U000000F6\U000000DFe f\U000000FCr Glyphen"),
-                         c("Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Size of the coordinates", "Size of the material difference", "Size of plots", "Size of glyphs")
+                    de = c("Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Gr\U000000F6\U000000DFe f\U000000FCr die Koordinaten", "Gr\U000000F6\U000000DFe f\U000000FCr den Materialunterschied", "Gr\U000000F6\U000000DFe f\U000000FCr Diagramme", "Gr\U000000F6\U000000DFe f\U000000FCr Text in Glyphen"),
+                         c("Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Size of the coordinates", "Size of the material difference", "Size of plots", "Size of text in glyphs")
    ))}
 
    if (x == "miscsetexpl") {

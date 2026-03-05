@@ -13,15 +13,15 @@
       return()
    }
 
-   col.top         <- .get("col.top")
-   col.fg          <- .get("col.fg")
-   col.bg          <- .get("col.bg")
-   col.square.l    <- .get("col.square.l")
-   col.square.d    <- .get("col.square.d")
-   col.help.border <- .get("col.help.border")
-   cex.plots       <- .get("cex.plots")
-   mar             <- .get("mar")
-   mar2            <- .get("mar2")
+   col.top      <- .get("col.top")
+   col.fg       <- .get("col.fg")
+   col.bg       <- .get("col.bg")
+   col.square.l <- .get("col.square.l")
+   col.square.d <- .get("col.square.d")
+   col.border   <- .get("col.border")
+   cex.plots    <- .get("cex.plots")
+   mar          <- .get("mar")
+   mar2         <- .get("mar2")
 
    # collapse sessions that were played on the same day
    day <- as.Date(format(dat$date.start, format="%Y-%m-%d"))
@@ -38,7 +38,7 @@
    dat.week$weeknum <- as.integer(substr(dat.week$week, 6, 7))
    dat.week$week <- as.Date(paste0(dat.week$year, "-01-01")) + (dat.week$weeknum * 7) - as.integer(format(as.Date(paste0(dat.week$year, "-01-01")), "%u")) + 1
 
-   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=.get("lwd")+3)
+   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
 
    usr <- NULL
 

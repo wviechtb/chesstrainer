@@ -5,10 +5,10 @@
 
    lang <- .get("lang")
 
-   col.bg          <- .get("col.bg")
-   col.help        <- .get("col.help")
-   col.help.border <- .get("col.help.border")
-   font.mono       <- .get("font.mono")
+   col.bg     <- .get("col.bg")
+   col.help   <- .get("col.help")
+   col.border <- .get("col.border")
+   font.mono  <- .get("font.mono")
 
    if (lang == "en") {
 
@@ -45,13 +45,10 @@
       "Ctrl-f   - copy the FEN of the current position to the clipboard",
       "<escape> - redraw the board / exit a menu",
       "o        - open the current position on lichess.org",
-      "i        - query the Lichess opening database for the current position",
-      "I        - toggle continuous query of the Lichess database on/off",
       "F1       - show this help",
       "F2       - show the leaderboard and player statistics",
       "F3       - show settings",
-      "F4       - settings for colors",
-      "F5       - settings for text sizes",
+      "F5       - settings for colors and text sizes",
       "F6       - settings for miscellanea",
       "F7       - settings for Stockfish",
       "F8       - settings for Lichess",
@@ -90,16 +87,18 @@
       txt.add <- c(
       "Shortcuts for the add mode:",
       "f        - flip the board",
+      "t        - take back the last move",
       "z and Z  - show moves (own / computer) on/off",
       "c        - add a comment to the current move",
       "e and E  - edit the comments / edit the sequence file",
       "h and H  - show the best move according to Stockfish (fast / deep evaluation)",
       "y        - continuous analysis on/off (also in analysis mode)",
-      "t        - take back the last move",
+      "i        - query the Lichess opening database (also in analysis mode)",
+      "I        - toggle continuous query of the Lichess database on/off",
       "0        - make the current position the starting position for the sequence",
-      "b        - start the board editor",
       "g        - show the evaluation graph (also in play and analysis mode)",
       "T        - show move transpositions on/off",
+      "b        - start the board editor",
       "s        - save the sequence")
 
       txt.play <- c(
@@ -147,13 +146,10 @@
       "Strg-f   - FEN der aktuellen Stellung in die Zwischenablage kopieren",
       "<escape> - Brett neu zeichnen / ein Men\U000000FC verlassen",
       "o        - die aktuelle Stellung auf lichess.org \U000000F6ffnen",
-      "i        - die Lichess Er\U000000F6ffnungsdatenbank nach der aktuellen Stellung abfragen",
-      "I        - Kontinuierliche Abfrage der Lichess Datenbank an/aus",
       "F1       - diese Hilfe anzeigen",
       "F2       - Rangliste und Spielerstatistiken anzeigen",
       "F3       - Einstellungen anzeigen",
-      "F4       - Einstellungen f\U000000FCr Farben",
-      "F5       - Einstellungen f\U000000FCr Textgr\U000000F6\U000000DFen",
+      "F5       - Einstellungen f\U000000FCr Farben und Textgr\U000000F6\U000000DFen",
       "F6       - Einstellungen f\U000000FCr Sonstiges",
       "F7       - Einstellungen f\U000000FCr Stockfish",
       "F8       - Einstellungen f\U000000FCr Lichess",
@@ -192,16 +188,18 @@
       txt.add <- c(
       "Tastenk\U000000FCrzel f\U000000FCr den Hinzuf\U000000FCgen Modus:",
       "f        - Brett umdrehen",
+      "t        - den letzten Zug zur\U000000FCcknehmen",
       "z und Z  - Z\U000000FCge zeigen (eigene / Computer) an/aus",
       "c        - Kommentar zum aktuellen Zug hinzuf\U000000FCgen",
       "e und E  - Kommentare editieren / Sequenzfile editieren",
       "h und H  - den besten Zug laut Stockfish anzeigen (schnelle / tiefe Analyse)",
       "y        - kontinuierliche Analyse an/aus (auch im Analysemodus)",
-      "t        - den letzten Zug zur\U000000FCcknehmen",
+      "i        - die Lichess Er\U000000F6ffnungsdatenbank abfragen (auch im Analysemodus)",
+      "I        - kontinuierliche Abfrage der Lichess Datenbank an/aus",
       "0        - aktuelle Stellung zur Ausgangsstellung der Sequenz machen",
-      "b        - Bretteditor starten",
       "g        - Bewertungsdiagram anzeigen (auch im Spiel- und Analysemodus)",
       "T        - Zugumstellungen anzeigen an/aus",
+      "b        - Bretteditor starten",
       "s        - Sequenz abspeichern"
       )
 
@@ -243,7 +241,7 @@
    while (TRUE) {
 
       if (redraw) {
-         rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=.get("lwd")+3)
+         rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
          text(1.5, ypos, txt, pos=4, offset=0, cex=cex, family=font.mono, font=ifelse(grepl(" :", txt), 2, 1), col=col.help)
          text(8.6, 1.4, paste0(page, " / 2"), pos=2, offset=0, cex=cex, family=font.mono, col=col.help)
          if (lang == "en")

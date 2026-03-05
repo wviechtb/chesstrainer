@@ -1038,12 +1038,31 @@
 
 }
 
-.liquery <- function(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, token, speeds, ratings, barlen, invertbar, contliquery, texttop) {
+.litouci <- function(move, pos) {
+
+   # since Lichess uses 960-compatible castling moves, need to translate these back to standard chess
+
+   if (identical(substr(move,1,4), "e1h1") && pos[1,5] == "WK")
+      substr(move,1,4) <- "e1g1"
+   if (identical(substr(move,1,4), "e1a1") && pos[1,5] == "WK")
+      substr(move,1,4) <- "e1c1"
+   if (identical(substr(move,1,4), "e8h8") && pos[8,5] == "BK")
+      substr(move,1,4) <- "e8g8"
+   if (identical(substr(move,1,4), "e8a8") && pos[8,5] == "BK")
+      substr(move,1,4) <- "e8c8"
+
+   return(move)
+
+}
+
+.liquery <- function(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, token, speeds, ratings, barlen, invertbar, contliquery, texttop, showout=TRUE) {
+
+   selmove <- ""
 
    if (is.null(token) || token == "") {
       .texttop(.text("needtoken"), sleep=2)
       .texttop(texttop)
-      return()
+      return(selmove)
    }
 
    fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
@@ -1058,12 +1077,6 @@
 
    } else {
 
-      #if (flip) {
-      #   ucimoves <- paste(paste0(letters[9-sub$moves[,2]], 9-sub$moves[,1], letters[9-sub$moves[,4]], 9-sub$moves[,3]), collapse=",")
-      #} else {
-      #   ucimoves <- paste(paste0(letters[sub$moves[,2]], sub$moves[,1], letters[sub$moves[,4]], sub$moves[,3]), collapse=",")
-      #}
-
       if (lichessdb == "lichess") {
          url <- paste0("https://explorer.lichess.org/lichess?topGames=0&recentGames=0&speeds=", speeds, "&ratings=", ratings, "&")
       } else {
@@ -1073,36 +1086,19 @@
       url <- paste0(url, "fen=", fen)
       header <- paste("Bearer", token)
 
-      #if (!is.null(pos)) {
-      #   tmp <- "w"
-      #   if (nrow(sub$moves) > 0L) {
-      #      if (flip) {
-      #         piece <- sub$pos[9-sub$moves[1,1], 9-sub$moves[1,2]]
-      #      } else {
-      #         piece <- sub$pos[sub$moves[1,1], sub$moves[1,2]]
-      #      }
-      #      tmp <- ifelse(startsWith(piece, "W"), "w", "b")
-      #   }
-      #   startfen <- .genfen(pos, flip=flip, sidetoplay=tmp, sidetoplaystart=tmp, i=1)
-      #   startfen <- gsub(" ", "%20", startfen, fixed=TRUE)
-      #   url <- paste0(url, "fen=", startfen, "&")
-      #}
-
-      #url <- paste0(url, "play=", ucimoves)
-
       out <- try(VERB("GET", url, add_headers('Authorization' = header), content_type("application/octet-stream"), timeout=1), silent=TRUE)
 
       if (inherits(out, "try-error")) {
 
          .texttop(.text("noconnect"), sleep=1.5)
          .texttop(texttop)
-         return()
+         return(selmove)
 
       } else {
 
          if (out$status == 429) {
             .texttop(.text("ratelimit"))
-            return()
+            return(selmove)
          }
 
          out <- do.call(rbind, lapply(content(out)$moves, function(x) data.frame(move=x$uci, white=x$white, draw=x$draws, black=x$black)))
@@ -1127,37 +1123,41 @@
 
    } else {
 
-      if (!contliquery)
-         eval(expr=.get("switch1"))
-      .flush()
       out$total <- rowSums(out[2:4])
-      totals    <- colSums(out[2:5])
-      percs     <- .percent(totals[1:3])
-      out$perc  <- .percent(out$total)
-      bars      <- apply(out[2:4], 1, .percbar, len=barlen, invert=invertbar)
-      out[2:4]  <- t(apply(out[2:4], 1, .percent))
-      out[1]    <- sapply(out[[1]], function(x) .parsemove(x, pos=pos, flip=flip, evalval="", i=NULL, sidetoplay=sidetoplay, rename=FALSE, returnline=TRUE, hintdepth=1)$txt)
-      out       <- out[c(1,6,5,2:4)]
-      out       <- rbind(out, data.frame(move="total", perc=100, total=totals[[4]], white=percs[[1]], draw=percs[[2]], black=percs[[3]]))
-      bars      <- c(bars, .percbar(totals[1:3], len=barlen, invert=invertbar))
-      out$total <- .numshort(out$total)
-      colnames(out)[c(2,4:6)] <- c("%", "white%", "draw%", "black%")
-      ncols <- num_ansi_colors()
-      if (ncols >= 256)
-         out <- out[-c(4:6)]
-      txt <- capture.output(print(out, print.gap=2))
-      for (i in 1:length(txt)) {
-         cat(txt[i], "  ")
-         if (i > 1)
-            cat(bars[i-1])
-         cat("\n\n")
+      out$move  <- sapply(out$move, .litouci, pos=pos)
+      selmove   <- sample(out$move, size=1, prob=out$total)
+      if (showout) {
+         if (!contliquery)
+            eval(expr=.get("switch1"))
+         .flush()
+         totals    <- colSums(out[2:5])
+         percs     <- .percent(totals[1:3])
+         out$perc  <- .percent(out$total)
+         bars      <- apply(out[2:4], 1, .percbar, len=barlen, invert=invertbar)
+         out[2:4]  <- t(apply(out[2:4], 1, .percent))
+         out[1]    <- sapply(out[[1]], function(x) .parsemove(x, pos=pos, flip=flip, evalval="", i=NULL, sidetoplay=sidetoplay, rename=FALSE, returnline=TRUE, hintdepth=1)$txt)
+         out       <- out[c(1,6,5,2:4)]
+         out       <- rbind(out, data.frame(move="total", perc=100, total=totals[[4]], white=percs[[1]], draw=percs[[2]], black=percs[[3]]))
+         bars      <- c(bars, .percbar(totals[1:3], len=barlen, invert=invertbar))
+         out$total <- .numshort(out$total)
+         colnames(out)[c(2,4:6)] <- c("%", "white%", "draw%", "black%")
+         ncols <- num_ansi_colors()
+         if (ncols >= 256)
+            out <- out[-c(4:6)]
+         txt <- capture.output(print(out, print.gap=2))
+         for (i in 1:length(txt)) {
+            cat(txt[i], "  ")
+            if (i > 1)
+               cat(bars[i-1])
+            cat("\n\n")
+         }
+         if (!contliquery)
+            eval(expr=.get("switch2"))
       }
-      if (!contliquery)
-         eval(expr=.get("switch2"))
 
    }
 
-   return()
+   return(selmove)
 
 }
 

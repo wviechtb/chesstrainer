@@ -2,10 +2,10 @@
 
    lang <- .get("lang")
 
-   col.bg          <- .get("col.bg")
-   col.help        <- .get("col.help")
-   col.help.border <- .get("col.help.border")
-   font.mono       <- .get("font.mono")
+   col.bg     <- .get("col.bg")
+   col.help   <- .get("col.help")
+   col.border <- .get("col.border")
+   font.mono  <- .get("font.mono")
 
    if (lang == "en") {
 
@@ -45,7 +45,7 @@
 
    }
 
-   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=.get("lwd")+3)
+   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
 
    cex <- .findcex(c(txt,.text("selmodeinfo")), font=font.mono, x1=1.5, x2=8.2, y1=3.5, y2=7.5)
 

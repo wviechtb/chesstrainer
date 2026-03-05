@@ -5,17 +5,17 @@
 
    x <- dat
 
-   col.top         <- .get("col.top")
-   col.fg          <- .get("col.fg")
-   col.bg          <- .get("col.bg")
-   col.square.l    <- .get("col.square.l")
-   col.square.d    <- .get("col.square.d")
-   col.help.border <- .get("col.help.border")
-   cex.plots       <- .get("cex.plots")
-   mar             <- .get("mar")
-   mar2            <- .get("mar2")
+   col.top      <- .get("col.top")
+   col.fg       <- .get("col.fg")
+   col.bg       <- .get("col.bg")
+   col.square.l <- .get("col.square.l")
+   col.square.d <- .get("col.square.d")
+   col.border   <- .get("col.border")
+   cex.plots    <- .get("cex.plots")
+   mar          <- .get("mar")
+   mar2         <- .get("mar2")
 
-   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.help.border, lwd=.get("lwd")+3)
+   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
 
    usr <- NULL
 

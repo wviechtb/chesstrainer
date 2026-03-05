@@ -4,12 +4,12 @@
 
    par(xpd=FALSE)
 
-   col.top         <- .get("col.top")
-   col.fg          <- .get("col.fg")
-   col.bg          <- .get("col.bg")
-   col.square.l    <- .get("col.square.l")
-   col.square.d    <- .get("col.square.d")
-   col.help.border <- .get("col.help.border")
+   col.top      <- .get("col.top")
+   col.fg       <- .get("col.fg")
+   col.bg       <- .get("col.bg")
+   col.square.l <- .get("col.square.l")
+   col.square.d <- .get("col.square.d")
+   col.border   <- .get("col.border")
 
    #par(mfrow=c(3,2), pty="m")
 
@@ -24,7 +24,7 @@
         xlab=.text("score"), col=col.square.d, border=col.square.l, main=paste0("Histogram: ", .text("score")), xlim=c(0,100))
    if (target > 0)
       abline(v=target, lty="dotted", col=col.top)
-   #box(which="figure", col=col.help.border, lwd=lwd)
+   #box(which="figure", col=col.border, lwd=lwd)
 
    #########################################################################
 
@@ -32,7 +32,7 @@
 
    hist(rounds, breaks=20, las=1, col.axis=col.top, col.lab=col.top, col.main=col.fg,
         xlab=.text("rounds"), col=col.square.d, border=col.square.l, main=paste0("Histogram: ", .text("rounds")))
-   #box(which="figure", col=col.help.border, lwd=lwd)
+   #box(which="figure", col=col.border, lwd=lwd)
 
    #########################################################################
 
@@ -44,7 +44,7 @@
    } else {
       plot(NA, xlim=c(0,1), ylim=c(0,1), xlab="", ylab="", xaxt="n", yaxt="n", bty="n")
    }
-   #box(which="figure", col=col.help.border, lwd=lwd)
+   #box(which="figure", col=col.border, lwd=lwd)
 
    #########################################################################
 
@@ -56,7 +56,7 @@
    } else {
       plot(NA, xlim=c(0,1), ylim=c(0,1), xlab="", ylab="", xaxt="n", yaxt="n", bty="n")
    }
-   #box(which="figure", col=col.help.border, lwd=lwd)
+   #box(which="figure", col=col.border, lwd=lwd)
 
    #########################################################################
 
@@ -85,7 +85,7 @@
    lines(xs, ys, col=col.top, lty="dashed")
    points(jitter(rounds, amount=0.5), jitter(scores, amount=0.5), pch=21, col=col.square.l, bg=col.square.d, cex=pt.cex)
    #legend("topright", lty=c("dotted","solid"), lwd=c(1,1), col=col.top, legend=.text("plotlegend"), bg=col.bg, box.col=col.square.l)
-   #box(which="figure", col=col.help.border, lwd=lwd)
+   #box(which="figure", col=col.border, lwd=lwd)
 
    par(mar=.get("mar"))
 
@@ -105,7 +105,7 @@
    layout(1)
    par(pty="s")
 
-   box(which="figure", col=col.help.border, lwd=.get("lwd")+3)
+   box(which="figure", col=col.border, lwd=.get("lwd")+3)
 
    par(xpd=NA)
 

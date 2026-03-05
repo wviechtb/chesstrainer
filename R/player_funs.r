@@ -1,9 +1,9 @@
 .selectplayer <- function(current, seqdir, mustselect=FALSE) {
 
-   col.bg          <- .get("col.bg")
-   col.help        <- .get("col.help")
-   col.help.border <- .get("col.help.border")
-   font.mono       <- .get("font.mono")
+   col.bg     <- .get("col.bg")
+   col.help   <- .get("col.help")
+   col.border <- .get("col.border")
+   font.mono  <- .get("font.mono")
 
    # find all players in the sequence files
 
@@ -13,7 +13,7 @@
    players <- sort(unique(unlist(lapply(dat, function(x) names(x$player)))))
    nplayers <- length(players)
 
-   rect(1.2, 1.2, 8.8, 8.8, col=.get("col.bg"), border=.get("col.help.border"), lwd=.get("lwd")+3)
+   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
 
    if (nplayers == 0L) {
 

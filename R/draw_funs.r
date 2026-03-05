@@ -1408,7 +1408,7 @@
 
 .startcomment <- function(txt) {
 
-   rect(1.2, 1.2, 8.8, 8.8, col=.get("col.bg"), border=.get("col.help.border"), lwd=.get("lwd")+3)
+   rect(1.2, 1.2, 8.8, 8.8, col=.get("col.bg"), border=.get("col.border"), lwd=.get("lwd")+3)
 
    xleft   <- 1.5
    xright  <- 8.5

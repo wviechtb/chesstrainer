@@ -78,7 +78,7 @@ play <- function(lang="en", sfpath="", ...) {
    cex.glyphs  <- ifelse(is.null(ddd[["cex.glyphs"]]),  1.6,                     ddd[["cex.glyphs"]])
    depth1      <- ifelse(is.null(ddd[["depth1"]]),      12,                      ddd[["depth1"]])
    depth2      <- ifelse(is.null(ddd[["depth2"]]),      20,                      ddd[["depth2"]])
-   depth3      <- ifelse(is.null(ddd[["depth3"]]),      6,                       ddd[["depth3"]])
+   depth3      <- ifelse(is.null(ddd[["depth3"]]),      8,                       ddd[["depth3"]])
    sflim       <- ifelse(is.null(ddd[["sflim"]]),       NA,                      ddd[["sflim"]])
    multipv1    <- ifelse(is.null(ddd[["multipv1"]]),    1,                       ddd[["multipv1"]])
    multipv2    <- ifelse(is.null(ddd[["multipv2"]]),    1,                       ddd[["multipv2"]])
@@ -171,7 +171,7 @@ play <- function(lang="en", sfpath="", ...) {
    verbose <- isTRUE(ddd$verbose)
 
    cols.all <- c("col.bg", "col.fg", "col.square.l", "col.square.d", "col.square.be",
-                 "col.top", "col.bot", "col.help", "col.help.border",
+                 "col.top", "col.bot", "col.help", "col.border",
                  "col.hint", "col.best", "col.wrong", "col.rect", "col.annot",
                  "col.side.w", "col.side.b", "col.time.fast", "col.time.slow")
 
@@ -674,7 +674,7 @@ play <- function(lang="en", sfpath="", ...) {
              "a", "A", "f", "z", "Z", "c", "!", "@", "\"", "e", "E", "s", "b", "k", "K", "C",
              "^", "6", "R", "G", "w", "-", "=", "_", "+", "[", "{", "}", "(", ")", "i", "I", "x", "v", "ctrl-V",
              "l", "<", ">", "ctrl-L", "ctrl-F", "ctrl-C", "ctrl-D", "/", ",", ".", "|", "*", "8", "?", "'", ";", ":",
-             "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "ctrl-S", "ctrl-H", "ctrl-I", "ctrl-E")
+             "F1", "F2", "F3", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "ctrl-S", "ctrl-H", "ctrl-I", "ctrl-E")
 
    run.all <- TRUE
 
@@ -3816,41 +3816,31 @@ play <- function(lang="en", sfpath="", ...) {
                next
             }
 
-            # F4 to adjust the colors
+            # F5 to adjust the colors and sizes
 
-            if (identical(click, "F4")) {
+            if (identical(click, "F5")) {
                eval(expr=switch1)
-               .colorsettings(cols.all, pos, flip, mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
+               .vizsettings(cols.all, pos, flip, mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
                eval(expr=switch2)
                .redrawall(pos, flip, mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
                .draweval(sub$moves$eval[i-1], NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
                cols <- sapply(cols.all, function(x) .get(x))
                saveRDS(cols, file=file.path(configdir, "colors.rds"))
-               next
-            }
-
-            # F5 to adjust the cex values
-
-            if (identical(click, "F5")) {
-               eval(expr=switch1)
-               .cexsettings(pos, flip, mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
-               eval(expr=switch2)
-               .redrawall(pos, flip, mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
-               .draweval(sub$moves$eval[i-1], NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
-               .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
-               cex.top <- .get("cex.top")
-               cex.bot <- .get("cex.bot")
-               cex.eval <- .get("cex.eval")
-               cex.coords <- .get("cex.coords")
+               cex.top     <- .get("cex.top")
+               cex.bot     <- .get("cex.bot")
+               cex.eval    <- .get("cex.eval")
+               cex.coords  <- .get("cex.coords")
                cex.matdiff <- .get("cex.matdiff")
-               cex.plots <- .get("cex.plots")
-               settings$cex.top <- cex.top
-               settings$cex.bot <- cex.bot
-               settings$cex.eval <- cex.eval
-               settings$cex.coords <- cex.coords
+               cex.plots   <- .get("cex.plots")
+               cex.glyphs  <- .get("cex.glyphs")
+               settings$cex.top     <- cex.top
+               settings$cex.bot     <- cex.bot
+               settings$cex.eval    <- cex.eval
+               settings$cex.coords  <- cex.coords
                settings$cex.matdiff <- cex.matdiff
-               settings$cex.plots <- cex.plots
+               settings$cex.plots   <- cex.plots
+               settings$cex.glyphs  <- cex.glyphs
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
@@ -4661,6 +4651,11 @@ play <- function(lang="en", sfpath="", ...) {
                sfproc   <- res.sf$sfproc
                sfrun    <- res.sf$sfrun
             }
+
+            #print(bestmove)
+            #tmp <- .liquery(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, token, speeds, ratings, barlen, invertbar, contliquery, texttop, showout=FALSE)
+            #bestmove <- list(tmp)
+            #print(bestmove)
 
             .draweval(evalval[1], evalvallast, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
 
