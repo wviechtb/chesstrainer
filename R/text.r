@@ -83,7 +83,7 @@
    if (x == "downloadedmpg123") {
       return(switch(lang,
                     de = paste0("Verzeichnis, in das mpg123 heruntergeladen wurde: ", arg, "\n"),
-                         paste0("Directory into which mpg123 was downloaded: " arg, "\n")
+                         paste0("Directory into which mpg123 was downloaded: ", arg, "\n")
    ))}
 
    if (x == "newplayername") {
