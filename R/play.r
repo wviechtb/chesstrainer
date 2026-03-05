@@ -338,11 +338,6 @@ play <- function(lang="en", sfpath="", ...) {
       }
    }
 
-   #if (is.null(settings$firstrun)) {
-   #   settings$firstrun <- FALSE
-   #   saveRDS(settings, file=file.path(configdir, "settings.rds"))
-   #}
-
    # parse switch1/switch2 text
 
    switch1 <- parse(text=switch1)
@@ -446,6 +441,35 @@ play <- function(lang="en", sfpath="", ...) {
    #   stop(.text("noreadaccess"), call.=FALSE)
    #if (file.access(seqdir, mode=2L) != 0L)
    #   stop(.text("nowriteaccess"), call.=FALSE)
+
+   # on first run under Windows, offer to download mpg123 for playing sounds
+
+   if (is.null(settings$firstrun)) {
+
+      if (iswin) {
+         downloadmpg123 <- readline(prompt=.text("downloadmpg123"))
+         if (identical(downloadmpg123, "") || .confirm(downloadmpg123)) {
+            zipdir <- tempdir()
+            zipfile <- tempfile(fileext=".zip", tmpdir=zipdir)
+            download.file("https://www.mpg123.de/download/win64/1.32.10/mpg123-1.32.10-static-x86-64.zip", destfile=zipfile)
+            unzip(zipfile, exdir=zipdir)
+            mpg123dir <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "mpg123")
+            dir.create(mpg123dir, recursive=TRUE)
+            file.copy(from=list.files(file.path(zipdir, "mpg123-1.32.10-static-x86-64"), full.names=TRUE), to=mpg123dir, recursive=TRUE)
+            cat(.text("downloadedmpg123", mpg123dir))
+         }
+      }
+
+      settings$firstrun <- FALSE
+      saveRDS(settings, file=file.path(configdir, "settings.rds"))
+
+   }
+
+   if (iswin) {
+      mpg123dir <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "mpg123")
+      if (dir.exists(mpg123dir))
+         Sys.setenv(PATH = paste(mpg123dir, Sys.getenv("PATH"), sep = ";"))
+   }
 
    cat(.text("useseqdir", seqdir[seqdirpos]))
 

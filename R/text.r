@@ -74,6 +74,18 @@
                          paste0("Using sequence directory: ", arg, "\n")
    ))}
 
+   if (x == "downloadmpg123") {
+      return(switch(lang,
+                    de = "Soll mpg123 heruntergeladen werden, um Sounds abzuspielen? (J/n): ",
+                         "Should mpg123 be downloaded to play sounds? (Y/n): "
+   ))}
+
+   if (x == "downloadedmpg123") {
+      return(switch(lang,
+                    de = paste0("Verzeichnis, in das mpg123 heruntergeladen wurde: ", arg, "\n"),
+                         paste0("Directory into which mpg123 was downloaded: " arg, "\n")
+   ))}
+
    if (x == "newplayername") {
       return(switch(lang,
                     de = "Gib einen neuen Spielernamen ein: ",
