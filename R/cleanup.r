@@ -1,8 +1,8 @@
-cleanup <- function(config=FALSE, colors=FALSE, seqdir=FALSE, history=FALSE, mpg123=FALSE, cache=FALSE) {
+cleanup <- function(config=FALSE, colors=FALSE, seqdir=FALSE, history=FALSE, mpg123=FALSE, stockfish=FALSE, cache=FALSE) {
 
    interactive <- TRUE
 
-   if (config || colors || seqdir || history || mpg123 || cache)
+   if (config || colors || seqdir || history || mpg123 || stockfish || cache)
       interactive <- FALSE
 
    cat("\n")
@@ -127,7 +127,7 @@ cleanup <- function(config=FALSE, colors=FALSE, seqdir=FALSE, history=FALSE, mpg
 
    }
 
-   # remove the directory where mpg123 is stored (and all files therein)
+   # remove the directory where mpg123 is installed (and all files therein)
 
    dir.mpg123 <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "mpg123")
 
@@ -144,6 +144,34 @@ cleanup <- function(config=FALSE, colors=FALSE, seqdir=FALSE, history=FALSE, mpg
 
       if (dorm) {
          res <- unlink(dir.mpg123, recursive=TRUE)
+         if (res == 0) {
+            cat("Directory removed successfully.\n")
+         } else {
+            cat("Directory could not be removed.\n")
+         }
+      }
+
+      cat("\n")
+
+   }
+
+   # remove the directory where Stockfish is installed (and all files therein)
+
+   dir.sf <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "stockfish")
+
+   if (file.exists(dir.sf)) {
+
+      cat("Directory for Stockfish found at:", dir.sf, "\n")
+
+      if (interactive) {
+         resp <- readline(prompt="Remove the Stockfish directory (y/N)? ")
+         dorm <- identical(resp, "y")
+      } else {
+         dorm <- isTRUE(stockfish)
+      }
+
+      if (dorm) {
+         res <- unlink(dir.sf, recursive=TRUE)
          if (res == 0) {
             cat("Directory removed successfully.\n")
          } else {

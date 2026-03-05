@@ -341,6 +341,13 @@ play <- function(lang="en", ...) {
       }
    }
 
+   # make sure that switch1/switch2 only make use of bringToTop() under Windows when using RGui
+
+   if (iswin && !identical(gui, "rgui") && grepl(switch1, "bringToTop", fixed=TRUE))
+      switch1 <- "invisible()"
+   if (iswin && !identical(gui, "rgui") && grepl(switch2, "bringToTop", fixed=TRUE))
+      switch2 <- "invisible()"
+
    # parse switch1/switch2 text
 
    switch1 <- parse(text=switch1)
@@ -446,6 +453,7 @@ play <- function(lang="en", ...) {
    #   stop(.text("nowriteaccess"), call.=FALSE)
 
    mpg123dir <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "mpg123")
+   sfdir     <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "stockfish")
 
    if (is.null(settings$firstrun)) {
 
@@ -461,6 +469,33 @@ play <- function(lang="en", ...) {
             dir.create(mpg123dir, recursive=TRUE)
             file.copy(from=list.files(file.path(zipdir, "mpg123-1.32.10-static-x86-64"), full.names=TRUE), to=mpg123dir, recursive=TRUE)
             cat(.text("installedmpg123", mpg123dir))
+         }
+      }
+
+      # on first run under Windows, offer to download Stockfish
+
+      if (iswin && !dir.exists(sfdir)) {
+         downloadsf <- readline(prompt=.text("downloadsf"))
+         if (identical(downloadsf, "") || .confirm(downloadsf)) {
+            zipdir <- tempdir()
+            zipfile <- tempfile(fileext=".zip", tmpdir=zipdir)
+            download.file("https://github.com/official-stockfish/Stockfish/releases/latest/download/stockfish-windows-x86-64-avx2.zip", destfile=zipfile)
+            unzip(zipfile, exdir=zipdir)
+            dir.create(sfdir, recursive=TRUE)
+            file.copy(from=list.files(file.path(zipdir, "stockfish"), full.names=TRUE, recursive=TRUE), to=sfdir, recursive=TRUE)
+            cat(.text("installedsf", sfdir))
+            sfpath <- file.path(sfdir, "stockfish-windows-x86-64-avx2.exe")
+            settings$sfpath <- sfpath
+         }
+      }
+
+      # on first run under Windows, set sleepadj to 0.3
+
+      if (iswin) {
+         if (is.null(sleepadj) || identical(sleepadj, 0)) {
+            sleepadj <- 0.3
+            settings$sleepadj <- sleepadj
+            assign("sleepadj", sleepadj, envir=.chesstrainer)
          }
       }
 

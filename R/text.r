@@ -86,6 +86,18 @@
                          paste0("Directory into which mpg123 was installed: ", arg, "\n")
    ))}
 
+   if (x == "downloadsf") {
+      return(switch(lang,
+                    de = "Soll Stockfish heruntergeladen werden? (J/n): ",
+                         "Should Stockfish be downloaded? (Y/n): "
+   ))}
+
+   if (x == "installedsf") {
+      return(switch(lang,
+                    de = paste0("Verzeichnis, in das Stockfish installiert wurde: ", arg, "\n"),
+                         paste0("Directory into which Stockfish was installed: ", arg, "\n")
+   ))}
+
    if (x == "newplayername") {
       return(switch(lang,
                     de = "Gib einen neuen Spielernamen ein: ",
