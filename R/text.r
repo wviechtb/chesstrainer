@@ -80,10 +80,10 @@
                          "Should mpg123 be downloaded to play sounds? (Y/n): "
    ))}
 
-   if (x == "downloadedmpg123") {
+   if (x == "installedmpg123") {
       return(switch(lang,
-                    de = paste0("Verzeichnis, in das mpg123 heruntergeladen wurde: ", arg, "\n"),
-                         paste0("Directory into which mpg123 was downloaded: ", arg, "\n")
+                    de = paste0("Verzeichnis, in das mpg123 installiert wurde: ", arg, "\n"),
+                         paste0("Directory into which mpg123 was installed: ", arg, "\n")
    ))}
 
    if (x == "newplayername") {
