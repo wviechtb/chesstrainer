@@ -168,7 +168,7 @@ play <- function(lang="en", ...) {
    mar2 <- pmax(mar2,1)
    if (is.null(token))
       token <- ""
-   if (is.null(sfpath))
+   if (is.null(sfpath) || length(sfpath) == 0)
       sfpath <- ""
 
    verbose <- isTRUE(ddd$verbose)
@@ -478,8 +478,10 @@ play <- function(lang="en", ...) {
 
    if (iswin && dir.exists(sfdir)) {
       sfpath <- list.files(file.path(sfdir), pattern=".exe$", full.names=TRUE)
-      settings$sfpath <- sfpath
-      saveRDS(settings, file=file.path(configdir, "settings.rds"))
+      if (length(sfpath) != 0) {
+         settings$sfpath <- sfpath[1]
+         saveRDS(settings, file=file.path(configdir, "settings.rds"))
+      }
    }
 
    cat(.text("useseqdir", seqdir[seqdirpos]))
