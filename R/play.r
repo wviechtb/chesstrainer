@@ -452,42 +452,7 @@ play <- function(lang="en", ...) {
    #if (file.access(seqdir, mode=2L) != 0L)
    #   stop(.text("nowriteaccess"), call.=FALSE)
 
-   mpg123dir <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "mpg123")
-   sfdir     <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "stockfish")
-
    if (is.null(settings$firstrun)) {
-
-      # on first run under Windows, offer to download mpg123 for playing sounds
-
-      if (iswin && !dir.exists(mpg123dir)) {
-         downloadmpg123 <- readline(prompt=.text("downloadmpg123"))
-         if (identical(downloadmpg123, "") || .confirm(downloadmpg123)) {
-            zipdir <- tempdir()
-            zipfile <- tempfile(fileext=".zip", tmpdir=zipdir)
-            download.file("https://www.mpg123.de/download/win64/1.32.10/mpg123-1.32.10-static-x86-64.zip", destfile=zipfile)
-            unzip(zipfile, exdir=zipdir)
-            dir.create(mpg123dir, recursive=TRUE)
-            file.copy(from=list.files(file.path(zipdir, "mpg123-1.32.10-static-x86-64"), full.names=TRUE), to=mpg123dir, recursive=TRUE)
-            cat(.text("installedmpg123", mpg123dir))
-         }
-      }
-
-      # on first run under Windows, offer to download Stockfish
-
-      if (iswin && !dir.exists(sfdir)) {
-         downloadsf <- readline(prompt=.text("downloadsf"))
-         if (identical(downloadsf, "") || .confirm(downloadsf)) {
-            zipdir <- tempdir()
-            zipfile <- tempfile(fileext=".zip", tmpdir=zipdir)
-            download.file("https://github.com/official-stockfish/Stockfish/releases/latest/download/stockfish-windows-x86-64-avx2.zip", destfile=zipfile)
-            unzip(zipfile, exdir=zipdir)
-            dir.create(sfdir, recursive=TRUE)
-            file.copy(from=list.files(file.path(zipdir, "stockfish"), full.names=TRUE, recursive=TRUE), to=sfdir, recursive=TRUE)
-            cat(.text("installedsf", sfdir))
-            sfpath <- file.path(sfdir, "stockfish-windows-x86-64-avx2.exe")
-            settings$sfpath <- sfpath
-         }
-      }
 
       # on first run under Windows, set sleepadj to 0.3
 
@@ -504,8 +469,18 @@ play <- function(lang="en", ...) {
 
    }
 
+   mpg123dir <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "mpg123")
+
    if (iswin && dir.exists(mpg123dir))
       Sys.setenv(PATH = paste(mpg123dir, Sys.getenv("PATH"), sep = ";"))
+
+   sfdir <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "stockfish")
+
+   if (iswin && dir.exists(sfdir)) {
+      sfpath <- list.files(file.path(sfdir), pattern=".exe$", full.names=TRUE)
+      settings$sfpath <- sfpath
+      saveRDS(settings, file=file.path(configdir, "settings.rds"))
+   }
 
    cat(.text("useseqdir", seqdir[seqdirpos]))
 

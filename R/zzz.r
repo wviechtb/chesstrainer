@@ -87,6 +87,7 @@
    assign("boardeditorpos", pos, envir=.chesstrainer)
 
    assign("volume", 50, envir=.chesstrainer)
+   assign("lang", "en", envir=.chesstrainer)
 
    # welcome message
 

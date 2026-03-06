@@ -14,7 +14,7 @@ cleanup(config=FALSE, colors=FALSE, seqdir=FALSE, history=FALSE,
    \item{seqdir}{logical to determine if the default directory where sequences are stored (and all files therein) should be removed.}
    \item{history}{logical to determine if the directory where the session histories of players are stored (and all files therein) should be removed.}
    \item{mpg123}{logical to determine if the directory where mpg123 is installed (and all files therein) should be removed.}
-   \item{stockfish}{logical to determine if the directory where Stockfosh is installed (and all files therein) should be removed.}
+   \item{stockfish}{logical to determine if the directory where Stockfish is installed (and all files therein) should be removed.}
    \item{cache}{logical to determine if the cache directory (and all files therein) should be removed.}
 }
 \details{
@@ -28,6 +28,8 @@ cleanup(config=FALSE, colors=FALSE, seqdir=FALSE, history=FALSE,
    Removing the config file or the colors settings file may be useful in case these files were corrupted with nonsensical settings. The files will be recreated (with default values) when restarting the trainer.
 
    Be careful with removing the other files and directories! Once deleted, they cannot be recovered.
+
+   Removing mpg123 or Stockfish with this function only removes the installations made via \code{\link{install_mpg123}} and \code{\link{install_stockfish}}. It does not touch any system files.
 
 }
 \value{

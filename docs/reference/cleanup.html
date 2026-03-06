@@ -29,7 +29,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chesstrainer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-141</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-142</span>
       </span>
     </div>
 
@@ -107,7 +107,7 @@
 <dd><p>logical to determine if the directory where mpg123 is installed (and all files therein) should be removed.</p></dd>
 
    <dt id="arg-stockfish">stockfish<a class="anchor" aria-label="anchor" href="#arg-stockfish"></a></dt>
-<dd><p>logical to determine if the directory where Stockfosh is installed (and all files therein) should be removed.</p></dd>
+<dd><p>logical to determine if the directory where Stockfish is installed (and all files therein) should be removed.</p></dd>
 
    <dt id="arg-cache">cache<a class="anchor" aria-label="anchor" href="#arg-cache"></a></dt>
 <dd><p>logical to determine if the cache directory (and all files therein) should be removed.</p></dd>
@@ -122,6 +122,7 @@
 <p>If at least one argument is set to <code>TRUE</code>, then the arguments determine which files and directories should be removed non-interactively.</p>
 <p>Removing the config file or the colors settings file may be useful in case these files were corrupted with nonsensical settings. The files will be recreated (with default values) when restarting the trainer.</p>
 <p>Be careful with removing the other files and directories! Once deleted, they cannot be recovered.</p>
+<p>Removing mpg123 or Stockfish with this function only removes the installations made via <code><a href="install_mpg123.html">install_mpg123</a></code> and <code><a href="install_stockfish.html">install_stockfish</a></code>. It does not touch any system files.</p>
     </div>
     <div id="value">
     <h2>Value</h2>

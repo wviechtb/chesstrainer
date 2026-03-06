@@ -74,30 +74,6 @@
                          paste0("Using sequence directory: ", arg, "\n")
    ))}
 
-   if (x == "downloadmpg123") {
-      return(switch(lang,
-                    de = "Soll mpg123 heruntergeladen werden, um Sounds abzuspielen? (J/n): ",
-                         "Should mpg123 be downloaded to play sounds? (Y/n): "
-   ))}
-
-   if (x == "installedmpg123") {
-      return(switch(lang,
-                    de = paste0("Verzeichnis, in das mpg123 installiert wurde: ", arg, "\n"),
-                         paste0("Directory into which mpg123 was installed: ", arg, "\n")
-   ))}
-
-   if (x == "downloadsf") {
-      return(switch(lang,
-                    de = "Soll Stockfish heruntergeladen werden? (J/n): ",
-                         "Should Stockfish be downloaded? (Y/n): "
-   ))}
-
-   if (x == "installedsf") {
-      return(switch(lang,
-                    de = paste0("Verzeichnis, in das Stockfish installiert wurde: ", arg, "\n"),
-                         paste0("Directory into which Stockfish was installed: ", arg, "\n")
-   ))}
-
    if (x == "newplayername") {
       return(switch(lang,
                     de = "Gib einen neuen Spielernamen ein: ",
@@ -1609,6 +1585,48 @@
       return(switch(lang,
                     de = "L\U000000F6sche den Cache ...",
                          "Deleting the cache ..."
+   ))}
+
+   if (x == "mpg123onlywin") {
+      return(switch(lang,
+                    de = "Die Installation von mpg123 mit dieser Funktion ist nur unter Windows m\U000000F6glich.\n",
+                         "Installating mpg123 with this function is only possible under Windows.\n"
+   ))}
+
+   if (x == "priormpg123") {
+      return(switch(lang,
+                    de = paste0("Verzeichnis einer vorherigen Installation von mpg123 gefunden unter: ", arg, "\n"),
+                         paste0("Directory of prior installation of mpg123 found at: ", arg, "\n")
+   ))}
+
+   if (x == "overwriteinst") {
+      return(switch(lang,
+                    de = "Soll die vorherige Installation \U000000FCberschrieben werden? (j/N): ",
+                         "Should the prior installation be overwritten? (y/N): "
+   ))}
+
+   if (x == "installedmpg123") {
+      return(switch(lang,
+                    de = paste0("Verzeichnis, in das mpg123 installiert wurde: ", arg, "\n"),
+                         paste0("Directory into which mpg123 was installed: ", arg, "\n")
+   ))}
+
+   if (x == "sfonlywin") {
+      return(switch(lang,
+                    de = "Die Installation von Stockfish mit dieser Funktion ist nur unter Windows m\U000000F6glich.\n",
+                         "Installing Stockfish with this function is only possible under Windows.\n"
+   ))}
+
+   if (x == "priorsf") {
+      return(switch(lang,
+                    de = paste0("Verzeichnis einer vorherigen Installation von Stockfish gefunden unter: ", arg, "\n"),
+                         paste0("Directory of prior installation of Stockfish found at: ", arg, "\n")
+   ))}
+
+   if (x == "installedsf") {
+      return(switch(lang,
+                    de = paste0("Verzeichnis, in das Stockfish installiert wurde: ", arg, "\n"),
+                         paste0("Directory into which Stockfish was installed: ", arg, "\n")
    ))}
 
 }
