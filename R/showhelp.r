@@ -33,15 +33,16 @@
       ">        - select and manage bookmarks",
       "m        - choose a sequence selection mode",
       "d        - choose a difficulty calculation method",
-      "w        - wait after completed sequences on/off",
       "-=       - decrease/increase the time between moves",
       "_+       - decrease/increase the sound volume",
       "()       - decrease/increase the line width",
       "{}       - decrease/increase the margin width",
-      "ctrl-l   - toggle the language (English/German)",
       "v        - evaluation bar on/off",
-      "k        - material difference on/off",
+      "L        - toggle the language (English/German)",
+      "W        - wait after completed sequences on/off",
+      "K        - material difference on/off",
       "C        - board coordinates on/off",
+      "S        - toggle between short and long algebraic notation",
       "Ctrl-f   - copy the FEN of the current position to the clipboard",
       "<escape> - redraw the board / exit a menu",
       "o        - open the current position on lichess.org",
@@ -134,15 +135,16 @@
       ">        - Lesezeichen ausw\U000000E4hlen und bearbeiten",
       "m        - Sequenzauswahlmodus ausw\U000000E4hlen",
       "d        - Methode zur Schwierigkeitsberechnung ausw\U000000E4hlen",
-      "w        - Warten nach abgeschlossenen Sequenzen an/aus",
       "-=       - Zeit zwischen den Z\U000000FCgen verringern/erh\U000000F6hen",
       "_+       - Lautst\U000000E4rke verringern/erh\U000000F6hen",
       "()       - Linienbreite verringern/erh\U000000F6hen",
       "{}       - Randbreite verringern/erh\U000000F6hen",
-      "Strg-l   - Sprache wechseln (Englisch/Deutsch)",
       "v        - Bewertungsbalken an/aus",
-      "k        - Materialunterschied an/aus",
+      "L        - Sprache wechseln (Englisch/Deutsch)",
+      "W        - Warten nach abgeschlossenen Sequenzen an/aus",
+      "K        - Materialunterschied an/aus",
       "C        - Brettkoordinaten an/aus",
+      "S        - zwischen kurzer und langer algebraischer Notation wechseln",
       "Strg-f   - FEN der aktuellen Stellung in die Zwischenablage kopieren",
       "<escape> - Brett neu zeichnen / ein Men\U000000FC verlassen",
       "o        - die aktuelle Stellung auf lichess.org \U000000F6ffnen",
@@ -272,7 +274,7 @@
          next
       }
 
-      if (identical(click, "ctrl-L")) {
+      if (identical(click, "L")) {
          if (lang == "de") {
             lang <- "en"
          } else {

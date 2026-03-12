@@ -16,7 +16,7 @@ playsound(sound)
 
    For Linux, the function uses \code{paplay}. For macOS, the function uses \code{afplay}. Note that these commands are assumed to be on the user path.
 
-   Windows does not provide a simple way to play sound files from the command line by default. To make sounds work under Windows, one can download the lightweight and open-source mpg123 player from \verb{https://www.mpg123.de} (click on \sQuote{download}, go to \sQuote{Win32 and Win64 binaries}, choose the link for the 64 bit binary, download the \sQuote{static} zip file, extract it to some directory on your computer, and place this directory on your system path; if you do not know how to do this last step, see: \verb{https://stackoverflow.com/q/9546324/2615367}).
+   Windows does not provide a simple way to play sound files from the command line by default. To make sounds work under Windows, one can download the lightweight and open-source mpg123 player from \url{https://www.mpg123.de} (click on \sQuote{download}, go to \sQuote{Win32 and Win64 binaries}, choose the link for the 64 bit binary, download the \sQuote{static} zip file, extract it to some directory on your computer, and place this directory on your system path; if you do not know how to do this last step, see: \url{https://stackoverflow.com/q/9546324/2615367}).
 
    You can also use the \code{\link{install_mpg123}} function to install the mpg123 player automatically. When running the trainer, it will automatically detect this installation and make use of it to play sounds.
 

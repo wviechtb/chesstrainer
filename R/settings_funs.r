@@ -1,4 +1,4 @@
-.vizsettings <- function(cols.all, pos, flip=FALSE, mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove) {
+.vizsettings <- function(cols.all, pos, flip=FALSE, mode="add", show=TRUE, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove) {
 
    pos <- .get("pos")
    pos[7:8,1:2] <- ""
@@ -157,7 +157,7 @@
 
 }
 
-.lichesssettings <- function(speeds, ratings, lichessdb, barlen, invertbar, token, cachedir) {
+.lichesssettings <- function(speeds, ratings, lichessdb, barlen, invertbar, token) {
 
    col.bg     <- .get("col.bg")
    col.help   <- .get("col.help")
@@ -166,6 +166,7 @@
    col.text   <- .get("col.square.d")
    switch1    <- .get("switch1")
    switch2    <- .get("switch2")
+   cachedir   <- .get("cachedir")
 
    rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
 
@@ -429,7 +430,7 @@
 
    click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.mousedownfun, onKeybd=.keyfun)
 
-   if (identical(click, "ctrl-L")) {
+   if (identical(click, "L")) {
       if (lang == "de") {
          lang <- "en"
       } else {

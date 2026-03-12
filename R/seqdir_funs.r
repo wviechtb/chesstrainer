@@ -2,7 +2,8 @@
 
    while (TRUE) {
 
-      .flush()
+      flush <- .flush()
+
       cat("\n")
       tab <- data.frame(seqdir=seqdir, selected="( )")
       tab$selected[seqdirpos] <- "(*)"
@@ -44,7 +45,7 @@
                   succces <- dir.create(seqdirnew, showWarnings=FALSE, recursive=TRUE)
                   if (!succces) {
                      cat(.text("dircreateerror"))
-                     Sys.sleep(2)
+                     if (flush) Sys.sleep(2)
                      next
                   }
                } else {
@@ -61,7 +62,7 @@
       if (grepl("^[re]$", resp)) {
          if (length(seqdir) == 1L) {
             cat(.text("cannotremovesingleseqdir"))
-            Sys.sleep(2)
+            if (flush) Sys.sleep(2)
             next
          }
          seqdirtoremove <- readline(prompt=.text("seqdirtoremove"))

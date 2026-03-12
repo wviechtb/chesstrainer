@@ -239,7 +239,7 @@
 
    while (TRUE) {
 
-      .flush()
+      flush <- .flush()
 
       cat("\n")
       cat(.text("sfrunning", sfrun))
@@ -273,7 +273,7 @@
             tmp <- .sf.start(sfproc, sfrun, sfpath, threads, hash)
             sfproc <- tmp$sfproc
             sfrun  <- tmp$sfrun
-            Sys.sleep(2)
+            if (flush) Sys.sleep(2)
             next
          }
 
@@ -283,7 +283,7 @@
             tmp <- .sf.stop(sfproc, sfrun)
             sfproc <- tmp$sfproc
             sfrun  <- tmp$sfrun
-            Sys.sleep(2)
+            if (flush) Sys.sleep(2)
             next
          }
 
@@ -315,7 +315,7 @@
                sfproc <- tmp$sfproc
                sfrun  <- tmp$sfrun
             }
-            Sys.sleep(2)
+            if (flush) Sys.sleep(2)
             next
          }
 
@@ -342,7 +342,7 @@
                   cat(.text("depthsetfail"))
                }
             }
-            Sys.sleep(2)
+            if (flush) Sys.sleep(2)
             next
          }
 
@@ -360,7 +360,7 @@
                      newsflim <- round(as.numeric(newsflim))
                      if (newsflim > 20 && newsflim < 1320) {
                         cat(.text("sflimsetfail"))
-                        Sys.sleep(2)
+                        if (flush) Sys.sleep(2)
                         next
                      }
                      newsflim[newsflim > 3190] <- 3190
@@ -371,7 +371,7 @@
                   cat(.text("sflimsetfail"))
                }
             }
-            Sys.sleep(2)
+            if (flush) Sys.sleep(2)
             next
          }
 
@@ -396,7 +396,7 @@
                   cat(.text("multipvsetfail"))
                }
             }
-            Sys.sleep(2)
+            if (flush) Sys.sleep(2)
             next
          }
 
@@ -417,7 +417,7 @@
                   cat(.text("threadssetfail"))
                }
             }
-            Sys.sleep(2)
+            if (flush) Sys.sleep(2)
             next
          }
          if (identical(resp, 8)) {
@@ -437,7 +437,7 @@
                   cat(.text("hashsetfail"))
                }
             }
-            Sys.sleep(2)
+            if (flush) Sys.sleep(2)
             next
          }
 
@@ -459,7 +459,7 @@
 
                }
             }
-            Sys.sleep(2)
+            if (flush) Sys.sleep(2)
             next
          }
 

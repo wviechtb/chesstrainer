@@ -22,11 +22,11 @@ The main purpose of the `chesstrainer` package is to create sequences of moves (
 - can be used with multiple players (performance is tracked separately for each player)
 - recognizes known openings with their ECO code and name
 - recognizes move transpositions
-- can query the Lichess opening database
 - when [Stockfish](https://stockfishchess.org) is installed:
   - automatically obtain and show position evaluations for each move in a sequence
   - show the best move(s) for a given position
   - can play against Stockfish in 'play mode'
+- can query the Lichess opening database and play against it
 - can adjust colors, text sizes, and various other settings
 - can manage multiple sequence directories
 - can toggle the language (English or German)

@@ -29,7 +29,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chesstrainer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-142</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-143</span>
       </span>
     </div>
 
@@ -100,7 +100,7 @@
 
 <p>The function is used by the package to play sounds. This is done by invoking system commands via the <code><a href="https://rdrr.io/r/base/system.html" class="external-link">system</a></code> function. This may or may not work depending on your operating system and configuration.</p>
 <p>For Linux, the function uses <code>paplay</code>. For macOS, the function uses <code>afplay</code>. Note that these commands are assumed to be on the user path.</p>
-<p>Windows does not provide a simple way to play sound files from the command line by default. To make sounds work under Windows, one can download the lightweight and open-source mpg123 player from <code>https://www.mpg123.de</code> (click on ‘download’, go to ‘Win32 and Win64 binaries’, choose the link for the 64 bit binary, download the ‘static’ zip file, extract it to some directory on your computer, and place this directory on your system path; if you do not know how to do this last step, see: <code>https://stackoverflow.com/q/9546324/2615367</code>).</p>
+<p>Windows does not provide a simple way to play sound files from the command line by default. To make sounds work under Windows, one can download the lightweight and open-source mpg123 player from <a href="https://www.mpg123.de" class="external-link">https://www.mpg123.de</a> (click on ‘download’, go to ‘Win32 and Win64 binaries’, choose the link for the 64 bit binary, download the ‘static’ zip file, extract it to some directory on your computer, and place this directory on your system path; if you do not know how to do this last step, see: <a href="https://stackoverflow.com/q/9546324/2615367" class="external-link">https://stackoverflow.com/q/9546324/2615367</a>).</p>
 <p>You can also use the <code><a href="install_mpg123.html">install_mpg123</a></code> function to install the mpg123 player automatically. When running the trainer, it will automatically detect this installation and make use of it to play sounds.</p>
 <p>Unfortunately, mpg123 cannot control the output volume, so adjusting the sound volume via the trainer has no effect for this player.</p>
 <p><em>For advanced users:</em></p>

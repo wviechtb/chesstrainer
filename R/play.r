@@ -12,8 +12,9 @@ play <- function(lang="en", ...) {
    options(warn=1)
    on.exit(options(warn=owarn))
 
-   iswin <- .Platform$OS.type == "windows"
+   iswin <- isTRUE(.Platform$OS.type == "windows")
    gui <- tolower(.Platform$GUI)
+   isonline <- isTRUE(curl::has_internet())
 
    assign("lang", lang, envir=.chesstrainer)
 
@@ -60,6 +61,7 @@ play <- function(lang="en", ...) {
    coords      <- ifelse(is.null(ddd[["coords"]]),      TRUE,                    ddd[["coords"]])
    showtransp  <- ifelse(is.null(ddd[["showtransp"]]),  TRUE,                    ddd[["showtransp"]])
    matdiff     <- ifelse(is.null(ddd[["matdiff"]]),     TRUE,                    ddd[["matdiff"]])
+   san         <- ifelse(is.null(ddd[["san"]]),         TRUE,                    ddd[["san"]])
    wait        <- ifelse(is.null(ddd[["wait"]]),        TRUE,                    ddd[["wait"]])
    delay       <- ifelse(is.null(ddd[["delay"]]),       0.5,                     ddd[["delay"]])
    idletime    <- ifelse(is.null(ddd[["idletime"]]),    120,                     ddd[["idletime"]])
@@ -189,7 +191,7 @@ play <- function(lang="en", ...) {
          stop(.text("dircreateerror"), call.=FALSE)
       settings <- list(lang=lang, player=player, mode=mode, seqdir=seqdir, seqdirpos=seqdirpos,
                        selmode=selmode, timed=timed, timepermove=timepermove, expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint,
-                       eval=eval, evalsteps=evalsteps, coords=coords, showtransp=showtransp, matdiff=matdiff, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
+                       eval=eval, evalsteps=evalsteps, coords=coords, showtransp=showtransp, matdiff=matdiff, san=san, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth,
                        difffun=difffun, difflen=difflen, diffmin=diffmin, zenmode=zenmode, speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb, token=token,
@@ -240,6 +242,8 @@ play <- function(lang="en", ...) {
             showtransp <- settings[["showtransp"]]
          if (is.null(mc[["matdiff"]]))
             matdiff <- settings[["matdiff"]]
+         if (is.null(mc[["san"]]))
+            san <- settings[["san"]]
          if (is.null(mc[["wait"]]))
             wait <- settings[["wait"]]
          if (is.null(mc[["delay"]]))
@@ -324,7 +328,7 @@ play <- function(lang="en", ...) {
       sfpath <- suppressWarnings(normalizePath(sfpath))
       settings <- list(lang=lang, player=player, mode=mode, seqdir=seqdir, seqdirpos=seqdirpos,
                        selmode=selmode, timed=timed, timepermove=timepermove, expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint,
-                       eval=eval, evalsteps=evalsteps, coords=coords, showtransp=showtransp, matdiff=matdiff, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
+                       eval=eval, evalsteps=evalsteps, coords=coords, showtransp=showtransp, matdiff=matdiff, san=san, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth,
                        difffun=difffun, difflen=difflen, diffmin=diffmin, zenmode=zenmode, speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb, token=token,
@@ -368,6 +372,7 @@ play <- function(lang="en", ...) {
    assign("mar2", mar2, envir=.chesstrainer)
    assign("coords", coords, envir=.chesstrainer)
    assign("matdiff", matdiff, envir=.chesstrainer)
+   assign("san", san, envir=.chesstrainer)
    assign("timed", timed, envir=.chesstrainer)
    assign("zenmode", zenmode, envir=.chesstrainer)
    assign("verbose", verbose, envir=.chesstrainer)
@@ -390,6 +395,8 @@ play <- function(lang="en", ...) {
       dir.create(file.path(cachedir, "lichess"), recursive=TRUE)
       dir.create(file.path(cachedir, "masters"), recursive=TRUE)
    }
+
+   assign("cachedir", cachedir, envir=.chesstrainer)
 
    # if seqdir is not an empty string, remove any directories from seqdir that do not exist
 
@@ -446,12 +453,6 @@ play <- function(lang="en", ...) {
       dir.create(sessionsdir, recursive=TRUE)
    }
 
-   # TODO: what to do with this?
-   #if (file.access(seqdir, mode=4L) != 0L)
-   #   stop(.text("noreadaccess"), call.=FALSE)
-   #if (file.access(seqdir, mode=2L) != 0L)
-   #   stop(.text("nowriteaccess"), call.=FALSE)
-
    if (is.null(settings$firstrun)) {
 
       # on first run under Windows, set sleepadj to 0.3
@@ -477,9 +478,11 @@ play <- function(lang="en", ...) {
    sfdir <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "stockfish")
 
    if (iswin && dir.exists(sfdir)) {
-      sfpath <- list.files(file.path(sfdir), pattern=".exe$", full.names=TRUE)
-      if (length(sfpath) != 0) {
-         settings$sfpath <- sfpath[1]
+      tmp <- list.files(file.path(sfdir), pattern=".exe$", full.names=TRUE)
+      if (length(tmp) != 0) {
+         sfpath <- tmp[1]
+         sfpath <- normalizePath(sfpath)
+         settings$sfpath <- sfpath
          saveRDS(settings, file=file.path(configdir, "settings.rds"))
       }
    }
@@ -512,13 +515,15 @@ play <- function(lang="en", ...) {
    filename <- ""
    lastseq  <- ""
    bestmove <- list("")
-   useflip  <- TRUE
    replast  <- FALSE
    oldmode  <- ifelse(mode == "play", "add", mode)
    .difffun <- eval(parse(text=paste0(".difffun", difffun)))
    contanalysis <- FALSE
    contliquery  <- FALSE
    updateall    <- FALSE
+   savpos       <- NULL
+
+   assign("contliquery", contliquery, envir=.chesstrainer)
 
    # session variables
 
@@ -708,10 +713,10 @@ play <- function(lang="en", ...) {
    keys <- c("q", "ctrl-Q", "\033", "ctrl-[", " ", "m", "d", "\\", "\U000000E4", "n", "N", "B", "p", "ctrl-R",
              "g", "h", "H", "y", "Left", "Right", "Up", "Down", "t", "T", "0", "1", "2", "3", "4", "5", "9",
              "r", "o", "u", "U", "ctrl-U", "M", "j", "%",
-             "a", "A", "f", "z", "Z", "c", "!", "@", "\"", "e", "E", "s", "b", "k", "K", "C",
-             "^", "6", "R", "G", "w", "-", "=", "_", "+", "[", "{", "}", "(", ")", "i", "I", "x", "v", "ctrl-V",
-             "l", "<", ">", "ctrl-L", "ctrl-F", "ctrl-C", "ctrl-D", "/", ",", ".", "|", "*", "8", "?", "'", ";", ":",
-             "F1", "F2", "F3", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12", "ctrl-S", "ctrl-H", "ctrl-I", "ctrl-E")
+             "a", "A", "f", "z", "Z", "c", "!", "@", "\"", "e", "E", "s", "b", "K", "C", "S",
+             "^", "6", "R", "G", "W", "-", "=", "_", "+", "[", "{", "}", "(", ")", "i", "I", "x", "v", "ctrl-V",
+             "l", "L", "<", ">", "ctrl-F", "ctrl-C", "ctrl-D", "/", ",", ".", "|", "*", "8", "?", "'", ";", ":",
+             "F1", "F2", "F3", "F5", "F6", "F7", "F8", "F9", "F10", "ctrl-S", "F11", "ctrl-I", "F12", "ctrl-H", "ctrl-E")
 
    run.all <- TRUE
 
@@ -720,6 +725,9 @@ play <- function(lang="en", ...) {
       ###### [a] ######
 
       pos <- start.pos
+
+      if (mode=="play" && contliquery && !is.null(savpos))
+         pos <- savpos
 
       # some defaults for a particular round / sequence
 
@@ -737,12 +745,13 @@ play <- function(lang="en", ...) {
       evalval    <- NA_real_
       starteval  <- 0.2
       texttop    <- ""
-      if (useflip) {
+      if (!(mode == "play" && contliquery)) { # when in play (Lichess) mode, stick to prior flip setting when starting a new round and set sidetoplay correctly
          flip <- FALSE
-         useflip <- TRUE
+         sidetoplay <- "w"
+      } else {
+         sidetoplay <- sidetoplaystart
       }
       scoreadd      <- 0
-      sidetoplay    <- "w"
       sideindicator <- NA
       opening       <- ""
       givehint1     <- FALSE
@@ -1032,9 +1041,11 @@ play <- function(lang="en", ...) {
 
          if (!is.null(sub$pos)) {
 
+            # if the sequence doesn't start at the initial position, get the position
+
             pos <- sub$pos
 
-            # determine sidetoplay based on the first piece to be moved
+            # determine sidetoplay based on the first piece moved
 
             if (nrow(sub$moves) > 0L) {
                if (flip) {
@@ -1063,7 +1074,8 @@ play <- function(lang="en", ...) {
 
          }
 
-         # compute number of moves to be made by the player
+         # compute number of moves to be made by the player (needed for the timed mode)
+
          movestoplay <- sum(!sub$moves$show)
 
       }
@@ -1088,19 +1100,28 @@ play <- function(lang="en", ...) {
 
       while (run.rnd) {
 
+         .newround <- function(seqno1=FALSE) {
+            bestmove <<- list("")
+            run.rnd <<- FALSE
+            input <<- FALSE
+            if (seqno1)
+               seqno <<- 1
+            return()
+         }
+
          ###### [b] ######
 
          if (mode == "test" && i <= max(1L,nrow(sub$moves)) && !updateall) { # need the max() for sequences that are just a start comment
 
             # show the start comment if there is one at move 1 (and showstartcom is TRUE)
+
             if (i == 1 && !is.null(sub$commentstart) && showstartcom) {
                .startcomment(sub$commentstart) # waits for click
                .redrawall(pos, flip, mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
                .draweval(starteval, NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
             }
 
-            if (nrow(sub$moves) == 0L) {
-               # can have a sequence that is just a start comment
+            if (nrow(sub$moves) == 0L) { # for sequences that are just a start comment
                .texttop("")
                run.rnd <- FALSE
                seqno <- ifelse(seqno == k, 1, seqno + 1)
@@ -1171,7 +1192,7 @@ play <- function(lang="en", ...) {
          }
 
          if (mode %in% c("add","analysis") && contliquery)
-            .liquery(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, token, speeds, ratings, barlen, invertbar, contliquery, texttop)
+            .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, mode)
 
          input <- TRUE
          islastmove <- FALSE
@@ -1194,7 +1215,7 @@ play <- function(lang="en", ...) {
 
                # if Stockfish is not running anymore, then it must have crashed, so switch to analysis mode
 
-               if (!sfrun) {
+               if (!contliquery && !sfrun) {
                   mode <- "analysis"
                   .textbot(mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
                   .draweval(clear=TRUE)
@@ -1207,9 +1228,15 @@ play <- function(lang="en", ...) {
 
                   # note: bestmove comes from [d]
 
+                  if (contliquery && !nzchar(bestmove[[1]][1])) {
+                     # but if we started a new round with contliquery, then bestmove is ""
+                     res.li <- .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, mode, showout=FALSE)
+                     bestmove <- res.li$selmove
+                  }
+
                   if (!nzchar(bestmove[[1]][1])) {
                      if (identical(matetype, "none") && !threefold && !fifty)
-                        .texttop(.text("nomove"))
+                        .texttop(ifelse(contliquery, .text("nomoveli"), .text("nomovesf")))
                      mode <- "analysis"
                      .textbot(mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
                      .draweval(evalval[1], NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
@@ -1244,6 +1271,8 @@ play <- function(lang="en", ...) {
                   opening <- .findopening(sub$moves[seq_len(i-1),1:4], flip=flip, opening=opening, openings=openings, mode=mode, posnull=is.null(sub$pos))
 
                   if (!identical(matetype, "none")) {
+                     if (matetype == "stalemate")
+                        evalval <- 0
                      .texttop(.text(matetype))
                      mode <- "analysis"
                   }
@@ -1352,8 +1381,7 @@ play <- function(lang="en", ...) {
                   saveRDS(dates, file=player.file)
                }
                run.all <- FALSE
-               run.rnd <- FALSE
-               input <- FALSE
+               .newround()
                .sf.stop(sfproc, sfrun)
                cat(.text("quit"))
                if (quitanim)
@@ -1386,8 +1414,7 @@ play <- function(lang="en", ...) {
                }
                settings$mode <- mode
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
-               run.rnd <- FALSE
-               input <- FALSE
+               .newround()
                next
             }
 
@@ -1400,9 +1427,7 @@ play <- function(lang="en", ...) {
                   settings$selmode <- selmode
                   saveRDS(settings, file=file.path(configdir, "settings.rds"))
                   write.table(data.frame(selmode), file=file.path(seqdir[seqdirpos], ".selmode"), col.names=FALSE, row.names=FALSE, quote=FALSE)
-                  seqno <- 1
-                  run.rnd <- FALSE
-                  input <- FALSE
+                  .newround(seqno1=TRUE)
                } else {
                   .redrawpos(pos, flip=flip)
                   .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
@@ -1445,8 +1470,8 @@ play <- function(lang="en", ...) {
             # \ (or ä) to switch into play mode or to analysis mode from play mode
 
             if (identical(click, "\\") || identical(click, "\U000000E4")) {
-               if (!sfrun) {
-                  .texttop(.text("noplaymode"), sleep=1)
+               if (!contliquery && !sfrun) {
+                  .texttop(.text("noplaymodewoutsf"), sleep=1.5)
                   .texttop(texttop)
                   next
                }
@@ -1458,24 +1483,36 @@ play <- function(lang="en", ...) {
                   .draweval(evalval[1], NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                   next
                }
-               prevmode <- mode
                mode <- "play"
+               .flush()
                if (timed) {
                   .drawtimer(clear=TRUE)
                   timed <- FALSE
                }
                show <- FALSE
                fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
-               if ((flip && sidetoplay=="b") || (!flip && sidetoplay=="w")) {
-                  res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
+               compmove <- (flip && sidetoplay == "w") || (!flip && sidetoplay == "b")
+               if (compmove) {
+                  res.sf <- .sf.eval(sfproc, ifelse(contliquery, FALSE, sfrun), depth3, multipv1, sflim, fen, sidetoplay)
                } else {
-                  res.sf <- .sf.eval(sfproc, sfrun, depth3, multipv1, sflim, fen, sidetoplay)
+                  res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
                }
                evalval  <- res.sf$eval
-               bestmove <- res.sf$bestmove
+               bestmove <- res.sf$bestmove # [d]
                matetype <- res.sf$matetype
                sfproc   <- res.sf$sfproc
-               sfrun    <- res.sf$sfrun
+               sfrun    <- ifelse(contliquery, sfrun, res.sf$sfrun)
+               if (compmove && (contliquery || !is.na(sflim) || depth1 > depth3)) {
+                  res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
+                  evalval  <- res.sf$eval
+                  matetype <- res.sf$matetype
+                  sfproc   <- res.sf$sfproc
+                  sfrun    <- res.sf$sfrun
+               }
+               if (compmove && contliquery) {
+                  res.li <- .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, mode, showout=FALSE)
+                  bestmove <- res.li$selmove # [d]
+               }
                texttop <- .texttop("")
                .textbot(mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
                .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), glyph=glyph, flip=flip)
@@ -1487,11 +1524,16 @@ play <- function(lang="en", ...) {
                next
             }
 
-            # n (or N) to start a new sequence / round (from play/analysis mode, jumps back to oldmode)
+            # n (or N) to start a new sequence / round (from play/analysis mode, jumps back to oldmode if not in contliquery mode)
 
             if (identical(click, "n") || identical(click, "N")) {
-               if (mode %in% c("play","analysis"))
-                  mode <- oldmode
+               if (mode %in% c("play","analysis")) {
+                  if (contliquery) {
+                     mode <- "play"
+                  } else {
+                     mode <- oldmode
+                  }
+               }
                if (mode == "test" && selmode %in% c("sequential","sequential_len","sequential_mov","age_oldest")) {
                   seqno <- seqno + 1
                   if (seqno > k) {
@@ -1502,9 +1544,12 @@ play <- function(lang="en", ...) {
                      }
                   }
                }
-               useflip <- FALSE
-               run.rnd <- FALSE
-               input <- FALSE
+               if (identical(click, "N")) {
+                  savpos <- NULL
+                  flip <- FALSE
+                  sidetoplay <- "w"
+               }
+               .newround()
                next
             }
 
@@ -1533,8 +1578,7 @@ play <- function(lang="en", ...) {
                   session.length <- 1
                   session.date.start <- Sys.time()
                   session.time.start <- proc.time()[[3]]
-                  run.rnd <- FALSE
-                  input <- FALSE
+                  .newround(seqno1=TRUE)
                } else {
                   .redrawpos(pos, flip=flip)
                   .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
@@ -1562,8 +1606,7 @@ play <- function(lang="en", ...) {
                   session.length <- 1
                   session.date.start <- Sys.time()
                   session.time.start <- proc.time()[[3]]
-                  run.rnd <- FALSE
-                  input <- FALSE
+                  .newround(seqno1=TRUE)
                } else {
                   .texttop(texttop)
                }
@@ -1735,7 +1778,7 @@ play <- function(lang="en", ...) {
                      evalvals <- tmp$evalvals
                   }
                   if (mode %in% c("add","analysis") && contliquery)
-                     .liquery(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, token, speeds, ratings, barlen, invertbar, contliquery, texttop)
+                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, mode)
                }
 
                next
@@ -1842,7 +1885,7 @@ play <- function(lang="en", ...) {
                      evalvals <- tmp$evalvals
                   }
                   if (mode %in% c("add","analysis") && contliquery)
-                     .liquery(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, token, speeds, ratings, barlen, invertbar, contliquery, texttop)
+                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, mode)
                }
                next
             }
@@ -1919,8 +1962,11 @@ play <- function(lang="en", ...) {
                   comment <- ""
                   sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
                   opening <- .findopening(sub$moves[seq_len(i-1),1:4], flip=flip, opening=opening, openings=openings, mode=mode, posnull=is.null(sub$pos))
-                  if (!identical(matetype, "none"))
+                  if (!identical(matetype, "none")) {
+                     if (matetype == "stalemate")
+                        evalval <- 0
                      .texttop(.text(matetype))
+                  }
                   threefold <- any(table(sapply(strsplit(sub$moves$fen, " "), function(x) paste(x[1:4], collapse = " "))) == 3L)
                   if (threefold) {
                      .texttop(.text("threefold"))
@@ -1939,7 +1985,7 @@ play <- function(lang="en", ...) {
                      evalvals <- tmp$evalvals
                   }
                   if (contliquery)
-                     .liquery(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, token, speeds, ratings, barlen, invertbar, contliquery, texttop)
+                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, mode)
                   next
                }
                comment <- ""
@@ -1987,7 +2033,7 @@ play <- function(lang="en", ...) {
                      evalvals <- tmp$evalvals
                   }
                   if (contliquery)
-                     .liquery(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, token, speeds, ratings, barlen, invertbar, contliquery, texttop)
+                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, mode)
                }
                next
             }
@@ -2087,7 +2133,7 @@ play <- function(lang="en", ...) {
                      evalvals <- tmp$evalvals
                   }
                   if (contliquery)
-                     .liquery(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, token, speeds, ratings, barlen, invertbar, contliquery, texttop)
+                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, mode)
                }
                next
             }
@@ -2150,7 +2196,7 @@ play <- function(lang="en", ...) {
                   evalvals <- tmp$evalvals
                }
                if (mode %in% c("add","analysis") && contliquery)
-                  .liquery(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, token, speeds, ratings, barlen, invertbar, contliquery, texttop)
+                  .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, mode)
                next
             }
 
@@ -2250,8 +2296,7 @@ play <- function(lang="en", ...) {
                         updateall <- FALSE
                         .sf.setoptions(sfproc, threads=threads, hash)
                      }
-                     run.rnd <- FALSE
-                     input <- FALSE
+                     .newround()
                   } else {
                      .sf.setoptions(sfproc, threads=threads, hash)
                      eval(expr=switch2)
@@ -2287,8 +2332,7 @@ play <- function(lang="en", ...) {
                      .texttop(texttop)
                   }
                }
-               run.rnd <- FALSE
-               input <- FALSE
+               .newround()
                next
             }
 
@@ -2296,8 +2340,7 @@ play <- function(lang="en", ...) {
 
             if (identical(click, "ctrl-U")) {
                assign("upsidedown", !.get("upsidedown"), envir=.chesstrainer)
-               run.rnd <- FALSE
-               input <- FALSE
+               .newround()
                next
             }
 
@@ -2308,8 +2351,7 @@ play <- function(lang="en", ...) {
                   seqnoold <- seqno
                   seqno <- .setseqno(seqno, k)
                   if (seqnoold != seqno) {
-                     run.rnd <- FALSE
-                     input <- FALSE
+                     .newround()
                   } else {
                      .redrawpos(pos, flip=flip)
                      .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
@@ -2351,8 +2393,7 @@ play <- function(lang="en", ...) {
                replast <- TRUE
                filename <- lastseq
                seqno <- max(1, seqno - 1)
-               run.rnd <- FALSE
-               input <- FALSE
+               .newround()
                next
             }
 
@@ -2446,8 +2487,7 @@ play <- function(lang="en", ...) {
                }
                saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
                Sys.sleep(2*delay)
-               run.rnd <- FALSE
-               input <- FALSE
+               .newround()
                next
             }
 
@@ -2584,7 +2624,7 @@ play <- function(lang="en", ...) {
                   evalvals <- tmp$evalvals
                }
                if (contliquery)
-                  .liquery(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, token, speeds, ratings, barlen, invertbar, contliquery, texttop)
+                  .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, mode)
                next
 
             }
@@ -2602,6 +2642,7 @@ play <- function(lang="en", ...) {
                   sub$pos <- pos
                   .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
                   sidetoplaystart <- sidetoplay
+                  savpos <- pos
                }
                next
             }
@@ -2730,7 +2771,7 @@ play <- function(lang="en", ...) {
                }
                eval(expr=switch1)
                .texttop(.text("saveseq"))
-               seqident <- sapply(dat.all, function(x) identical(sub$moves[1:5], x$moves[1:5]))
+               seqident <- sapply(dat.all, function(x) identical(sub$moves[1:5], x$moves[1:5]) && identical(sub$pos, x$pos))
                if (any(seqident))
                   cat(.text("seqexists", files.all[which(seqident)[1]]))
                # if there are circles/arrows at the end of a sequence, save these to the sequence file (as symbolend)
@@ -2749,7 +2790,7 @@ play <- function(lang="en", ...) {
                   eval(expr=switch2)
                   next
                }
-               filename <- sub("\\.rds$", "", filename) # strip .rds from end of filename
+               filename <- sub("\\.rds$", "", filename) # strip .rds from the end of filename
                filenamefull <- file.path(seqdir[seqdirpos], paste0(filename, ".rds"))
                dosave <- TRUE
                if (file.exists(filenamefull)) {
@@ -2763,9 +2804,7 @@ play <- function(lang="en", ...) {
                if (dosave) {
                   saveRDS(sub, file=filenamefull)
                   playsound(system.file("sounds", "complete.ogg", package="chesstrainer"))
-                  run.rnd <- FALSE
-                  input <- FALSE
-                  seqno <- 1
+                  .newround(seqno1=TRUE)
                }
                eval(expr=switch2)
                next
@@ -2823,31 +2862,40 @@ play <- function(lang="en", ...) {
                   }
                }
                if (mode %in% c("add","analysis") && contliquery)
-                  .liquery(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, token, speeds, ratings, barlen, invertbar, contliquery, texttop)
+                  .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, mode)
                if (verbose)
                   print(pos)
                next
             }
 
-            # i to query the lichess games database for the current position
+            # i to query the Lichess opening database for the current position
 
             if (identical(click, "i")) {
-               .liquery(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, token, speeds, ratings, barlen, invertbar, contliquery, texttop)
+               .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, mode)
                next
             }
 
-            # I to toggle continuous querying on/off (only in add and analysis mode)
+            # I to toggle continuous querying of the Lichess opening database on/off
 
-            if (mode %in% c("add","analysis","play") && identical(click, "I")) {
+            if (identical(click, "I")) {
                if (is.null(token) || token == "") {
                   .texttop(.text("needtoken"), sleep=2)
                   .texttop(texttop)
                   next
                }
+               if (!isonline) {
+                  .texttop(.text("nointqueryli"), sleep=2)
+                  .texttop(texttop)
+                  next
+               }
                contliquery <- !contliquery
-               .texttop(.text("contliquery", contliquery), sleep=0.75)
+               assign("contliquery", contliquery, envir=.chesstrainer)
+               .texttop(.text("contliquery", contliquery), sleep=1)
+               .texttop(texttop)
+               if (mode == "play")
+                  .textbot(mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
                if (contliquery)
-                  .liquery(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, token, speeds, ratings, barlen, invertbar, contliquery, texttop)
+                  .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, mode)
                next
             }
 
@@ -2865,8 +2913,7 @@ play <- function(lang="en", ...) {
                if (expvalold != expval) {
                   settings$expval <- expval
                   saveRDS(settings, file=file.path(configdir, "settings.rds"))
-                  run.rnd <- FALSE
-                  input <- FALSE
+                  .newround()
                }
                next
             }
@@ -2911,16 +2958,28 @@ play <- function(lang="en", ...) {
 
             if (identical(click, "T")) {
                showtransp <- !showtransp
-               .texttop(.text("showtransp", showtransp), sleep=0.75)
+               .texttop(.text("showtransp", showtransp), sleep=1)
                .texttop(texttop)
                settings$showtransp <- showtransp
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
 
-            # w to switch wait on/off
+            # S to toggle san on/off
 
-            if (identical(click, "w")) {
+            if (identical(click, "S")) {
+               san <- !san
+               assign("san", san, envir=.chesstrainer)
+               .texttop(.text("san", san), sleep=1)
+               .texttop(texttop)
+               settings$san <- san
+               saveRDS(settings, file=file.path(configdir, "settings.rds"))
+               next
+            }
+
+            # W to switch wait on/off
+
+            if (identical(click, "W")) {
                wait <- !wait
                .texttop(.text("wait", wait), sleep=0.75)
                .texttop(texttop)
@@ -2995,9 +3054,9 @@ play <- function(lang="en", ...) {
                next
             }
 
-            # ctrl-l to toggle the language
+            # L to toggle the language
 
-            if (identical(click, "ctrl-L")) {
+            if (identical(click, "L")) {
                if (lang == "de") {
                   lang <- "en"
                } else {
@@ -3022,8 +3081,7 @@ play <- function(lang="en", ...) {
                settings$timed <- timed
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                if (timed) {
-                  run.rnd <- FALSE
-                  input <- FALSE
+                  .newround()
                } else {
                   .drawtimer(clear=TRUE)
                   sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
@@ -3047,9 +3105,9 @@ play <- function(lang="en", ...) {
                next
             }
 
-            # k to toggle the showing material difference on/off
+            # K to toggle the showing material difference on/off
 
-            if (identical(click, "k")) {
+            if (identical(click, "K")) {
                matdiff <- !matdiff
                assign("matdiff", matdiff, envir=.chesstrainer)
                if (matdiff) {
@@ -3064,21 +3122,13 @@ play <- function(lang="en", ...) {
                next
             }
 
-            # K to show material difference
-
-            if (identical(click, "K")) {
-               .clearmatdiff()
-               .drawmatdiff(pos, flip, force=TRUE)
-               next
-            }
-
             # ctrl-v to toggle verbose mode on/off
 
             if (identical(click, "ctrl-V")) {
                verbose <- !verbose
                if (verbose) {
                   eval(expr=switch1)
-                  .printverbose(selected, seqno, filename, lastseq, flip, useflip, replast, oldmode, i, seqname, seqnum, score, rounds, totalmoves, show, showcomp, comment, bestmove, starteval, evalval, texttop, scoreadd, sidetoplay, givehint1, givehint2, mistake, timetotal, movesplayed, movestoplay, drawcircles, drawarrows, showstartcom, pos)
+                  .printverbose(selected, seqno, filename, lastseq, flip, replast, oldmode, i, seqname, seqnum, score, rounds, totalmoves, show, showcomp, comment, bestmove, starteval, evalval, texttop, scoreadd, sidetoplay, givehint1, givehint2, mistake, timetotal, movesplayed, movestoplay, drawcircles, drawarrows, showstartcom, pos)
                   eval(expr=switch2)
                }
                assign("verbose", verbose, envir=.chesstrainer)
@@ -3097,7 +3147,7 @@ play <- function(lang="en", ...) {
                   next
                }
                contanalysis <- !contanalysis
-               .texttop(.text("contanalysis", contanalysis), sleep=0.75)
+               .texttop(.text("contanalysis", contanalysis), sleep=1)
                if (contanalysis) {
                   tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                   harrows  <- tmp$harrows
@@ -3183,10 +3233,8 @@ play <- function(lang="en", ...) {
                if (isTRUE(bookmark != "")) { # only TRUE if bookmark is neither NA nor ""
                   selected <- grepl(bookmark, files.all)
                   selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected]
-                  run.rnd <- FALSE
-                  input <- FALSE
+                  .newround(seqno1=TRUE)
                   mode <- oldmode <- "add"
-                  seqno <- 1
                } else {
                   if (isTRUE(bookmark == "")) {
                      .redrawpos(pos, flip=flip)
@@ -3247,8 +3295,7 @@ play <- function(lang="en", ...) {
                if (answer) {
                   .texttop(.text("delseq"), sleep=1)
                   file.remove(file.path(seqdir[seqdirpos], seqname))
-                  run.rnd <- FALSE
-                  input <- FALSE
+                  .newround(seqno1=TRUE)
                } else {
                   .texttop(texttop)
                }
@@ -3289,10 +3336,8 @@ play <- function(lang="en", ...) {
                if (identical(searchterm , "*") && !identical(click, "|")) {
                   cat(.text("allseqselected"))
                   selected <- NULL
-                  run.rnd <- FALSE
-                  input <- FALSE
+                  .newround(seqno1=TRUE)
                   mode <- oldmode <- "add"
-                  seqno <- 1
                   eval(expr=switch2)
                   next
                }
@@ -3325,10 +3370,8 @@ play <- function(lang="en", ...) {
                      if (identical(selmatches, "") || .confirm(selmatches)) {
                         cat(.text("selmatchesconfirm", sum(notnull)))
                         selected <- files.all[notnull]
-                        run.rnd <- FALSE
-                        input <- FALSE
+                        .newround(seqno1=TRUE)
                         mode <- oldmode <- "add"
-                        seqno <- 1
                      }
                   } else {
                      cat(.text("noseqsfound"))
@@ -3353,10 +3396,8 @@ play <- function(lang="en", ...) {
                      if (identical(selmatches, "") || .confirm(selmatches)) {
                         cat(.text("selmatchesconfirm", sum(seqident)))
                         selected <- files.all[seqident]
-                        run.rnd <- FALSE
-                        input <- FALSE
+                        .newround(seqno1=TRUE)
                         mode <- oldmode <- "add"
-                        seqno <- 1
                      }
                   } else {
                      cat(.text("noseqsfound"))
@@ -3375,10 +3416,8 @@ play <- function(lang="en", ...) {
                   } else {
                      cat(.text("selseq12", c(tmp$seq.lo, tmp$seq.hi)))
                      selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[tmp$seq.lo:tmp$seq.hi]
-                     run.rnd <- FALSE
-                     input <- FALSE
+                     .newround(seqno1=TRUE)
                      mode <- oldmode <- "add"
-                     seqno <- 1
                   }
                   eval(expr=switch2)
                   next
@@ -3393,10 +3432,8 @@ play <- function(lang="en", ...) {
                   } else {
                      cat(.text("selseq", tmp))
                      selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[tmp]
-                     run.rnd <- FALSE
-                     input <- FALSE
+                     .newround(seqno1=TRUE)
                      mode <- oldmode <- "add"
-                     seqno <- 1
                   }
                   eval(expr=switch2)
                   next
@@ -3415,10 +3452,8 @@ play <- function(lang="en", ...) {
                      selected <- NULL
                   } else {
                      cat(.text("numseqfound", length(selected)))
-                     run.rnd <- FALSE
-                     input <- FALSE
+                     .newround(seqno1=TRUE)
                      mode <- oldmode <- "add"
-                     seqno <- 1
                   }
                   eval(expr=switch2)
                   next
@@ -3437,10 +3472,8 @@ play <- function(lang="en", ...) {
                      selected <- NULL
                   } else {
                      cat(.text("numseqfound", length(selected)))
-                     run.rnd <- FALSE
-                     input <- FALSE
+                     .newround(seqno1=TRUE)
                      mode <- oldmode <- "add"
-                     seqno <- 1
                   }
                   eval(expr=switch2)
                   next
@@ -3460,10 +3493,8 @@ play <- function(lang="en", ...) {
                      selected <- NULL
                   } else {
                      cat(.text("numseqfound", length(selected)))
-                     run.rnd <- FALSE
-                     input <- FALSE
+                     .newround(seqno1=TRUE)
                      mode <- oldmode <- "add"
-                     seqno <- 1
                   }
                   eval(expr=switch2)
                   next
@@ -3483,10 +3514,8 @@ play <- function(lang="en", ...) {
                      selected <- NULL
                   } else {
                      cat(.text("numseqfound", length(selected)))
-                     run.rnd <- FALSE
-                     input <- FALSE
+                     .newround(seqno1=TRUE)
                      mode <- oldmode <- "add"
-                     seqno <- 1
                   }
                   eval(expr=switch2)
                   next
@@ -3531,10 +3560,8 @@ play <- function(lang="en", ...) {
                         selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected]
                      }
                      cat(.text("numseqfound", length(selected)))
-                     run.rnd <- FALSE
-                     input <- FALSE
+                     .newround(seqno1=TRUE)
                      mode <- oldmode <- "add"
-                     seqno <- 1
                   }
                }
 
@@ -3549,10 +3576,8 @@ play <- function(lang="en", ...) {
                if (!is.null(selected)) {
                   .texttop(.text("allseqselected"), sleep=1)
                   selected <- NULL
-                  run.rnd <- FALSE
-                  input <- FALSE
+                  .newround(seqno1=TRUE)
                   mode <- oldmode <- "add"
-                  seqno <- 1
                } else {
                   .texttop(.text("allseqalreadyselected"), sleep=1)
                   .texttop(texttop)
@@ -3589,9 +3614,7 @@ play <- function(lang="en", ...) {
                   if (identical(selmatches, "") || .confirm(selmatches)) {
                      cat(.text("selmatchesconfirm", sum(notnull)))
                      selected <- files.all[notnull]
-                     run.rnd <- FALSE
-                     input <- FALSE
-                     seqno <- 1
+                     .newround(seqno1=TRUE)
                   }
                   eval(expr=switch2)
                } else {
@@ -3633,9 +3656,7 @@ play <- function(lang="en", ...) {
                   if (identical(selmatches, "") || .confirm(selmatches)) {
                      cat(.text("selmatchesconfirm", sum(notnull)))
                      selected <- files.all[notnull]
-                     run.rnd <- FALSE
-                     input <- FALSE
-                     seqno <- 1
+                     .newround(seqno1=TRUE)
                   }
                   eval(expr=switch2)
                } else {
@@ -3708,9 +3729,7 @@ play <- function(lang="en", ...) {
                   if (identical(selmatches, "") || .confirm(selmatches)) {
                      cat(.text("selmatchesconfirm", sum(seqident)))
                      selected <- files.all[seqident]
-                     run.rnd <- FALSE
-                     input <- FALSE
-                     seqno <- 1
+                     .newround(seqno1=TRUE)
                   }
                   eval(expr=switch2)
                } else {
@@ -3788,9 +3807,7 @@ play <- function(lang="en", ...) {
                   if (identical(selmatches, "") || .confirm(selmatches)) {
                      cat(.text("selmatchesconfirm", sum(seqident)))
                      selected <- files.all[seqident]
-                     run.rnd <- FALSE
-                     input <- FALSE
-                     seqno <- 1
+                     .newround(seqno1=TRUE)
                   }
                   eval(expr=switch2)
                } else {
@@ -3842,7 +3859,7 @@ play <- function(lang="en", ...) {
 
             if (identical(click, "F3")) {
                tab <- list(lang=lang, player=player, mode=mode, seqdir=seqdir[seqdirpos], selmode=selmode, zenmode=zenmode, timed=timed, timepermove=timepermove, expval=expval,
-                           multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, eval=eval, evalsteps=evalsteps, coords=coords, showtransp=showtransp, matdiff=matdiff, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, mar=mar, mar2=mar2, lwd=lwd,
+                           multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, eval=eval, evalsteps=evalsteps, coords=coords, showtransp=showtransp, matdiff=matdiff, san=san, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, mar=mar, mar2=mar2, lwd=lwd,
                            volume=volume, showgraph=showgraph, repmistake=repmistake, target=target, # cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
                            difffun=difffun, difflen=difflen, diffmin=diffmin,
                            sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, contanalysis=contanalysis)
@@ -3944,7 +3961,7 @@ play <- function(lang="en", ...) {
             # F8 to adjust the Lichess database settings
 
             if (identical(click, "F8")) {
-               tmp <- .lichesssettings(speeds, ratings, lichessdb, barlen, invertbar, token, cachedir)
+               tmp <- .lichesssettings(speeds, ratings, lichessdb, barlen, invertbar, token)
                .redrawpos(pos, flip=flip)
                .textbot(mode, score=score, onlyscore=TRUE)
                .drawannot(circles=circles, arrows=arrows, glyph=glyph)
@@ -3979,11 +3996,9 @@ play <- function(lang="en", ...) {
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                if (!identical(seqdir, seqdirold) || !identical(seqdirpos, seqdirposold)) {
                   selected <- NULL
-                  seqno <- 1
                   filename <- ""
                   lastseq  <- ""
                   bestmove <- list("")
-                  useflip  <- TRUE
                   replast  <- FALSE
                   oldmode  <- ifelse(mode %in% c("play","analysis"), "add", mode)
                   mode <- "add"
@@ -3994,8 +4009,7 @@ play <- function(lang="en", ...) {
                   selmode <- .loadselmode(seqdir, seqdirpos, selmode, texttop=TRUE)
                   if (selmodeold != selmode && !file.exists(file.path(seqdir[seqdirpos], ".sequential")))
                      .texttop(.text("selmodeswitch", selmode), sleep=1.5)
-                  run.rnd <- FALSE
-                  input <- FALSE
+                  .newround(seqno1=TRUE)
                }
                next
             }
@@ -4513,7 +4527,7 @@ play <- function(lang="en", ...) {
                            evalvals <- tmp$evalvals
                         }
                         if (contliquery)
-                           .liquery(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, token, speeds, ratings, barlen, invertbar, contliquery, texttop)
+                           .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, mode)
                         .textbot(mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
                         contplay <- TRUE
                         break
@@ -4532,16 +4546,29 @@ play <- function(lang="en", ...) {
                         .draweval(sub$moves$eval[i-1], NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                         sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
                         fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
-                        if ((flip && sidetoplay=="b") || (!flip && sidetoplay=="w")) {
-                           res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
+                        compmove <- (flip && sidetoplay == "w") || (!flip && sidetoplay == "b")
+                        if (compmove) {
+                           res.sf <- .sf.eval(sfproc, ifelse(contliquery, FALSE, sfrun), depth3, multipv1, sflim, fen, sidetoplay)
                         } else {
-                           res.sf <- .sf.eval(sfproc, sfrun, depth3, multipv1, sflim, fen, sidetoplay)
+                           res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
                         }
                         evalval  <- res.sf$eval
                         bestmove <- res.sf$bestmove
                         matetype <- res.sf$matetype
                         sfproc   <- res.sf$sfproc
-                        sfrun    <- res.sf$sfrun
+                        sfrun    <- ifelse(contliquery, sfrun, res.sf$sfrun)
+                        if (compmove && (contliquery || !is.na(sflim) || depth1 > depth3)) {
+                           res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
+                           evalval  <- res.sf$eval
+                           matetype <- res.sf$matetype
+                           sfproc   <- res.sf$sfproc
+                           sfrun    <- res.sf$sfrun
+                        }
+                        if (compmove && contliquery) {
+                           res.li <- .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, mode, showout=FALSE)
+                           bestmove <- res.li$selmove # [d]
+                        }
+
                         .textbot(mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
                         contplay <- TRUE
                         break
@@ -4609,13 +4636,12 @@ play <- function(lang="en", ...) {
                         .drawannot(circles=circles, arrows=arrows, glyph=glyph)
                      }
 
-                     if (identical(click, "i")) {
-                        .liquery(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, token, speeds, ratings, barlen, invertbar, contliquery, texttop)
-                     }
+                     if (identical(click, "i"))
+                        .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, mode)
 
                      if (identical(click, "ctrl-V")) {
                         eval(expr=switch1)
-                        .printverbose(selected, seqno, filename, lastseq, flip, useflip, replast, oldmode, i, seqname, seqnum, score, rounds, totalmoves, show, showcomp, comment, bestmove, starteval, evalval, texttop, scoreadd, sidetoplay, givehint1, givehint2, mistake, timetotal, movesplayed, movestoplay, drawcircles, drawarrows, showstartcom, pos)
+                        .printverbose(selected, seqno, filename, lastseq, flip, replast, oldmode, i, seqname, seqnum, score, rounds, totalmoves, show, showcomp, comment, bestmove, starteval, evalval, texttop, scoreadd, sidetoplay, givehint1, givehint2, mistake, timetotal, movesplayed, movestoplay, drawcircles, drawarrows, showstartcom, pos)
                         eval(expr=switch2)
                      }
 
@@ -4664,24 +4690,26 @@ play <- function(lang="en", ...) {
 
          if (mode %in% c("add","play","analysis")) {
 
-            # after the move has been made, get the evaluation and the next bestmove, using depth1 in add/analysis mode and depth3 (with sflim) in play mode
+            # here we are after the player move in add, play, or analysis mode
 
             evalvallast <- evalval[1]
             fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
             if (mode %in% c("add","analysis")) {
+               # in add and analysis mode, get the evaluation and next bestmove using depth1
                res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
             } else {
-               res.sf <- .sf.eval(sfproc, sfrun, depth3, multipv1, sflim, fen, sidetoplay)
+               # in play mode, get the evaluation and next bestmove using depth3 (with sflim), but we can skip this is contliquery is on
+               res.sf <- .sf.eval(sfproc, sfrun=ifelse(contliquery, FALSE, sfrun), depth3, multipv1, sflim, fen, sidetoplay)
             }
             evalval  <- res.sf$eval
             bestmove <- res.sf$bestmove # [d]
             matetype <- res.sf$matetype
             sfproc   <- res.sf$sfproc
-            sfrun    <- res.sf$sfrun
+            sfrun    <- ifelse(contliquery, sfrun, res.sf$sfrun)
 
-            # in play mode, have to run .sf.eval() one more time, to base the actual evaluation on depth1 (and without sflim) and not depth3
+            # in play mode, run .sf.eval() one more time to base the actual evaluation on depth1 (and without sflim) and not depth3 or in case contliquery is on
 
-            if (mode == "play" && (!is.na(sflim) || depth1 > depth3)) {
+            if (mode == "play" && (contliquery || !is.na(sflim) || depth1 > depth3)) {
                res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
                evalval  <- res.sf$eval
                matetype <- res.sf$matetype
@@ -4689,10 +4717,12 @@ play <- function(lang="en", ...) {
                sfrun    <- res.sf$sfrun
             }
 
-            #print(bestmove)
-            #tmp <- .liquery(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, token, speeds, ratings, barlen, invertbar, contliquery, texttop, showout=FALSE)
-            #bestmove <- list(tmp)
-            #print(bestmove)
+            # in play mode with contliquery, set bestmove to the one selected from the Lichess database
+
+            if (mode == "play" && contliquery) {
+               res.li <- .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, mode, showout=FALSE)
+               bestmove <- res.li$selmove # [d]
+            }
 
             .draweval(evalval[1], evalvallast, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
 
@@ -4742,23 +4772,17 @@ play <- function(lang="en", ...) {
 
             # check for (stale)mate
 
-            if (mode %in% c("play","analysis") && !identical(matetype, "none")) {
-               playsound(system.file("sounds", "complete.ogg", package="chesstrainer"))
-               .texttop(.text(matetype))
-               mode <- "analysis"
-               .textbot(mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
-               .draweval(evalval[1], evalvallast, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
-               next
-            }
-
             if (!identical(matetype, "none")) {
                .texttop(.text(matetype))
+               if (matetype == "stalemate")
+                  evalval <- 0
+               .draweval(evalval[1], evalvallast, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                if (mode %in% c("play","analysis")) {
                   playsound(system.file("sounds", "complete.ogg", package="chesstrainer"))
                   mode <- "analysis"
                   .textbot(mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
-                  next
                }
+               next
             }
 
             # check for threefold repetition
@@ -4773,8 +4797,8 @@ play <- function(lang="en", ...) {
                   playsound(system.file("sounds", "complete.ogg", package="chesstrainer"))
                   mode <- "analysis"
                   .textbot(mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
-                  next
                }
+               next
             }
 
             # check fifty-move rule
@@ -4789,8 +4813,8 @@ play <- function(lang="en", ...) {
                   playsound(system.file("sounds", "complete.ogg", package="chesstrainer"))
                   mode <- "analysis"
                   .textbot(mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
-                  next
                }
+               next
             }
 
          }

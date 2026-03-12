@@ -411,21 +411,19 @@
    isTRUE(x != "") && !is.na(x2y2[1])
 }
 
-.parsemove <- function(move, pos, flip, evalval, i, sidetoplay, rename, returnline, hintdepth) {
-
-   lang <- .get("lang")
+.parsemove <- function(move, pos, flip, evalval, i, sidetoplay, rename, returnline, hintdepth, space="") {
 
    move <- strsplit(move, "")
 
-   tmp <- pos
-
-   moves <- length(move)
-   moves <- min(moves, hintdepth)
+   nmoves <- length(move)
+   nmoves <- min(nmoves, hintdepth)
 
    if (!returnline)
-      moves <- 1
+      nmoves <- 1
 
-   for (j in 1:moves) {
+   san <- .get("san")
+
+   for (j in 1:nmoves) {
 
       if (flip) {
          letters8 <- letters[8:1]
@@ -433,14 +431,16 @@
          y1 <- as.numeric(which(move[[j]][1] == letters8))
          x2 <- as.numeric(which(move[[j]][4] == 8:1))
          y2 <- as.numeric(which(move[[j]][3] == letters8))
-         piece <- substr(tmp[9-x1,9-y1], 2, 2)
+         colorpiece <- pos[9-x1,9-y1]
+         piece <- substr(pos[9-x1,9-y1], 2, 2)
       } else {
          letters8 <- letters[1:8]
          x1 <- as.numeric(which(move[[j]][2] == 1:8))
          y1 <- as.numeric(which(move[[j]][1] == letters8))
-         x2 <- as.numeric(which(move[[j]][4] == 1:18))
+         x2 <- as.numeric(which(move[[j]][4] == 1:8))
          y2 <- as.numeric(which(move[[j]][3] == letters8))
-         piece <- substr(tmp[x1,y1], 2, 2)
+         colorpiece <- pos[x1,y1]
+         piece <- substr(pos[x1,y1], 2, 2)
       }
 
       if (j == 1) {
@@ -455,31 +455,31 @@
       rochade <- ""
 
       if (flip) {
-         if (identical(c(x1,y1), c(8,4)) && tmp[9-x1,9-y1] == "WK" && identical(c(x2,y2), c(8,2)))
+         if (identical(c(x1,y1), c(8,4)) && pos[9-x1,9-y1] == "WK" && identical(c(x2,y2), c(8,2)))
             rochade <- "0-0"
-         if (identical(c(x1,y1), c(8,4)) && tmp[9-x1,9-y1] == "WK" && identical(c(x2,y2), c(8,6)))
+         if (identical(c(x1,y1), c(8,4)) && pos[9-x1,9-y1] == "WK" && identical(c(x2,y2), c(8,6)))
             rochade <- "0-0-0"
-         if (identical(c(x1,y1), c(1,4)) && tmp[9-x1,9-y1] == "BK" && identical(c(x2,y2), c(1,2)))
+         if (identical(c(x1,y1), c(1,4)) && pos[9-x1,9-y1] == "BK" && identical(c(x2,y2), c(1,2)))
             rochade <- "0-0"
-         if (identical(c(x1,y1), c(1,4)) && tmp[9-x1,9-y1] == "BK" && identical(c(x2,y2), c(1,6)))
+         if (identical(c(x1,y1), c(1,4)) && pos[9-x1,9-y1] == "BK" && identical(c(x2,y2), c(1,6)))
             rochade <- "0-0-0"
       } else {
-         if (identical(c(x1,y1), c(1,5)) && tmp[x1,y1] == "WK" && identical(c(x2,y2), c(1,7)))
+         if (identical(c(x1,y1), c(1,5)) && pos[x1,y1] == "WK" && identical(c(x2,y2), c(1,7)))
             rochade <- "0-0"
-         if (identical(c(x1,y1), c(1,5)) && tmp[x1,y1] == "WK" && identical(c(x2,y2), c(1,3)))
+         if (identical(c(x1,y1), c(1,5)) && pos[x1,y1] == "WK" && identical(c(x2,y2), c(1,3)))
             rochade <- "0-0-0"
-         if (identical(c(x1,y1), c(8,5)) && tmp[x1,y1] == "BK" && identical(c(x2,y2), c(8,7)))
+         if (identical(c(x1,y1), c(8,5)) && pos[x1,y1] == "BK" && identical(c(x2,y2), c(8,7)))
             rochade <- "0-0"
-         if (identical(c(x1,y1), c(8,5)) && tmp[x1,y1] == "BK" && identical(c(x2,y2), c(8,3)))
+         if (identical(c(x1,y1), c(8,5)) && pos[x1,y1] == "BK" && identical(c(x2,y2), c(8,3)))
             rochade <- "0-0-0"
       }
 
       # check if a piece was captured (either the target square is not empty or a pawn moved diagonally, which also covers en passant)
 
       if (flip) {
-         iscapture <- tmp[9-x2,9-y2] != "" || (piece == "P" && y1 != y2)
+         iscapture <- pos[9-x2,9-y2] != "" || (piece == "P" && y1 != y2)
       } else {
-         iscapture <- tmp[x2,y2] != "" || (piece == "P" && y1 != y2)
+         iscapture <- pos[x2,y2] != "" || (piece == "P" && y1 != y2)
       }
 
       # check for pawn promotion
@@ -492,31 +492,200 @@
 
       # determine if the move results in a check
 
-      tmp.next <- .updateboard(tmp, move=data.frame(x1, y1, x2, y2, NA, ifelse(promotiontxt=="", NA, promotiontxt)), flip=flip, autoprom=TRUE, draw=FALSE, x2y2=FALSE)
-      ischeck <- any(attr(tmp.next,"ischeck"))
+      pos.next <- .updateboard(pos, move=data.frame(x1, y1, x2, y2, NA, ifelse(promotiontxt=="", NA, promotiontxt)), flip=flip, autoprom=TRUE, draw=FALSE, x2y2=FALSE)
+      ischeck <- any(attr(pos.next,"ischeck"))
 
-      # construct the move text in long algebraic notation
+      # construct the move text in short or long algebraic notation
 
       if (identical(rochade, "")) {
-         txt.move <- paste0(piece, move[[j]][1], move[[j]][2], ifelse(iscapture, "x", "-"), move[[j]][3], move[[j]][4], promotiontxt, ifelse(ischeck, "+", ""), collapse="")
+         if (san) {
+            # use short algebraic notation
+            if (piece=="P") {
+               if (y1 == y2) {
+                  # pawn moves vertically on the same file
+                  txt.move <- paste0(move[[j]][3], move[[j]][4], promotiontxt, ifelse(ischeck, "+", ""), collapse="")
+               } else {
+                  # pawn moves diagonally; this must be a capture (including en passant)
+                  txt.move <- paste0(move[[j]][1], "x", move[[j]][3], move[[j]][4], promotiontxt, ifelse(ischeck, "+", ""), collapse="")
+               }
+            }
+            if (piece=="K") {
+               txt.move <- paste0(piece, move[[j]][3], move[[j]][4], ifelse(ischeck, "+", ""), collapse="")
+            }
+            startletter <- ""
+            startnumber <- ""
+            if (piece=="R") {
+               dirs <- list(
+                  c(-1,  0),
+                  c( 1,  0),
+                  c( 0, -1),
+                  c( 0,  1)
+               )
+               startxy <- character(0)
+               for (d in dirs) {
+                  r <- ifelse(flip, 9-x2, x2) + d[1]
+                  c <- ifelse(flip, 9-y2, y2) + d[2]
+                  while (r >= 1 && r <= 8 && c >= 1 && c <= 8) {
+                     if (pos[r,c] == "") {
+                        r <- r + d[1]
+                        c <- c + d[2]
+                        next
+                     }
+                     if (pos[r,c] == colorpiece)
+                        startxy <- c(startxy, paste0(letters[c], r))
+                     break
+                  }
+               }
+               if (length(startxy) > 1) {
+                  # there is more than one rook that can reach the square
+                  if (sum(move[[j]][1] == substr(startxy, 1, 1)) == 1L) {
+                     # there is a single rook on the file from which the rook is moving that can reach the target square
+                     startletter <- move[[j]][1] # need to add the file
+                  } else {
+                     # there is more than one rook on the file from which the rook is moving that can reach the target square (this implies that the rook is moving vertically)
+                     startnumber <- move[[j]][2] # need to add the rank
+                  }
+               }
+               txt.move <- paste0(piece, startletter, startnumber, ifelse(iscapture, "x", ""), move[[j]][3], move[[j]][4], ifelse(ischeck, "+", ""), collapse="")
+            }
+            if (piece=="B") {
+               dirs <- list(
+                  c(-1, -1),
+                  c( 1,  1),
+                  c(-1,  1),
+                  c( 1, -1)
+               )
+               startxy <- character(0)
+               for (d in dirs) {
+                  r <- ifelse(flip, 9-x2, x2) + d[1]
+                  c <- ifelse(flip, 9-y2, y2) + d[2]
+                  while (r >= 1 && r <= 8 && c >= 1 && c <= 8) {
+                     if (pos[r,c] == "") {
+                        r <- r + d[1]
+                        c <- c + d[2]
+                        next
+                     }
+                     if (pos[r,c] == colorpiece)
+                        startxy <- c(startxy, paste0(letters[c], r))
+                     break
+                  }
+               }
+               if (length(startxy) > 1) {
+                  # there is more than one bishop that can reach the square
+                  if (sum(move[[j]][1] == substr(startxy, 1, 1)) == 1L) {
+                     # there is a single bishop on the file from which the bishop is moving that can reach the target square
+                     startletter <- move[[j]][1] # need to add the file
+                  } else {
+                     # there are two bishops on the file from which the bishop is moving that can reach the target square
+                     if (sum(move[[j]][2] == substr(startxy, 2, 2)) == 1L) {
+                        # there is a single bishop on the rank from which the bishop is moving that can reach the target square
+                        startnumber <- move[[j]][2] # need to add the rank
+                     } else {
+                        # otherwise need to add the file and the rank
+                        startletter <- move[[j]][1]
+                        startnumber <- move[[j]][2]
+                     }
+                  }
+               }
+               txt.move <- paste0(piece, startletter, startnumber, ifelse(iscapture, "x", ""), move[[j]][3], move[[j]][4], ifelse(ischeck, "+", ""), collapse="")
+            }
+            if (piece=="Q") {
+               dirs <- list(
+                  c(-1, -1),
+                  c( 1,  1),
+                  c(-1,  1),
+                  c( 1, -1),
+                  c(-1,  0),
+                  c( 1,  0),
+                  c( 0, -1),
+                  c( 0,  1)
+               )
+               startxy <- character(0)
+               for (d in dirs) {
+                  r <- ifelse(flip, 9-x2, x2) + d[1]
+                  c <- ifelse(flip, 9-y2, y2) + d[2]
+                  while (r >= 1 && r <= 8 && c >= 1 && c <= 8) {
+                     if (pos[r,c] == "") {
+                        r <- r + d[1]
+                        c <- c + d[2]
+                        next
+                     }
+                     if (pos[r,c] == colorpiece)
+                        startxy <- c(startxy, paste0(letters[c], r))
+                     break
+                  }
+               }
+               if (length(startxy) > 1) {
+                  if (sum(move[[j]][1] == substr(startxy, 1, 1)) == 1L) {
+                     # there is a single queen on the file from which the queen is moving that can reach the target square
+                     startletter <- move[[j]][1] # need to add the file
+                  } else {
+                     # there is more than one queen on the file from which the queen is moving that can reach the target square
+                     if (sum(move[[j]][2] == substr(startxy, 2, 2)) == 1L) {
+                        # there is a single queen on the rank from which the queen is moving that can reach the target square
+                        startnumber <- move[[j]][2] # need to add the rank
+                     } else {
+                        # otherwise need to add the file and the rank
+                        startletter <- move[[j]][1]
+                        startnumber <- move[[j]][2]
+                     }
+                  }
+               }
+               txt.move <- paste0(piece, startletter, startnumber, ifelse(iscapture, "x", ""), move[[j]][3], move[[j]][4], ifelse(ischeck, "+", ""), collapse="")
+            }
+            if (piece=="N") {
+               dirs <- list(
+                  c( 2,  1),
+                  c( 1,  2),
+                  c(-1,  2),
+                  c(-2,  1),
+                  c(-2, -1),
+                  c(-1, -2),
+                  c( 1, -2),
+                  c( 2, -1)
+               )
+               startxy <- character(0)
+               for (d in dirs) {
+                  r <- ifelse(flip, 9-x2, x2) + d[1]
+                  c <- ifelse(flip, 9-y2, y2) + d[2]
+                  if (r >= 1 && r <= 8 && c >= 1 && c <= 8) {
+                     if (pos[r,c] == colorpiece)
+                        startxy <- c(startxy, paste0(letters[c], r))
+                  }
+               }
+               if (length(startxy) > 1) {
+                  if (sum(move[[j]][1] == substr(startxy, 1, 1)) == 1L) {
+                     # there is a single knight on the file from which the knight is moving that can reach the target square
+                     startletter <- move[[j]][1] # need to add the file
+                  } else {
+                     # there is more than one knight on the file from which the knight is moving that can reach the target square
+                     if (sum(move[[j]][2] == substr(startxy, 2, 2)) == 1L) {
+                        # there is a single knight on the rank from which the knight is moving that can reach the target square
+                        startnumber <- move[[j]][2] # need to add the rank
+                     } else {
+                        # otherwise need to add the file and the rank
+                        startletter <- move[[j]][1]
+                        startnumber <- move[[j]][2]
+                     }
+                  }
+               }
+               txt.move <- paste0(piece, startletter, startnumber, ifelse(iscapture, "x", ""), move[[j]][3], move[[j]][4], ifelse(ischeck, "+", ""), collapse="")
+            }
+         }
       } else {
+         # use long algebraic notation
+         txt.move <- paste0(piece, move[[j]][1], move[[j]][2], ifelse(iscapture, "x", "-"), move[[j]][3], move[[j]][4], promotiontxt, ifelse(ischeck, "+", ""), collapse="")
          txt.move <- paste0(rochade, ifelse(ischeck, "+", ""))
       }
 
-      # rename pieces for other languages
+      # change pieces to symbols
 
       if (rename) {
-         #if (lang == "de") {
-         #   txt.move <- sub("Q", "D", txt.move, fixed=TRUE)
-         #   txt.move <- sub("B", "L", txt.move, fixed=TRUE)
-         #   txt.move <- sub("N", "S", txt.move, fixed=TRUE)
-         #   txt.move <- sub("R", "T", txt.move, fixed=TRUE)
-         #}
-         txt.move <- sub("K", "\U0000265A", txt.move, fixed=TRUE)
-         txt.move <- sub("Q", "\U0000265B", txt.move, fixed=TRUE)
-         txt.move <- sub("R", "\U0000265C", txt.move, fixed=TRUE)
-         txt.move <- sub("B", "\U0000265D", txt.move, fixed=TRUE)
-         txt.move <- sub("N", "\U0000265E", txt.move, fixed=TRUE)
+         txt.move <- sub("K", paste0("\U0000265A", space), txt.move, fixed=TRUE)
+         txt.move <- sub("Q", paste0("\U0000265B", space), txt.move, fixed=TRUE)
+         txt.move <- sub("R", paste0("\U0000265C", space), txt.move, fixed=TRUE)
+         txt.move <- sub("B", paste0("\U0000265D", space), txt.move, fixed=TRUE)
+         txt.move <- sub("N", paste0("\U0000265E", space), txt.move, fixed=TRUE)
       }
 
       # remove P for pawns
@@ -558,7 +727,7 @@
 
          txt <- paste0(txt, " ", txt.move, collapse=" ")
 
-         tmp <- tmp.next
+         pos <- pos.next
 
       } else {
 
@@ -574,7 +743,7 @@
 
 }
 
-.printverbose <- function(selected, seqno, filename, lastseq, flip, useflip, replast, oldmode, i,
+.printverbose <- function(selected, seqno, filename, lastseq, flip, replast, oldmode, i,
                           seqname, seqnum, score, rounds, totalmoves, show, showcomp, comment, bestmove, starteval,
                           evalval, texttop, scoreadd, sidetoplay, givehint1, givehint2, mistake,
                           timetotal, movesplayed, movestoplay, drawcircles, drawarrows, showstartcom, pos) {
@@ -585,7 +754,6 @@
    cat("filename:     ", filename, "\n")
    cat("lastseq:      ", lastseq, "\n")
    cat("flip:         ", flip, "\n")
-   cat("useflip:      ", useflip, "\n")
    cat("replast:      ", replast, "\n")
    cat("oldmode:      ", oldmode, "\n")
    cat("i:            ", i, "\n")
@@ -1055,20 +1223,29 @@
 
 }
 
-.liquery <- function(cachedir, pos, flip, sidetoplay, sidetoplaystart, i, lichessdb, token, speeds, ratings, barlen, invertbar, contliquery, texttop, showout=TRUE) {
+.liquery <- function(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, mode, showout=TRUE) {
 
-   selmove <- ""
+   res <- list(selmove="")
 
    if (is.null(token) || token == "") {
       .texttop(.text("needtoken"), sleep=2)
       .texttop(texttop)
-      return(selmove)
+      return(res)
    }
+
+   if (!isonline) {
+      .texttop(.text("nointqueryli"), sleep=2)
+      .texttop(texttop)
+      return(res)
+   }
+
+   contliquery <- .get("contliquery")
 
    fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
    fen <- gsub(" ", "%20", fen, fixed=TRUE)
    filename <- paste0(gsub("/", "_", fen, fixed=TRUE), ".rds")
 
+   cachedir <- .get("cachedir")
    files <- list.files(file.path(cachedir, lichessdb), pattern=".rds$")
 
    if (filename %in% files) {
@@ -1086,19 +1263,19 @@
       url <- paste0(url, "fen=", fen)
       header <- paste("Bearer", token)
 
-      out <- try(VERB("GET", url, add_headers('Authorization' = header), content_type("application/octet-stream"), timeout=1), silent=TRUE)
+      out <- try(VERB("GET", url, add_headers('Authorization'=header), content_type("application/octet-stream"), timeout(1)), silent=TRUE)
 
       if (inherits(out, "try-error")) {
 
          .texttop(.text("noconnect"), sleep=1.5)
          .texttop(texttop)
-         return(selmove)
+         return(res)
 
       } else {
 
          if (out$status == 429) {
             .texttop(.text("ratelimit"))
-            return(selmove)
+            return(res)
          }
 
          out <- do.call(rbind, lapply(content(out)$moves, function(x) data.frame(move=x$uci, white=x$white, draw=x$draws, black=x$black)))
@@ -1118,46 +1295,45 @@
 
    if (is.null(out)) {
 
-      if (contliquery)
+      if (mode != "play" && contliquery)
          cat("\n", .text("posnotfound"), "\n\n", sep="")
 
    } else {
 
       out$total <- rowSums(out[2:4])
       out$move  <- sapply(out$move, .litouci, pos=pos)
-      selmove   <- sample(out$move, size=1, prob=out$total)
-      if (showout) {
-         if (!contliquery)
-            eval(expr=.get("switch1"))
-         .flush()
-         totals    <- colSums(out[2:5])
-         percs     <- .percent(totals[1:3])
-         out$perc  <- .percent(out$total)
-         bars      <- apply(out[2:4], 1, .percbar, len=barlen, invert=invertbar)
-         out[2:4]  <- t(apply(out[2:4], 1, .percent))
-         out[1]    <- sapply(out[[1]], function(x) .parsemove(x, pos=pos, flip=flip, evalval="", i=NULL, sidetoplay=sidetoplay, rename=FALSE, returnline=TRUE, hintdepth=1)$txt)
-         out       <- out[c(1,6,5,2:4)]
-         out       <- rbind(out, data.frame(move="total", perc=100, total=totals[[4]], white=percs[[1]], draw=percs[[2]], black=percs[[3]]))
-         bars      <- c(bars, .percbar(totals[1:3], len=barlen, invert=invertbar))
-         out$total <- .numshort(out$total)
-         colnames(out)[c(2,4:6)] <- c("%", "white%", "draw%", "black%")
-         ncols <- num_ansi_colors()
-         if (ncols >= 256)
-            out <- out[-c(4:6)]
-         txt <- capture.output(print(out, print.gap=2))
-         for (i in 1:length(txt)) {
-            cat(txt[i], "  ")
-            if (i > 1)
-               cat(bars[i-1])
-            cat("\n\n")
-         }
-         if (!contliquery)
-            eval(expr=.get("switch2"))
+      res$selmove <- sample(out$move, size=1, prob=out$total)
+      #if (!showout) print(paste0("Selected move: ", res$selmove))
+      if (!contliquery)
+         eval(expr=.get("switch1"))
+      .flush()
+      totals    <- colSums(out[2:5])
+      percs     <- .percent(totals[1:3])
+      out$perc  <- .percent(out$total)
+      bars      <- apply(out[2:4], 1, .percbar, len=barlen, invert=invertbar)
+      out[2:4]  <- t(apply(out[2:4], 1, .percent))
+      out[1]    <- sapply(out[[1]], function(x) .parsemove(x, pos=pos, flip=flip, evalval="", i=NULL, sidetoplay=sidetoplay, rename=TRUE, space="", returnline=FALSE, hintdepth=1)$txt)
+      out       <- out[c(1,6,5,2:4)]
+      out       <- rbind(out, data.frame(move="total", perc=100, total=totals[[4]], white=percs[[1]], draw=percs[[2]], black=percs[[3]]))
+      bars      <- c(bars, .percbar(totals[1:3], len=barlen, invert=invertbar))
+      out$total <- .numshort(out$total)
+      colnames(out)[c(2,4:6)] <- c("%", "white%", "draw%", "black%")
+      ncols <- num_ansi_colors()
+      if (ncols >= 256)
+         out <- out[-c(4:6)]
+      txt <- capture.output(print(out, print.gap=2))
+      for (i in 1:length(txt)) {
+         cat(txt[i], "  ")
+         if (i > 1)
+            cat(bars[i-1])
+         cat("\n\n")
       }
+      if (!contliquery)
+         eval(expr=.get("switch2"))
 
    }
 
-   return(selmove)
+   return(res)
 
 }
 
@@ -1213,7 +1389,8 @@
    sprintf("%*s%s%*s", floor((width - nchar(text)) / 2), "", text, ceiling((width - nchar(text)) / 2), "")
 
 .flush <- function() {
-   if (isTRUE(.get("flush")))
+   flush <- isTRUE(.get("flush"))
+   if (flush)
       cat(c("\033[2J","\033[0;0H"))
-   return()
+   return(flush)
 }

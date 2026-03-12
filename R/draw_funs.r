@@ -1047,6 +1047,7 @@
    font    <- .get("font.mono")
    col     <- .get("col.bot")
    col.bg  <- .get("col.bg")
+   contliquery <- .get("contliquery")
 
    if (mode == "test" && .get("zenmode")) {
       rect(-2, -1, 12, 0.6, col=col.bg, border=NA)
@@ -1145,7 +1146,7 @@
             text(xleft, 0.15, paste0("        ", i), pos=4, cex=cex, family=font, col=col, srt=srt)
          }
          if (redraw) {
-            text(xleft, 0.45, paste0("Mode:   ", ifelse(mode == "play", "Play", "Analysis")), pos=4, cex=cex, family=font, col=col, srt=srt)
+            text(xleft, 0.45, paste0("Mode:   ", ifelse(mode == "play", ifelse(contliquery, "Play (Lichess)", "Play (Stockfish)"), "Analysis")), pos=4, cex=cex, family=font, col=col, srt=srt)
             text(xleft, 0.30, paste0("Player: ", player), pos=4, cex=cex, family=font, col=col, srt=srt)
             text(xleft, 0.15, paste0("Move:   ", i), pos=4, cex=cex, family=font, col=col, srt=srt)
          }
@@ -1218,7 +1219,7 @@
             text(xleft, 0.15, paste0("         ", i), pos=4, cex=cex, family=font, col=col, srt=srt)
          }
          if (redraw) {
-            text(xleft, 0.45, paste0("Modus:   ", ifelse(mode == "play", "Spielen", "Analyse")), pos=4, cex=cex, family=font, col=col, srt=srt)
+            text(xleft, 0.45, paste0("Modus:   ", ifelse(mode == "play", ifelse(contliquery, "Spielen (Lichess)", "Spielen (Stockfish)"), "Analyse")), pos=4, cex=cex, family=font, col=col, srt=srt)
             text(xleft, 0.30, paste0("Spieler: ", player), pos=4, cex=cex, family=font, col=col, srt=srt)
             text(xleft, 0.15, paste0("Zug:     ", i), pos=4, cex=cex, family=font, col=col, srt=srt)
          }
@@ -1487,7 +1488,6 @@
       evalvals <- evalvals[!is.na(evalvals)]
       bestmovetxt <- bestmovetxt[!is.na(bestmovetxt)]
       .drawarrows(harrows, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
-      .drawglyph(glyph)
       texttop <- .texttop(paste0(bestmovetxt, collapse="\n"), left=TRUE)
       attr(texttop, "left") <- TRUE
    } else {
@@ -1497,6 +1497,7 @@
          .texttop(.text("nomovewoutsf"), sleep=1.5)
       }
    }
+   .drawglyph(glyph)
 
    return(list(harrows=harrows, texttop=texttop, evalvals=evalvals))
 
