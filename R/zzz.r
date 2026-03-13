@@ -48,6 +48,7 @@
    assign("col.annot",     "#00800080",     envir=.chesstrainer)
    assign("col.side.w",    "white",         envir=.chesstrainer)
    assign("col.side.b",    "black",         envir=.chesstrainer)
+   assign("col.side.d",    "gray",          envir=.chesstrainer)
    assign("col.time.fast", "#008000",       envir=.chesstrainer)
    assign("col.time.slow", "#800000",       envir=.chesstrainer)
 

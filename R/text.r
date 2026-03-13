@@ -611,8 +611,8 @@
 
    if (x == "colsetexpl") {
       return(switch(lang,
-                    de = c("Hintergrundfarbe", "Vordergrundfarbe", "Farbe f\U000000FCr helle Felder", "Farbe f\U000000FCr dunkle Felder", "Farbe der zus\U000000E4tzlichen Felder im Brett-Editor", "Farbe f\U000000FCr Text oben", "Farbe f\U000000FCr Text unten", "Farbe des Hilfetext", "Farbe der Fensterrahmen", "Farbe f\U000000FCr Hinweise", "Farbe f\U000000FCr Pfeile f\U000000FCr den besten Zug", "Farbe f\U000000FCr falsche Z\U000000FCge", "Farbe f\U000000FCr die Felder Rechtecke", "Farbe f\U000000FCr Annotationen", "Farbe f\U000000FCr den Seitenindikator (wei\U000000DF)", "Farbe f\U000000FCr den Seitenindikator (schwarz)", "Farbe f\U000000FCr schnelle Zeiten im Zeitmodus", "Farbe f\U000000FCr langsame Zeiten im Zeitmodus"),
-                         c("Background color", "Foreground color", "Color of light squares", "Color of dark squares", "Color of the extra squares in the board editor", "Color for text at the top", "Color for text at the bottom", "Color of help text", "Color of window borders", "Color for hints", "Color for best move arrows", "Color for wrong moves", "Color for the square rectangles", "Color for annotations", "Color for the side indicator (white)", "Color for the side indicator (black)", "Color for fast times in timed mode", "Color for slow times in timed mode")
+                    de = c("Hintergrundfarbe", "Vordergrundfarbe", "Farbe f\U000000FCr helle Felder", "Farbe f\U000000FCr dunkle Felder", "Farbe der zus\U000000E4tzlichen Felder im Brett-Editor", "Farbe f\U000000FCr Text oben", "Farbe f\U000000FCr Text unten", "Farbe des Hilfetext", "Farbe der Fensterrahmen", "Farbe f\U000000FCr Hinweise", "Farbe f\U000000FCr Pfeile f\U000000FCr den besten Zug", "Farbe f\U000000FCr falsche Z\U000000FCge", "Farbe f\U000000FCr die Felder Rechtecke", "Farbe f\U000000FCr Annotationen", "Farbe f\U000000FCr den Seitenindikator (wei\U000000DF)", "Farbe f\U000000FCr den Seitenindikator (schwarz)", "Farbe f\U000000FCr Remis", "Farbe f\U000000FCr schnelle Zeiten im Zeitmodus", "Farbe f\U000000FCr langsame Zeiten im Zeitmodus"),
+                         c("Background color", "Foreground color", "Color of light squares", "Color of dark squares", "Color of the extra squares in the board editor", "Color for text at the top", "Color for text at the bottom", "Color of help text", "Color of window borders", "Color for hints", "Color for best move arrows", "Color for wrong moves", "Color for the square rectangles", "Color for annotations", "Color for the side indicator (white)", "Color for the side indicator (black)", "Color for draws", "Color for fast times in timed mode", "Color for slow times in timed mode")
    ))}
 
    if (x == "cexsetexpl") {
@@ -671,8 +671,14 @@
 
    if (x == "eval") {
       return(switch(lang,
-                    de = paste0("Bewertungsleiste: ", ifelse(arg, "An", "Aus")),
-                         paste0("Evaluation bar: ", ifelse(arg, "On", "Off"))
+                    de = paste0("Stockfish Bewertungsleiste: ", ifelse(arg, "An", "Aus")),
+                         paste0("Stockfish evaluation bar: ", ifelse(arg, "On", "Off"))
+   ))}
+
+   if (x == "libar") {
+      return(switch(lang,
+                    de = paste0("Lichess Bewertungsleiste: ", ifelse(arg, "An", "Aus")),
+                         paste0("Lichess evaluation bar: ", ifelse(arg, "On", "Off"))
    ))}
 
    if (x == "sfstart") {

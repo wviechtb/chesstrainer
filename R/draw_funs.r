@@ -1407,6 +1407,47 @@
 
 }
 
+.drawlibar <- function(totals=NULL, flip=FALSE, clear=FALSE) {
+
+   col.bg <- .get("col.bg")
+   libar <- .get("libar")
+
+   xpos <- 0.55
+   indsize <- 0.25
+
+   if (!libar || clear || is.null(totals)) {
+      rect(xpos, 1, xpos+indsize, 9, border=NA, col=col.bg)
+      return(NULL)
+   }
+
+   col.fg     <- .get("col.fg")
+   col.side.w <- .get("col.side.w")
+   col.side.b <- .get("col.side.b")
+   col.side.d <- .get("col.side.d")
+
+   total <- sum(totals[1:3])
+   white <- totals[1] / total
+   draw  <- totals[2] / total
+   black <- totals[3] / total
+
+   if (flip) {
+      rect(xpos, 1, xpos+indsize, 1 + 8*black, border=NA, col=col.side.b)
+      rect(xpos, 9, xpos+indsize, 9 - 8*white, border=NA, col=col.side.w)
+      rect(xpos, 1 + 8*black, xpos+indsize, 9 - 8*white, border=NA, col=col.side.d)
+   } else {
+      rect(xpos, 1, xpos+indsize, 1 + 8*white, border=NA, col=col.side.w)
+      rect(xpos, 9, xpos+indsize, 9 - 8*black, border=NA, col=col.side.b)
+      rect(xpos, 1 + 8*white, xpos+indsize, 9 - 8*black, border=NA, col=col.side.d)
+   }
+
+   segments(xpos, 5, xpos+indsize, col=col.fg)
+
+   assign("lasttotals", totals, envir=.chesstrainer)
+
+   return()
+
+}
+
 .startcomment <- function(txt) {
 
    rect(1.2, 1.2, 8.8, 8.8, col=.get("col.bg"), border=.get("col.border"), lwd=.get("lwd")+3)
