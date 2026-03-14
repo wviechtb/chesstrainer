@@ -663,6 +663,12 @@
                          paste0("Continuous analysis: ", ifelse(arg, "On", "Off"))
    ))}
 
+   if (x == "usecache") {
+      return(switch(lang,
+                    de = paste0("Positionsdaten aus dem Cache abrufen: ", ifelse(arg, "An", "Aus")),
+                         paste0("Get position information from the cache: ", ifelse(arg, "On", "Off"))
+   ))}
+
    if (x == "contliquery") {
       return(switch(lang,
                     de = paste0("Kontinuierliche Abfrage der Lichess Datenbank: ", ifelse(arg, "An", "Aus")),

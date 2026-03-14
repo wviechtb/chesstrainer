@@ -97,6 +97,7 @@ play <- function(lang="en", ...) {
    invertbar   <- ifelse(is.null(ddd[["invertbar"]]),   FALSE,                   ddd[["invertbar"]])
    lichessdb   <- ifelse(is.null(ddd[["lichessdb"]]),   "lichess",               ddd[["lichessdb"]])
    token       <- ifelse(is.null(ddd[["token"]]),       "",                      ddd[["token"]])
+   usecache    <- ifelse(is.null(ddd[["usecache"]]),    TRUE,                    ddd[["usecache"]])
    libar       <- ifelse(is.null(ddd[["libar"]]),       TRUE,                    ddd[["libar"]])
    sfpath      <- ifelse(is.null(ddd[["sfpath"]]),      "",                      ddd[["sfpath"]])
    switch1     <- ifelse(is.null(ddd[["switch1"]]), ifelse(isTRUE(iswin) && identical(gui, "rgui"), "bringToTop(-1)",        "invisible()"), ddd[["switch1"]])
@@ -195,7 +196,8 @@ play <- function(lang="en", ...) {
                        eval=eval, evalsteps=evalsteps, coords=coords, showtransp=showtransp, matdiff=matdiff, san=san, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth,
-                       difffun=difffun, difflen=difflen, diffmin=diffmin, zenmode=zenmode, speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb, token=token, libar=libar,
+                       difffun=difffun, difflen=difflen, diffmin=diffmin, zenmode=zenmode,
+                       speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb, token=token, usecache=usecache, libar=libar,
                        mar=mar, mar2=mar2, switch1=switch1, switch2=switch2)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       cols <- sapply(cols.all, function(x) .get(x))
@@ -317,6 +319,8 @@ play <- function(lang="en", ...) {
             lichessdb <- settings[["lichessdb"]]
          if (is.null(mc[["token"]]))
             token <- settings[["token"]]
+         if (is.null(mc[["usecache"]]))
+            usecache <- settings[["usecache"]]
          if (is.null(mc[["libar"]]))
             libar <- settings[["libar"]]
          if (is.null(mc[["mar"]]))
@@ -334,7 +338,8 @@ play <- function(lang="en", ...) {
                        eval=eval, evalsteps=evalsteps, coords=coords, showtransp=showtransp, matdiff=matdiff, san=san, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth,
-                       difffun=difffun, difflen=difflen, diffmin=diffmin, zenmode=zenmode, speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb, token=token, libar=libar,
+                       difffun=difffun, difflen=difflen, diffmin=diffmin, zenmode=zenmode,
+                       speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb, token=token, usecache=usecache, libar=libar,
                        mar=mar, mar2=mar2, switch1=switch1, switch2=switch2, firstrun=settings$firstrun)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       if (file.exists(file.path(configdir, "colors.rds"))) {
@@ -385,7 +390,9 @@ play <- function(lang="en", ...) {
    assign("sleepadj", sleepadj, envir=.chesstrainer)
    assign("switch1", switch1, envir=.chesstrainer)
    assign("switch2", switch2, envir=.chesstrainer)
+   assign("usecache", usecache, envir=.chesstrainer)
    assign("libar", libar, envir=.chesstrainer)
+   assign("lastget", proc.time()[[3]], envir=.chesstrainer)
 
    # create cache directory
 
@@ -715,7 +722,7 @@ play <- function(lang="en", ...) {
    # define keys
 
    keys <- c("q", "ctrl-Q", "\033", "ctrl-[", " ", "m", "d", "\\", "\U000000E4", "n", "N", "B", "p", "ctrl-R",
-             "g", "h", "H", "y", "Left", "Right", "Up", "Down", "t", "T", "0", "1", "2", "3", "4", "5", "9",
+             "g", "h", "H", "y", "Y", "Left", "Right", "Up", "Down", "t", "T", "0", "1", "2", "3", "4", "5", "9",
              "r", "o", "u", "U", "ctrl-U", "M", "j", "%",
              "a", "A", "f", "z", "Z", "c", "!", "@", "\"", "e", "E", "s", "b", "K", "C", "S",
              "^", "6", "R", "G", "W", "-", "=", "_", "+", "[", "{", "}", "(", ")", "i", "I", "x", "v", "V", "ctrl-V",
@@ -2886,9 +2893,21 @@ play <- function(lang="en", ...) {
                next
             }
 
-            # I to toggle continuous querying of the Lichess opening database on/off
+            # I to toggle use of Lichess cache on/off
 
             if (identical(click, "I")) {
+               usecache <- !usecache
+               assign("usecache", usecache, envir=.chesstrainer)
+               .texttop(.text("usecache", usecache), sleep=1)
+               .texttop(texttop)
+               settings$usecache <- usecache
+               saveRDS(settings, file=file.path(configdir, "settings.rds"))
+               next
+            }
+
+            # Y to toggle continuous querying of the Lichess opening database on/off
+
+            if (identical(click, "Y")) {
                if (is.null(token) || token == "") {
                   .texttop(.text("needtoken"), sleep=2)
                   .texttop(texttop)
@@ -3895,7 +3914,7 @@ play <- function(lang="en", ...) {
                            volume=volume, showgraph=showgraph, repmistake=repmistake, target=target, # cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
                            difffun=difffun, difflen=difflen, diffmin=diffmin,
                            sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, contanalysis=contanalysis)
-                           #speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb, token=paste0(rep("*", nchar(token), collapse=""), libar=libar)
+                           #speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb, token=paste0(rep("*", nchar(token), collapse=""), usecache=usecache, libar=libar)
                .showsettings(tab)
                .redrawpos(pos, flip=flip)
                .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
@@ -4756,7 +4775,7 @@ play <- function(lang="en", ...) {
             if (mode == "play" && contliquery) {
                res.li <- .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, mode)
                bestmove <- res.li$selmove # [d]
-               Sys.sleep(max(2,4*delay)) # pause so that player can register whether their move was good or not
+               Sys.sleep(max(1,4*delay)) # pause so that player can register whether their move was good or not
             }
 
             if (is.null(sub$moves$circles))

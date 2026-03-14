@@ -1246,7 +1246,13 @@
    filename <- paste0(gsub("/", "_", fen, fixed=TRUE), ".rds")
 
    cachedir <- .get("cachedir")
-   files <- list.files(file.path(cachedir, lichessdb), pattern=".rds$")
+   usecache <- .get("usecache")
+
+   if (usecache) {
+      files <- list.files(file.path(cachedir, lichessdb), pattern=".rds$")
+   } else {
+      files <- ""
+   }
 
    if (filename %in% files) {
 
@@ -1263,8 +1269,21 @@
       url <- paste0(url, "fen=", fen)
       header <- paste("Bearer", token)
 
-      #out <- try(VERB("GET", url, add_headers('Authorization'=header), content_type("application/octet-stream"), timeout(1)), silent=TRUE)
+      lastget <- .get("lastget")
+
+      # ensure that there are at least 2.5 seconds between each API request
+
+      while (proc.time()[[3]] - lastget < 2.5)
+         Sys.sleep(0.1)
+
       out <- try(VERB("GET", url, add_headers('Authorization'=header), content_type("application/octet-stream"), user_agent("R chesstrainer (wvb@wvbauer.com)"), timeout(2)), silent=TRUE)
+
+      if (inherits(out, "try-error")) {
+         Sys.sleep(4)
+         out <- try(VERB("GET", url, add_headers('Authorization'=header), content_type("application/octet-stream"), user_agent("R chesstrainer (wvb@wvbauer.com)"), timeout(2)), silent=TRUE)
+      }
+
+      assign("lastget", proc.time()[[3]], envir=.chesstrainer)
 
       if (inherits(out, "try-error")) {
 
