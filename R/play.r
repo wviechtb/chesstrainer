@@ -1611,7 +1611,7 @@ play <- function(lang="en", ...) {
                .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
                .draweval(neweval, oldeval, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
-               .textbot(mode, opening="", onlyeco=TRUE)
+               .textbot(mode, opening=opening, onlyeco=TRUE)
                if (mode %in% c("add","analysis")) {
                   fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                   res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
@@ -1716,7 +1716,7 @@ play <- function(lang="en", ...) {
                } else {
                   sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
                }
-               .textbot(mode, opening="", onlyeco=TRUE)
+               .textbot(mode, opening=opening, onlyeco=TRUE)
                if (mode == "add" && identical(click, "t")) # t in add mode removes all further moves
                   sub$moves <- sub$moves[seq_len(i-1),,drop=FALSE]
                if (mode %in% c("add","play","analysis")) {
@@ -1941,7 +1941,7 @@ play <- function(lang="en", ...) {
                } else {
                   sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
                }
-               .textbot(mode, opening="", onlyeco=TRUE)
+               .textbot(mode, opening=opening, onlyeco=TRUE)
                if (mode %in% c("add","test")) {
                   if (i > nrow(sub$moves)) {
                      texttop <- .texttop(sub$commentend)
@@ -2030,7 +2030,7 @@ play <- function(lang="en", ...) {
                .draweval(sub$moves$eval[i-1], oldeval, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
                sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
-               .textbot(mode, opening="", onlyeco=TRUE)
+               .textbot(mode, opening=opening, onlyeco=TRUE)
                fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
                evalval  <- res.sf$eval
@@ -4655,7 +4655,7 @@ play <- function(lang="en", ...) {
             # in add mode, check if there are sequences with the current position that occurred via a move transposition
 
             if (mode == "add" && showtransp)
-               .findmovetransp(fen, flip, i, sub, dat.all.short, files.all, sub$pos)
+               .findmovetransp(fen=fen, flip=flip, i=i, sub=sub, dat=dat.all.short, files=files.all, pos=sub$pos, contanalysis=contanalysis)
 
             # check for (stale)mate
 

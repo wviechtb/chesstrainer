@@ -1120,7 +1120,7 @@
 
 }
 
-.findmovetransp <- function(fen, flip, i, sub, dat, files, pos, texttop=TRUE) {
+.findmovetransp <- function(fen, flip, i, sub, dat, files, pos, contanalysis) {
 
    fenshort <- paste(strsplit(fen, " ", fixed=TRUE)[[1]][1:3], collapse=" ")
    seqident <- lapply(dat, function(x) {
@@ -1136,8 +1136,7 @@
    notnull <- !sapply(seqident, is.null)
    seqident <- seqident[notnull]
    if (any(notnull)) {
-      if (texttop)
-         .texttop(.text("transpositions", length(seqident) == 1L))
+      .texttop(.text("transpositions", length(seqident) == 1L))
       #eval(expr=.get("switch1"))
       cat(.text("transposseqs", length(seqident) == 1L))
       tab <- data.frame(files[notnull])
@@ -1146,6 +1145,8 @@
       tab <- cbind(tab, nextmoves)
       rownames(tab) <- which(notnull)
       .printdf(tab, align=c("l",rep("r",5)))
+      if (contanalysis)
+         .waitforclick()
       #eval(expr=.get("switch2"))
    }
 
@@ -1171,7 +1172,7 @@
       if (length(openingmatch) >= 1L) {
          opening <- openings[openingmatch[1],1:2]
          opening <- paste0(opening[1], " (", substr(opening[2], 1, 120), ")", collapse="")
-         if (!identical(opening, oldopening))
+         if (!identical(opening, oldopening) && draw)
             .textbot(mode, opening=opening, onlyeco=TRUE)
       }
 
