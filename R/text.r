@@ -1575,6 +1575,24 @@
                          "Delete cache"
    ))}
 
+   if (x == "usecacheshort") {
+      return(switch(lang,
+                    de = "Cache nutzen",
+                         "Use cache"
+   ))}
+
+   if (x == "yes") {
+      return(switch(lang,
+                    de = "Ja",
+                         "Yes"
+   ))}
+
+   if (x == "no") {
+      return(switch(lang,
+                    de = "Nein",
+                         "No"
+   ))}
+
    if (x == "barlen") {
       return(switch(lang,
                     de = "Balkenl\U000000E4nge",

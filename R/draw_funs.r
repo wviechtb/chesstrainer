@@ -1260,7 +1260,7 @@
 .drawtimer <- function(movestoplay, movesplayed, timetotal, timepermove, clear=FALSE, settings=FALSE) {
 
    col.bg        <- .get("col.bg")
-   col.square.be <- .get("col.square.be")
+   col.side.d    <- .get("col.side.d")
    col.time.fast <- .get("col.time.fast")
    col.time.slow <- .get("col.time.slow")
 
@@ -1275,7 +1275,7 @@
    if (settings) {
 
       rect(xpos, 1, xpos+indsize, 9, border=NA, col=col.time.fast)
-      rect(xpos, 1, xpos+indsize, 6, border=NA, col=col.square.be)
+      rect(xpos, 1, xpos+indsize, 6, border=NA, col=col.side.d)
       rect(xpos, 1, xpos+indsize, 4, border=NA, col=col.time.slow)
 
    } else {
@@ -1288,12 +1288,12 @@
       top    <- 9 - 8*prop
       pos.top.hlines <- movestoplay-movesplayed+1
 
-      rect(xpos, max(hlines[pos.top.hlines],top), xpos+indsize, 9, col=col.bg, border=col.square.be)
+      rect(xpos, max(hlines[pos.top.hlines],top), xpos+indsize, 9, col=col.bg, border=col.side.d)
 
-      #segments(xpos, hlines[(pos.top.hlines):(movestoplay+1)], xpos+indsize, hlines[(pos.top.hlines):(movestoplay+1)], col=col.square.be, lwd=2)
+      #segments(xpos, hlines[(pos.top.hlines):(movestoplay+1)], xpos+indsize, hlines[(pos.top.hlines):(movestoplay+1)], col=col.side.d, lwd=2)
       #segments(xpos, hlines[1:(pos.top.hlines)], xpos+indsize, hlines[1:(pos.top.hlines)], col=col.bg, lwd=2)
 
-      rect(xpos, 1, xpos+indsize, hlines[pos.top.hlines], border=NA, col=col.square.be)
+      rect(xpos, 1, xpos+indsize, hlines[pos.top.hlines], border=NA, col=col.side.d)
 
       # draw the progress rectangle in the appropriate color
       if (intime) {
@@ -1302,12 +1302,12 @@
          rect(xpos, 1, xpos+indsize, top, border=NA, col=col.time.slow)
       }
 
-      #segments(xpos, hlines, xpos+indsize, hlines, col=col.square.be, lwd=2)
+      #segments(xpos, hlines, xpos+indsize, hlines, col=col.side.d, lwd=2)
 
    }
 
    # outline
-   rect(xpos, 1, xpos+indsize, 9, border=col.square.be, lwd=2)
+   rect(xpos, 1, xpos+indsize, 9, border=col.side.d, lwd=2)
 
 }
 

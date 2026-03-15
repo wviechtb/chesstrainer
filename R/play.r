@@ -18,103 +18,40 @@ play <- function(lang="en", ...) {
 
    assign("lang", lang, envir=.chesstrainer)
 
-   # get arguments passed via ...
+   # get arguments passed via ... and assign values either from ... or the defaults
 
    ddd <- list(...)
 
-   if (is.null(ddd[["seqdir"]])) { # seqdir can be a vector, so not using ifelse()
-      seqdir <- ""
-   } else {
-      seqdir <- ddd[["seqdir"]]
+   defaults <- list(player="", seqdir="", seqdirpos=1, mode="add", selmode="score_random", timed=FALSE, timepermove=5,
+                    expval=2, target=1, multiplier=0.8, adjustwrong=40, adjusthint=20, eval=TRUE, evalsteps=5,
+                    coords=TRUE, showtransp=TRUE, matdiff=TRUE, san=TRUE, wait=TRUE, delay=0.5, idletime=120, mintime=60, sleepadj=0, lwd=2, volume=50,
+                    showgraph=FALSE, repmistake=FALSE, zenmode=FALSE,
+                    cex.top=1.4, cex.bot=0.7, cex.eval=0.5, cex.coords=0.85, cex.matdiff=1.1, cex.plots=1.0, cex.glyphs=1.6,
+                    sfpath="", depth1=12, depth2=20, depth3=8, sflim=NA, multipv1=1, multipv2=1, threads=1, hash=256, hintdepth=10,
+                    difffun=1, difflen=15, diffmin=5,
+                    mar=c(5.5, 5.5, 5.5, 5.5), mar2=c(11, 11, 9, 9),
+                    speeds="blitz,rapid,classical", ratings="1200,1400,1600,1800", barlen=50, invertbar=FALSE, lichessdb="lichess", token="", usecache=TRUE, libar=TRUE,
+                    switch1=ifelse(isTRUE(iswin) && identical(gui, "rgui"), "bringToTop(-1)",        "invisible()"),
+                    switch2=ifelse(isTRUE(iswin) && identical(gui, "rgui"), "bringToTop(dev.cur())", "invisible()"),
+                    quitanim=TRUE, inhibit=FALSE, flush=FALSE, raster=TRUE) # these are not saved as part of the settings
+
+   quitanim <- inhibit <- flush <- raster <- NULL # to avoid the 'no visible binding for global variable ...' warnings from R CMD check
+
+   for (element in names(defaults)) {
+      if (is.null(ddd[[element]])) {
+         val <- defaults[[element]]
+      } else {
+         val <- ddd[[element]]
+      }
+      assign(element, val)
    }
 
-   if (is.null(ddd[["eval"]])) { # eval can be a vector, so not using ifelse()
-      eval <- TRUE
-   } else {
-      eval <- ddd[["eval"]]
-   }
-
-   if (is.null(ddd[["mar"]])) { # mar can be a vector, so not using ifelse()
-      mar <- c(5.5, 5.5, 5.5, 5.5)
-   } else {
-      mar <- ddd[["mar"]]
-   }
-
-   if (is.null(ddd[["mar2"]])) { # mar2 can be a vector, so not using ifelse()
-      mar2 <- c(11, 11, 9, 9)
-   } else {
-      mar2 <- ddd[["mar2"]]
-   }
-
-   player      <- ifelse(is.null(ddd[["player"]]),      "",                      ddd[["player"]])
-   seqdirpos   <- ifelse(is.null(ddd[["seqdirpos"]]),   1,                       ddd[["seqdirpos"]])
-   mode        <- ifelse(is.null(ddd[["mode"]]),        "add",                   ddd[["mode"]])
-   selmode     <- ifelse(is.null(ddd[["selmode"]]),     "score_random",          ddd[["selmode"]])
-   timed       <- ifelse(is.null(ddd[["timed"]]),       FALSE,                   ddd[["timed"]])
-   timepermove <- ifelse(is.null(ddd[["timepermove"]]), 5,                       ddd[["timepermove"]])
-   expval      <- ifelse(is.null(ddd[["expval"]]),      2,                       ddd[["expval"]])
-   target      <- ifelse(is.null(ddd[["target"]]),      1,                       ddd[["target"]])
-   multiplier  <- ifelse(is.null(ddd[["multiplier"]]),  0.8,                     ddd[["multiplier"]])
-   adjustwrong <- ifelse(is.null(ddd[["adjustwrong"]]), 40,                      ddd[["adjustwrong"]])
-   adjusthint  <- ifelse(is.null(ddd[["adjusthint"]]),  20,                      ddd[["adjusthint"]])
-   evalsteps   <- ifelse(is.null(ddd[["evalsteps"]]),   5,                       ddd[["evalsteps"]])
-   coords      <- ifelse(is.null(ddd[["coords"]]),      TRUE,                    ddd[["coords"]])
-   showtransp  <- ifelse(is.null(ddd[["showtransp"]]),  TRUE,                    ddd[["showtransp"]])
-   matdiff     <- ifelse(is.null(ddd[["matdiff"]]),     TRUE,                    ddd[["matdiff"]])
-   san         <- ifelse(is.null(ddd[["san"]]),         TRUE,                    ddd[["san"]])
-   wait        <- ifelse(is.null(ddd[["wait"]]),        TRUE,                    ddd[["wait"]])
-   delay       <- ifelse(is.null(ddd[["delay"]]),       0.5,                     ddd[["delay"]])
-   idletime    <- ifelse(is.null(ddd[["idletime"]]),    120,                     ddd[["idletime"]])
-   mintime     <- ifelse(is.null(ddd[["mintime"]]),     60,                      ddd[["mintime"]])
-   sleepadj    <- ifelse(is.null(ddd[["sleepadj"]]),    0,                       ddd[["sleepadj"]])
-   lwd         <- ifelse(is.null(ddd[["lwd"]]),         2,                       ddd[["lwd"]])
-   volume      <- ifelse(is.null(ddd[["volume"]]),      50,                      ddd[["volume"]])
-   showgraph   <- ifelse(is.null(ddd[["showgraph"]]),   FALSE,                   ddd[["showgraph"]])
-   repmistake  <- ifelse(is.null(ddd[["repmistake"]]),  FALSE,                   ddd[["repmistake"]])
-   cex.top     <- ifelse(is.null(ddd[["cex.top"]]),     1.4,                     ddd[["cex.top"]])
-   cex.bot     <- ifelse(is.null(ddd[["cex.bot"]]),     0.7,                     ddd[["cex.bot"]])
-   cex.eval    <- ifelse(is.null(ddd[["cex.eval"]]),    0.5,                     ddd[["cex.eval"]])
-   cex.coords  <- ifelse(is.null(ddd[["cex.coords"]]),  0.85,                    ddd[["cex.coords"]])
-   cex.matdiff <- ifelse(is.null(ddd[["cex.matdiff"]]), 1.1,                     ddd[["cex.matdiff"]])
-   cex.plots   <- ifelse(is.null(ddd[["cex.plots"]]),   1.0,                     ddd[["cex.plots"]])
-   cex.glyphs  <- ifelse(is.null(ddd[["cex.glyphs"]]),  1.6,                     ddd[["cex.glyphs"]])
-   depth1      <- ifelse(is.null(ddd[["depth1"]]),      12,                      ddd[["depth1"]])
-   depth2      <- ifelse(is.null(ddd[["depth2"]]),      20,                      ddd[["depth2"]])
-   depth3      <- ifelse(is.null(ddd[["depth3"]]),      8,                       ddd[["depth3"]])
-   sflim       <- ifelse(is.null(ddd[["sflim"]]),       NA,                      ddd[["sflim"]])
-   multipv1    <- ifelse(is.null(ddd[["multipv1"]]),    1,                       ddd[["multipv1"]])
-   multipv2    <- ifelse(is.null(ddd[["multipv2"]]),    1,                       ddd[["multipv2"]])
-   threads     <- ifelse(is.null(ddd[["threads"]]),     1,                       ddd[["threads"]])
-   hash        <- ifelse(is.null(ddd[["hash"]]),        256,                     ddd[["hash"]])
-   hintdepth   <- ifelse(is.null(ddd[["hintdepth"]]),   10,                      ddd[["hintdepth"]])
-   difffun     <- ifelse(is.null(ddd[["difffun"]]),     1,                       ddd[["difffun"]])
-   difflen     <- ifelse(is.null(ddd[["difflen"]]),     15,                      ddd[["difflen"]])
-   diffmin     <- ifelse(is.null(ddd[["diffmin"]]),     5,                       ddd[["diffmin"]])
-   zenmode     <- ifelse(is.null(ddd[["zenmode"]]),     FALSE,                   ddd[["zenmode"]])
-   speeds      <- ifelse(is.null(ddd[["speeds"]]),      "blitz,rapid,classical", ddd[["speeds"]])
-   ratings     <- ifelse(is.null(ddd[["ratings"]]),     "1200,1400,1600,1800",   ddd[["ratings"]])
-   barlen      <- ifelse(is.null(ddd[["barlen"]]),      50,                      ddd[["barlen"]])
-   invertbar   <- ifelse(is.null(ddd[["invertbar"]]),   FALSE,                   ddd[["invertbar"]])
-   lichessdb   <- ifelse(is.null(ddd[["lichessdb"]]),   "lichess",               ddd[["lichessdb"]])
-   token       <- ifelse(is.null(ddd[["token"]]),       "",                      ddd[["token"]])
-   usecache    <- ifelse(is.null(ddd[["usecache"]]),    TRUE,                    ddd[["usecache"]])
-   libar       <- ifelse(is.null(ddd[["libar"]]),       TRUE,                    ddd[["libar"]])
-   sfpath      <- ifelse(is.null(ddd[["sfpath"]]),      "",                      ddd[["sfpath"]])
-   switch1     <- ifelse(is.null(ddd[["switch1"]]), ifelse(isTRUE(iswin) && identical(gui, "rgui"), "bringToTop(-1)",        "invisible()"), ddd[["switch1"]])
-   switch2     <- ifelse(is.null(ddd[["switch2"]]), ifelse(isTRUE(iswin) && identical(gui, "rgui"), "bringToTop(dev.cur())", "invisible()"), ddd[["switch2"]])
-
-   # these are not saved as part of the settings
-   quitanim    <- ifelse(is.null(ddd[["quitanim"]]),    TRUE,                    ddd[["quitanim"]])
-   inhibit     <- ifelse(is.null(ddd[["inhibit"]]),     FALSE,                   ddd[["inhibit"]])
-   flush       <- ifelse(is.null(ddd[["flush"]]),       FALSE,                   ddd[["flush"]])
-   raster      <- ifelse(is.null(ddd[["raster"]]),      TRUE,                    ddd[["raster"]])
-
-   # ensure that argument values passed via ... are sensible
-
-   if (!is.element(mode, c("add","test","play")))
-      mode <- "add"
+   # ensure that argument values passed via ... are sensible and expand elements as needed
 
    seqdirpos <- round(seqdirpos)
+   if (!is.element(mode, c("add","test","play")))
+      mode <- "add"
+   timepermove[timepermove < 1] <- 1
    expval[expval < 0] <- 0
    target <- round(target)
    target[target < 1] <- 1
@@ -142,6 +79,8 @@ play <- function(lang="en", ...) {
    cex.matdiff[cex.matdiff < 0.1] <- 0.1
    cex.plots[cex.plots < 0.1] <- 0.1
    cex.glyphs[cex.glyphs < 0.1] <- 0.1
+   if (is.null(sfpath) || length(sfpath) == 0)
+      sfpath <- ""
    depth1[depth1 < 1] <- 1
    depth2[depth2 < 1] <- 1
    depth3[depth3 < 1] <- 1
@@ -156,6 +95,8 @@ play <- function(lang="en", ...) {
    multipv2[multipv2 < 1] <- 1
    multipv1 <- round(multipv1)
    multipv2 <- round(multipv2)
+   threads[threads < 1] <- 1
+   threads <- round(threads)
    hash[hash < 16] <- 16
    hash <- round(hash)
    hintdepth[hintdepth < 2] <- 2
@@ -172,8 +113,6 @@ play <- function(lang="en", ...) {
    mar2 <- pmax(mar2,1)
    if (is.null(token))
       token <- ""
-   if (is.null(sfpath) || length(sfpath) == 0)
-      sfpath <- ""
 
    verbose <- isTRUE(ddd$verbose)
 
@@ -191,14 +130,16 @@ play <- function(lang="en", ...) {
       success <- dir.create(configdir, recursive=TRUE)
       if (!success)
          stop(.text("dircreateerror"), call.=FALSE)
-      settings <- list(lang=lang, player=player, mode=mode, seqdir=seqdir, seqdirpos=seqdirpos,
-                       selmode=selmode, timed=timed, timepermove=timepermove, expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint,
-                       eval=eval, evalsteps=evalsteps, coords=coords, showtransp=showtransp, matdiff=matdiff, san=san, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
+      settings <- list(lang=lang, player=player, seqdir=seqdir, seqdirpos=seqdirpos, mode=mode, selmode=selmode, timed=timed, timepermove=timepermove,
+                       expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, eval=eval, evalsteps=evalsteps,
+                       coords=coords, showtransp=showtransp, matdiff=matdiff, san=san, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, lwd=lwd, volume=volume,
+                       showgraph=showgraph, repmistake=repmistake, zenmode=zenmode,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth,
-                       difffun=difffun, difflen=difflen, diffmin=diffmin, zenmode=zenmode,
+                       difffun=difffun, difflen=difflen, diffmin=diffmin,
+                       mar=mar, mar2=mar2,
                        speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb, token=token, usecache=usecache, libar=libar,
-                       mar=mar, mar2=mar2, switch1=switch1, switch2=switch2)
+                       switch1=switch1, switch2=switch2)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       cols <- sapply(cols.all, function(x) .get(x))
       saveRDS(cols, file=file.path(configdir, "colors.rds"))
@@ -211,136 +152,26 @@ play <- function(lang="en", ...) {
             lang <- settings[["lang"]]
          assign("lang", lang, envir=.chesstrainer)
          cat(.text("loadsettings"))
-         if (is.null(mc[["player"]]))
-            player <- settings[["player"]]
-         if (is.null(mc[["mode"]]))
-            mode <- settings[["mode"]]
-         if (is.null(mc[["seqdir"]]))
-            seqdir <- settings[["seqdir"]]
-         if (is.null(mc[["seqdirpos"]]))
-            seqdirpos <- settings[["seqdirpos"]]
-         if (is.null(mc[["selmode"]]))
-            selmode <- settings[["selmode"]]
-         if (is.null(mc[["timed"]]))
-            timed <- settings[["timed"]]
-         if (is.null(mc[["timepermove"]]))
-            timepermove <- settings[["timepermove"]]
-         if (is.null(mc[["expval"]]))
-            expval <- settings[["expval"]]
-         if (is.null(mc[["target"]]))
-            target <- settings[["target"]]
-         if (is.null(mc[["multiplier"]]))
-            multiplier <- settings[["multiplier"]]
-         if (is.null(mc[["adjustwrong"]]))
-            adjustwrong <- settings[["adjustwrong"]]
-         if (is.null(mc[["adjusthint"]]))
-            adjusthint <- settings[["adjusthint"]]
-         if (is.null(mc[["eval"]]))
-            eval <- settings[["eval"]]
-         if (is.null(mc[["evalsteps"]]))
-            evalsteps <- settings[["evalsteps"]]
-         if (is.null(mc[["coords"]]))
-            coords <- settings[["coords"]]
-         if (is.null(mc[["showtransp"]]))
-            showtransp <- settings[["showtransp"]]
-         if (is.null(mc[["matdiff"]]))
-            matdiff <- settings[["matdiff"]]
-         if (is.null(mc[["san"]]))
-            san <- settings[["san"]]
-         if (is.null(mc[["wait"]]))
-            wait <- settings[["wait"]]
-         if (is.null(mc[["delay"]]))
-            delay <- settings[["delay"]]
-         if (is.null(mc[["idletime"]]))
-            idletime <- settings[["idletime"]]
-         if (is.null(mc[["mintime"]]))
-            mintime <- settings[["mintime"]]
-         if (is.null(mc[["sleepadj"]]))
-            sleepadj <- settings[["sleepadj"]]
-         if (is.null(mc[["lwd"]]))
-            lwd <- settings[["lwd"]]
-         if (is.null(mc[["volume"]]))
-            volume <- settings[["volume"]]
-         if (is.null(mc[["showgraph"]]))
-            showgraph <- settings[["showgraph"]]
-         if (is.null(mc[["repmistake"]]))
-            repmistake <- settings[["repmistake"]]
-         if (is.null(mc[["cex.top"]]))
-            cex.top <- settings[["cex.top"]]
-         if (is.null(mc[["cex.bot"]]))
-            cex.bot <- settings[["cex.bot"]]
-         if (is.null(mc[["cex.eval"]]))
-            cex.eval <- settings[["cex.eval"]]
-         if (is.null(mc[["cex.coords"]]))
-            cex.coords <- settings[["cex.coords"]]
-         if (is.null(mc[["cex.matdiff"]]))
-            cex.matdiff <- settings[["cex.matdiff"]]
-         if (is.null(mc[["cex.plots"]]))
-            cex.plots <- settings[["cex.plots"]]
-         if (is.null(mc[["cex.glyphs"]]))
-            cex.glyphs <- settings[["cex.glyphs"]]
-         if (is.null(mc[["sfpath"]]))
-            sfpath <- settings[["sfpath"]]
-         if (is.null(mc[["depth1"]]))
-            depth1 <- settings[["depth1"]]
-         if (is.null(mc[["depth2"]]))
-            depth2 <- settings[["depth2"]]
-         if (is.null(mc[["depth3"]]))
-            depth3 <- settings[["depth3"]]
-         if (is.null(mc[["sflim"]]))
-            sflim <- settings[["sflim"]]
-         if (is.null(mc[["multipv1"]]))
-            multipv1 <- settings[["multipv1"]]
-         if (is.null(mc[["multipv2"]]))
-            multipv2 <- settings[["multipv2"]]
-         if (is.null(mc[["threads"]]))
-            threads <- settings[["threads"]]
-         if (is.null(mc[["hash"]]))
-            hash <- settings[["hash"]]
-         if (is.null(mc[["hintdepth"]]))
-            hintdepth <- settings[["hintdepth"]]
-         if (is.null(mc[["difffun"]]))
-            difffun <- settings[["difffun"]]
-         if (is.null(mc[["difflen"]]))
-            difflen <- settings[["difflen"]]
-         if (is.null(mc[["diffmin"]]))
-            diffmin <- settings[["diffmin"]]
-         if (is.null(mc[["zenmode"]]))
-            zenmode <- settings[["zenmode"]]
-         if (is.null(mc[["speeds"]]))
-            speeds <- settings[["speeds"]]
-         if (is.null(mc[["ratings"]]))
-            ratings <- settings[["ratings"]]
-         if (is.null(mc[["barlen"]]))
-            barlen <- settings[["barlen"]]
-         if (is.null(mc[["invertbar"]]))
-            invertbar <- settings[["invertbar"]]
-         if (is.null(mc[["lichessdb"]]))
-            lichessdb <- settings[["lichessdb"]]
-         if (is.null(mc[["token"]]))
-            token <- settings[["token"]]
-         if (is.null(mc[["usecache"]]))
-            usecache <- settings[["usecache"]]
-         if (is.null(mc[["libar"]]))
-            libar <- settings[["libar"]]
-         if (is.null(mc[["mar"]]))
-            mar <- settings[["mar"]]
-         if (is.null(mc[["mar2"]]))
-            mar2 <- settings[["mar2"]]
-         if (is.null(mc[["switch1"]]))
-            switch1 <- settings[["switch1"]]
-         if (is.null(mc[["switch2"]]))
-            switch2 <- settings[["switch2"]]
+         for (element in names(settings)) {
+            if (is.null(mc[[element]])) {
+               val <- settings[[element]]
+               if (is.null(val))
+                  val <- defaults[[element]] # but get default value in case the element is not yet part of the settings
+               assign(element, val)
+            }
+         }
       }
       sfpath <- suppressWarnings(normalizePath(sfpath))
-      settings <- list(lang=lang, player=player, mode=mode, seqdir=seqdir, seqdirpos=seqdirpos,
-                       selmode=selmode, timed=timed, timepermove=timepermove, expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint,
-                       eval=eval, evalsteps=evalsteps, coords=coords, showtransp=showtransp, matdiff=matdiff, san=san, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, lwd=lwd, volume=volume, showgraph=showgraph, repmistake=repmistake,
+      settings <- list(lang=lang, player=player, seqdir=seqdir, seqdirpos=seqdirpos, mode=mode, selmode=selmode, timed=timed, timepermove=timepermove,
+                       expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, eval=eval, evalsteps=evalsteps,
+                       coords=coords, showtransp=showtransp, matdiff=matdiff, san=san, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, lwd=lwd, volume=volume,
+                       showgraph=showgraph, repmistake=repmistake, zenmode=zenmode,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth,
-                       difffun=difffun, difflen=difflen, diffmin=diffmin, zenmode=zenmode,
+                       difffun=difffun, difflen=difflen, diffmin=diffmin,
+                       mar=mar, mar2=mar2,
                        speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb, token=token, usecache=usecache, libar=libar,
-                       mar=mar, mar2=mar2, switch1=switch1, switch2=switch2, firstrun=settings$firstrun)
+                       switch1=switch1, switch2=switch2, firstrun=settings$firstrun)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       if (file.exists(file.path(configdir, "colors.rds"))) {
          cols <- readRDS(file.path(configdir, "colors.rds"))
@@ -2898,7 +2729,7 @@ play <- function(lang="en", ...) {
             if (identical(click, "I")) {
                usecache <- !usecache
                assign("usecache", usecache, envir=.chesstrainer)
-               .texttop(.text("usecache", usecache), sleep=1)
+               .texttop(.text("usecache", usecache), sleep=1.5)
                .texttop(texttop)
                settings$usecache <- usecache
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
@@ -4012,22 +3843,26 @@ play <- function(lang="en", ...) {
             # F8 to adjust the Lichess database settings
 
             if (identical(click, "F8")) {
-               tmp <- .lichesssettings(speeds, ratings, lichessdb, barlen, invertbar, token)
+               tmp <- .lichesssettings(speeds, ratings, lichessdb, usecache, barlen, invertbar, token)
                .redrawpos(pos, flip=flip)
                .textbot(mode, score=score, onlyscore=TRUE)
                .drawannot(circles=circles, arrows=arrows, glyph=glyph)
                speeds    <- tmp$speeds
                ratings   <- tmp$ratings
                lichessdb <- tmp$lichessdb
+               usecache  <- tmp$usecache
                barlen    <- tmp$barlen
                invertbar <- tmp$invertbar
                token     <- tmp$token
                settings$speeds    <- speeds
                settings$ratings   <- ratings
                settings$lichessdb <- lichessdb
+               settings$usecache  <- usecache
                settings$barlen    <- barlen
                settings$invertbar <- invertbar
                settings$token     <- token
+               if (contliquery)
+                  .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, mode)
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }

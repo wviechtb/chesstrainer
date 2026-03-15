@@ -159,7 +159,7 @@
 
 }
 
-.lichesssettings <- function(speeds, ratings, lichessdb, barlen, invertbar, token) {
+.lichesssettings <- function(speeds, ratings, lichessdb, usecache, barlen, invertbar, token) {
 
    col.bg     <- .get("col.bg")
    col.help   <- .get("col.help")
@@ -179,7 +179,8 @@
    text(title.xpos, title.ypos[1], .text("speed"),     pos=4, cex=cex, family=font.mono, col=col.help, font=2)
    text(title.xpos, title.ypos[2], .text("rating"),    pos=4, cex=cex, family=font.mono, col=col.help, font=2)
    text(title.xpos, title.ypos[3], .text("lichessdb"), pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(5, title.ypos[3], .text("delcache"), pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(4.2, title.ypos[3], .text("usecacheshort"), pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(6, title.ypos[3], .text("delcache"), pos=4, cex=cex, family=font.mono, col=col.help, font=2)
    text(title.xpos, title.ypos[4], .text("barlen"),    pos=4, cex=cex, family=font.mono, col=col.help, font=2)
    text(title.xpos, title.ypos[5], .text("invertbar"), pos=4, cex=cex, family=font.mono, col=col.help, font=2)
    text(5, title.ypos[5], .text("entertoken"), pos=4, cex=cex, family=font.mono, col=col.help, font=2)
@@ -197,7 +198,7 @@
    ratings.opts <- c(0, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2500)
    ratings.xpos <- 2 + 0.74 * (seq_along(ratings.opts) - 1)
    ratings.ypos <- title.ypos[2] - 0.4 * (title.ypos[1]-title.ypos[2])
-   ratings.txt  <- ratings.opts
+   ratings.txt  <- c(400, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2500)
    ratings.on   <- ratings.opts %in% strsplit(ratings, ",", fixed=TRUE)[[1]]
    ratings.box  <- list()
    for (i in seq_along(ratings.txt)) {
@@ -205,7 +206,7 @@
    }
 
    lichessdb.opts <- c("lichess", "masters")
-   lichessdb.xpos <- 2.2 + 1.2 * (seq_along(lichessdb.opts) - 1)
+   lichessdb.xpos <- 2.2 + 1.1 * (seq_along(lichessdb.opts) - 1)
    lichessdb.ypos <- title.ypos[3] - 0.4 * (title.ypos[1]-title.ypos[2])
    lichessdb.txt  <- c("players", "masters")
    lichessdb.on   <- lichessdb.opts == lichessdb
@@ -214,8 +215,18 @@
       lichessdb.box[[i]] <- .drawbutton(lichessdb.xpos[i], lichessdb.ypos, text=lichessdb.txt[i], len=max(nchar(lichessdb.txt)), on=lichessdb.on[i], cex=cex)
    }
 
+   usecache.opts <- c(TRUE, TRUE)
+   usecache.xpos <- 4.7 + 0.7 * (seq_along(usecache.opts) - 1)
+   usecache.ypos <- title.ypos[3] - 0.4 * (title.ypos[1]-title.ypos[2])
+   usecache.txt  <- c(.text("yes"), .text("no"))
+   usecache.on   <- c(usecache, !usecache)
+   usecache.box  <- list()
+   for (i in seq_along(usecache.txt)) {
+      usecache.box[[i]] <- .drawbutton(usecache.xpos[i], usecache.ypos, text=usecache.txt[i], len=max(nchar(usecache.txt)), on=usecache.on[i], cex=cex)
+   }
+
    delcache.opts <- c("players", "masters")
-   delcache.xpos <- 5.7 + 1.2 * (seq_along(delcache.opts) - 1)
+   delcache.xpos <- 6.7 + 1.1 * (seq_along(delcache.opts) - 1)
    delcache.ypos <- title.ypos[3] - 0.4 * (title.ypos[1]-title.ypos[2])
    delcache.txt  <- delcache.opts
    delcache.on   <- c(FALSE, FALSE)
@@ -230,9 +241,9 @@
    .updateslider(NULL, barlen.ypos, oldval=barlen, xlim=barlen.xpos, range=c(10,100), round=TRUE, cex=cex)
 
    invertbar.opts <- c("No", "Yes")
-   invertbar.xpos <- 2 + 0.8 * (seq_along(invertbar.opts) - 1)
+   invertbar.xpos <- 2 + 0.7 * (seq_along(invertbar.opts) - 1)
    invertbar.ypos <- title.ypos[5] - 0.4 * (title.ypos[1]-title.ypos[2])
-   invertbar.txt  <- invertbar.opts
+   invertbar.txt  <- c(.text("no"), .text("yes"))
    invertbar.on   <- c(!invertbar, invertbar)
    invertbar.box  <- list()
    for (i in seq_along(invertbar.txt)) {
@@ -283,6 +294,18 @@
             lichessdb.on <- !lichessdb.on
             for (i in seq_along(lichessdb.txt)) {
                .drawbutton(lichessdb.xpos[i], lichessdb.ypos, text=lichessdb.txt[i], len=max(nchar(lichessdb.txt)), on=lichessdb.on[i], cex=cex)
+            }
+            next
+         }
+
+         hit <- sapply(usecache.box, function(coords) xy[1] >= coords[1] & xy[2] >= coords[2] & xy[1] <= coords[3] & xy[2] <= coords[4])
+         if (any(hit)) {
+            i <- which(hit)
+            if (usecache.on[i])
+               next
+            usecache.on <- !usecache.on
+            for (i in seq_along(usecache.txt)) {
+               .drawbutton(usecache.xpos[i], usecache.ypos, text=usecache.txt[i], len=max(nchar(usecache.txt)), on=usecache.on[i], cex=cex)
             }
             next
          }
@@ -342,9 +365,10 @@
    speeds    <- paste0(speeds.opts[speeds.on],   collapse=",")
    ratings   <- paste0(ratings.opts[ratings.on], collapse=",")
    lichessdb <- lichessdb.opts[lichessdb.on]
+   usecache  <- usecache.on[1]
    invertbar <- invertbar.on[2]
 
-   out <- list(speeds=speeds, ratings=ratings, lichessdb=lichessdb, barlen=barlen, invertbar=invertbar, token=token)
+   out <- list(speeds=speeds, ratings=ratings, lichessdb=lichessdb, usecache=usecache, barlen=barlen, invertbar=invertbar, token=token)
 
    #.erase(1, 1, 9, 9)
 
