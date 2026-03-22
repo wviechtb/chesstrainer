@@ -122,6 +122,12 @@
                          paste0("Short algebraic notation: ", ifelse(arg, "on", "off"))
    ))}
 
+   if (x == "pieces") {
+      return(switch(lang,
+                    de = paste0("Figurensymbole: ", ifelse(arg == 1, "\U0000265A\U0000265B\U0000265C\U0000265D\U0000265E", ifelse(arg == 2, "KQRBN", "KDTLS"))),
+                         paste0("Piece symbols: ",  ifelse(arg == 1, "\U0000265A\U0000265B\U0000265C\U0000265D\U0000265E", "KQRBN"))
+   ))}
+
    if (x == "showtransp") {
       return(switch(lang,
                     de = paste0("Zugumstellungen anzeigen: ", ifelse(arg, "an", "aus")),
@@ -623,8 +629,8 @@
 
    if (x == "miscsetexpl") {
       return(switch(lang,
-                    de = c("Punktemultiplikator beim fehlerfreien Abschlie\U000000DFen einer Sequenz", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Anzahl der Animationsschritte f\U000000FCr die Bewertungsleiste", "Zeit pro Zug im zeitgesteuerten Modus (Sekunden)", "Leerlaufzeit (Sekunden)", "Mindestdauer der Sitzung (Sekunden)", "Pausenanpassung (Sekunden)"),
-                         c("Score multiplier when completing a sequences without any mistakes", "Score penalty for wrong moves", "Score penalty per hint", "Number of animation steps for the evaluation bar", "Time per move in timed mode (seconds)", "Idle time (seconds)", "Minimum session time (seconds)", "Pause adjustment (seconds)")
+                    de = c("Punktemultiplikator beim fehlerfreien Abschlie\U000000DFen einer Sequenz", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Anzahl der Animationsschritte f\U000000FCr die Bewertungsleiste", "Anzahl der anzuzeigenden n\U000000E4chsten Z\U000000FCge nach Suchen", "Zeit pro Zug im zeitgesteuerten Modus (Sekunden)", "Leerlaufzeit (Sekunden)", "Mindestdauer der Sitzung (Sekunden)", "Pausenanpassung (Sekunden)"),
+                         c("Score multiplier when completing a sequences without any mistakes", "Score penalty for wrong moves", "Score penalty per hint", "Number of animation steps for the evaluation bar", "Number of next moves to show after searches", "Time per move in timed mode (seconds)", "Idle time (seconds)", "Minimum session time (seconds)", "Pause adjustment (seconds)")
    ))}
 
    if (x == "cexwhich") {
@@ -1001,8 +1007,8 @@
 
    if (x == "explsettings") {
       return(switch(lang,
-                    de = c("Sprache", "Spielername", "Modus", "Aktuelles Sequenzverzeichnis", "Selektionsmodus f\U000000FCr Sequenzen", "Zen Modus", "Zeitgesteuerter Modus", "Zeit pro Zug im zeitgesteuerten Modus (Sekunden)", "Exponentenwert", "Multiplikator f\U000000FCr abgeschlossene Sequenzen", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Bewertungsleiste (Hinzuf\U000000FCgen/Test/Spielen/Analyse)", "Animationsschritte f\U000000FCr die Bewertungsleiste", "Koordinaten anzeigen", "Zugumstellungen anzeigen", "Materialunterschied anzeigen", "Kurze algebraische Notation", "Warten zwischen Sequenzen", "Verz\U000000F6gerung zwischen den Z\U000000FCgen (Sekunden)", "Leerlaufzeit (Sekunden)", "Mindestdauer der Sitzung (Sekunden)", "Pausenanpassung (Sekunden)", "Randbreite (unten/links/oben/rechts)", "Randbreite f\U000000FCr Inline-Diagramme", "Linienbreite", "Lautst\U000000E4rke (%)", "Fortschrittsdiagramm nach Sequenzen anzeigen", "Sequenzen nach Fehler wiederholen", "Zielwert f\U000000FCr Punkte", "Schwierigkeitsberechnung (Methode)", "Schwierigkeitsberechnung (Anzahl der letzten Werte)", "Schwierigkeitsberechnung (Mindestanzahl der Werte)", "Stockfish Pfad", "Berechnungstiefe (schnell)", "Berechnungstiefe (tief)", "Berechnungstiefe (spielen)", "Spielmodus-St\U000000E4rke-Limit", "Anzahl der besten Zugvarianten (schnell)", "Anzahl der besten Zugvarianten (tief)", "Anzahl der Threads f\U000000FCr Stockfish", "Hashgr\U000000F6\U000000DFe f\U000000FCr Stockfish", "Hinweistiefe", "Kontinuierliche Analyse"),
-                         c("Language", "Player name", "Mode", "Current sequence directory", "Selection mode for sequences", "Zen mode", "Timed mode", "Time per move in timed mode (seconds)", "Exponent value", "Multiplier for completed sequences", "Score penalty for wrong moves", "Score penalty per hint", "Evaluation bar (add/test/play/analysis)", "Animation steps for the evaluation bar", "Show coordinates", "Show move transpositions", "Show material difference", "Short algebraic notation", "Wait between sequences", "Delay between moves (seconds)", "Idle time (seconds)", "Minimum session duration (seconds)", "Pause adjustment (seconds)", "Margin width (bottom/left/top/right)", "Margin width for inline graphs", "Line width", "Sound volume (%)", "Show progress graph after sequences", "Repeat sequences after mistake", "Target value for scores", "Difficulty calculation (method)", "Difficulty calculation (number of recent values)", "Difficulty calculation (minimum number of values)", "Stockfish path", "Calculation depth (fast)", "Calculation depth (deep)", "Calculation depth (play)", "Play mode strength limit", "Number of principal variations (fast)", "Number of principal variations (deep)", "Number of threads for Stockfish", "Hash size for Stockfish", "Hint depth", "Continuous analysis")
+                    de = c("Sprache", "Spielername", "Modus", "Aktuelles Sequenzverzeichnis", "Selektionsmodus f\U000000FCr Sequenzen", "Zen Modus", "Zeitgesteuerter Modus", "Zeit pro Zug im zeitgesteuerten Modus (Sekunden)", "Exponentenwert", "Multiplikator f\U000000FCr abgeschlossene Sequenzen", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Bewertungsleiste (Hinzuf\U000000FCgen/Test/Spielen/Analyse)", "Animationsschritte f\U000000FCr die Bewertungsleiste", "Anzahl der anzuzeigenden n\U000000E4chsten Z\U000000FCge nach Suchen", "Koordinaten anzeigen", "Zugumstellungen anzeigen", "Materialunterschied anzeigen", "Kurze algebraische Notation", "Figurensymbole", "Warten zwischen Sequenzen", "Verz\U000000F6gerung zwischen den Z\U000000FCgen (Sekunden)", "Leerlaufzeit (Sekunden)", "Mindestdauer der Sitzung (Sekunden)", "Pausenanpassung (Sekunden)", "Randbreite (unten/links/oben/rechts)", "Randbreite f\U000000FCr Inline-Diagramme", "Linienbreite", "Lautst\U000000E4rke (%)", "Fortschrittsdiagramm nach Sequenzen anzeigen", "Sequenzen nach Fehler wiederholen", "Zielwert f\U000000FCr Punkte", "Schwierigkeitsberechnung (Methode)", "Schwierigkeitsberechnung (Anzahl der letzten Werte)", "Schwierigkeitsberechnung (Mindestanzahl der Werte)", "Stockfish Pfad", "Berechnungstiefe (schnell)", "Berechnungstiefe (tief)", "Berechnungstiefe (spielen)", "Spielmodus-St\U000000E4rke-Limit", "Anzahl der besten Zugvarianten (schnell)", "Anzahl der besten Zugvarianten (tief)", "Anzahl der Threads f\U000000FCr Stockfish", "Hashgr\U000000F6\U000000DFe f\U000000FCr Stockfish", "Hinweistiefe", "Kontinuierliche Analyse"),
+                         c("Language", "Player name", "Mode", "Current sequence directory", "Selection mode for sequences", "Zen mode", "Timed mode", "Time per move in timed mode (seconds)", "Exponent value", "Multiplier for completed sequences", "Score penalty for wrong moves", "Score penalty per hint", "Evaluation bar (add/test/play/analysis)", "Animation steps for the evaluation bar", "Number of next moves to show after searches", "Show coordinates", "Show move transpositions", "Show material difference", "Short algebraic notation", "Piece symbols", "Wait between sequences", "Delay between moves (seconds)", "Idle time (seconds)", "Minimum session duration (seconds)", "Pause adjustment (seconds)", "Margin width (bottom/left/top/right)", "Margin width for inline graphs", "Line width", "Sound volume (%)", "Show progress graph after sequences", "Repeat sequences after mistake", "Target value for scores", "Difficulty calculation (method)", "Difficulty calculation (number of recent values)", "Difficulty calculation (minimum number of values)", "Stockfish path", "Calculation depth (fast)", "Calculation depth (deep)", "Calculation depth (play)", "Play mode strength limit", "Number of principal variations (fast)", "Number of principal variations (deep)", "Number of threads for Stockfish", "Hash size for Stockfish", "Hint depth", "Continuous analysis")
    ))}
 
    if (x == "comment") {
@@ -1135,12 +1141,6 @@
       return(switch(lang,
                     de = "Alle Z\U000000FCge der Sequenz werden automatisch angezeigt.\nEs muss mindestens einen Zug geben, der gespielt werden muss.",
                          "All moves in the sequence are automatically shown.\nThere must be at least one move that has to be played."
-   ))}
-
-   if (x == "lastmoveplayer") {
-      return(switch(lang,
-                    de = "Sequenzen m\U000000FCssen mit einem Zug des Spielers enden.",
-                         "Sequences must end with a move by the player."
    ))}
 
    if (x == "notatend") {
@@ -1675,6 +1675,24 @@
       return(switch(lang,
                     de = paste0("Verzeichnis, in das Stockfish installiert wurde: ", arg, "\n"),
                          paste0("Directory into which Stockfish was installed: ", arg, "\n")
+   ))}
+
+   if (x == "scheme_brown") {
+      return(switch(lang,
+                    de = "Braune Farbpalette ausw\U000000E4hlen",
+                         "Select brown color scheme"
+   ))}
+
+   if (x == "scheme_green") {
+      return(switch(lang,
+                    de = "Gr\U000000FCne Farbpalette ausw\U000000E4hlen",
+                         "Select green color scheme"
+   ))}
+
+   if (x == "scheme_blue") {
+      return(switch(lang,
+                    de = "Blaue Farbpalette ausw\U000000E4hlen",
+                         "Select blue color scheme"
    ))}
 
 }

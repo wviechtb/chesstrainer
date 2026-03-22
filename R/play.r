@@ -23,8 +23,8 @@ play <- function(lang="en", ...) {
    ddd <- list(...)
 
    defaults <- list(player="", seqdir="", seqdirpos=1, mode="add", selmode="score_random", timed=FALSE, timepermove=5,
-                    expval=2, target=1, multiplier=0.8, adjustwrong=40, adjusthint=20, eval=TRUE, evalsteps=5,
-                    coords=TRUE, showtransp=TRUE, matdiff=TRUE, san=TRUE, wait=TRUE, delay=0.5, idletime=120, mintime=60, sleepadj=0, lwd=2, volume=50,
+                    expval=2, target=0, multiplier=0.8, adjustwrong=40, adjusthint=20, eval=TRUE, evalsteps=5, movestoshow=5,
+                    coords=TRUE, showtransp=TRUE, matdiff=TRUE, san=TRUE, pieces=1, wait=TRUE, delay=0.5, idletime=120, mintime=60, sleepadj=0, lwd=2, volume=50,
                     showgraph=FALSE, repmistake=FALSE, zenmode=FALSE,
                     cex.top=1.4, cex.bot=0.7, cex.eval=0.5, cex.coords=0.85, cex.matdiff=1.1, cex.plots=1.0, cex.glyphs=1.6,
                     sfpath="", depth1=12, depth2=20, depth3=8, sflim=NA, multipv1=1, multipv2=1, threads=1, hash=256, hintdepth=10,
@@ -54,7 +54,7 @@ play <- function(lang="en", ...) {
    timepermove[timepermove < 1] <- 1
    expval[expval < 0] <- 0
    target <- round(target)
-   target[target < 1] <- 1
+   target[target < 0] <- 0
    target[target > 100] <- 100
    multiplier[multiplier < 0] <- 0
    multiplier[multiplier > 1] <- 1
@@ -64,6 +64,11 @@ play <- function(lang="en", ...) {
       eval <- c(add=eval, test=eval, play=eval, analysis=eval)
    evalsteps[evalsteps < 2] <- 2
    evalsteps <- round(evalsteps)
+   movestoshow[movestoshow < 0] <- 0
+   movestoshow <- round(movestoshow)
+   pieces[pieces < 1] <- 1
+   pieces[pieces > 3] <- 3
+   pieces <- round(pieces)
    delay[delay < 0] <- 0
    idletime[idletime < 1] <- 1
    mintime[mintime < 1] <- 1
@@ -131,8 +136,8 @@ play <- function(lang="en", ...) {
       if (!success)
          stop(.text("dircreateerror"), call.=FALSE)
       settings <- list(lang=lang, player=player, seqdir=seqdir, seqdirpos=seqdirpos, mode=mode, selmode=selmode, timed=timed, timepermove=timepermove,
-                       expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, eval=eval, evalsteps=evalsteps,
-                       coords=coords, showtransp=showtransp, matdiff=matdiff, san=san, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, lwd=lwd, volume=volume,
+                       expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, eval=eval, evalsteps=evalsteps, movestoshow=movestoshow,
+                       coords=coords, showtransp=showtransp, matdiff=matdiff, san=san, pieces=pieces, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, lwd=lwd, volume=volume,
                        showgraph=showgraph, repmistake=repmistake, zenmode=zenmode,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth,
@@ -163,8 +168,8 @@ play <- function(lang="en", ...) {
       }
       sfpath <- suppressWarnings(normalizePath(sfpath))
       settings <- list(lang=lang, player=player, seqdir=seqdir, seqdirpos=seqdirpos, mode=mode, selmode=selmode, timed=timed, timepermove=timepermove,
-                       expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, eval=eval, evalsteps=evalsteps,
-                       coords=coords, showtransp=showtransp, matdiff=matdiff, san=san, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, lwd=lwd, volume=volume,
+                       expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, eval=eval, evalsteps=evalsteps, movestoshow=movestoshow,
+                       coords=coords, showtransp=showtransp, matdiff=matdiff, san=san, pieces=pieces, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, lwd=lwd, volume=volume,
                        showgraph=showgraph, repmistake=repmistake, zenmode=zenmode,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth,
@@ -212,6 +217,7 @@ play <- function(lang="en", ...) {
    assign("coords", coords, envir=.chesstrainer)
    assign("matdiff", matdiff, envir=.chesstrainer)
    assign("san", san, envir=.chesstrainer)
+   assign("pieces", pieces, envir=.chesstrainer)
    assign("timed", timed, envir=.chesstrainer)
    assign("zenmode", zenmode, envir=.chesstrainer)
    assign("verbose", verbose, envir=.chesstrainer)
@@ -552,11 +558,11 @@ play <- function(lang="en", ...) {
 
    # define keys
 
-   keys <- c("q", "ctrl-Q", "\033", "ctrl-[", " ", "m", "d", "\\", "\U000000E4", "n", "N", "B", "p", "ctrl-R",
+   keys <- c("q", "ctrl-Q", "\033", "ctrl-[", " ", "m", "d", "\\", "\U000000E4", "n", "N", "B", "p", "P", "ctrl-R",
              "g", "h", "H", "y", "Y", "Left", "Right", "Up", "Down", "t", "T", "0", "1", "2", "3", "4", "5", "9",
              "r", "o", "u", "U", "ctrl-U", "M", "j", "%",
              "a", "A", "f", "z", "Z", "c", "!", "@", "\"", "e", "E", "s", "b", "K", "C", "S",
-             "^", "6", "R", "G", "W", "-", "=", "_", "+", "[", "{", "}", "(", ")", "i", "I", "x", "v", "V", "ctrl-V",
+             "^", "6", "R", "G", "W", "-", "=", "_", "+", "[", "]", "{", "}", "(", ")", "i", "I", "x", "v", "V", "ctrl-V",
              "l", "L", "<", ">", "ctrl-F", "ctrl-C", "ctrl-D", "/", ",", ".", "|", "*", "8", "?", "'", ";", ":",
              "F1", "F2", "F3", "F5", "F6", "F7", "F8", "F9", "F10", "ctrl-S", "F11", "ctrl-I", "F12", "ctrl-H", "ctrl-E")
 
@@ -634,6 +640,10 @@ play <- function(lang="en", ...) {
       files.all <- list.files(seqdir[seqdirpos], pattern=".rds$")
       dat.all <- lapply(file.path(seqdir[seqdirpos], files.all), readRDS)
 
+      # run integrity check on sequences (check that sub$moves has all columns and add SAN column to any sequences that are missing this)
+
+      .checkseq(dat.all, seqdir[seqdirpos], files.all)
+
       # copy of dat.all with short FENs
 
       dat.all.short <- lapply(dat.all, function(x) list(moves    = x$moves[1:4],
@@ -641,6 +651,7 @@ play <- function(lang="en", ...) {
                                                         fen      = x$moves$fen,
                                                         fenshort = if (nrow(x$moves) == 0L) character(0) else sapply(strsplit(x$moves$fen, " ", fixed=TRUE), function(x) paste0(x[1:3], collapse=" ")),
                                                         move     = x$moves$move,
+                                                        san      = x$moves$san,
                                                         pos      = x$pos))
 
       k.all <- length(files.all)
@@ -711,7 +722,7 @@ play <- function(lang="en", ...) {
       difficulty.selected <- unlist(difficulty.selected)
       length.selected <- sapply(dat, function(x) sum(!x$moves$show))
       moves.selected <- sapply(dat, function(x) paste0(x$moves$move, collapse=", "))
-      moves.selected <- gsub("[NBRKQ+=]", "", moves.selected)
+      moves.selected <- gsub("[NBRKQ+#=]", "", moves.selected)
       moves.selected <- gsub("x", "-", moves.selected)
 
       if (all(scores.selected == 0)) # in case all selected sequences have a score of 0
@@ -818,7 +829,7 @@ play <- function(lang="en", ...) {
 
          # set up the data frame for a new sequence
 
-         sub <- list(flip = flip, moves = data.frame(x1=numeric(), y1=numeric(), x2=numeric(), y2=numeric(), show=logical(), move=character(),
+         sub <- list(flip = flip, moves = data.frame(x1=numeric(), y1=numeric(), x2=numeric(), y2=numeric(), show=logical(), move=character(), san=character(),
                                                      eval=numeric(), comment=character(), circles=character(), arrows=character(), glyph=character(), fen=character()))
 
          if (mode=="play" && contliquery && !is.null(savpos)) {
@@ -882,7 +893,7 @@ play <- function(lang="en", ...) {
          if (is.null(sub$moves$glyph))
             sub$moves$glyph <- ""
 
-         sub$moves <- sub$moves[c("x1", "y1", "x2", "y2", "show", "move", "eval", "comment", "circles", "arrows", "glyph", "fen")]
+         sub$moves <- sub$moves[c("x1", "y1", "x2", "y2", "show", "move", "san", "eval", "comment", "circles", "arrows", "glyph", "fen")]
 
          if (!is.null(sub$pos)) {
 
@@ -903,7 +914,7 @@ play <- function(lang="en", ...) {
 
             # calculate starteval (in case this is missing) or get it
 
-            if (is.null(attr(pos, "starteval"))) {
+            if (is.null(attr(pos,"starteval"))) {
                fen <- .genfen(pos, flip, sidetoplay, sidetoplay, i)
                res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
                evalval  <- res.sf$eval
@@ -996,7 +1007,6 @@ play <- function(lang="en", ...) {
                   .waitforclick()
                .rmannot(pos, circles=circles, arrows=arrows, glyph=glyph, flip=flip)
                pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE)
-               sub$moves$move[i] <- attr(pos,"move")
                .draweval(sub$moves$eval[i], sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                i <- i + 1
                sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
@@ -1088,8 +1098,10 @@ play <- function(lang="en", ...) {
                      next
                   }
 
-                  tmp <- .parsemove(bestmove[[1]][1], pos=pos, flip=flip, evalval=NA, i=i, sidetoplay=sidetoplay, rename=FALSE, returnline=FALSE, hintdepth=1)
-                  sub$moves <- rbind(sub$moves, data.frame(x1=tmp$x1, y1=tmp$y1, x2=tmp$x2, y2=tmp$y2, show=TRUE, move=tmp$txt, eval=NA_real_, comment="", circles="", arrows="", glyph="", fen=""))
+                  tmp <- .parsemove(bestmove[[1]][1], pos=pos, flip=flip, evalval=NA, i=i, sidetoplay=sidetoplay, rename=FALSE, returnline=0, hintdepth=1, san=FALSE)
+                  moveuci <- .lan2uci(tmp$txt, sidetoplay=sidetoplay)
+                  movesan <- .parsemove(moveuci, pos=pos, flip=flip, evalval=NA, i=i, sidetoplay=sidetoplay, rename=FALSE, returnline=2, hintdepth=1, san=TRUE)
+                  sub$moves <- rbind(sub$moves, data.frame(x1=tmp$x1, y1=tmp$y1, x2=tmp$x2, y2=tmp$y2, show=TRUE, move=tmp$txt, san=movesan, eval=NA_real_, comment="", circles="", arrows="", glyph="", fen=""))
                   pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE)
 
                   i <- i + 1
@@ -1117,6 +1129,11 @@ play <- function(lang="en", ...) {
                   .draweval(sub$moves$eval[i-1], sub$moves$eval[i-2], i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                   sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
                   opening <- .findopening(sub$moves[seq_len(i-1),1:4], flip=flip, opening=opening, openings=openings, mode=mode, posnull=is.null(sub$pos))
+
+                  if (identical(matetype, "mate")) {
+                     sub$moves$move[i-1] <- sub("+", "#", sub$moves$move[i-1], fixed=TRUE)
+                     sub$moves$san[i-1] <- sub("+", "#", sub$moves$san[i-1], fixed=TRUE)
+                  }
 
                   if (!identical(matetype, "none")) {
                      if (matetype == "stalemate")
@@ -1569,7 +1586,7 @@ play <- function(lang="en", ...) {
                   pos <- start.pos
                } else {
                   pos <- sub$pos
-                  starteval <- attr(pos, "starteval")
+                  starteval <- attr(pos,"starteval")
                }
                neweval <- starteval
                sidetoplay <- sidetoplaystart
@@ -1581,7 +1598,6 @@ play <- function(lang="en", ...) {
                      # if there is such a move, go back one more move
                      for (i in seq_len(min(firstmove)-1)) {
                         pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE, draw=FALSE)
-                        sub$moves$move[i] <- attr(pos,"move")
                         sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                         opening <- .findopening(sub$moves[seq_len(i),1:4], flip=flip, opening=opening, openings=openings, mode=mode, posnull=is.null(sub$pos), draw=FALSE)
                      }
@@ -1599,7 +1615,7 @@ play <- function(lang="en", ...) {
                   texttop <- .texttop(sub$moves$comment[i])
                   circles <- .parseannot(sub$moves$circles[i], cols=2)
                   arrows  <- .parseannot(sub$moves$arrows[i], cols=4)
-                  glyph <- sub$moves$glyph[i-1]
+                  glyph   <- sub$moves$glyph[i-1]
                   .drawannot(circles=circles, arrows=arrows, glyph=glyph)
                } else {
                   texttop <- .texttop("")
@@ -1669,7 +1685,7 @@ play <- function(lang="en", ...) {
                   pos <- start.pos
                } else {
                   pos <- sub$pos
-                  starteval <- attr(pos, "starteval")
+                  starteval <- attr(pos,"starteval")
                }
                neweval <- starteval
                sidetoplay <- sidetoplaystart
@@ -1688,7 +1704,6 @@ play <- function(lang="en", ...) {
                   neweval <- sub$moves$eval[i-1]
                   for (i in seq_len(i-1)) {
                      pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE, draw=FALSE)
-                     sub$moves$move[i] <- attr(pos,"move")
                      sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                      opening <- .findopening(sub$moves[seq_len(i),1:4], flip=flip, opening=opening, openings=openings, mode=mode, posnull=is.null(sub$pos), draw=FALSE)
                   }
@@ -1766,7 +1781,9 @@ play <- function(lang="en", ...) {
                      glyph   <- ""
                      evalvals <- NULL
                   }
-                  tmp <- .parsemove(bestmove[[1]][1], pos=pos, flip=flip, evalval=NA, i=i, sidetoplay=sidetoplay, rename=FALSE, returnline=FALSE, hintdepth=1)
+                  tmp <- .parsemove(bestmove[[1]][1], pos=pos, flip=flip, evalval=NA, i=i, sidetoplay=sidetoplay, rename=FALSE, returnline=0, hintdepth=1, san=FALSE)
+                  moveuci <- .lan2uci(tmp$txt, sidetoplay=sidetoplay)
+                  movesan <- .parsemove(moveuci, pos=pos, flip=flip, evalval=NA, i=i, sidetoplay=sidetoplay, rename=FALSE, returnline=2, hintdepth=1, san=TRUE)
                   pos <- .updateboard(pos, move=data.frame(x1=tmp$x1, y1=tmp$y1, x2=tmp$x2, y2=tmp$y2, show=TRUE, move=tmp$txt), flip=flip, autoprom=TRUE)
                   texttop <- .texttop("")
                   i <- i + 1
@@ -1807,10 +1824,14 @@ play <- function(lang="en", ...) {
                      }
                   }
                   sub$moves <- sub$moves[seq_len(i-2),]
-                  sub$moves <- rbind(sub$moves, data.frame(x1=tmp$x1, y1=tmp$y1, x2=tmp$x2, y2=tmp$y2, show=showval, move=attr(pos,"move"), eval=evalval[1], comment="", circles=circlesvar, arrows=arrowsvar, glyph="", fen=fen))
+                  sub$moves <- rbind(sub$moves, data.frame(x1=tmp$x1, y1=tmp$y1, x2=tmp$x2, y2=tmp$y2, show=showval, move=tmp$txt, san=movesan, eval=evalval[1], comment="", circles=circlesvar, arrows=arrowsvar, glyph="", fen=fen))
                   comment <- ""
                   sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
                   opening <- .findopening(sub$moves[seq_len(i-1),1:4], flip=flip, opening=opening, openings=openings, mode=mode, posnull=is.null(sub$pos))
+                  if (identical(matetype, "mate")) {
+                     sub$moves$move[i-1] <- sub("+", "#", sub$moves$move[i-1], fixed=TRUE)
+                     sub$moves$san[i-1] <- sub("+", "#", sub$moves$san[i-1], fixed=TRUE)
+                  }
                   if (!identical(matetype, "none")) {
                      if (matetype == "stalemate")
                         evalval <- 0
@@ -1845,7 +1866,6 @@ play <- function(lang="en", ...) {
                glyph   <- ""
                evalvals <- NULL
                pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE)
-               sub$moves$move[i] <- attr(pos,"move")
                .draweval(sub$moves$eval[i], sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                if (mode == "test" && timed) {
@@ -1923,13 +1943,12 @@ play <- function(lang="en", ...) {
                   pos <- start.pos
                } else {
                   pos <- sub$pos
-                  starteval <- attr(pos, "starteval")
+                  starteval <- attr(pos,"starteval")
                }
                sidetoplay <- sidetoplaystart
                i <- 1
                while (i <= movnumber) {
                   pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE, draw=FALSE)
-                  sub$moves$move[i] <- attr(pos,"move")
                   sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                   i <- i + 1
                   opening <- .findopening(sub$moves[seq_len(i-1),1:4], flip=flip, opening=opening, openings=openings, mode=mode, posnull=is.null(sub$pos), draw=FALSE)
@@ -2014,13 +2033,12 @@ play <- function(lang="en", ...) {
                   pos <- start.pos
                } else {
                   pos <- sub$pos
-                  starteval <- attr(pos, "starteval")
+                  starteval <- attr(pos,"starteval")
                }
                sidetoplay <- sidetoplaystart
                i <- 1
                while (i <= nrow(sub$moves)) {
                   pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE, draw=FALSE)
-                  sub$moves$move[i] <- attr(pos,"move")
                   sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                   i <- i + 1
                   opening <- .findopening(sub$moves[seq_len(i-1),1:4], flip=flip, opening=opening, openings=openings, mode=mode, posnull=is.null(sub$pos), draw=FALSE)
@@ -2107,7 +2125,6 @@ play <- function(lang="en", ...) {
 
                      for (i in 1:nrow(sub$moves)) {
                         pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE)
-                        sub$moves$move[i] <- attr(pos,"move")
                         .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
                         sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                         sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
@@ -2404,7 +2421,7 @@ play <- function(lang="en", ...) {
                      sidetoplay <- "w"
                   } else {
                      pos <- sub$pos
-                     starteval <- attr(pos, "starteval")
+                     starteval <- attr(pos,"starteval")
                      if (flip) {
                         piece <- pos[9-sub$moves[1,1], 9-sub$moves[1,2]]
                      } else {
@@ -2431,7 +2448,6 @@ play <- function(lang="en", ...) {
                   if (!k1A) {
                      for (i in 1:nrow(sub$moves)) {
                         pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE)
-                        sub$moves$move[i] <- attr(pos,"move")
                         if (identical(sub$moves$comment[i], "") && !identical(sub$moves$comment[i-1], "")) {
                            texttop <- .texttop(sub$moves$comment[i-1])
                         } else {
@@ -2570,15 +2586,6 @@ play <- function(lang="en", ...) {
 
             if (identical(click, "e")) {
                eval(expr=switch1)
-               #tmp <- sub
-               #tmp$moves$fen <- NULL
-               #tmp$moves$circles <- NULL
-               #tmp$moves$arrows <- NULL
-               #tmp$moves$glyphs <- NULL
-               #tmp$moves$comments <- NULL
-               #print(tmp)
-               #eval(expr=switch2)
-               #next
                sub <- .editcomments(sub, seqdir[seqdirpos], seqname, mode) # note: directly saves after edit in test mode
                eval(expr=switch2)
                texttop <- sub$moves$comment[i-1]
@@ -2591,12 +2598,9 @@ play <- function(lang="en", ...) {
             if (identical(click, "E")) {
                sub$moves <- edit(sub$moves)
                sub$moves$comment[is.na(sub$moves$comment)] <- ""
-               if (!is.null(sub$moves$circles))
-                  sub$moves$circles[is.na(sub$moves$circles)] <- ""
-               if (!is.null(sub$moves$arrows))
-                  sub$moves$arrows[is.na(sub$moves$arrows)] <- ""
-               if (!is.null(sub$moves$glyph))
-                  sub$moves$glyph[is.na(sub$moves$glyph)] <- ""
+               sub$moves$circles[is.na(sub$moves$circles)] <- ""
+               sub$moves$arrows[is.na(sub$moves$arrows)] <- ""
+               sub$moves$glyph[is.na(sub$moves$glyph)] <- ""
                if (mode == "test") # note: save after edit in test mode
                   saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
                next
@@ -2605,11 +2609,6 @@ play <- function(lang="en", ...) {
             # s to save the sequence (in add mode)
 
             if (mode == "add" && identical(click, "s")) {
-               # no longer necessary that a sequence ends with a move of the player
-               #if ((flip && sidetoplay == "b") || (!flip && sidetoplay == "w")) {
-               #   .texttop(.text("lastmoveplayer"))
-               #   next
-               #}
                if (all(sub$moves$show)) {
                   .texttop(.text("allmovesshown"))
                   next
@@ -2841,6 +2840,25 @@ play <- function(lang="en", ...) {
                next
             }
 
+            # P to toggle piece symbols
+
+            if (identical(click, "P")) {
+               pieces <- pieces + 1
+               if (lang=="en") {
+                  if (pieces > 2)
+                     pieces <- 1
+               } else {
+                  if (pieces > 3)
+                     pieces <- 1
+               }
+               assign("pieces", pieces, envir=.chesstrainer)
+               .texttop(.text("pieces", pieces), sleep=1.25)
+               .texttop(texttop)
+               settings$pieces <- pieces
+               saveRDS(settings, file=file.path(configdir, "settings.rds"))
+               next
+            }
+
             # W to switch wait on/off
 
             if (identical(click, "W")) {
@@ -2987,7 +3005,7 @@ play <- function(lang="en", ...) {
                next
             }
 
-            # K to toggle the showing material difference on/off
+            # K to toggle show material difference on/off
 
             if (identical(click, "K")) {
                matdiff <- !matdiff
@@ -3231,7 +3249,11 @@ play <- function(lang="en", ...) {
                   seqident <- lapply(dat.all.short, function(x) {
                      if (any(searchterm == x$fenshort) && identical(flip, x$flip)) {
                         pos <- min(which(searchterm == x$fenshort))
-                        nextmoves <- x$move[pos+c(1:5)]
+                        if (san) {
+                           nextmoves <- x$san[pos+c(1:max(1,movestoshow))]
+                        } else {
+                           nextmoves <- x$move[pos+c(1:max(1,movestoshow))]
+                        }
                         nextmoves[is.na(nextmoves)] <- ""
                         return(nextmoves)
                      } else {
@@ -3243,11 +3265,16 @@ play <- function(lang="en", ...) {
                   if (any(notnull)) {
                      cat(.text("seqsmatchfen"))
                      tab <- data.frame(files.all[notnull])
-                     colnames(tab) <- .text("sequence")
-                     nextmoves <- do.call(rbind, seqident)
-                     tab <- cbind(tab, nextmoves)
+                     if (movestoshow > 0) {
+                        nextmoves <- do.call(rbind, seqident)
+                        nextmoves <- .rename(nextmoves)
+                        tab <- cbind(tab, nextmoves)
+                        colnames(tab) <- c(.text("sequence"), seq(movestoshow))
+                     } else {
+                        colnames(tab) <- .text("sequence")
+                     }
                      rownames(tab) <- which(notnull)
-                     .printdf(tab, align=c("l",rep("r",5)))
+                     .printdf(tab, align=c("l",rep("r",movestoshow)))
                      selmatches <- readline(prompt=.text("selmatches"))
                      if (identical(selmatches, "") || .confirm(selmatches)) {
                         cat(.text("selmatchesconfirm", sum(notnull)))
@@ -3473,8 +3500,12 @@ play <- function(lang="en", ...) {
                if (i == 1)
                   next
                seqident <- lapply(dat.all.short, function(x) {
-                  if (identical(sub$moves[seq_len(i-1),1:4], x$moves[seq_len(i-1),1:4]) && identical(flip, x$flip)) {
-                     nextmoves <- x$move[i+c(0:4)]
+                  if (identical(sub$moves[seq_len(i-1),1:4], x$moves[seq_len(i-1),1:4]) && identical(flip, x$flip) && identical(sub$pos, x$pos)) {
+                     if (san) {
+                        nextmoves <- x$san[i+c(0:(max(1,movestoshow)-1))]
+                     } else {
+                        nextmoves <- x$move[i+c(0:(max(1,movestoshow)-1))]
+                     }
                      nextmoves[is.na(nextmoves)] <- ""
                      return(nextmoves)
                   } else {
@@ -3487,11 +3518,16 @@ play <- function(lang="en", ...) {
                   eval(expr=switch1)
                   cat(.text("seqsmatchstart"))
                   tab <- data.frame(files.all[notnull])
-                  colnames(tab) <- .text("sequence")
-                  nextmoves <- do.call(rbind, seqident)
-                  tab <- cbind(tab, nextmoves)
+                  if (movestoshow > 0) {
+                     nextmoves <- do.call(rbind, seqident)
+                     nextmoves <- .rename(nextmoves)
+                     tab <- cbind(tab, nextmoves)
+                     colnames(tab) <- c(.text("sequence"), seq(movestoshow))
+                  } else {
+                     colnames(tab) <- .text("sequence")
+                  }
                   rownames(tab) <- which(notnull)
-                  .printdf(tab, align=c("l",rep("r",5)))
+                  .printdf(tab, align=c("l",rep("r",movestoshow)))
                   selmatches <- readline(prompt=.text("selmatches"))
                   if (identical(selmatches, "") || .confirm(selmatches)) {
                      cat(.text("selmatchesconfirm", sum(notnull)))
@@ -3506,9 +3542,9 @@ play <- function(lang="en", ...) {
                next
             }
 
-            # ' to find sequences that include the same position
+            # ' and ] to find sequences that include the same position; ] just shows them without selecting
 
-            if (identical(click, "'")) {
+            if (identical(click, "'") || identical(click, "]")) {
                if (.is.start.pos(pos))
                   next
                searchterm <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
@@ -3516,7 +3552,11 @@ play <- function(lang="en", ...) {
                seqident <- lapply(dat.all.short, function(x) {
                   if (any(searchterm == x$fenshort) && identical(flip, x$flip)) {
                      pos <- min(which(searchterm == x$fenshort))
-                     nextmoves <- x$move[pos+c(1:5)]
+                     if (san) {
+                        nextmoves <- x$san[pos+c(1:max(1,movestoshow))]
+                     } else {
+                        nextmoves <- x$move[pos+c(1:max(1,movestoshow))]
+                     }
                      nextmoves[is.na(nextmoves)] <- ""
                      return(nextmoves)
                   } else {
@@ -3529,16 +3569,23 @@ play <- function(lang="en", ...) {
                   eval(expr=switch1)
                   cat(.text("seqsinclpos"))
                   tab <- data.frame(files.all[notnull])
-                  colnames(tab) <- .text("sequence")
-                  nextmoves <- do.call(rbind, seqident)
-                  tab <- cbind(tab, nextmoves)
+                  if (movestoshow > 0) {
+                     nextmoves <- do.call(rbind, seqident)
+                     nextmoves <- .rename(nextmoves)
+                     tab <- cbind(tab, nextmoves)
+                     colnames(tab) <- c(.text("sequence"), seq(movestoshow))
+                  } else {
+                     colnames(tab) <- .text("sequence")
+                  }
                   rownames(tab) <- which(notnull)
-                  .printdf(tab, align=c("l",rep("r",5)))
-                  selmatches <- readline(prompt=.text("selmatches"))
-                  if (identical(selmatches, "") || .confirm(selmatches)) {
-                     cat(.text("selmatchesconfirm", sum(notnull)))
-                     selected <- files.all[notnull]
-                     .newround(seqno1=TRUE)
+                  .printdf(tab, align=c("l",rep("r",movestoshow)))
+                  if (identical(click, "'")) {
+                     selmatches <- readline(prompt=.text("selmatches"))
+                     if (identical(selmatches, "") || .confirm(selmatches)) {
+                        cat(.text("selmatchesconfirm", sum(notnull)))
+                        selected <- files.all[notnull]
+                        .newround(seqno1=TRUE)
+                     }
                   }
                   eval(expr=switch2)
                } else {
@@ -3558,7 +3605,11 @@ play <- function(lang="en", ...) {
                seqident <- lapply(dat.all.short, function(x) {
                   if (any(searchterm == x$fenshort) && identical(flip, x$flip)) {
                      pos <- min(which(searchterm == x$fenshort))
-                     nextmoves <- x$move[pos+1]
+                     if (san) {
+                        nextmoves <- x$san[pos+1]
+                     } else {
+                        nextmoves <- x$move[pos+1]
+                     }
                      nextmoves[is.na(nextmoves)] <- ""
                      return(nextmoves)
                   } else {
@@ -3569,6 +3620,7 @@ play <- function(lang="en", ...) {
                seqident <- seqident[notnull]
                if (any(notnull)) {
                   nextmoves <- do.call(rbind, seqident)
+                  nextmoves <- .rename(nextmoves)
                   nextmoves <- nextmoves[nextmoves!=""]
                   if (length(nextmoves) == 0L) {
                      .texttop(.text("noseqsfurthermoves"), sleep=1.5)
@@ -3741,8 +3793,10 @@ play <- function(lang="en", ...) {
 
             if (identical(click, "F3")) {
                tab <- list(lang=lang, player=player, mode=mode, seqdir=seqdir[seqdirpos], selmode=selmode, zenmode=zenmode, timed=timed, timepermove=timepermove, expval=expval,
-                           multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, eval=eval, evalsteps=evalsteps, coords=coords, showtransp=showtransp, matdiff=matdiff, san=san, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, mar=mar, mar2=mar2, lwd=lwd,
-                           volume=volume, showgraph=showgraph, repmistake=repmistake, target=target, # cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
+                           multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, eval=eval, evalsteps=evalsteps, movestoshow=movestoshow,
+                           coords=coords, showtransp=showtransp, matdiff=matdiff, san=san, pieces=pieces, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, mar=mar, mar2=mar2, lwd=lwd,
+                           volume=volume, showgraph=showgraph, repmistake=repmistake, target=target,
+                           # cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
                            difffun=difffun, difflen=difflen, diffmin=diffmin,
                            sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, contanalysis=contanalysis)
                            #speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb, token=paste0(rep("*", nchar(token), collapse=""), usecache=usecache, libar=libar)
@@ -3785,12 +3839,13 @@ play <- function(lang="en", ...) {
 
             if (identical(click, "F6")) {
                eval(expr=switch1)
-               tmp <- .miscsettings(multiplier, adjustwrong, adjusthint, evalsteps, timepermove, idletime, mintime, sleepadj)
+               tmp <- .miscsettings(multiplier, adjustwrong, adjusthint, evalsteps, movestoshow, timepermove, idletime, mintime, sleepadj)
                eval(expr=switch2)
                multiplier  <- tmp$multiplier
                adjustwrong <- tmp$adjustwrong
                adjusthint  <- tmp$adjusthint
                evalsteps   <- tmp$evalsteps
+               movestoshow <- tmp$movestoshow
                timepermove <- tmp$timepermove
                idletime    <- tmp$idletime
                mintime     <- tmp$mintime
@@ -3800,6 +3855,7 @@ play <- function(lang="en", ...) {
                settings$adjustwrong <- adjustwrong
                settings$adjusthint  <- adjusthint
                settings$evalsteps   <- evalsteps
+               settings$movestoshow <- movestoshow
                settings$timepermove <- timepermove
                settings$idletime    <- idletime
                settings$mintime     <- mintime
@@ -4198,7 +4254,10 @@ play <- function(lang="en", ...) {
 
             # if in add, play, or analysis mode, make the move
 
-            pos <- .updateboard(pos, move=data.frame(click1.x, click1.y, click2.x, click2.y, NA, NA), flip=flip, autoprom=FALSE)
+            tmp <- .updateboard(pos, move=data.frame(click1.x, click1.y, click2.x, click2.y, NA, NA), flip=flip, autoprom=FALSE)
+            moveuci <- .lan2uci(attr(tmp,"move"), sidetoplay=sidetoplay)
+            movesan <- .parsemove(moveuci, pos=pos, flip=flip, evalval=NA, i=NA, sidetoplay=sidetoplay, rename=FALSE, returnline=2, hintdepth=1, san=TRUE)
+            pos <- tmp
 
          }
 
@@ -4221,7 +4280,6 @@ play <- function(lang="en", ...) {
                      domistake <- FALSE
                      pos <- tmp
                      .draweval(sub$moves$eval[i], sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
-                     sub$moves$move[i] <- attr(pos,"move")
                   }
                }
 
@@ -4613,14 +4671,14 @@ play <- function(lang="en", ...) {
                Sys.sleep(max(1,4*delay)) # pause so that player can register whether their move was good or not
             }
 
-            if (is.null(sub$moves$circles))
-               sub$moves$circles <- ""
-            if (is.null(sub$moves$arrows))
-               sub$moves$arrows <- ""
-            if (is.null(sub$moves$glyph))
-               sub$moves$glyph <- ""
-            if (is.null(sub$moves$fen))
-               sub$moves$fen <- ""
+            #if (is.null(sub$moves$circles))
+            #   sub$moves$circles <- ""
+            #if (is.null(sub$moves$arrows))
+            #   sub$moves$arrows <- ""
+            #if (is.null(sub$moves$glyph))
+            #   sub$moves$glyph <- ""
+            #if (is.null(sub$moves$fen))
+            #   sub$moves$fen <- ""
 
             # if we are in analysis mode and make a move (i.e., we go into a new variation), then cut away the previous variation
 
@@ -4648,7 +4706,7 @@ play <- function(lang="en", ...) {
             # add the current move to sub
 
             sub$moves <- sub$moves[seq_len(i-2),]
-            sub$moves <- rbind(sub$moves, data.frame(x1=click1.x, y1=click1.y, x2=click2.x, y2=click2.y, show=showval, move=attr(pos,"move"), eval=evalval[1], comment=comment, circles=circlesvar, arrows=arrowsvar, glyph="", fen=fen))
+            sub$moves <- rbind(sub$moves, data.frame(x1=click1.x, y1=click1.y, x2=click2.x, y2=click2.y, show=showval, move=attr(pos,"move"), san=movesan, eval=evalval[1], comment=comment, circles=circlesvar, arrows=arrowsvar, glyph="", fen=fen))
             comment <- ""
             glyph <- ""
 
@@ -4656,6 +4714,13 @@ play <- function(lang="en", ...) {
 
             if (mode == "add" && showtransp)
                .findmovetransp(fen=fen, flip=flip, i=i, sub=sub, dat=dat.all.short, files=files.all, pos=sub$pos, contanalysis=contanalysis)
+
+            # use the correct symbol if it is mate
+
+            if (identical(matetype, "mate")) {
+               sub$moves$move[i-1] <- sub("+", "#", sub$moves$move[i-1], fixed=TRUE)
+               sub$moves$san[i-1] <- sub("+", "#", sub$moves$san[i-1], fixed=TRUE)
+            }
 
             # check for (stale)mate
 
@@ -4736,7 +4801,6 @@ play <- function(lang="en", ...) {
                }
                .rmannot(pos, glyph=glyph, flip=flip)
                pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE)
-               sub$moves$move[i] <- attr(pos,"move")
                .draweval(sub$moves$eval[i], sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                texttop <- .texttop(sub$moves$comment[i])
                circles <- matrix(nrow=0, ncol=2)

@@ -375,9 +375,9 @@
       rochade <- c(grepl("K", rochade), grepl("Q", rochade), grepl("k", rochade), grepl("q", rochade))
    }
 
-   attr(pos,"rochade")  <- rochade
-   attr(pos, "moves50") <- fields[5]
-   attr(pos,"move")     <- fields[6]
+   attr(pos,"rochade") <- rochade
+   attr(pos,"moves50") <- fields[5]
+   attr(pos,"move")    <- NULL
 
    if (!identical(fields[4], "-")) {
       attr(pos,"ispp") <- ifelse(fields[2] == "w", "b", "w")
@@ -411,17 +411,55 @@
    isTRUE(x != "") && !is.na(x2y2[1])
 }
 
-.parsemove <- function(move, pos, flip, evalval, i, sidetoplay, rename, returnline, hintdepth, space="") {
+.lan2uci <- function(moves, sidetoplay) {
+
+   moves <- gsub("=([QRBN])", "\\L\\1", moves, perl=TRUE)
+   moves <- gsub("[RNBQK+#=x]", "", moves)
+
+   if (any(moves %in% c("0-0", "0-0-0"))) {
+      nmoves <- length(moves)
+      moveseq <- seq_len(nmoves)
+      if (sidetoplay == "w") {
+         pos <- moveseq[!.is.even(moveseq)]
+         moves[pos] <- sub("0-0",   "e1g1", moves[pos], fixed=TRUE)
+         moves[pos] <- sub("0-0-0", "e1c1", moves[pos], fixed=TRUE)
+         pos <- moveseq[.is.even(moveseq)]
+         moves[pos] <- sub("0-0",   "e8g8", moves[pos], fixed=TRUE)
+         moves[pos] <- sub("0-0-0", "e8c8", moves[pos], fixed=TRUE)
+      } else {
+         pos <- moveseq[!.is.even(moveseq)]
+         moves[pos] <- sub("0-0",   "e8g8", moves[pos], fixed=TRUE)
+         moves[pos] <- sub("0-0-0", "e8c8", moves[pos], fixed=TRUE)
+         pos <- moveseq[.is.even(moveseq)]
+         moves[pos] <- sub("0-0",   "e1g1", moves[pos], fixed=TRUE)
+         moves[pos] <- sub("0-0-0", "e1c1", moves[pos], fixed=TRUE)
+      }
+   }
+
+   moves <- gsub("-", "", moves, fixed=TRUE)
+   return(moves)
+
+}
+
+.parsemove <- function(move, pos, flip, evalval, i, sidetoplay, rename, returnline, hintdepth, space="", san=NULL) {
 
    move <- strsplit(move, "")
-
+   nmoves.all <- length(move)
+   move <- move[lengths(move) > 0]
    nmoves <- length(move)
    nmoves <- min(nmoves, hintdepth)
 
-   if (!returnline)
+   if (returnline == 0)
       nmoves <- 1
 
-   san <- .get("san")
+   if (returnline == 2) {
+      if (nmoves == 0)
+         return("")
+      txt.moves <- rep("", nmoves.all)
+   }
+
+   if (is.null(san))
+      san <- .get("san")
 
    for (j in 1:nmoves) {
 
@@ -494,6 +532,7 @@
 
       pos.next <- .updateboard(pos, move=data.frame(x1, y1, x2, y2, NA, ifelse(promotiontxt=="", NA, promotiontxt)), flip=flip, autoprom=TRUE, draw=FALSE, x2y2=FALSE)
       ischeck <- any(attr(pos.next,"ischeck"))
+      checksym <- ifelse(ischeck, "+", "")
 
       # construct the move text in short or long algebraic notation
 
@@ -503,14 +542,14 @@
             if (piece=="P") {
                if (y1 == y2) {
                   # pawn moves vertically on the same file
-                  txt.move <- paste0(move[[j]][3], move[[j]][4], promotiontxt, ifelse(ischeck, "+", ""), collapse="")
+                  txt.move <- paste0(move[[j]][3], move[[j]][4], promotiontxt, checksym, collapse="")
                } else {
                   # pawn moves diagonally; this must be a capture (including en passant)
-                  txt.move <- paste0(move[[j]][1], "x", move[[j]][3], move[[j]][4], promotiontxt, ifelse(ischeck, "+", ""), collapse="")
+                  txt.move <- paste0(move[[j]][1], "x", move[[j]][3], move[[j]][4], promotiontxt, checksym, collapse="")
                }
             }
             if (piece=="K") {
-               txt.move <- paste0(piece, move[[j]][3], move[[j]][4], ifelse(ischeck, "+", ""), collapse="")
+               txt.move <- paste0(piece, move[[j]][3], move[[j]][4], checksym, collapse="")
             }
             startletter <- ""
             startnumber <- ""
@@ -546,7 +585,7 @@
                      startnumber <- move[[j]][2] # need to add the rank
                   }
                }
-               txt.move <- paste0(piece, startletter, startnumber, ifelse(iscapture, "x", ""), move[[j]][3], move[[j]][4], ifelse(ischeck, "+", ""), collapse="")
+               txt.move <- paste0(piece, startletter, startnumber, ifelse(iscapture, "x", ""), move[[j]][3], move[[j]][4], checksym, collapse="")
             }
             if (piece=="B") {
                dirs <- list(
@@ -587,7 +626,7 @@
                      }
                   }
                }
-               txt.move <- paste0(piece, startletter, startnumber, ifelse(iscapture, "x", ""), move[[j]][3], move[[j]][4], ifelse(ischeck, "+", ""), collapse="")
+               txt.move <- paste0(piece, startletter, startnumber, ifelse(iscapture, "x", ""), move[[j]][3], move[[j]][4], checksym, collapse="")
             }
             if (piece=="Q") {
                dirs <- list(
@@ -631,7 +670,7 @@
                      }
                   }
                }
-               txt.move <- paste0(piece, startletter, startnumber, ifelse(iscapture, "x", ""), move[[j]][3], move[[j]][4], ifelse(ischeck, "+", ""), collapse="")
+               txt.move <- paste0(piece, startletter, startnumber, ifelse(iscapture, "x", ""), move[[j]][3], move[[j]][4], checksym, collapse="")
             }
             if (piece=="N") {
                dirs <- list(
@@ -669,24 +708,19 @@
                      }
                   }
                }
-               txt.move <- paste0(piece, startletter, startnumber, ifelse(iscapture, "x", ""), move[[j]][3], move[[j]][4], ifelse(ischeck, "+", ""), collapse="")
+               txt.move <- paste0(piece, startletter, startnumber, ifelse(iscapture, "x", ""), move[[j]][3], move[[j]][4], checksym, collapse="")
             }
+         } else {
+            txt.move <- paste0(piece, move[[j]][1], move[[j]][2], ifelse(iscapture, "x", "-"), move[[j]][3], move[[j]][4], promotiontxt, checksym, collapse="")
          }
       } else {
-         # use long algebraic notation
-         txt.move <- paste0(piece, move[[j]][1], move[[j]][2], ifelse(iscapture, "x", "-"), move[[j]][3], move[[j]][4], promotiontxt, ifelse(ischeck, "+", ""), collapse="")
-         txt.move <- paste0(rochade, ifelse(ischeck, "+", ""))
+         txt.move <- paste0(rochade, checksym)
       }
 
       # change pieces to symbols
 
-      if (rename) {
-         txt.move <- sub("K", paste0("\U0000265A", space), txt.move, fixed=TRUE)
-         txt.move <- sub("Q", paste0("\U0000265B", space), txt.move, fixed=TRUE)
-         txt.move <- sub("R", paste0("\U0000265C", space), txt.move, fixed=TRUE)
-         txt.move <- sub("B", paste0("\U0000265D", space), txt.move, fixed=TRUE)
-         txt.move <- sub("N", paste0("\U0000265E", space), txt.move, fixed=TRUE)
-      }
+      if (rename)
+         txt.move <- .rename(txt.move)
 
       # remove P for pawns
 
@@ -694,7 +728,10 @@
 
       # construct text
 
-      if (returnline) {
+      if (returnline == 0)
+         txt <- txt.move
+
+      if (returnline == 1) {
 
          if (!is.null(i)) {
 
@@ -729,17 +766,23 @@
 
          pos <- pos.next
 
-      } else {
+      }
 
-         txt <- txt.move
+      if (returnline == 2) {
+
+         txt.moves[j] <- txt.move
+         pos <- pos.next
 
       }
 
    }
 
-   out <- list(txt=txt, x1=bestx1, y1=besty1, x2=bestx2, y2=besty2)
-
-   return(out)
+   if (returnline == 2) {
+      return(txt.moves)
+   } else {
+      out <- list(txt=txt, x1=bestx1, y1=besty1, x2=bestx2, y2=besty2)
+      return(out)
+   }
 
 }
 
@@ -782,28 +825,12 @@
    cat("showstartcom: ", showstartcom, "\n")
    cat("\n")
 
-   printpos <- pos
-
-   if (TRUE) {
-      printpos[printpos == ""] <- "\U00000B7"
-      printpos[printpos == "WP"] <- "\U000265F"
-      printpos[printpos == "WR"] <- "\U000265C"
-      printpos[printpos == "WN"] <- "\U000265E"
-      printpos[printpos == "WB"] <- "\U000265D"
-      printpos[printpos == "WK"] <- "\U000265A"
-      printpos[printpos == "WQ"] <- "\U000265B"
-      printpos[printpos == "BP"] <- "\U0002659"
-      printpos[printpos == "BR"] <- "\U0002656"
-      printpos[printpos == "BN"] <- "\U0002658"
-      printpos[printpos == "BB"] <- "\U0002657"
-      printpos[printpos == "BK"] <- "\U0002654"
-      printpos[printpos == "BQ"] <- "\U0002655"
-   }
+   pos <- .rename(pos, withcolor=TRUE)
 
    if (flip) {
-      print(printpos[,8:1], quote=FALSE)
+      print(pos[,8:1], quote=FALSE)
    } else {
-      print(printpos[8:1,], quote=FALSE)
+      print(pos[8:1,], quote=FALSE)
    }
 
    return()
@@ -1341,7 +1368,7 @@
          out$perc  <- .percent(out$total)
          bars      <- apply(out[2:4], 1, .percbar, len=barlen, invert=invertbar)
          out[2:4]  <- t(apply(out[2:4], 1, .percent))
-         out[1]    <- sapply(out[[1]], function(x) .parsemove(x, pos=pos, flip=flip, evalval="", i=NULL, sidetoplay=sidetoplay, rename=TRUE, space="", returnline=FALSE, hintdepth=1)$txt)
+         out[1]    <- sapply(out[[1]], function(x) .parsemove(x, pos=pos, flip=flip, evalval="", i=NULL, sidetoplay=sidetoplay, rename=TRUE, space="", returnline=0, hintdepth=1)$txt)
          out       <- out[c(1,6,5,2:4)]
          out       <- rbind(out, data.frame(move="total", perc=100, total=totals[[4]], white=percs[[1]], draw=percs[[2]], black=percs[[3]]))
          bars      <- c(bars, .percbar(totals[1:3], len=barlen, invert=invertbar))
@@ -1351,12 +1378,14 @@
          if (ncols >= 256)
             out <- out[-c(4:6)]
          txt <- capture.output(print(out, print.gap=2))
+         #sink("~/downloads/output.txt")
          for (i in 1:length(txt)) {
             cat(txt[i], "  ")
             if (i > 1)
                cat(bars[i-1])
             cat("\n\n")
          }
+         #sink()
       }
 
       if (!contliquery)
@@ -1373,8 +1402,8 @@
    x <- x / sum(x) * total
    xfloor <- floor(x)
    remainder <- total - sum(xfloor)
-   frac.part <- x - xfloor
    if (remainder > 0) {
+      frac.part <- x - xfloor
       add.to <- order(frac.part, decreasing=TRUE)[1:remainder]
       xfloor[add.to] <- xfloor[add.to] + 1
    }
@@ -1424,4 +1453,126 @@
    if (flush)
       cat(c("\033[2J","\033[0;0H"))
    return(flush)
+}
+
+.checkseq <- function(dat, seqdir, files) {
+
+   for (j in 1:length(dat)) {
+
+      sub <- dat[[j]]
+
+      dosave <- FALSE
+
+      if (ncol(sub$moves) != 13L) {
+
+         dosave <- TRUE
+
+         if (is.null(sub$moves$comment))
+            sub$moves$comment <- ""
+         if (is.null(sub$moves$circles))
+            sub$moves$circles <- ""
+         if (is.null(sub$moves$arrows))
+            sub$moves$arrows <- ""
+         if (is.null(sub$moves$glyph))
+            sub$moves$glyph <- ""
+         if (is.null(sub$moves$fen))
+            sub$moves$fen <- ""
+
+      }
+
+      if (is.null(sub$moves$san)) {
+
+         dosave <- TRUE
+
+         if (nrow(sub$moves) == 0L) {
+
+            sub$moves <- data.frame(x1=numeric(), y1=numeric(), x2=numeric(), y2=numeric(), show=logical(), move=character(), san=character(), eval=numeric(), comment=character(), circles=character(), arrows=character(), glyph=character(), fen=character())
+
+         } else {
+
+            flip <- sub$flip
+
+            # get start position
+
+            if (is.null(sub$pos)) {
+               pos <- .get("pos")
+            } else {
+               pos <- sub$pos
+            }
+
+            # determine sidetoplay based on the first piece moved
+
+            if (flip) {
+               piece <- pos[9-sub$moves[1,1], 9-sub$moves[1,2]]
+            } else {
+               piece <- pos[sub$moves[1,1], sub$moves[1,2]]
+            }
+            sidetoplay <- ifelse(startsWith(piece, "W"), "w", "b")
+
+            # transform the moves from long algebraic notation to UCI notation
+
+            tmp <- .lan2uci(sub$moves$move, sidetoplay=sidetoplay)
+
+            # transform the move from UCI notation to short algebraic notation
+
+            tmp <- .parsemove(tmp, pos=pos, flip=flip, evalval=NA, i=NA, sidetoplay=sidetoplay, rename=FALSE, returnline=2, hintdepth=nrow(sub$moves), san=TRUE)
+
+            # add the move in SAN to the sequence
+
+            sub$moves$san <- tmp
+            sub$moves <- sub$moves[c("x1","y1","x2","y2","show","move","san","eval","comment","circles","arrows","glyph","fen")]
+
+         }
+
+      }
+
+      if (dosave)
+         saveRDS(sub, file=file.path(seqdir, files[j]))
+
+   }
+
+   return()
+
+}
+
+.rename <- function(x, withcolor=FALSE) {
+
+   pieces <- .get("pieces")
+
+   if (withcolor) {
+      x[x==""]   <- "\U000000B7"
+      x[x=="WP"] <- "\U0000265F"
+      x[x=="WR"] <- "\U0000265C"
+      x[x=="WN"] <- "\U0000265E"
+      x[x=="WB"] <- "\U0000265D"
+      x[x=="WK"] <- "\U0000265A"
+      x[x=="WQ"] <- "\U0000265B"
+      x[x=="BP"] <- "\U00002659"
+      x[x=="BR"] <- "\U00002656"
+      x[x=="BN"] <- "\U00002658"
+      x[x=="BB"] <- "\U00002657"
+      x[x=="BK"] <- "\U00002654"
+      x[x=="BQ"] <- "\U00002655"
+   } else {
+      if (pieces == 1) {
+         x <- gsub("K", "\U0000265A", x, fixed=TRUE)
+         x <- gsub("Q", "\U0000265B", x, fixed=TRUE)
+         x <- gsub("R", "\U0000265C", x, fixed=TRUE)
+         x <- gsub("B", "\U0000265D", x, fixed=TRUE)
+         x <- gsub("N", "\U0000265E", x, fixed=TRUE)
+      }
+      if (pieces == 3) {
+         lang <- .get("lang")
+         if (lang == "de") {
+            x <- gsub("K", "K", x, fixed=TRUE)
+            x <- gsub("Q", "D", x, fixed=TRUE)
+            x <- gsub("R", "T", x, fixed=TRUE)
+            x <- gsub("B", "L", x, fixed=TRUE)
+            x <- gsub("N", "S", x, fixed=TRUE)
+         }
+      }
+   }
+
+   return(x)
+
 }

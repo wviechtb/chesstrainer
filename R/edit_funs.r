@@ -8,7 +8,7 @@
          cat(.text("commentstart", sub$commentstart))
          cat("\n")
       }
-      print(sub$moves[1:8])
+      print(sub$moves[5:9])
       if (!is.null(sub$commentend))
          cat(.text("commentend", sub$commentend))
       cat("\n")

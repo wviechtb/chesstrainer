@@ -10,9 +10,16 @@
    tab2 <- data.frame(x = c("cex.top", "cex.bot", "cex.eval", "cex.coords", "cex.matdiff", "cex.plots", "cex.glyphs"),
                       val = c(.get("cex.top"), .get("cex.bot"), .get("cex.eval"), .get("cex.coords"), .get("cex.matdiff"), .get("cex.plots"), .get("cex.glyphs")))
    tab2$explanation <- .text("cexsetexpl")
+   ncexs <- nrow(tab2)
 
-   tab <- rbind(tab1, tab2)
+   tab <- rbind(tab1, c("", "", ""), tab2)
+   #tab <- rbind(tab1, tab2)
    names(tab) <- c("", "", "")
+
+   tab <- rbind(tab, c("", "", ""))
+   tab <- rbind(tab, c("scheme.brown", "", .text("scheme_brown")))
+   tab <- rbind(tab, c("scheme.green", "", .text("scheme_green")))
+   tab <- rbind(tab, c("scheme.blue",  "", .text("scheme_blue")))
 
    coords <- .get("coords")
    timed <- .get("timed")
@@ -56,26 +63,40 @@
          number <- round(as.numeric(resp))
          if (number < 1 || number > nrow(tab))
             next
-         if (number >= 1 && number <= ncols) {
-            val <- readline(prompt=.text("colval", tab[number,2]))
-         } else {
-            val <- readline(prompt=.text("cexval", tab[number,2]))
-         }
-         val <- trimws(val)
-         if (identical(val, ""))
+         if (number %in% which(tab[,1] == ""))
             next
-         if (number >= 1 && number <= ncols) {
-            if (!(is.element(val, colors()) || !grepl(val, "^#(?:[0-9A-Fa-f]{6}|[0-9A-Fa-f]{2})$")))
+         if (number %in% which(startsWith(tab[,1], "col.")))
+            val <- readline(prompt=.text("colval", tab[number,2]))
+         if (number %in% which(startsWith(tab[,1], "cex.")))
+            val <- readline(prompt=.text("cexval", tab[number,2]))
+         if (number %in% which(startsWith(tab[,1], "scheme."))) {
+            if (number == which(tab[,1] == "scheme.brown"))
+               scheme <- c(col.fg="#7a6d59", col.square.l="#f0d9b5", col.square.d="#b58863", col.top="#b09d7f", col.bot="#b09d7f", col.help="#b09d7f", col.border="#63462e", col.rect="darkseagreen4")
+            if (number == which(tab[,1] == "scheme.green"))
+               scheme <- c(col.fg="#5b7a59", col.square.l="#ffffdd", col.square.d="#86a666", col.top="#aabbaa", col.bot="#aabbaa", col.help="#aabbaa", col.border="#335533", col.rect="gray40")
+            if (number == which(tab[,1] == "scheme.blue"))
+               scheme <- c(col.fg="#596e7a", col.square.l="#dee3e6", col.square.d="#8ca2ad", col.top="#7f99b0", col.bot="#7f99b0", col.help="#7f99b0", col.border="#2e5163", col.rect="gray40")
+            tab[which(tab[,1] %in% names(scheme)),2] <- unname(scheme)
+            for (j in 1:length(scheme))
+               assign(names(scheme[j]), unname(scheme[j]), envir=.chesstrainer)
+         }
+         if (number <= ncols+ncexs) {
+            val <- trimws(val)
+            if (identical(val, ""))
                next
-            assign(tab[number,1], val, envir=.chesstrainer)
-            tab[number,2] <- val
-         } else {
-            if (!grepl("^[0-9.]+$", val))
-               next
-            cex <- as.numeric(val)
-            cex[cex < 0.1] <- 0.1
-            assign(tab[number,1], cex, envir=.chesstrainer)
-            tab[number,2] <- cex
+            if (number %in% which(startsWith(tab[,1], "col."))) {
+               if (!(is.element(val, colors()) || grepl("^#(?:[0-9A-Fa-f]{6}|[0-9A-Fa-f]{2})$", val)))
+                  next
+               assign(tab[number,1], val, envir=.chesstrainer)
+               tab[number,2] <- val
+            } else {
+               if (!grepl("^[0-9.]+$", val))
+                  next
+               cex <- as.numeric(val)
+               cex[cex < 0.1] <- 0.1
+               assign(tab[number,1], cex, envir=.chesstrainer)
+               tab[number,2] <- cex
+            }
          }
          .redrawall(pos, flip, mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
          .addrect(4, 5, col=.get("col.hint"))
@@ -109,10 +130,10 @@
 
 }
 
-.miscsettings <- function(multiplier, adjustwrong, adjusthint, evalsteps, timepermove, idletime, mintime, sleepadj) {
+.miscsettings <- function(multiplier, adjustwrong, adjusthint, evalsteps, movestoshow, timepermove, idletime, mintime, sleepadj) {
 
-   tab <- data.frame(setting = c("multiplier", "adjustwrong", "adjusthint", "evalsteps", "timepermove", "idletime", "mintime", "sleepadj"),
-                     val     = c(multiplier, adjustwrong, adjusthint, evalsteps, timepermove, idletime, mintime, sleepadj))
+   tab <- data.frame(setting = c("multiplier", "adjustwrong", "adjusthint", "evalsteps", "movestoshow", "timepermove", "idletime", "mintime", "sleepadj"),
+                     val     = c(multiplier, adjustwrong, adjusthint, evalsteps, movestoshow, timepermove, idletime, mintime, sleepadj))
    tab$explanation <- .text("miscsetexpl")
    names(tab) <- c("", "", "")
 
@@ -134,18 +155,22 @@
          val <- as.numeric(val)
          if (is.na(val))
             next
-         if (setno == 1) {
+         if (setno == which(tab[[1]] == "multiplier")) {
             val[val < 0] <- 0
             val[val > 1] <- 1
          }
-         if (setno %in% c(2,3,5,8))
+         if (setno %in% which(tab[[1]] %in% c("adjustwrong","adjusthint","sleepadj")))
             val[val < 0] <- 0
-         if (setno == 4) {
+         if (setno == which(tab[[1]] == "evalsteps")) {
             val[val < 2] <- 2
             val <- round(val)
          }
-         if (setno %in% c(6,7)) {
+         if (setno %in% which(tab[[1]] %in% c("timepermove","idletime","mintime"))) {
             val[val < 1] <- 1
+            val <- round(val)
+         }
+         if (setno %in% which(tab[[1]] %in% c("movestoshow"))) {
+            val[val < 0] <- 0
             val <- round(val)
          }
          tab[setno,2] <- val
@@ -413,6 +438,15 @@
    if (lang == "de") {
       tab$eval <- gsub("TRUE", "Ja",    tab$eval, fixed=TRUE)
       tab$eval <- gsub("FALSE", "Nein", tab$eval, fixed=TRUE)
+   }
+
+   if (tab$pieces == 1)
+      tab$pieces <- "\U0000265A\U0000265B\U0000265C\U0000265D\U0000265E"
+   if (tab$pieces == 2)
+      tab$pieces <- "KQRBN"
+   if (tab$pieces == 3) {
+      if (lang == "de")
+         tab$pieces <- "KDTLS"
    }
 
    tab$mar  <- paste0(tab$mar,  collapse="/")

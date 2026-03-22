@@ -163,7 +163,7 @@
          resp <- readline(prompt=.text("enterrochade"))
          if (grepl("^K?Q?k?q?$", resp)) {
             oldfen <- curfen
-            attr(pos, "rochade") <- c(grepl("K", resp), grepl("Q", resp), grepl("k", resp), grepl("q", resp))
+            attr(pos,"rochade") <- c(grepl("K", resp), grepl("Q", resp), grepl("k", resp), grepl("q", resp))
             curfen <- .genfen(.shrinkpos(pos), flip, sidetoplay, sidetoplay, i=1)
          } else {
             cat(.text("notcorrectrochade"))
@@ -192,7 +192,7 @@
             if (norochade) {
                rochade <- c((pos[1,5] == "WK" && pos[1,8] == "WR"), (pos[1,5] == "WK" && pos[1,1] == "WR"),
                             (pos[8,5] == "BK" && pos[8,8] == "BR"), (pos[8,5] == "BK" && pos[8,1] == "BR"))
-               attr(pos, "rochade") <- rochade
+               attr(pos,"rochade") <- rochade
             }
             curfen <- .genfen(pos, flip, sidetoplay, sidetoplay, i=1)
             pos <- .expandpos(pos)
@@ -266,8 +266,8 @@
       pos <- .boardeditor.updateboard(pos, move=c(click1.x, click1.y, click2.x, click2.y), flip=flip, button=button)
 
       if (!identical(oldpos[2:9,2:9], pos[2:9,2:9])) {
-         attr(pos, "ispp") <- NULL
-         attr(pos, "y1") <- NULL
+         attr(pos,"ispp") <- NULL
+         attr(pos,"y1") <- NULL
       }
 
       curfen <- .genfen(.shrinkpos(pos), flip, sidetoplay, sidetoplay, i=1)
@@ -278,7 +278,7 @@
 
    pos <- .shrinkpos(pos)
 
-   rochade <- attr(pos, "rochade")
+   rochade <- attr(pos,"rochade")
 
    if (is.null(rochade)) {
 
@@ -302,7 +302,7 @@
 
    }
 
-   attr(pos, "rochade") <- rochade
+   attr(pos,"rochade") <- rochade
 
    ischeck <- c(.isattacked(pos, xy=c(which(pos=="WK", arr.ind=TRUE)), attackcolor="b"),
                 .isattacked(pos, xy=c(which(pos=="BK", arr.ind=TRUE)), attackcolor="w"))
@@ -325,10 +325,10 @@
    pos[1,3:8]  <- c("WK","WQ","WR","WB","WN","WP")
    pos[10,3:8] <- c("BK","BQ","BR","BB","BN","BP")
 
-   attr(pos, "moves50") <- attribs$moves50
-   attr(pos, "rochade") <- attribs$rochade
-   attr(pos, "ispp") <- attribs$ispp
-   attr(pos, "y1") <- attribs$y1
+   attr(pos,"moves50") <- attribs$moves50
+   attr(pos,"rochade") <- attribs$rochade
+   attr(pos,"ispp")    <- attribs$ispp
+   attr(pos,"y1")      <- attribs$y1
 
    return(pos)
 
@@ -342,8 +342,8 @@
 
    attr(pos,"moves50") <- attribs$moves50
    attr(pos,"rochade") <- attribs$rochade
-   attr(pos, "ispp") <- attribs$ispp
-   attr(pos, "y1") <- attribs$y1
+   attr(pos,"ispp")    <- attribs$ispp
+   attr(pos,"y1")      <- attribs$y1
 
    if (is.null(attr(pos,"moves50"))) {
       attr(pos,"moves50") <- 0

@@ -381,7 +381,7 @@
    if (flip) {
       if (x1 == 7 && x2 == 8 && piece == "BP") {
          if (autoprom) {
-            promotionpiece <- paste0("B", strsplit(sub("+" ,"", move[[6]], fixed=TRUE), "=", fixed=TRUE)[[1]][2])
+            promotionpiece <- paste0("B", strsplit(sub("[+#]" ,"", move[[6]]), "=", fixed=TRUE)[[1]][2])
          } else {
             sapply(8:5, function(x2) .drawsquare(x2, y2, flip=flip, col=col.square.be))
             mapply(.drawpiece, x=8:5, y=rep(y2,4), piece=c("BQ","BN","BR","BB"))
@@ -400,13 +400,13 @@
             }
             sapply(8:5, function(x2) .drawsquare(x2, y2, flip=flip))
             mapply(.drawpiece, x=8:5, y=rep(y2,4), piece=pos[1:4,9-y2])
-            if (!is.na(move[[6]]) && !identical(promotionpiece, paste0("B", strsplit(sub("+" ,"", move[[6]], fixed=TRUE), "=", fixed=TRUE)[[1]][2])))
+            if (!is.na(move[[6]]) && !identical(promotionpiece, paste0("B", strsplit(sub("[+#]" ,"", move[[6]]), "=", fixed=TRUE)[[1]][2])))
                return("prommistake")
          }
       }
       if (x1 == 2 && x2 == 1 && piece == "WP") {
          if (autoprom) {
-            promotionpiece <- paste0("W", strsplit(sub("+" ,"", move[[6]], fixed=TRUE), "=", fixed=TRUE)[[1]][2])
+            promotionpiece <- paste0("W", strsplit(sub("[+#]" ,"", move[[6]]), "=", fixed=TRUE)[[1]][2])
          } else {
             sapply(1:4, function(x2) .drawsquare(x2, y2, flip=flip,, col=col.square.be))
             mapply(.drawpiece, x=1:4, y=rep(y2,4), piece=c("WQ","WN","WR","WB"))
@@ -425,14 +425,14 @@
             }
             sapply(1:4, function(x2) .drawsquare(x2, y2, flip=flip))
             mapply(.drawpiece, x=1:4, y=rep(y2,4), piece=pos[8:5,9-y2])
-            if (!is.na(move[[6]]) && !identical(promotionpiece, paste0("W", strsplit(sub("+" ,"", move[[6]], fixed=TRUE), "=", fixed=TRUE)[[1]][2])))
+            if (!is.na(move[[6]]) && !identical(promotionpiece, paste0("W", strsplit(sub("[+#]" ,"", move[[6]]), "=", fixed=TRUE)[[1]][2])))
                return("prommistake")
          }
       }
    } else {
       if (x1 == 7 && x2 == 8 && piece == "WP") {
          if (autoprom) {
-            promotionpiece <- paste0("W", strsplit(sub("+" ,"", move[[6]], fixed=TRUE), "=", fixed=TRUE)[[1]][2])
+            promotionpiece <- paste0("W", strsplit(sub("[+#]" ,"", move[[6]]), "=", fixed=TRUE)[[1]][2])
          } else {
             sapply(8:5, function(x2) .drawsquare(x2, y2, flip=flip, col=col.square.be))
             mapply(.drawpiece, x=8:5, y=rep(y2,4), piece=c("WQ","WN","WR","WB"))
@@ -451,13 +451,13 @@
             }
             sapply(8:5, function(x2) .drawsquare(x2, y2, flip=flip))
             mapply(.drawpiece, x=8:5, y=rep(y2,4), piece=pos[8:5,y2])
-            if (!is.na(move[[6]]) && !identical(promotionpiece, paste0("W", strsplit(sub("+" ,"", move[[6]], fixed=TRUE), "=", fixed=TRUE)[[1]][2])))
+            if (!is.na(move[[6]]) && !identical(promotionpiece, paste0("W", strsplit(sub("[+#]" ,"", move[[6]]), "=", fixed=TRUE)[[1]][2])))
                return("prommistake")
          }
       }
       if (x1 == 2 && x2 == 1 && piece == "BP") {
          if (autoprom) {
-            promotionpiece <- paste0("B", strsplit(sub("+" ,"", move[[6]], fixed=TRUE), "=", fixed=TRUE)[[1]][2])
+            promotionpiece <- paste0("B", strsplit(sub("[+#]" ,"", move[[6]]), "=", fixed=TRUE)[[1]][2])
          } else {
             sapply(1:4, function(x2) .drawsquare(x2, y2, flip=flip, col=col.square.be))
             mapply(.drawpiece, x=1:4, y=rep(y2,4), piece=c("BQ","BN","BR","BB"))
@@ -476,7 +476,7 @@
             }
             sapply(1:4, function(x2) .drawsquare(x2, y2, flip=flip))
             mapply(.drawpiece, x=1:4, y=rep(y2,4), piece=pos[1:4,y2])
-            if (!is.na(move[[6]]) && !identical(promotionpiece, paste0("B", strsplit(sub("+" ,"", move[[6]], fixed=TRUE), "=", fixed=TRUE)[[1]][2])))
+            if (!is.na(move[[6]]) && !identical(promotionpiece, paste0("B", strsplit(sub("[+#]" ,"", move[[6]]), "=", fixed=TRUE)[[1]][2])))
                return("prommistake")
          }
       }
@@ -541,7 +541,7 @@
 
    }
 
-   # check which kings are in check
+   # check if a king is in check
 
    ischeck <- c(.isattacked(pos, xy=c(which(pos=="WK", arr.ind=TRUE)), attackcolor="b"),
                 .isattacked(pos, xy=c(which(pos=="BK", arr.ind=TRUE)), attackcolor="w"))
@@ -600,7 +600,7 @@
    if (draw && .get("verbose")) {
       cat("Move: ", move, "\n\n", sep="")
       printpos <- pos
-      printpos[printpos == ""] <- "\U00000B7"
+      printpos[printpos == ""]   <- "\U00000B7"
       printpos[printpos == "WP"] <- "\U000265F"
       printpos[printpos == "WR"] <- "\U000265C"
       printpos[printpos == "WN"] <- "\U000265E"
@@ -720,7 +720,7 @@
 
 .drawcheck <- function(pos, flip) {
 
-   ischeck <- attr(pos, "ischeck")
+   ischeck <- attr(pos,"ischeck")
 
    if (sum(ischeck) == 0L || sum(ischeck) == 2L) {
       assign("checkpos", c(NA,NA), envir=.chesstrainer)
@@ -772,7 +772,7 @@
 
 .rmcheck <- function(pos, flip) {
 
-   ischeck <- attr(pos, "ischeck")
+   ischeck <- attr(pos,"ischeck")
 
    assign("checkpos", c(NA,NA), envir=.chesstrainer)
 
@@ -892,7 +892,7 @@
    ysoff  <-  0.025
    radius <-  0.200
 
-   symbols(y+yoff+ysoff, x+xoff+xsoff, circles=radius, inches=FALSE, lwd=1, fg=NA, bg="#666666", add=TRUE)
+   #symbols(y+yoff+ysoff, x+xoff+xsoff, circles=radius, inches=FALSE, lwd=1, fg=NA, bg="#666666", add=TRUE)
    symbols(y+yoff, x+xoff, circles=radius, inches=FALSE, lwd=1, fg=NA, bg=col, add=TRUE)
    text(y+yoff, x+xoff, glyph, font=2, col="white", offset=0, cex=.get("cex.glyphs"))
 
@@ -967,7 +967,7 @@
 
       }
 
-      ischeck <- attr(pos, "ischeck")
+      ischeck <- attr(pos,"ischeck")
 
       if (any(ischeck)) {
 
@@ -1409,8 +1409,10 @@
 
 .drawlibar <- function(totals=NULL, flip=FALSE, clear=FALSE) {
 
-   col.bg <- .get("col.bg")
-   libar <- .get("libar")
+   col.bg   <- .get("col.bg")
+   cex.eval <- .get("cex.eval")
+   libar    <- .get("libar")
+
 
    xpos <- 0.55
    indsize <- 0.25
@@ -1430,17 +1432,31 @@
    draw  <- totals[2] / total
    black <- totals[3] / total
 
+   minprop <- 0.03
+
    if (flip) {
       rect(xpos, 1, xpos+indsize, 1 + 8*black, border=NA, col=col.side.b)
+      if (black >= minprop)
+         text(xpos + indsize/2, 1.1, paste0(round(black*100), "%"), cex=cex.eval, col=col.side.w)
       rect(xpos, 9, xpos+indsize, 9 - 8*white, border=NA, col=col.side.w)
+      if (white >= minprop)
+         text(xpos + indsize/2, 8.9, paste0(round(white*100), "%"), cex=cex.eval, col=col.side.b)
       rect(xpos, 1 + 8*black, xpos+indsize, 9 - 8*white, border=NA, col=col.side.d)
+      if (draw >= minprop)
+         text(xpos + indsize/2, (1 + 8*black + 9 - 8*white)/2, paste0(round(draw*100), "%"), cex=cex.eval, col=col.side.b)
    } else {
       rect(xpos, 1, xpos+indsize, 1 + 8*white, border=NA, col=col.side.w)
+      if (white >= minprop)
+         text(xpos + indsize/2, 1.1, paste0(round(white*100), "%"), cex=cex.eval, col=col.side.b)
       rect(xpos, 9, xpos+indsize, 9 - 8*black, border=NA, col=col.side.b)
+      if (black >= minprop)
+         text(xpos + indsize/2, 8.9, paste0(round(black*100), "%"), cex=cex.eval, col=col.side.w)
       rect(xpos, 1 + 8*white, xpos+indsize, 9 - 8*black, border=NA, col=col.side.d)
+      if (draw >= minprop)
+         text(xpos + indsize/2, (1 + 8*white + 9 - 8*black)/2, paste0(round(draw*100), "%"), cex=cex.eval, col=col.side.b)
    }
 
-   segments(xpos, 5, xpos+indsize, col=col.fg)
+   #segments(xpos, 5, xpos+indsize, col=col.fg)
 
    assign("lasttotals", totals, envir=.chesstrainer)
 
@@ -1506,13 +1522,13 @@
       sfrun    <- res.sf$sfrun
    }
    if (bestmove[[1]][1] != "") { # bestmove comes from [d] (unless it was calculate above)
-      nmoves <- length(bestmove)
-      bestmovetxt <- rep(NA_character_, nmoves)
-      evalvals <- rep(NA_real_, nmoves)
-      for (j in 1:nmoves) {
+      nvariations <- length(bestmove)
+      bestmovetxt <- rep(NA_character_, nvariations)
+      evalvals <- rep(NA_real_, nvariations)
+      for (j in 1:nvariations) {
          if (bestmove[[j]][1] == "")
             next
-         bestmovetxt[j] <- .parsemove(bestmove[[j]], pos=pos, flip=flip, evalval=evalval[j], i=i, sidetoplay=sidetoplay, rename=TRUE, returnline=TRUE, hintdepth=hintdepth)$txt
+         bestmovetxt[j] <- .parsemove(bestmove[[j]], pos=pos, flip=flip, evalval=evalval[j], i=i, sidetoplay=sidetoplay, rename=TRUE, returnline=1, hintdepth=hintdepth)$txt
          evalvals[j] <- evalval[j]
          bestx1 <- as.numeric(substr(bestmove[[j]][1], 2, 2))
          besty1 <- which(letters[1:8] == substr(bestmove[[j]][1], 1, 1))
