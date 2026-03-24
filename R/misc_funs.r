@@ -549,7 +549,7 @@
                }
             }
             if (piece=="K") {
-               txt.move <- paste0(piece, move[[j]][3], move[[j]][4], checksym, collapse="")
+               txt.move <- paste0(piece, ifelse(iscapture, "x", ""), move[[j]][3], move[[j]][4], checksym, collapse="")
             }
             startletter <- ""
             startnumber <- ""
@@ -1459,6 +1459,8 @@
 
    for (j in 1:length(dat)) {
 
+      #print(j)
+
       sub <- dat[[j]]
 
       dosave <- FALSE
@@ -1479,6 +1481,8 @@
             sub$moves$fen <- ""
 
       }
+
+      #sub$moves$san <- NULL
 
       if (is.null(sub$moves$san)) {
 

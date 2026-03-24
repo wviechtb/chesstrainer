@@ -1695,6 +1695,12 @@
                          "Select blue color scheme"
    ))}
 
+   if (x == "scheme_gray") {
+      return(switch(lang,
+                    de = "Graue Farbpalette ausw\U000000E4hlen",
+                         "Select gray color scheme"
+   ))}
+
 }
 
 .confirm <- function(x) {

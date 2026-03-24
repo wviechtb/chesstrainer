@@ -1456,7 +1456,7 @@
          text(xpos + indsize/2, (1 + 8*white + 9 - 8*black)/2, paste0(round(draw*100), "%"), cex=cex.eval, col=col.side.b)
    }
 
-   #segments(xpos, 5, xpos+indsize, col=col.fg)
+   segments(xpos, 5, xpos+indsize, col=col.fg)
 
    assign("lasttotals", totals, envir=.chesstrainer)
 
