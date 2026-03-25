@@ -649,7 +649,7 @@ play <- function(lang="en", ...) {
       dat.all.short <- lapply(dat.all, function(x) list(moves    = x$moves[1:4],
                                                         flip     = x$flip,
                                                         fen      = x$moves$fen,
-                                                        fenshort = if (nrow(x$moves) == 0L) character(0) else sapply(strsplit(x$moves$fen, " ", fixed=TRUE), function(x) paste0(x[1:3], collapse=" ")),
+                                                        fenshort = if (nrow(x$moves) == 0L) character(0) else sapply(strsplit(c(x$startfen, x$moves$fen), " ", fixed=TRUE), function(x) paste0(x[1:3], collapse=" ")),
                                                         move     = x$moves$move,
                                                         san      = x$moves$san,
                                                         pos      = x$pos))
@@ -2625,6 +2625,13 @@ play <- function(lang="en", ...) {
                # if there are circles/arrows at the end of a sequence, save these to the sequence file (as symbolend)
                circlesvar <- ""
                arrowsvar  <- ""
+               # add startfen to the sequence
+               if (is.null(sub$pos)) {
+                  startpos <- start.pos
+               } else {
+                  startpos <- sub$pos
+               }
+               sub$startfen <- .genfen(startpos, flip=sub$flip, sidetoplay=sidetoplaystart, sidetoplaystart=sidetoplaystart, i=1)
                if (nrow(circles) >= 1L)
                   circlesvar <- paste0(apply(circles, 1, function(x) paste0("(",x[1],",",x[2],")")), collapse=";")
                if (nrow(arrows) >= 1L)
@@ -3250,9 +3257,9 @@ play <- function(lang="en", ...) {
                      if (any(searchterm == x$fenshort) && identical(flip, x$flip)) {
                         pos <- min(which(searchterm == x$fenshort))
                         if (san) {
-                           nextmoves <- x$san[pos+c(1:max(1,movestoshow))]
+                           nextmoves <- x$san[pos-1+c(1:max(1,movestoshow))]
                         } else {
-                           nextmoves <- x$move[pos+c(1:max(1,movestoshow))]
+                           nextmoves <- x$move[pos-1+c(1:max(1,movestoshow))]
                         }
                         nextmoves[is.na(nextmoves)] <- ""
                         return(nextmoves)
@@ -3545,17 +3552,15 @@ play <- function(lang="en", ...) {
             # ' and ] to find sequences that include the same position; ] just shows them without selecting
 
             if (identical(click, "'") || identical(click, "]")) {
-               if (.is.start.pos(pos))
-                  next
                searchterm <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                searchterm <- paste(strsplit(searchterm, " ", fixed=TRUE)[[1]][1:3], collapse=" ")
                seqident <- lapply(dat.all.short, function(x) {
                   if (any(searchterm == x$fenshort) && identical(flip, x$flip)) {
                      pos <- min(which(searchterm == x$fenshort))
                      if (san) {
-                        nextmoves <- x$san[pos+c(1:max(1,movestoshow))]
+                        nextmoves <- x$san[pos-1+c(1:max(1,movestoshow))]
                      } else {
-                        nextmoves <- x$move[pos+c(1:max(1,movestoshow))]
+                        nextmoves <- x$move[pos-1+c(1:max(1,movestoshow))]
                      }
                      nextmoves[is.na(nextmoves)] <- ""
                      return(nextmoves)
@@ -3598,17 +3603,15 @@ play <- function(lang="en", ...) {
             # [ to find sequences that include the same position and show a frequency table for the next moves
 
             if (identical(click, "[")) {
-               if (.is.start.pos(pos))
-                  next
                searchterm <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                searchterm <- paste(strsplit(searchterm, " ", fixed=TRUE)[[1]][1:3], collapse=" ")
                seqident <- lapply(dat.all.short, function(x) {
                   if (any(searchterm == x$fenshort) && identical(flip, x$flip)) {
                      pos <- min(which(searchterm == x$fenshort))
                      if (san) {
-                        nextmoves <- x$san[pos+1]
+                        nextmoves <- x$san[pos-1+1]
                      } else {
-                        nextmoves <- x$move[pos+1]
+                        nextmoves <- x$move[pos-1+1]
                      }
                      nextmoves[is.na(nextmoves)] <- ""
                      return(nextmoves)
@@ -4713,7 +4716,7 @@ play <- function(lang="en", ...) {
             # in add mode, check if there are sequences with the current position that occurred via a move transposition
 
             if (mode == "add" && showtransp)
-               .findmovetransp(fen=fen, flip=flip, i=i, sub=sub, dat=dat.all.short, files=files.all, pos=sub$pos, contanalysis=contanalysis)
+               .findmovetransp(fen=fen, flip=flip, i=i, sub=sub, dat=dat.all.short, files=files.all, pos=sub$pos, contanalysis=contanalysis, movestoshow=movestoshow)
 
             # use the correct symbol if it is mate
 

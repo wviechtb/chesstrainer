@@ -1147,13 +1147,19 @@
 
 }
 
-.findmovetransp <- function(fen, flip, i, sub, dat, files, pos, contanalysis) {
+.findmovetransp <- function(fen, flip, i, sub, dat, files, pos, contanalysis, movestoshow) {
+
+   san <- .get("san")
 
    fenshort <- paste(strsplit(fen, " ", fixed=TRUE)[[1]][1:3], collapse=" ")
    seqident <- lapply(dat, function(x) {
-      if (any(fenshort == x$fenshort) && identical(flip, x$flip) && !identical(sub$moves$fen[1:(i-1)], x$fen[1:(i-1)]) && identical(pos, x$pos)) {
-         pos <- min(which(fenshort == x$fenshort))
-         nextmoves <- x$move[pos+c(1:5)]
+      if (any(fenshort == x$fenshort[-1]) && identical(flip, x$flip) && !identical(sub$moves$fen[1:(i-1)], x$fen[1:(i-1)]) && identical(pos, x$pos)) {
+         pos <- min(which(fenshort == x$fenshort[-1]))
+         if (san) {
+            nextmoves <- x$san[pos+c(1:max(1,movestoshow))]
+         } else {
+            nextmoves <- x$move[pos+c(1:max(1,movestoshow))]
+         }
          nextmoves[is.na(nextmoves)] <- ""
          return(nextmoves)
       } else {
@@ -1168,10 +1174,13 @@
       cat(.text("transposseqs", length(seqident) == 1L))
       tab <- data.frame(files[notnull])
       colnames(tab) <- .text("sequence")
-      nextmoves <- do.call(rbind, seqident)
-      tab <- cbind(tab, nextmoves)
+      if (movestoshow > 0) {
+         nextmoves <- do.call(rbind, seqident)
+         nextmoves <- .rename(nextmoves)
+         tab <- cbind(tab, nextmoves)
+      }
       rownames(tab) <- which(notnull)
-      .printdf(tab, align=c("l",rep("r",5)))
+      .printdf(tab, align=c("l",rep("r",movestoshow)))
       if (contanalysis)
          .waitforclick()
       #eval(expr=.get("switch2"))
@@ -1467,7 +1476,7 @@
 
    for (j in 1:length(dat)) {
 
-      #print(j)
+      print(j)
 
       sub <- dat[[j]]
 
@@ -1491,10 +1500,43 @@
       }
 
       #sub$moves$san <- NULL
+      #sub$startfen <- NULL
 
-      if (is.null(sub$moves$san)) {
+      if (is.null(sub$startfen) || is.null(sub$moves$san)) {
 
          dosave <- TRUE
+
+         # get the flip setting
+         flip <- sub$flip
+
+         # get the starting position
+         if (is.null(sub$pos)) {
+            pos <- .get("pos")
+         } else {
+            pos <- sub$pos
+         }
+
+         # determine 'sidetoplay' based on the first piece moved
+         if (flip) {
+            piece <- pos[9-sub$moves[1,1], 9-sub$moves[1,2]]
+         } else {
+            piece <- pos[sub$moves[1,1], sub$moves[1,2]]
+         }
+         sidetoplay <- ifelse(startsWith(piece, "W"), "w", "b")
+
+      }
+
+      if (is.null(sub$startfen)) {
+
+         # generate the FEN for the starting position
+         fen <- .genfen(pos, flip=flip, sidetoplay=sidetoplay, sidetoplaystart=sidetoplay, i=1)
+
+         # add the FEN to the sequence
+         sub$startfen <- fen
+
+      }
+
+      if (is.null(sub$moves$san)) {
 
          if (nrow(sub$moves) == 0L) {
 
@@ -1502,35 +1544,17 @@
 
          } else {
 
-            flip <- sub$flip
-
-            # get start position
-
-            if (is.null(sub$pos)) {
-               pos <- .get("pos")
-            } else {
-               pos <- sub$pos
-            }
-
-            # determine sidetoplay based on the first piece moved
-
-            if (flip) {
-               piece <- pos[9-sub$moves[1,1], 9-sub$moves[1,2]]
-            } else {
-               piece <- pos[sub$moves[1,1], sub$moves[1,2]]
-            }
-            sidetoplay <- ifelse(startsWith(piece, "W"), "w", "b")
-
             # transform the moves from long algebraic notation to UCI notation
-
             tmp <- .lan2uci(sub$moves$move, sidetoplay=sidetoplay)
 
-            # transform the move from UCI notation to short algebraic notation
-
+            # transform the moves from UCI notation to short algebraic notation
             tmp <- .parsemove(tmp, pos=pos, flip=flip, evalval=NA, i=NA, sidetoplay=sidetoplay, rename=FALSE, returnline=2, hintdepth=nrow(sub$moves), san=TRUE)
 
-            # add the move in SAN to the sequence
+            # replace + with # for mates
+            ismate <- grepl("#", sub$moves$move, fixed=TRUE)
+            tmp[ismate] <- gsub("+", "#", tmp, fixed=TRUE)[ismate]
 
+            # add the move in SAN to the sequence
             sub$moves$san <- tmp
             sub$moves <- sub$moves[c("x1","y1","x2","y2","show","move","san","eval","comment","circles","arrows","glyph","fen")]
 
