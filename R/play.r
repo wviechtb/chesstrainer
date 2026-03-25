@@ -1410,7 +1410,7 @@ play <- function(lang="en", ...) {
                      }
                   }
                }
-               if (identical(click, "N")) {
+               if (identical(click, "N")) { # N also resets savpos, flip, and sidetoplay
                   savpos <- NULL
                   flip <- FALSE
                   sidetoplay <- "w"
@@ -2286,9 +2286,9 @@ play <- function(lang="en", ...) {
                next
             }
 
-            # M to trigger a mistake (only in test mode)
+            # M to trigger a mistake (only in test mode and when upsidedown is TRUE)
 
-            if (mode == "test" && identical(click, "M")) {
+            if (.get("upsidedown") && mode == "test" && identical(click, "M")) {
                mistake <- TRUE
                if (score >= 1) {
                   scoreadd <- min(adjustwrong, 100-score)
@@ -2299,9 +2299,9 @@ play <- function(lang="en", ...) {
                next
             }
 
-            # B to end the sequence and go to the next one (only in test mode)
+            # B to end the sequence and go to the next one (only in test mode and when upsidedown is TRUE)
 
-            if (mode == "test" && identical(click, "B")) {
+            if (.get("upsidedown") && mode == "test" && identical(click, "B")) {
                playsound(system.file("sounds", "complete.ogg", package="chesstrainer"))
                if (is.null(sub$commentend)) {
                   if (mistake) {
@@ -3899,7 +3899,7 @@ play <- function(lang="en", ...) {
             # F8 to adjust the Lichess database settings
 
             if (identical(click, "F8")) {
-               tmp <- .lichesssettings(speeds, ratings, lichessdb, usecache, barlen, invertbar, token)
+               tmp <- .lichesssettings(speeds, ratings, lichessdb, usecache, barlen, invertbar, token, isonline)
                .redrawpos(pos, flip=flip)
                .textbot(mode, score=score, onlyscore=TRUE)
                .drawannot(circles=circles, arrows=arrows, glyph=glyph)

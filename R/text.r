@@ -1607,20 +1607,38 @@
 
    if (x == "entertoken") {
       return(switch(lang,
-                    de = "API-token eingeben",
+                    de = "API Token eingeben",
                          "Enter API token"
    ))}
 
    if (x == "token") {
       return(switch(lang,
-                    de = "API-token: ",
+                    de = "API Token: ",
                          "API token: "
    ))}
 
    if (x == "needtoken") {
       return(switch(lang,
-                    de = "F\U000000FCr diese Funktion muss ein API-token festgelegt werden (via F8).",
+                    de = "F\U000000FCr diese Funktion muss ein API Token festgelegt werden (via F8).",
                          "Need to set API token for this function (via F8)."
+   ))}
+
+   if (x == "tokenonline") {
+      return(switch(lang,
+                    de = "Ein API Token kann nur bei bestehender Internetverbindung festgelegt werden.",
+                         "Can only set an API token with an active internet connection."
+   ))}
+
+   if (x == "tokensetfail") {
+      return(switch(lang,
+                    de = "API Token konnte nicht festgelegt werden (falscher Token?).",
+                         "API token could not be set (incorrect token?)."
+   ))}
+
+   if (x == "tokensetsuccess") {
+      return(switch(lang,
+                    de = "API Token wurde eingerichtet.",
+                         "API token successfully set."
    ))}
 
    if (x == "rlydelcache") {

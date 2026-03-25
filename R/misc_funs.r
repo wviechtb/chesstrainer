@@ -1251,7 +1251,7 @@
 
 }
 
-.liquery <- function(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, mode, showout=TRUE) {
+.liquery <- function(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, mode, showout=TRUE, tokencheck=FALSE) {
 
    res <- list(out=NULL, selmove="")
 
@@ -1327,6 +1327,14 @@
          }
 
          out <- do.call(rbind, lapply(content(out)$moves, function(x) data.frame(move=x$uci, white=x$white, draw=x$draws, black=x$black)))
+
+         if (tokencheck) {
+            if (is.null(out)) {
+               return(res)
+            } else {
+               return(list(out=TRUE))
+            }
+         }
 
          if (is.null(out)) {
             if (!contliquery) {

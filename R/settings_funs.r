@@ -187,7 +187,7 @@
 
 }
 
-.lichesssettings <- function(speeds, ratings, lichessdb, usecache, barlen, invertbar, token) {
+.lichesssettings <- function(speeds, ratings, lichessdb, usecache, barlen, invertbar, token, isonline) {
 
    col.bg     <- .get("col.bg")
    col.help   <- .get("col.help")
@@ -278,7 +278,7 @@
       invertbar.box[[i]] <- .drawbutton(invertbar.xpos[i], invertbar.ypos, text=invertbar.txt[i], len=max(nchar(invertbar.txt)), on=invertbar.on[i], cex=cex)
    }
 
-   text(5, invertbar.ypos, paste0(rep("*", nchar(token)), collapse=""), pos=4, cex=cex, family=font.mono, col=col.text, font=2)
+   text(5, invertbar.ypos, paste0(rep("*", min(30,nchar(token))), collapse=""), pos=4, cex=cex, family=font.mono, col=col.text, font=2)
 
    while (TRUE) {
 
@@ -305,11 +305,11 @@
          hit <- sapply(ratings.box, function(coords) xy[1] >= coords[1] & xy[2] >= coords[2] & xy[1] <= coords[3] & xy[2] <= coords[4])
          if (any(hit)) {
             i <- which(hit)
+            ratings.on[i] <- !ratings.on[i]
             if (all(!ratings.on)) {
                ratings.on[i] <- !ratings.on[i]
                next
             }
-            ratings.on[i] <- !ratings.on[i]
             .drawbutton(ratings.xpos[i], ratings.ypos, text=ratings.txt[i], len=max(nchar(ratings.txt)), on=ratings.on[i], cex=cex)
             next
          }
@@ -377,7 +377,25 @@
             eval(expr=switch2)
             if (identical(tmp, ""))
                next
-            token <- tmp
+            if (!isonline) {
+               .texttop(.text("tokenonline"), sleep=2)
+               .texttop("")
+               next
+            }
+            usecache <- .get("usecache")
+            contliquery <- .get("contliquery")
+            assign("usecache", FALSE, envir=.chesstrainer)
+            res.li <- .liquery(pos=.get("pos"), flip=FALSE, sidetoplay="w", sidetoplaystart="w", i=1, isonline=isonline, lichessdb="lichess", token=tmp, speeds="blitz,rapid,classical", ratings="1200,1400,1600,1800", barlen=50, invertbar=FALSE, texttop="", mode="", tokencheck=TRUE)
+            assign("usecache", usecache, envir=.chesstrainer)
+            if (is.null(res.li$out)) {
+               .texttop(.text("tokensetfail"), sleep=2)
+               .texttop("")
+               next
+            } else {
+               token <- tmp
+               .texttop(.text("tokensetsuccess"), sleep=2)
+               .texttop("")
+            }
             rect(4.8, invertbar.ypos-0.3, 8.5, invertbar.ypos+0.3, col=col.bg, border=NA)
             text(5, invertbar.ypos, paste0(rep("*", nchar(token)), collapse=""), pos=4, cex=cex, family=font.mono, col=col.text, font=2)
             next
