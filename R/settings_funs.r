@@ -187,7 +187,298 @@
 
 }
 
-.lichesssettings <- function(speeds, ratings, lichessdb, usecache, barlen, invertbar, token, isonline) {
+.sfsettings <- function(sfproc, sfrun, sfpath, depth1, depth2, depth3, sflim, multipv1, multipv2, threads, hash, hintdepth, monthssfcache) {
+
+   col.bg     <- .get("col.bg")
+   col.help   <- .get("col.help")
+   col.border <- .get("col.border")
+   font.mono  <- .get("font.mono")
+   col.text   <- .get("col.square.d")
+   switch1    <- .get("switch1")
+   switch2    <- .get("switch2")
+   cachedir   <- .get("cachedir")
+
+   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
+
+   cex <- 0.9
+   cex.mult <- 0.8
+
+   title.xpos <- 1.5
+   title.ypos <- c(8.2, 7.8, 7.2 - 1.02 * c(0:6))
+   sfpath2 <- sfpath
+   pathlen <- nchar(sfpath2)
+   maxpathlen <- 60
+   if (pathlen >= maxpathlen) {
+      sfpath2 <- paste0("...", substr(sfpath2, max(1,nchar(sfpath2)-maxpathlen), nchar(sfpath2)))
+   }
+   text(title.xpos, title.ypos[1], .text("sfpath", sfpath2), pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(title.xpos, title.ypos[2], .text("sfrunning"),       pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(title.xpos, title.ypos[3], .text("depth1"),          pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(5,          title.ypos[3], .text("multipv1"),        pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(title.xpos, title.ypos[4], .text("depth2"),          pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(5,          title.ypos[4], .text("multipv2"),        pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(title.xpos, title.ypos[5], .text("depth3"),          pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(5,          title.ypos[5], .text("hintdepth"),       pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(title.xpos, title.ypos[6], .text("sflim_level"),     pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(5,          title.ypos[6], .text("sflim_elo"),       pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(title.xpos, title.ypos[7], .text("threads"),         pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(5,          title.ypos[7], .text("hash"),            pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(title.xpos, title.ypos[8], .text("monthscache"),     pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+
+   sfrun.on   <- c(sfrun, !sfrun)
+   sfrun.xpos <- 4.0 + 0.7 * (seq_along(sfrun.on) - 1)
+   sfrun.ypos <- title.ypos[2]
+   sfrun.txt  <- c(.text("on"), .text("off"))
+   sfrun.box  <- list()
+   for (i in seq_along(sfrun.txt)) {
+      sfrun.box[[i]] <- .drawbutton(sfrun.xpos[i], sfrun.ypos, text=sfrun.txt[i], len=max(nchar(sfrun.txt)), on=sfrun.on[i], cex=cex)
+   }
+
+   depth1.xpos <- c(1.7,4.5)
+   depth1.ypos <- title.ypos[3] - 0.4 * (title.ypos[3]-title.ypos[4])
+   depth1.box  <- .drawslider(x=depth1.xpos, depth1.ypos, xlab=c(1,50), cex=cex*cex.mult)
+   .updateslider(NULL, depth1.ypos, oldval=depth1, xlim=depth1.xpos, range=c(1,50), round=TRUE, cex=cex*cex.mult)
+
+   depth2.xpos <- c(1.7,4.5)
+   depth2.ypos <- title.ypos[4] - 0.4 * (title.ypos[4]-title.ypos[5])
+   depth2.box  <- .drawslider(x=depth2.xpos, depth2.ypos, xlab=c(1,50), cex=cex*cex.mult)
+   .updateslider(NULL, depth2.ypos, oldval=depth2, xlim=depth2.xpos, range=c(1,50), round=TRUE, cex=cex*cex.mult)
+
+   depth3.xpos <- c(1.7,4.5)
+   depth3.ypos <- title.ypos[5] - 0.4 * (title.ypos[5]-title.ypos[6])
+   depth3.box  <- .drawslider(x=depth3.xpos, depth3.ypos, xlab=c(1,50), cex=cex*cex.mult)
+   .updateslider(NULL, depth3.ypos, oldval=depth3, xlim=depth3.xpos, range=c(1,50), round=TRUE, cex=cex*cex.mult)
+
+   multipv1.xpos <- c(5.2,8)
+   multipv1.ypos <- title.ypos[3] - 0.4 * (title.ypos[3]-title.ypos[4])
+   multipv1.box  <- .drawslider(x=multipv1.xpos, multipv1.ypos, xlab=1:5, cex=cex*cex.mult)
+   .updateslider(NULL, multipv1.ypos, oldval=multipv1, xlim=multipv1.xpos, range=c(1,5), round=TRUE, cex=cex*cex.mult, text=FALSE)
+
+   multipv2.xpos <- c(5.2,8)
+   multipv2.ypos <- title.ypos[4] - 0.4 * (title.ypos[4]-title.ypos[5])
+   multipv2.box  <- .drawslider(x=multipv2.xpos, multipv2.ypos, xlab=1:5, cex=cex*cex.mult)
+   .updateslider(NULL, multipv2.ypos, oldval=multipv2, xlim=multipv2.xpos, range=c(1,5), round=TRUE, cex=cex*cex.mult, text=FALSE)
+
+   hintdepth.xpos <- c(5.2,8)
+   hintdepth.ypos <- title.ypos[5] - 0.4 * (title.ypos[5]-title.ypos[6])
+   hintdepth.box  <- .drawslider(x=hintdepth.xpos, hintdepth.ypos, xlab=c(2,20), cex=cex*cex.mult)
+   .updateslider(NULL, hintdepth.ypos, oldval=hintdepth, xlim=hintdepth.xpos, range=c(2,20), round=TRUE, cex=cex*cex.mult)
+
+   if (is.na(sflim)) {
+      sflim_level <- 20
+      sflim_elo   <- 3190
+   } else {
+      if (sflim >= 0 && sflim <= 20) {
+         sflim_level <- sflim
+         sflim_elo   <- 3190
+      } else {
+         sflim_level <- 20
+         sflim_elo   <- sflim
+      }
+   }
+
+   sflim_level.xpos <- c(1.7,4.5)
+   sflim_level.ypos <- title.ypos[6] - 0.4 * (title.ypos[6]-title.ypos[7])
+   sflim_level.box  <- .drawslider(x=sflim_level.xpos, sflim_level.ypos, xlab=c(0,20), cex=cex*cex.mult)
+   .updateslider(NULL, sflim_level.ypos, oldval=sflim_level, xlim=sflim_level.xpos, range=c(0,20), round=TRUE, cex=cex*cex.mult)
+
+   sflim_elo.xpos <- c(5.2,8)
+   sflim_elo.ypos <- title.ypos[6] - 0.4 * (title.ypos[6]-title.ypos[7])
+   sflim_elo.box  <- .drawslider(x=sflim_elo.xpos, sflim_elo.ypos, xlab=c(1320,3190), cex=cex*cex.mult)
+   .updateslider(NULL, sflim_elo.ypos, oldval=sflim_elo, xlim=sflim_elo.xpos, range=c(1320,3190), round=10, cex=cex*cex.mult)
+
+   threads.xpos <- c(1.7,4.5)
+   threads.ypos <- title.ypos[7] - 0.4 * (title.ypos[7]-title.ypos[8])
+   threads.box  <- .drawslider(x=threads.xpos, threads.ypos, xlab=1:8, cex=cex*cex.mult)
+   .updateslider(NULL, threads.ypos, oldval=threads, xlim=threads.xpos, range=c(1,8), round=TRUE, cex=cex*cex.mult, text=FALSE)
+
+   hash.opts <- round(2^(6:11))
+   hash.xpos <- c(5.2,8)
+   hash.ypos <- title.ypos[7] - 0.4 * (title.ypos[7]-title.ypos[8])
+   hash.box  <- .drawslider(x=hash.xpos, hash.ypos, xlab=2^(6:11), cex=cex*cex.mult)
+   hash <- which(hash == hash.opts)
+   .updateslider(NULL, hash.ypos, oldval=hash, xlim=hash.xpos, range=c(1,6), round=TRUE, cex=cex*cex.mult, text=FALSE)
+   hash <- hash.opts[hash]
+
+   monthssfcache.xpos <- c(1.7,8)
+   monthssfcache.ypos <- title.ypos[8] - 0.4 * (title.ypos[8]-title.ypos[9])
+   monthssfcache.box  <- .drawslider(x=monthssfcache.xpos, monthssfcache.ypos, xlab=c(1,60), cex=cex*cex.mult)
+   .updateslider(NULL, monthssfcache.ypos, oldval=monthssfcache, xlim=monthssfcache.xpos, range=c(1,60), round=TRUE, cex=cex*cex.mult)
+
+   while (TRUE) {
+
+      plt <- par("plt")
+
+      resp <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.mousedownfun, onKeybd=.keyfun)
+
+      if (is.numeric(resp)) {
+
+         xy <- .calcxy(resp[1], resp[2], plt)
+
+         hit <- xy[1] >= 1.5 & xy[2] >= title.ypos[1]-(title.ypos[1]-title.ypos[2])/2 & xy[1] <= 8.5 & xy[2] <= 8.7
+         if (hit) {
+            oldpath <- sfpath
+            if (.Platform$OS.type == "windows") {
+               tmp <- choose.files(caption="", multi=FALSE)
+               if (length(sfpath) == 0L)
+                  next
+            } else {
+               eval(expr=switch1)
+               tmp <- readline(prompt=.text("sfenterpath"))
+               eval(expr=switch2)
+               if (identical(tmp, ""))
+                  next
+               tmp <- suppressWarnings(normalizePath(tmp))
+               if (file.exists(tmp)) {
+                  .texttop(.text("sfpathsuccess"), sleep=2)
+                  .texttop("")
+               } else {
+                  .texttop(.text("sfpathfail"), sleep=2)
+                  .texttop("")
+                  next
+               }
+            }
+            sfpath <- tmp
+            if (oldpath != sfpath) {
+               # (re)start stockfish if the path is new
+               rect(title.xpos-0.1, title.ypos[1]-(title.ypos[2]-title.ypos[1])/2, 8.7, title.ypos[1]+(title.ypos[2]-title.ypos[1])/2, col=col.bg, border=col.bg)
+               sfpath2 <- sfpath
+               pathlen <- nchar(sfpath2)
+               if (pathlen >= maxpathlen) {
+                  sfpath2 <- paste0("...", substr(sfpath2, max(1,nchar(sfpath2)-maxpathlen), nchar(sfpath2)))
+               }
+               text(title.xpos, title.ypos[1], .text("sfpath", sfpath2), pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+               tmp <- .sf.stop(sfproc, sfrun)
+               sfproc <- tmp$sfproc
+               sfrun  <- tmp$sfrun
+               tmp <- .sf.start(sfproc, sfrun, sfpath, threads, hash)
+               sfproc <- tmp$sfproc
+               sfrun  <- tmp$sfrun
+            }
+            next
+         }
+
+         hit <- sapply(sfrun.box, function(coords) xy[1] >= coords[1] & xy[2] >= coords[2] & xy[1] <= coords[3] & xy[2] <= coords[4])
+         if (any(hit)) {
+            i <- which(hit)
+            if (i == 1) {
+               if (sfrun)
+                  next
+               # start Stockfish
+               tmp <- .sf.start(sfproc, sfrun, sfpath, threads, hash)
+               sfproc <- tmp$sfproc
+               sfrun  <- tmp$sfrun
+            }
+            if (i == 2) {
+               # stop Stockfish
+               tmp <- .sf.stop(sfproc, sfrun)
+               sfproc <- tmp$sfproc
+               sfrun  <- tmp$sfrun
+            }
+            sfrun.on <- c(sfrun, !sfrun)
+            for (i in seq_along(sfrun.txt)) {
+               .drawbutton(sfrun.xpos[i], sfrun.ypos, text=sfrun.txt[i], len=max(nchar(sfrun.txt)), on=sfrun.on[i], cex=cex)
+            }
+            next
+         }
+
+         hit <- xy[1] >= depth1.box[1] & xy[2] >= depth1.box[2] & xy[1] <= depth1.box[3] & xy[2] <= depth1.box[4]
+         if (hit) {
+            depth1 <- .updateslider(xy[1], depth1.ypos, oldval=depth1, xlim=depth1.xpos, range=c(1,50), round=TRUE, cex=cex*cex.mult)
+            next
+         }
+
+         hit <- xy[1] >= depth2.box[1] & xy[2] >= depth2.box[2] & xy[1] <= depth2.box[3] & xy[2] <= depth2.box[4]
+         if (hit) {
+            depth2 <- .updateslider(xy[1], depth2.ypos, oldval=depth2, xlim=depth2.xpos, range=c(1,50), round=TRUE, cex=cex*cex.mult)
+            next
+         }
+
+         hit <- xy[1] >= depth3.box[1] & xy[2] >= depth3.box[2] & xy[1] <= depth3.box[3] & xy[2] <= depth3.box[4]
+         if (hit) {
+            depth3 <- .updateslider(xy[1], depth3.ypos, oldval=depth3, xlim=depth3.xpos, range=c(1,50), round=TRUE, cex=cex*cex.mult)
+            next
+         }
+
+         hit <- xy[1] >= multipv1.box[1] & xy[2] >= multipv1.box[2] & xy[1] <= multipv1.box[3] & xy[2] <= multipv1.box[4]
+         if (hit) {
+            multipv1 <- .updateslider(xy[1], multipv1.ypos, oldval=multipv1, xlim=multipv1.xpos, range=c(1,5), round=TRUE, cex=cex*cex.mult, text=FALSE)
+            next
+         }
+
+         hit <- xy[1] >= multipv2.box[1] & xy[2] >= multipv2.box[2] & xy[1] <= multipv2.box[3] & xy[2] <= multipv2.box[4]
+         if (hit) {
+            multipv2 <- .updateslider(xy[1], multipv2.ypos, oldval=multipv2, xlim=multipv2.xpos, range=c(1,5), round=TRUE, cex=cex*cex.mult, text=FALSE)
+            next
+         }
+
+         hit <- xy[1] >= hintdepth.box[1] & xy[2] >= hintdepth.box[2] & xy[1] <= hintdepth.box[3] & xy[2] <= hintdepth.box[4]
+         if (hit) {
+            hintdepth <- .updateslider(xy[1], hintdepth.ypos, oldval=hintdepth, xlim=hintdepth.xpos, range=c(2,20), round=TRUE, cex=cex*cex.mult)
+            next
+         }
+
+         hit <- xy[1] >= sflim_level.box[1] & xy[2] >= sflim_level.box[2] & xy[1] <= sflim_level.box[3] & xy[2] <= sflim_level.box[4]
+         if (hit) {
+            sflim_level <- .updateslider(xy[1], sflim_level.ypos, oldval=sflim_level, xlim=sflim_level.xpos, range=c(0,20), round=TRUE, cex=cex*cex.mult)
+            next
+         }
+
+         hit <- xy[1] >= sflim_elo.box[1] & xy[2] >= sflim_elo.box[2] & xy[1] <= sflim_elo.box[3] & xy[2] <= sflim_elo.box[4]
+         if (hit) {
+            sflim_elo <- .updateslider(xy[1], sflim_elo.ypos, oldval=sflim_elo, xlim=sflim_elo.xpos, range=c(1320,3190), round=10, cex=cex*cex.mult)
+            next
+         }
+
+         hit <- xy[1] >= threads.box[1] & xy[2] >= threads.box[2] & xy[1] <= threads.box[3] & xy[2] <= threads.box[4]
+         if (hit) {
+            threads <- .updateslider(xy[1], threads.ypos, oldval=threads, xlim=threads.xpos, range=c(1,8), round=TRUE, cex=cex*cex.mult, text=FALSE)
+            next
+         }
+
+         hit <- xy[1] >= hash.box[1] & xy[2] >= hash.box[2] & xy[1] <= hash.box[3] & xy[2] <= hash.box[4]
+         if (hit) {
+            hash <- which(hash == hash.opts)
+            hash <- .updateslider(xy[1], hash.ypos, oldval=hash, xlim=hash.xpos, range=c(1,6), round=TRUE, cex=cex*cex.mult, text=FALSE)
+            hash <- hash.opts[hash]
+            next
+         }
+
+         hit <- xy[1] >= monthssfcache.box[1] & xy[2] >= monthssfcache.box[2] & xy[1] <= monthssfcache.box[3] & xy[2] <= monthssfcache.box[4]
+         if (hit) {
+            monthssfcache <- .updateslider(xy[1], monthssfcache.ypos, oldval=monthssfcache, xlim=monthssfcache.xpos, range=c(1,60), round=TRUE, cex=cex*cex.mult)
+            next
+         }
+
+      }
+
+      if (identical(resp, "F7") || identical(resp, "\r") || identical(resp, "ctrl-J") || identical(resp, "q") || identical(resp, "\033") || identical(resp, "ctrl-[") || identical(resp, " "))
+         break
+
+   }
+
+   if (sflim_level == 20 && sflim_elo == 3190) {
+      sflim <- NA
+   } else {
+      if (sflim_level < 20) {
+         sflim <- sflim_level
+      } else {
+         sflim <- sflim_elo
+      }
+   }
+
+   if (sfrun)
+      .sf.setoptions(sfproc, threads, hash)
+
+   out <- list(sfproc=sfproc, sfrun=sfrun, sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, monthssfcache=monthssfcache)
+
+   #.erase(1, 1, 9, 9)
+
+   return(out)
+
+}
+
+.lichesssettings <- function(speeds, ratings, lichessdb, uselicache, barlen, invertbar, token, monthslicache, isonline) {
 
    col.bg     <- .get("col.bg")
    col.help   <- .get("col.help")
@@ -203,15 +494,16 @@
    cex <- 1
 
    title.xpos <- 1.5
-   title.ypos <- 8 - 1.4 * c(0:4)
-   text(title.xpos, title.ypos[1], .text("speed"),     pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(title.xpos, title.ypos[2], .text("rating"),    pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(title.xpos, title.ypos[3], .text("lichessdb"), pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(4.2, title.ypos[3], .text("usecacheshort"), pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(6, title.ypos[3], .text("delcache"), pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(title.xpos, title.ypos[4], .text("barlen"),    pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(title.xpos, title.ypos[5], .text("invertbar"), pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(5, title.ypos[5], .text("entertoken"), pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   title.ypos <- 8.4 - 1.25 * c(0:5)
+   text(title.xpos, title.ypos[1], .text("speed"),         pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(title.xpos, title.ypos[2], .text("rating"),        pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(title.xpos, title.ypos[3], .text("lichessdb"),     pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(4.2,        title.ypos[3], .text("usecacheshort"), pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(6,          title.ypos[3], .text("delcache"),      pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(title.xpos, title.ypos[4], .text("monthscache"),   pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(title.xpos, title.ypos[5], .text("barlen"),        pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(title.xpos, title.ypos[6], .text("invertbar"),     pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(5,          title.ypos[6], .text("entertoken"),    pos=4, cex=cex, family=font.mono, col=col.help, font=2)
 
    speeds.opts <- c("ultraBullet", "bullet", "blitz", "rapid", "classical", "correspondence")
    speeds.xpos <- 2.2 + 1.1 * (seq_along(speeds.opts) - 1)
@@ -243,14 +535,14 @@
       lichessdb.box[[i]] <- .drawbutton(lichessdb.xpos[i], lichessdb.ypos, text=lichessdb.txt[i], len=max(nchar(lichessdb.txt)), on=lichessdb.on[i], cex=cex)
    }
 
-   usecache.opts <- c(TRUE, TRUE)
-   usecache.xpos <- 4.7 + 0.7 * (seq_along(usecache.opts) - 1)
-   usecache.ypos <- title.ypos[3] - 0.4 * (title.ypos[1]-title.ypos[2])
-   usecache.txt  <- c(.text("yes"), .text("no"))
-   usecache.on   <- c(usecache, !usecache)
-   usecache.box  <- list()
-   for (i in seq_along(usecache.txt)) {
-      usecache.box[[i]] <- .drawbutton(usecache.xpos[i], usecache.ypos, text=usecache.txt[i], len=max(nchar(usecache.txt)), on=usecache.on[i], cex=cex)
+   uselicache.opts <- c(TRUE, TRUE)
+   uselicache.xpos <- 4.7 + 0.7 * (seq_along(uselicache.opts) - 1)
+   uselicache.ypos <- title.ypos[3] - 0.4 * (title.ypos[1]-title.ypos[2])
+   uselicache.txt  <- c(.text("yes"), .text("no"))
+   uselicache.on   <- c(uselicache, !uselicache)
+   uselicache.box  <- list()
+   for (i in seq_along(uselicache.txt)) {
+      uselicache.box[[i]] <- .drawbutton(uselicache.xpos[i], uselicache.ypos, text=uselicache.txt[i], len=max(nchar(uselicache.txt)), on=uselicache.on[i], cex=cex)
    }
 
    delcache.opts <- c("players", "masters")
@@ -263,14 +555,19 @@
       delcache.box[[i]] <- .drawbutton(delcache.xpos[i], delcache.ypos, text=delcache.txt[i], len=max(nchar(delcache.txt)), on=delcache.on[i], cex=cex)
    }
 
+   monthslicache.xpos <- c(2,8)
+   monthslicache.ypos <- title.ypos[4] - 0.4 * (title.ypos[1]-title.ypos[2])
+   monthslicache.box  <- .drawslider(x=monthslicache.xpos, monthslicache.ypos, xlab=c(1,60), cex=cex)
+   .updateslider(NULL, monthslicache.ypos, oldval=monthslicache, xlim=monthslicache.xpos, range=c(1,60), round=TRUE, cex=cex)
+
    barlen.xpos <- c(2,8)
-   barlen.ypos <- title.ypos[4] - 0.4 * (title.ypos[1]-title.ypos[2])
+   barlen.ypos <- title.ypos[5] - 0.4 * (title.ypos[1]-title.ypos[2])
    barlen.box  <- .drawslider(x=barlen.xpos, barlen.ypos, xlab=c(10,100), cex=cex)
    .updateslider(NULL, barlen.ypos, oldval=barlen, xlim=barlen.xpos, range=c(10,100), round=TRUE, cex=cex)
 
    invertbar.opts <- c("No", "Yes")
    invertbar.xpos <- 2 + 0.7 * (seq_along(invertbar.opts) - 1)
-   invertbar.ypos <- title.ypos[5] - 0.4 * (title.ypos[1]-title.ypos[2])
+   invertbar.ypos <- title.ypos[6] - 0.4 * (title.ypos[1]-title.ypos[2])
    invertbar.txt  <- c(.text("no"), .text("yes"))
    invertbar.on   <- c(!invertbar, invertbar)
    invertbar.box  <- list()
@@ -326,14 +623,14 @@
             next
          }
 
-         hit <- sapply(usecache.box, function(coords) xy[1] >= coords[1] & xy[2] >= coords[2] & xy[1] <= coords[3] & xy[2] <= coords[4])
+         hit <- sapply(uselicache.box, function(coords) xy[1] >= coords[1] & xy[2] >= coords[2] & xy[1] <= coords[3] & xy[2] <= coords[4])
          if (any(hit)) {
             i <- which(hit)
-            if (usecache.on[i])
+            if (uselicache.on[i])
                next
-            usecache.on <- !usecache.on
-            for (i in seq_along(usecache.txt)) {
-               .drawbutton(usecache.xpos[i], usecache.ypos, text=usecache.txt[i], len=max(nchar(usecache.txt)), on=usecache.on[i], cex=cex)
+            uselicache.on <- !uselicache.on
+            for (i in seq_along(uselicache.txt)) {
+               .drawbutton(uselicache.xpos[i], uselicache.ypos, text=uselicache.txt[i], len=max(nchar(uselicache.txt)), on=uselicache.on[i], cex=cex)
             }
             next
          }
@@ -355,6 +652,12 @@
          hit <- xy[1] >= barlen.box[1] & xy[2] >= barlen.box[2] & xy[1] <= barlen.box[3] & xy[2] <= barlen.box[4]
          if (hit) {
             barlen <- .updateslider(xy[1], barlen.ypos, oldval=barlen, xlim=barlen.xpos, range=c(10,100), round=TRUE, cex=cex)
+            next
+         }
+
+         hit <- xy[1] >= monthslicache.box[1] & xy[2] >= monthslicache.box[2] & xy[1] <= monthslicache.box[3] & xy[2] <= monthslicache.box[4]
+         if (hit) {
+            monthslicache <- .updateslider(xy[1], monthslicache.ypos, oldval=monthslicache, xlim=monthslicache.xpos, range=c(1,60), round=TRUE, cex=cex)
             next
          }
 
@@ -382,11 +685,11 @@
                .texttop("")
                next
             }
-            usecache <- .get("usecache")
+            uselicache <- .get("uselicache")
             contliquery <- .get("contliquery")
-            assign("usecache", FALSE, envir=.chesstrainer)
+            assign("uselicache", FALSE, envir=.chesstrainer)
             res.li <- .liquery(pos=.get("pos"), flip=FALSE, sidetoplay="w", sidetoplaystart="w", i=1, isonline=isonline, lichessdb="lichess", token=tmp, speeds="blitz,rapid,classical", ratings="1200,1400,1600,1800", barlen=50, invertbar=FALSE, texttop="", mode="", tokencheck=TRUE)
-            assign("usecache", usecache, envir=.chesstrainer)
+            assign("uselicache", uselicache, envir=.chesstrainer)
             if (is.null(res.li$out)) {
                .texttop(.text("tokensetfail"), sleep=2)
                .texttop("")
@@ -408,13 +711,13 @@
 
    }
 
-   speeds    <- paste0(speeds.opts[speeds.on],   collapse=",")
-   ratings   <- paste0(ratings.opts[ratings.on], collapse=",")
-   lichessdb <- lichessdb.opts[lichessdb.on]
-   usecache  <- usecache.on[1]
-   invertbar <- invertbar.on[2]
+   speeds     <- paste0(speeds.opts[speeds.on],   collapse=",")
+   ratings    <- paste0(ratings.opts[ratings.on], collapse=",")
+   lichessdb  <- lichessdb.opts[lichessdb.on]
+   uselicache <- uselicache.on[1]
+   invertbar  <- invertbar.on[2]
 
-   out <- list(speeds=speeds, ratings=ratings, lichessdb=lichessdb, usecache=usecache, barlen=barlen, invertbar=invertbar, token=token)
+   out <- list(speeds=speeds, ratings=ratings, lichessdb=lichessdb, uselicache=uselicache, barlen=barlen, monthslicache=monthslicache, invertbar=invertbar, token=token)
 
    #.erase(1, 1, 9, 9)
 

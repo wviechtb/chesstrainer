@@ -1514,9 +1514,10 @@
    harrows <- matrix(nrow=0, ncol=4)
    if (i == 1 && is.na(evalval[1])) {
       fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
-      res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
-      evalval  <- res.sf$eval
-      bestmove <- res.sf$bestmove
+      res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv=5, sflim=NA, fen, usesfcache=TRUE)
+      evalval  <- res.sf$eval[1:multipv1]
+      bestmove <- res.sf$bestmove[1:multipv1]
+      bestmove[.is.null(bestmove)] <- ""
       matetype <- res.sf$matetype
       sfproc   <- res.sf$sfproc
       sfrun    <- res.sf$sfrun
@@ -1686,16 +1687,18 @@
    height <- strheight("A", family=font.mono, cex=cex)
 
    segments(x[1], y, x[2], y, col=col.line, lend=2)
-   segments(x[1], y-0.06, x[1], y+0.06, col=col.line, lend=2)
-   segments(x[2], y-0.06, x[2], y+0.06, col=col.line, lend=2)
-   text(x[1], y - 1.6 * height, xlab[1], family=font.mono, cex=cex, col=col.line, adj=c(0.5,0.5))
-   text(x[2], y - 1.6 * height, xlab[2], family=font.mono, cex=cex, col=col.line, adj=c(0.5,0.5))
+
+   pos <- seq(x[1], x[2], length.out=length(xlab))
+   for (i in 1:length(xlab)) {
+      segments(pos[i], y-0.06, pos[i], y+0.06, col=col.line, lend=2)
+      text(pos[i], y - 2.0 * height, xlab[i], family=font.mono, cex=cex, col=col.line, adj=c(0.5,0.5))
+   }
 
    return(c(x[1], y-height, x[2], y+height))
 
 }
 
-.updateslider <- function(x, y, oldval, xlim, range, round, cex) {
+.updateslider <- function(x, y, oldval, xlim, range, round, cex, text=TRUE) {
 
    font.mono  <- .get("font.mono")
    col.slider <- .get("col.square.l")
@@ -1704,29 +1707,41 @@
 
    height <- strheight("A", family=font.mono, cex=cex)
 
-   xold <- xlim[1] + (oldval - range[1]) / (range[2] - range[1]) * (xlim[2] - xlim[1])
+   n <- length(xlim)
+
+   xold <- xlim[1] + (oldval - range[1]) / (range[2] - range[1]) * (xlim[n] - xlim[1])
 
    if (is.null(x)) {
       rect(xold-0.03, y-0.08, xold+0.03, y+0.08, col=col.slider, border=col.slider)
-      text(xold, y + 1.6 * height, oldval, family=font.mono, cex=cex, col=col.line, adj=c(0.5,0.5))
+      if (text)
+         text(xold, y + 2.0*height, oldval, family=font.mono, cex=cex, col=col.line, adj=c(0.5,0.5))
       return()
    } else {
       x[x < xlim[1]] <- xlim[1]
-      x[x > xlim[2]] <- xlim[2]
-      newval <- range[1] + (x - xlim[1]) / (xlim[2] - xlim[1]) * (range[2] - range[1])
-      if (round)
-         newval <- round(newval)
+      x[x > xlim[n]] <- xlim[n]
+      newval <- range[1] + (x - xlim[1]) / (xlim[n] - xlim[1]) * (range[2] - range[1])
+      if (round > 0)
+         newval <- round(newval/round) * round
       if (oldval == newval)
          return(newval)
-      rect(xold-0.1, y-0.12, xold+0.1, y+0.12, col=col.bg, border=col.bg)
-      rect(max(1.25, xold-1), y+0.05, min(8.75,xold+1), y+3 * height, col=col.bg, border=col.bg)
-      segments(max(xlim[1], xold-0.1), y, min(xlim[2], xold+0.1), y, col=col.line, lend=2)
-      segments(xlim[1], y-0.06, xlim[1], y+0.06, col=col.line, lend=2)
-      segments(xlim[2], y-0.06, xlim[2], y+0.06, col=col.line, lend=2)
+      rect(xold-0.2, y-0.12, xold+0.2, y+0.12, col=col.bg, border=col.bg)
+      if (text) {
+         rect(max(1.25, xold-1), y+0.05, min(8.75,xold+1), y + 3.0*height, col=col.bg, border=col.bg)
+         segments(max(xlim[1], xold-0.2), y, min(xlim[n], xold+0.2), y, col=col.line, lend=2)
+         segments(xlim[1], y-0.06, xlim[1], y+0.06, col=col.line, lend=2)
+         segments(xlim[n], y-0.06, xlim[n], y+0.06, col=col.line, lend=2)
+      } else {
+         segments(xold, y-0.06, xold, y+0.06, col=col.line, lend=2)
+         segments(max(xlim[1], xold-0.2), y, min(xlim[n], xold+0.2), y, col=col.line, lend=2)
+      }
    }
 
-   rect(x-0.03, y-0.08, x+0.03, y+0.08, col=col.slider, border=col.slider)
-   text(x, y + 1.6 * height, newval, family=font.mono, cex=cex, col=col.line, adj=c(0.5,0.5))
+   xnew <- (newval - range[1]) * (xlim[n] - xlim[1]) / (range[2] - range[1]) + xlim[1]
+
+   rect(xnew-0.03, y-0.08, xnew+0.03, y+0.08, col=col.slider, border=col.slider)
+
+   if (text)
+      text(xnew, y + 2.0*height, newval, family=font.mono, cex=cex, col=col.line, adj=c(0.5,0.5))
 
    return(newval)
 

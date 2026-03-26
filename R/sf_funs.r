@@ -80,7 +80,33 @@
 
 }
 
-.sf.eval <- function(sfproc, sfrun, depth, multipv, sflim, fen, sidetoplay, progbar=FALSE) {
+.sf.eval <- function(sfproc, sfrun, depth, multipv, sflim, fen, progbar=FALSE, usesfcache=FALSE) {
+
+   if (usesfcache) {
+
+      cachedir <- .get("cachedir")
+      files <- list.files(file.path(cachedir, "stockfish"), pattern=".rds$")
+      filessplit <- strsplit(files, "_", fixed=TRUE)
+      depths <- as.numeric(sapply(filessplit, function(x) x[1]))
+      fileswoutdepth  <- sapply(filessplit, function(x) x[2])
+      fenfilename <- gsub(" ", "%20", fen, fixed=TRUE)
+      fenfilename <- gsub("/", "%2F", fenfilename, fixed=TRUE)
+      fenfilename <- paste0(fenfilename, ".rds")
+      if (fenfilename %in% fileswoutdepth) {
+         pos <- which(fenfilename == fileswoutdepth)[1]
+         if (depths[pos] >= depth) {
+            # read in the cache file if it is of sufficient depth
+            out <- readRDS(file.path(cachedir, "stockfish", files[pos]))
+            out$sfproc <- sfproc
+            out$sfrun <- sfrun
+            return(out)
+         } else {
+            # remove the lower depth cache file
+            file.remove(file.path(cachedir, "stockfish", files[pos]))
+         }
+      }
+
+   }
 
    sfout    <- NULL
    eval     <- rep(NA_real_, multipv)
@@ -173,6 +199,8 @@
    if (is.null(sfout) || !sfrun)
       return(list(eval=eval, bestmove=bestmove, matetype="none", sfproc=sfproc, sfrun=sfrun))
 
+   sidetoplay <- strsplit(fen, " ", fixed=TRUE)[[1]][2]
+
    # check for mate
    if (any(grepl("info depth 0 score mate 0", sfout, fixed=TRUE)))
       return(list(eval=ifelse(sidetoplay == "b", 99.9, -99.9), bestmove=bestmove, matetype="mate", sfproc=sfproc, sfrun=sfrun))
@@ -231,242 +259,13 @@
    if (!is.na(sflim))
       bestmove <- bestmoveatend
 
-   return(list(eval=eval, bestmove=bestmove, matetype="none", sfproc=sfproc, sfrun=sfrun))
+   if (usesfcache) {
 
-}
-
-.sfsettings <- function(sfproc, sfrun, sfpath, depth1, depth2, depth3, sflim, multipv1, multipv2, threads, hash, hintdepth) {
-
-   while (TRUE) {
-
-      flush <- .flush()
-
-      cat("\n")
-      cat(.text("sfrunning", sfrun))
-      cat(.text("sfpath",    sfpath))
-      cat(.text("depths",    depth1, depth2, depth3))
-      cat(.text("multipvs",  multipv1, multipv2))
-      cat(.text("sflim",     sflim))
-      cat(.text("threads",   threads))
-      cat(.text("hash",      hash))
-      cat(.text("hintdepth", hintdepth))
-
-      cat("\n")
-      cat(.text("sfoptions"))
-      cat("\n\n")
-
-      resp <- readline(prompt=.text("sfoptionwhich"))
-
-      if (identical(resp, ""))
-         break
-
-      if (grepl("^[1-9]$", resp)) {
-
-         resp <- round(as.numeric(resp))
-
-         if (resp < 1 || resp > 9)
-            next
-
-         if (identical(resp, 1)) {
-            # (re)start Stockfish
-            cat("\n")
-            tmp <- .sf.start(sfproc, sfrun, sfpath, threads, hash)
-            sfproc <- tmp$sfproc
-            sfrun  <- tmp$sfrun
-            if (flush) Sys.sleep(2)
-            next
-         }
-
-         if (identical(resp, 2)) {
-            # stop Stockfish
-            cat("\n")
-            tmp <- .sf.stop(sfproc, sfrun)
-            sfproc <- tmp$sfproc
-            sfrun  <- tmp$sfrun
-            if (flush) Sys.sleep(2)
-            next
-         }
-
-         if (identical(resp, 3)) {
-            # change path to Stockfish executable
-            oldpath <- sfpath
-            cat("\n")
-            if (.Platform$OS.type == "windows") {
-               sfpath <- choose.files(caption="", multi=FALSE)
-               if (length(sfpath) == 0L)
-                  sfpath <- oldpath
-            } else {
-               sfpath <- readline(prompt=.text("sfenterpath"))
-               if (!identical(sfpath, "")) {
-                  sfpath <- suppressWarnings(normalizePath(sfpath))
-                  if (file.exists(sfpath)) {
-                     cat(.text("sfpathsuccess"))
-                  } else {
-                     cat(.text("sfpathfail"))
-                  }
-               }
-            }
-            if (oldpath != sfpath) {
-               # (re)start stockfish if the path is new
-               tmp <- .sf.stop(sfproc, sfrun)
-               sfproc <- tmp$sfproc
-               sfrun  <- tmp$sfrun
-               tmp <- .sf.start(sfproc, sfrun, sfpath, threads, hash)
-               sfproc <- tmp$sfproc
-               sfrun  <- tmp$sfrun
-            }
-            if (flush) Sys.sleep(2)
-            next
-         }
-
-         if (identical(resp, 4)) {
-            # set depth1/depth2
-            cat("\n")
-            newdepth <- readline(prompt=.text("depthenter"))
-            if (identical(newdepth, "")) {
-               next
-            } else {
-               if (grepl("^[0-9]+,\\s*[0-9]+,\\s*[0-9]+$", newdepth)) {
-                  newdepth <- strsplit(newdepth, ",", fixed=TRUE)[[1]]
-                  newdepth1 <- round(as.numeric(newdepth[1]))
-                  newdepth2 <- round(as.numeric(newdepth[2]))
-                  newdepth3 <- round(as.numeric(newdepth[3]))
-                  newdepth1 <- max(1, newdepth1)
-                  newdepth2 <- max(1, newdepth2)
-                  newdepth3 <- max(1, newdepth3)
-                  depth1 <- newdepth1
-                  depth2 <- newdepth2
-                  depth3 <- newdepth3
-                  cat(.text("depthsetsuccess"))
-               } else {
-                  cat(.text("depthsetfail"))
-               }
-            }
-            if (flush) Sys.sleep(2)
-            next
-         }
-
-         if (identical(resp, 5)) {
-            # set sflim
-            cat("\n")
-            newsflim <- readline(prompt=.text("sflimenter"))
-            if (identical(newsflim, "")) {
-               next
-            } else {
-               if (grepl("^([0-9]+|NA)$", newsflim)) {
-                  if (identical(newsflim, "NA")) {
-                     sflim <- NA
-                  } else {
-                     newsflim <- round(as.numeric(newsflim))
-                     if (newsflim > 20 && newsflim < 1320) {
-                        cat(.text("sflimsetfail"))
-                        if (flush) Sys.sleep(2)
-                        next
-                     }
-                     newsflim[newsflim > 3190] <- 3190
-                     sflim <- newsflim
-                  }
-                  cat(.text("sflimsetsuccess"))
-               } else {
-                  cat(.text("sflimsetfail"))
-               }
-            }
-            if (flush) Sys.sleep(2)
-            next
-         }
-
-         if (identical(resp, 6)) {
-            # set multipv1/multipv2
-            cat("\n")
-            newmultipv <- readline(prompt=.text("multipventer"))
-            if (identical(newmultipv, "")) {
-               next
-            } else {
-               if (grepl("^[0-9]+,\\s*[0-9]+$", newmultipv)) {
-                  newmultipv <- strsplit(newmultipv, ",", fixed=TRUE)[[1]]
-                  newmultipv1 <- round(as.numeric(newmultipv[1]))
-                  newmultipv2 <- round(as.numeric(newmultipv[2]))
-                  newmultipv1 <- max(1, newmultipv1)
-                  newmultipv2 <- max(1, newmultipv2)
-                  multipv1 <- newmultipv1
-                  multipv2 <- newmultipv2
-                  cat(.text("multipvsetsuccess"))
-                  .sf.setoptions(sfproc, threads, hash)
-               } else {
-                  cat(.text("multipvsetfail"))
-               }
-            }
-            if (flush) Sys.sleep(2)
-            next
-         }
-
-         if (identical(resp, 7)) {
-            # set threads
-            cat("\n")
-            newthreads <- readline(prompt=.text("threadsenter"))
-            if (identical(newthreads, "")) {
-               next
-            } else {
-               if (grepl("^[0-9]+$", newthreads)) {
-                  newthreads <- round(as.numeric(newthreads))
-                  newthreads <- max(1, newthreads)
-                  threads <- newthreads
-                  cat(.text("threadssetsuccess"))
-                  .sf.setoptions(sfproc, threads, hash)
-               } else {
-                  cat(.text("threadssetfail"))
-               }
-            }
-            if (flush) Sys.sleep(2)
-            next
-         }
-         if (identical(resp, 8)) {
-            # set hash
-            cat("\n")
-            newhash <- readline(prompt=.text("hashenter"))
-            if (identical(newhash, "")) {
-               next
-            } else {
-               if (grepl("^[0-9]+$", newhash)) {
-                  newhash <- round(as.numeric(newhash))
-                  newhash <- max(16, newhash)
-                  hash <- newhash
-                  cat(.text("hashsetsuccess"))
-                  .sf.setoptions(sfproc, threads, hash)
-               } else {
-                  cat(.text("hashsetfail"))
-               }
-            }
-            if (flush) Sys.sleep(2)
-            next
-         }
-
-         if (identical(resp, 9)) {
-            # set hintdepth
-            cat("\n")
-            newhintdepth <- readline(prompt=.text("hintdepthenter"))
-            if (identical(newhintdepth, "")) {
-               next
-            } else {
-               if (grepl("^[0-9]+$", newhintdepth)) {
-                  newhintdepth <- round(as.numeric(newhintdepth))
-                  newhintdepth <- max(2, newhintdepth)
-                  hintdepth <- newhintdepth
-                  cat(.text("hintdepthsetsuccess"))
-                  .sf.setoptions(sfproc, threads, hash)
-               } else {
-                  cat(.text("hintdepthsetfail"))
-
-               }
-            }
-            if (flush) Sys.sleep(2)
-            next
-         }
-
-      }
+      depthfenfilename <- paste0(depth, "_", fenfilename)
+      saveRDS(list(eval=eval, bestmove=bestmove, matetype="none"), file=file.path(cachedir, "stockfish", depthfenfilename))
 
    }
 
-   return(list(sfproc=sfproc, sfrun=sfrun, sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth))
+   return(list(eval=eval, bestmove=bestmove, matetype="none", sfproc=sfproc, sfrun=sfrun))
 
 }

@@ -465,6 +465,12 @@
                          "\nSelect these sequences? (Y/n): "
    ))}
 
+   if (x == "selmatchestop") {
+      return(switch(lang,
+                    de = "\nDiese Sequenzen selektieren? (J/n)",
+                         "\nSelect these sequences? (Y/n)"
+   ))}
+
    if (x == "selmatchesconfirm") {
       return(switch(lang,
                     de = paste0(arg, " Sequenz", ifelse(arg > 1, "en", ""), " selektiert.\n"),
@@ -669,7 +675,7 @@
                          paste0("Continuous analysis: ", ifelse(arg, "On", "Off"))
    ))}
 
-   if (x == "usecache") {
+   if (x == "uselicache") {
       return(switch(lang,
                     de = paste0("Positionsdaten aus dem Cache abrufen: ", ifelse(arg, "An", "Aus")),
                          paste0("Get position information from the cache: ", ifelse(arg, "On", "Off"))
@@ -729,70 +735,94 @@
                          "Successfully stopped Stockfish.\n"
    ))}
 
-   if (x == "sfrunning") {
-      return(switch(lang,
-                    de = paste0("Stockfish Status:                         ", ifelse(arg, "an", "aus"), "\n"),
-                         paste0("Stockfish status:                    ", ifelse(arg, "on", "off"), "\n")
-   ))}
-
    if (x == "sfpath") {
       return(switch(lang,
-                    de = paste0("Stockfish Pfad:                           ", arg, "\n"),
-                         paste0("Stockfish path:                      ", arg, "\n")
-   ))}
-
-   if (x == "depths") {
-      return(switch(lang,
-                    de = paste0("Berechnungstiefen (schnell,tief,spielen): ", arg, ",", arg2, ",", arg3, "\n"),
-                         paste0("Calculation depths (fast,deep,play): ", arg, ",", arg2, ",", arg3, "\n")
-   ))}
-
-   if (x == "multipvs") {
-      return(switch(lang,
-                    de = paste0("Anzahl der Zugvarianten (schnell,tief):   ", arg, ",", arg2, "\n"),
-                         paste0("Number of variations (fast,deep):    ", arg, ",", arg2, "\n")
-   ))}
-
-   if (x == "sflim") {
-      return(switch(lang,
-                    de = paste0("Spielmodus-St\U000000E4rke-Limit:                  ", arg, ifelse(is.na(arg), "", ifelse(arg <= 20, " (level)", " (Elo)")), "\n"),
-                         paste0("Play mode strength limit:            ", arg, ifelse(is.na(arg), "", ifelse(arg <= 20, " (level)", " (Elo)")), "\n")
-   ))}
-
-   if (x == "threads") {
-      return(switch(lang,
-                    de = paste0("Anzahl der Threads:                       ", arg, "\n"),
-                         paste0("Number of threads:                   ", arg, "\n")
-   ))}
-
-   if (x == "hash") {
-      return(switch(lang,
-                    de = paste0("Hashgr\U000000F6\U000000DFe:                                ", arg, "\n"),
-                         paste0("Hash size:                           ", arg, "\n")
-   ))}
-
-   if (x == "hintdepth") {
-      return(switch(lang,
-                    de = paste0("Hinweistiefe:                             ", arg, "\n"),
-                         paste0("Hint depth:                          ", arg, "\n")
-   ))}
-
-   if (x == "sfoptions") {
-      return(switch(lang,
-                    de = "1 - Stockfisch (neu) starten\n2 - Stockfisch beenden\n3 - Pfad f\U000000FCr Stockfish \U000000E4ndern\n4 - Berechnungstiefen \U000000E4ndern\n5 - Spielmodus-St\U000000E4rke-Limit \U000000E4ndern\n6 - Anzahl der Zugvarianten \U000000E4ndern\n7 - Anzahl der Threads \U000000E4ndern\n8 - Hashgr\U000000F6\U000000DFe \U000000E4ndern\n9 - Hinweistiefe \U000000E4ndern",
-                         "1 - (Re)start Stockfisch\n2 - Quit Stockfisch\n3 - Change the path for Stockfish\n4 - Change the calculation depths\n5 - Change the play mode strength limit\n6 - Change the number of principal variations\n7 - Change the number of threads\n8 - Change the hash size\n9 - Change the hint depth"
-   ))}
-
-   if (x == "sfoptionwhich") {
-      return(switch(lang,
-                    de = "Option (<Nummer> oder <Enter> zum Verlassen): ",
-                         "Option (<number> or <enter> to quit): "
+                    de = paste0("Stockfish Pfad: ", arg, "\n"),
+                         paste0("Stockfish path: ", arg, "\n")
    ))}
 
    if (x == "sfenterpath") {
       return(switch(lang,
                     de = "Pfad (einschlie\U000000DFlich der ausf\U000000FChrbaren Datei): ",
                          "Path (including the executable): "
+   ))}
+
+   if (x == "sfrunning") {
+      return(switch(lang,
+                    de = "Stockfish Status: ",
+                         "Stockfish status: "
+   ))}
+
+   if (x == "on") {
+      return(switch(lang,
+                    de = "An",
+                         "On"
+   ))}
+
+   if (x == "off") {
+      return(switch(lang,
+                    de = "Aus",
+                         "Off"
+   ))}
+
+   if (x == "depth1") {
+      return(switch(lang,
+                    de = "Berechnungstiefe (schnell)",
+                         "Calculation depths (fast)"
+   ))}
+
+   if (x == "depth2") {
+      return(switch(lang,
+                    de = "Berechnungstiefe (tief))",
+                         "Calculation depths (deep)"
+   ))}
+
+   if (x == "depth3") {
+      return(switch(lang,
+                    de = "Berechnungstiefe (spielen)",
+                         "Calculation depths (play)"
+   ))}
+
+   if (x == "multipv1") {
+      return(switch(lang,
+                    de = "Anzahl der Zugvarianten (schnell)",
+                         "Number of variations (fast)"
+   ))}
+
+   if (x == "multipv2") {
+      return(switch(lang,
+                    de = "Anzahl der Zugvarianten (tief)",
+                         "Number of variations (deep)"
+   ))}
+
+   if (x == "sflim_level") {
+      return(switch(lang,
+                    de = "Spielmodus-St\U000000E4rke-Limit (level)",
+                         "Play mode strength limit (level)"
+   ))}
+
+   if (x == "sflim_elo") {
+      return(switch(lang,
+                    de = "Spielmodus-St\U000000E4rke-Limit (Elo)",
+                         "Play mode strength limit (Elo)"
+   ))}
+
+   if (x == "threads") {
+      return(switch(lang,
+                    de = "Anzahl der Threads",
+                         "Number of threads"
+   ))}
+
+   if (x == "hash") {
+      return(switch(lang,
+                    de = "Hashgr\U000000F6\U000000DFe (MB)",
+                         "Hash size (MB)"
+   ))}
+
+   if (x == "hintdepth") {
+      return(switch(lang,
+                    de = "Hinweistiefe",
+                         "Hint depth"
    ))}
 
    if (x == "sfpathsuccess") {
@@ -805,114 +835,6 @@
       return(switch(lang,
                     de = "Pfad konnte nicht gefunden/gesetzt werden.\n",
                          "Could not find/set path.\n"
-   ))}
-
-   if (x == "depthenter") {
-      return(switch(lang,
-                    de = "Berechnungstiefen (<schnell>,<tief>,<spielen>): ",
-                         "Calculation depths (<fast>,<deep>,<play>): "
-   ))}
-
-   if (x == "depthsetsuccess") {
-      return(switch(lang,
-                    de = "Neue Berechnungstiefen wurden erfolgreich gesetzt.\n",
-                         "New calculation depths were set successfully.\n"
-   ))}
-
-   if (x == "depthsetfail") {
-      return(switch(lang,
-                    de = "Neue Berechnungstiefen konnten nicht gesetzt werden.\n",
-                         "New calculation depths could not be set.\n"
-   ))}
-
-   if (x == "sflimenter") {
-      return(switch(lang,
-                    de = "St\U000000E4rke-Limit (0 bis 20 f\U000000FCr level, 1320 bis 3190 f\U000000FCr Elo; NA f\U000000FCr kein Limit): ",
-                         "Strength limit (0 to 20 for level; 1320 to 3190 for Elo; NA for no limit): "
-   ))}
-
-   if (x == "sflimsetsuccess") {
-      return(switch(lang,
-                    de = "Neues St\U000000E4rke-Limit wurde erfolgreich gesetzt.\n",
-                         "New strength limit was set successfully.\n"
-   ))}
-
-   if (x == "sflimsetfail") {
-      return(switch(lang,
-                    de = "Neues St\U000000E4rke-Limit konnte nicht gesetzt werden.\n",
-                         "New strength limit could not be set.\n"
-   ))}
-
-   if (x == "multipventer") {
-      return(switch(lang,
-                    de = "Anzahl der besten Zugvarianten (<schnell>,<tief>): ",
-                         "Number of principal variations (<fast>,<deep>): "
-   ))}
-
-   if (x == "multipvsetsuccess") {
-      return(switch(lang,
-                    de = "Neue Werte wurden erfolgreich gesetzt.\n",
-                         "New numbers were set successfully.\n"
-   ))}
-
-   if (x == "multipvsetfail") {
-      return(switch(lang,
-                    de = "Neue Werte konnten nicht gesetzt werden.\n",
-                         "New numbers could not be set.\n"
-   ))}
-
-   if (x == "threadsenter") {
-      return(switch(lang,
-                    de = "Anzahl der Threads: ",
-                         "Number of threads: "
-   ))}
-
-   if (x == "threadssetsuccess") {
-      return(switch(lang,
-                    de = "Neue Anzahl der Threads wurde erfolgreich gesetzt.\n",
-                         "New number of threads was set successfully.\n"
-   ))}
-
-   if (x == "threadssetfail") {
-      return(switch(lang,
-                    de = "Neue Anzahl der Threads konnte nicht gesetzt werden.\n",
-                         "New number of threads could not be set.\n"
-   ))}
-
-   if (x == "hashenter") {
-      return(switch(lang,
-                    de = "Hashgr\U000000F6\U000000DFe (MB): ",
-                         "Hash size (MB): "
-   ))}
-
-   if (x == "hashsetsuccess") {
-      return(switch(lang,
-                    de = "Neue Hashgr\U000000F6\U000000DFe wurde erfolgreich gesetzt.\n",
-                         "New hash size was set successfully.\n"
-   ))}
-
-   if (x == "hashsetfail") {
-      return(switch(lang,
-                    de = "Neue Hashgr\U000000F6\U000000DFe konnte nicht gesetzt werden.\n",
-                         "New hash size could not be set.\n"
-   ))}
-
-   if (x == "hintdepthenter") {
-      return(switch(lang,
-                    de = "Hinweistiefe: ",
-                         "Hint depth: "
-   ))}
-
-   if (x == "hintdepthsetsuccess") {
-      return(switch(lang,
-                    de = "Neue Hinweistiefe wurde erfolgreich gesetzt.\n",
-                         "New hint depth was set successfully.\n"
-   ))}
-
-   if (x == "hintdepthsetfail") {
-      return(switch(lang,
-                    de = "Neue Hinweistiefe konnte nicht gesetzt werden.\n",
-                         "New hint depth could not be set.\n"
    ))}
 
    if (x == "sfsegfault") {
@@ -1007,8 +929,8 @@
 
    if (x == "explsettings") {
       return(switch(lang,
-                    de = c("Sprache", "Spielername", "Modus", "Aktuelles Sequenzverzeichnis", "Selektionsmodus f\U000000FCr Sequenzen", "Zen Modus", "Zeitgesteuerter Modus", "Zeit pro Zug im zeitgesteuerten Modus (Sekunden)", "Exponentenwert", "Multiplikator f\U000000FCr abgeschlossene Sequenzen", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Bewertungsleiste (Hinzuf\U000000FCgen/Test/Spielen/Analyse)", "Animationsschritte f\U000000FCr die Bewertungsleiste", "Anzahl der anzuzeigenden n\U000000E4chsten Z\U000000FCge nach Suchen", "Koordinaten anzeigen", "Zugumstellungen anzeigen", "Materialunterschied anzeigen", "Kurze algebraische Notation", "Figurensymbole", "Warten zwischen Sequenzen", "Verz\U000000F6gerung zwischen den Z\U000000FCgen (Sekunden)", "Leerlaufzeit (Sekunden)", "Mindestdauer der Sitzung (Sekunden)", "Pausenanpassung (Sekunden)", "Randbreite (unten/links/oben/rechts)", "Randbreite f\U000000FCr Inline-Diagramme", "Linienbreite", "Lautst\U000000E4rke (%)", "Fortschrittsdiagramm nach Sequenzen anzeigen", "Sequenzen nach Fehler wiederholen", "Zielwert f\U000000FCr Punkte", "Schwierigkeitsberechnung (Methode)", "Schwierigkeitsberechnung (Anzahl der letzten Werte)", "Schwierigkeitsberechnung (Mindestanzahl der Werte)", "Stockfish Pfad", "Berechnungstiefe (schnell)", "Berechnungstiefe (tief)", "Berechnungstiefe (spielen)", "Spielmodus-St\U000000E4rke-Limit", "Anzahl der besten Zugvarianten (schnell)", "Anzahl der besten Zugvarianten (tief)", "Anzahl der Threads f\U000000FCr Stockfish", "Hashgr\U000000F6\U000000DFe f\U000000FCr Stockfish", "Hinweistiefe", "Kontinuierliche Analyse"),
-                         c("Language", "Player name", "Mode", "Current sequence directory", "Selection mode for sequences", "Zen mode", "Timed mode", "Time per move in timed mode (seconds)", "Exponent value", "Multiplier for completed sequences", "Score penalty for wrong moves", "Score penalty per hint", "Evaluation bar (add/test/play/analysis)", "Animation steps for the evaluation bar", "Number of next moves to show after searches", "Show coordinates", "Show move transpositions", "Show material difference", "Short algebraic notation", "Piece symbols", "Wait between sequences", "Delay between moves (seconds)", "Idle time (seconds)", "Minimum session duration (seconds)", "Pause adjustment (seconds)", "Margin width (bottom/left/top/right)", "Margin width for inline graphs", "Line width", "Sound volume (%)", "Show progress graph after sequences", "Repeat sequences after mistake", "Target value for scores", "Difficulty calculation (method)", "Difficulty calculation (number of recent values)", "Difficulty calculation (minimum number of values)", "Stockfish path", "Calculation depth (fast)", "Calculation depth (deep)", "Calculation depth (play)", "Play mode strength limit", "Number of principal variations (fast)", "Number of principal variations (deep)", "Number of threads for Stockfish", "Hash size for Stockfish", "Hint depth", "Continuous analysis")
+                    de = c("Sprache", "Spielername", "Modus", "Aktuelles Sequenzverzeichnis", "Selektionsmodus f\U000000FCr Sequenzen", "Zen Modus", "Zeitgesteuerter Modus", "Zeit pro Zug im zeitgesteuerten Modus (Sekunden)", "Exponentenwert", "Multiplikator f\U000000FCr abgeschlossene Sequenzen", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Bewertungsleiste (Hinzuf\U000000FCgen/Test/Spielen/Analyse)", "Animationsschritte f\U000000FCr die Bewertungsleiste", "Anzahl der anzuzeigenden n\U000000E4chsten Z\U000000FCge nach Suchen", "Koordinaten anzeigen", "Zugumstellungen anzeigen", "Materialunterschied anzeigen", "Kurze algebraische Notation", "Figurensymbole", "Warten zwischen Sequenzen", "Verz\U000000F6gerung zwischen den Z\U000000FCgen (Sekunden)", "Leerlaufzeit (Sekunden)", "Mindestdauer der Sitzung (Sekunden)", "Pausenanpassung (Sekunden)", "Randbreite (unten/links/oben/rechts)", "Randbreite f\U000000FCr Inline-Diagramme", "Linienbreite", "Lautst\U000000E4rke (%)", "Fortschrittsdiagramm nach Sequenzen anzeigen", "Sequenzen nach Fehler wiederholen", "Zielwert f\U000000FCr Punkte", "Schwierigkeitsberechnung (Methode)", "Schwierigkeitsberechnung (Anzahl der letzten Werte)", "Schwierigkeitsberechnung (Mindestanzahl der Werte)", "Stockfish Pfad", "Berechnungstiefe (schnell)", "Berechnungstiefe (tief)", "Berechnungstiefe (spielen)", "Spielmodus-St\U000000E4rke-Limit", "Anzahl der besten Zugvarianten (schnell)", "Anzahl der besten Zugvarianten (tief)", "Anzahl der Threads f\U000000FCr Stockfish", "Hashgr\U000000F6\U000000DFe f\U000000FCr Stockfish", "Hinweistiefe", "Maximales Alter von Cache-Eintr\U000000E4gen (in Monaten)", "Kontinuierliche Analyse"),
+                         c("Language", "Player name", "Mode", "Current sequence directory", "Selection mode for sequences", "Zen mode", "Timed mode", "Time per move in timed mode (seconds)", "Exponent value", "Multiplier for completed sequences", "Score penalty for wrong moves", "Score penalty per hint", "Evaluation bar (add/test/play/analysis)", "Animation steps for the evaluation bar", "Number of next moves to show after searches", "Show coordinates", "Show move transpositions", "Show material difference", "Short algebraic notation", "Piece symbols", "Wait between sequences", "Delay between moves (seconds)", "Idle time (seconds)", "Minimum session duration (seconds)", "Pause adjustment (seconds)", "Margin width (bottom/left/top/right)", "Margin width for inline graphs", "Line width", "Sound volume (%)", "Show progress graph after sequences", "Repeat sequences after mistake", "Target value for scores", "Difficulty calculation (method)", "Difficulty calculation (number of recent values)", "Difficulty calculation (minimum number of values)", "Stockfish path", "Calculation depth (fast)", "Calculation depth (deep)", "Calculation depth (play)", "Play mode strength limit", "Number of principal variations (fast)", "Number of principal variations (deep)", "Number of threads for Stockfish", "Hash size for Stockfish", "Hint depth", "Maximum age of cache entries (in months)", "Continuous analysis")
    ))}
 
    if (x == "comment") {
@@ -1591,6 +1513,12 @@
       return(switch(lang,
                     de = "Nein",
                          "No"
+   ))}
+
+   if (x == "monthscache") {
+      return(switch(lang,
+                    de = "Maximales Alter von Cache-Eintr\U000000E4gen (in Monaten)",
+                         "Maximum age of cache entries (in months)"
    ))}
 
    if (x == "barlen") {

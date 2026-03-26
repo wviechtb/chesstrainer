@@ -27,10 +27,10 @@ play <- function(lang="en", ...) {
                     coords=TRUE, showtransp=TRUE, matdiff=TRUE, san=TRUE, pieces=1, wait=TRUE, delay=0.5, idletime=120, mintime=60, sleepadj=0, lwd=2, volume=50,
                     showgraph=FALSE, repmistake=FALSE, zenmode=FALSE,
                     cex.top=1.4, cex.bot=0.7, cex.eval=0.5, cex.coords=0.85, cex.matdiff=1.1, cex.plots=1.0, cex.glyphs=1.6,
-                    sfpath="", depth1=12, depth2=20, depth3=8, sflim=NA, multipv1=1, multipv2=1, threads=1, hash=256, hintdepth=10,
+                    sfpath="", depth1=12, depth2=20, depth3=8, sflim=NA, multipv1=1, multipv2=1, threads=1, hash=256, hintdepth=10, monthssfcache=24,
                     difffun=1, difflen=15, diffmin=5,
                     mar=c(5.5, 5.5, 5.5, 5.5), mar2=c(11, 11, 9, 9),
-                    speeds="blitz,rapid,classical", ratings="1200,1400,1600,1800", barlen=50, invertbar=FALSE, lichessdb="lichess", token="", usecache=TRUE, libar=TRUE,
+                    speeds="blitz,rapid,classical", ratings="1200,1400,1600,1800", barlen=50, invertbar=FALSE, lichessdb="lichess", token="", uselicache=TRUE, libar=TRUE, monthslicache=24,
                     switch1=ifelse(isTRUE(iswin) && identical(gui, "rgui"), "bringToTop(-1)",        "invisible()"),
                     switch2=ifelse(isTRUE(iswin) && identical(gui, "rgui"), "bringToTop(dev.cur())", "invisible()"),
                     quitanim=TRUE, inhibit=FALSE, flush=FALSE, raster=TRUE) # these are not saved as part of the settings
@@ -96,16 +96,18 @@ play <- function(lang="en", ...) {
    if (!is.na(sflim) && (sflim > 20 && sflim < 1320))
       sflim <- NA
    sflim[sflim > 3190] <- 3190
+   sflim <- round(sflim/10) * 10
    multipv1[multipv1 < 1] <- 1
    multipv2[multipv2 < 1] <- 1
    multipv1 <- round(multipv1)
    multipv2 <- round(multipv2)
    threads[threads < 1] <- 1
    threads <- round(threads)
-   hash[hash < 16] <- 16
-   hash <- round(hash)
+   hash.opts <- round(2^(6:11))
+   hash <- hash.opts[which.min(abs(hash - hash.opts))]
    hintdepth[hintdepth < 2] <- 2
    hintdepth <- round(hintdepth)
+   monthssfcache[monthssfcache < 1] <- 1
    difflen[difflen < 2] <- 2
    difflen <- round(difflen)
    diffmin[diffmin < 2] <- 2
@@ -116,8 +118,12 @@ play <- function(lang="en", ...) {
    if (length(mar2) == 1L)
       mar2 <- rep(mar2,4)
    mar2 <- pmax(mar2,1)
+   barlen[barlen < 10] <- 10
+   barlen[barlen > 100] <- 100
+   barlen <- round(barlen)
    if (is.null(token))
       token <- ""
+   monthslicache[monthslicache < 1] <- 1
 
    verbose <- isTRUE(ddd$verbose)
 
@@ -140,10 +146,10 @@ play <- function(lang="en", ...) {
                        coords=coords, showtransp=showtransp, matdiff=matdiff, san=san, pieces=pieces, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, lwd=lwd, volume=volume,
                        showgraph=showgraph, repmistake=repmistake, zenmode=zenmode,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
-                       sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth,
+                       sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, monthssfcache=monthssfcache,
                        difffun=difffun, difflen=difflen, diffmin=diffmin,
                        mar=mar, mar2=mar2,
-                       speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb, token=token, usecache=usecache, libar=libar,
+                       speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb, token=token, uselicache=uselicache, libar=libar, monthslicache=monthslicache,
                        switch1=switch1, switch2=switch2)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       cols <- sapply(cols.all, function(x) .get(x))
@@ -172,10 +178,10 @@ play <- function(lang="en", ...) {
                        coords=coords, showtransp=showtransp, matdiff=matdiff, san=san, pieces=pieces, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, lwd=lwd, volume=volume,
                        showgraph=showgraph, repmistake=repmistake, zenmode=zenmode,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
-                       sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth,
+                       sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, monthssfcache=monthssfcache,
                        difffun=difffun, difflen=difflen, diffmin=diffmin,
                        mar=mar, mar2=mar2,
-                       speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb, token=token, usecache=usecache, libar=libar,
+                       speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb, token=token, uselicache=uselicache, libar=libar, monthslicache=monthslicache,
                        switch1=switch1, switch2=switch2, firstrun=settings$firstrun)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       if (file.exists(file.path(configdir, "colors.rds"))) {
@@ -227,7 +233,7 @@ play <- function(lang="en", ...) {
    assign("sleepadj", sleepadj, envir=.chesstrainer)
    assign("switch1", switch1, envir=.chesstrainer)
    assign("switch2", switch2, envir=.chesstrainer)
-   assign("usecache", usecache, envir=.chesstrainer)
+   assign("uselicache", uselicache, envir=.chesstrainer)
    assign("libar", libar, envir=.chesstrainer)
    assign("lastget", proc.time()[[3]], envir=.chesstrainer)
 
@@ -240,11 +246,22 @@ play <- function(lang="en", ...) {
       success <- dir.create(cachedir, recursive=TRUE)
       if (!success)
          stop(.text("dircreateerror"), call.=FALSE)
-      dir.create(file.path(cachedir, "lichess"), recursive=TRUE)
-      dir.create(file.path(cachedir, "masters"), recursive=TRUE)
    }
 
+   if (!dir.exists(file.path(cachedir, "lichess")))
+      dir.create(file.path(cachedir, "lichess"), recursive=TRUE)
+   if (!dir.exists(file.path(cachedir, "masters")))
+      dir.create(file.path(cachedir, "masters"), recursive=TRUE)
+   if (!dir.exists(file.path(cachedir, "stockfish")))
+      dir.create(file.path(cachedir, "stockfish"), recursive=TRUE)
+
    assign("cachedir", cachedir, envir=.chesstrainer)
+
+   # clean up the Lichess cache based on monthslicache and the Stockfish cache based on monthssfcache
+
+   .cleancache(file.path(cachedir, "lichess"), monthslicache)
+   .cleancache(file.path(cachedir, "masters"), monthslicache)
+   .cleancache(file.path(cachedir, "stockfish"), monthssfcache)
 
    # if seqdir is not an empty string, remove any directories from seqdir that do not exist
 
@@ -916,9 +933,10 @@ play <- function(lang="en", ...) {
 
             if (is.null(attr(pos,"starteval"))) {
                fen <- .genfen(pos, flip, sidetoplay, sidetoplay, i)
-               res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
-               evalval  <- res.sf$eval
-               bestmove <- res.sf$bestmove
+               res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv=5, sflim=NA, fen, usesfcache=TRUE)
+               evalval  <- res.sf$eval[1:multipv1]
+               bestmove <- res.sf$bestmove[1:multipv1]
+               bestmove[.is.null(bestmove)] <- ""
                matetype <- res.sf$matetype
                sfproc   <- res.sf$sfproc
                sfrun    <- res.sf$sfrun
@@ -1116,9 +1134,10 @@ play <- function(lang="en", ...) {
 
                   evalvallast <- evalval[1]
                   fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
-                  res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
-                  evalval  <- res.sf$eval
-                  bestmove <- res.sf$bestmove
+                  res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv=5, sflim=NA, fen, usesfcache=TRUE)
+                  evalval  <- res.sf$eval[1:multipv1]
+                  bestmove <- res.sf$bestmove[1:multipv1]
+                  bestmove[.is.null(bestmove)] <- ""
                   matetype <- res.sf$matetype
                   sfproc   <- res.sf$sfproc
                   sfrun    <- res.sf$sfrun
@@ -1142,7 +1161,7 @@ play <- function(lang="en", ...) {
                      mode <- "analysis"
                   }
 
-                  threefold <- any(table(sapply(strsplit(sub$moves$fen, " "), function(x) paste(x[1:4], collapse = " "))) == 3L)
+                  threefold <- any(table(sapply(strsplit(sub$moves$fen, " ", fixed=TRUE), function(x) paste(x[1:4], collapse = " "))) == 3L)
 
                   if (threefold) {
                      .texttop(.text("threefold"))
@@ -1150,7 +1169,7 @@ play <- function(lang="en", ...) {
                      mode <- "analysis"
                   }
 
-                  fifty <- identical(strsplit(fen, " ")[[1]][5], "100")
+                  fifty <- identical(strsplit(fen, " ", fixed=TRUE)[[1]][5], "100")
 
                   if (fifty) {
                      .texttop(.text("fifty"))
@@ -1359,18 +1378,21 @@ play <- function(lang="en", ...) {
                fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                compmove <- (flip && sidetoplay == "w") || (!flip && sidetoplay == "b")
                if (compmove) {
-                  res.sf <- .sf.eval(sfproc, ifelse(contliquery, FALSE, sfrun), depth3, multipv1, sflim, fen, sidetoplay)
+                  res.sf <- .sf.eval(sfproc, ifelse(contliquery, FALSE, sfrun), depth3, multipv1, sflim, fen)
+                  evalval  <- res.sf$eval
+                  bestmove <- res.sf$bestmove # [d]
                } else {
-                  res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
+                  res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv=5, sflim=NA, fen, usesfcache=TRUE)
+                  evalval  <- res.sf$eval[1:multipv1]
+                  bestmove <- res.sf$bestmove[1:multipv1] # [d]
+                  bestmove[.is.null(bestmove)] <- ""
                }
-               evalval  <- res.sf$eval
-               bestmove <- res.sf$bestmove # [d]
                matetype <- res.sf$matetype
                sfproc   <- res.sf$sfproc
                sfrun    <- ifelse(contliquery, sfrun, res.sf$sfrun)
                if (compmove && (contliquery || !is.na(sflim) || depth1 > depth3)) {
-                  res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
-                  evalval  <- res.sf$eval
+                  res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv=5, sflim=NA, fen, usesfcache=TRUE)
+                  evalval  <- res.sf$eval[1:multipv1]
                   matetype <- res.sf$matetype
                   sfproc   <- res.sf$sfproc
                   sfrun    <- res.sf$sfrun
@@ -1520,9 +1542,10 @@ play <- function(lang="en", ...) {
                }
                .texttop(.text("sfdeepeval"))
                fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
-               res.sf <- .sf.eval(sfproc, sfrun, depth2, multipv2, sflim=NA, fen, sidetoplay, progbar=TRUE)
-               evalval  <- res.sf$eval
-               bestmove <- res.sf$bestmove
+               res.sf <- .sf.eval(sfproc, sfrun, depth2, multipv=5, sflim=NA, fen, progbar=TRUE, usesfcache=TRUE)
+               evalval  <- res.sf$eval[1:multipv2]
+               bestmove <- res.sf$bestmove[1:multipv2]
+               bestmove[.is.null(bestmove)] <- ""
                matetype <- res.sf$matetype
                sfproc   <- res.sf$sfproc
                sfrun    <- res.sf$sfrun
@@ -1557,9 +1580,10 @@ play <- function(lang="en", ...) {
                   texttop  <- tmp$texttop
                   evalvals <- tmp$evalvals
                   # recalculate after showing the best move (not done at the moment)
-                  #res.sf   <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
-                  #evalval  <- res.sf$eval
-                  #bestmove <- res.sf$bestmove
+                  #res.sf   <- .sf.eval(sfproc, sfrun, depth1, multipv=5, sflim=NA, fen, usesfcache=TRUE)
+                  #evalval  <- res.sf$eval[1:multipv1]
+                  #bestmove <- res.sf$bestmove[1:multipv1]
+                  #bestmove[.is.null(bestmove)] <- ""
                   #matetype <- res.sf$matetype
                   #sfproc   <- res.sf$sfproc
                   #sfrun    <- res.sf$sfrun
@@ -1630,9 +1654,10 @@ play <- function(lang="en", ...) {
                .textbot(mode, opening=opening, onlyeco=TRUE)
                if (mode %in% c("add","analysis")) {
                   fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
-                  res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
-                  evalval  <- res.sf$eval
-                  bestmove <- res.sf$bestmove
+                  res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv=5, sflim=NA, fen, usesfcache=TRUE)
+                  evalval  <- res.sf$eval[1:multipv1]
+                  bestmove <- res.sf$bestmove[1:multipv1]
+                  bestmove[.is.null(bestmove)] <- ""
                   matetype <- res.sf$matetype
                   sfproc   <- res.sf$sfproc
                   sfrun    <- res.sf$sfrun
@@ -1736,9 +1761,10 @@ play <- function(lang="en", ...) {
                   sub$moves <- sub$moves[seq_len(i-1),,drop=FALSE]
                if (mode %in% c("add","play","analysis")) {
                   fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
-                  res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
-                  evalval  <- res.sf$eval
-                  bestmove <- res.sf$bestmove
+                  res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv=5, sflim=NA, fen, usesfcache=TRUE)
+                  evalval  <- res.sf$eval[1:multipv1]
+                  bestmove <- res.sf$bestmove[1:multipv1]
+                  bestmove[.is.null(bestmove)] <- ""
                   matetype <- res.sf$matetype
                   sfproc   <- res.sf$sfproc
                   sfrun    <- res.sf$sfrun
@@ -1792,18 +1818,21 @@ play <- function(lang="en", ...) {
                   evalvallast <- evalval[1]
                   fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                   if (mode %in% c("add","analysis")) {
-                     res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
+                     res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv=5, sflim=NA, fen, usesfcache=TRUE)
+                     evalval  <- res.sf$eval[1:multipv1]
+                     bestmove <- res.sf$bestmove[1:multipv1]
+                     bestmove[.is.null(bestmove)] <- ""
                   } else {
-                     res.sf <- .sf.eval(sfproc, sfrun, depth3, multipv1, sflim, fen, sidetoplay)
+                     res.sf <- .sf.eval(sfproc, sfrun, depth3, multipv1, sflim, fen)
+                     evalval  <- res.sf$eval
+                     bestmove <- res.sf$bestmove
                   }
-                  evalval  <- res.sf$eval
-                  bestmove <- res.sf$bestmove
                   matetype <- res.sf$matetype
                   sfproc   <- res.sf$sfproc
                   sfrun    <- res.sf$sfrun
                   if (mode == "play" && (!is.na(sflim) || depth1 > depth3)) {
-                     res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
-                     evalval  <- res.sf$eval
+                     res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv=5, sflim=NA, fen, usesfcache=TRUE)
+                     evalval  <- res.sf$eval[1:multipv1]
                      matetype <- res.sf$matetype
                      sfproc   <- res.sf$sfproc
                      sfrun    <- res.sf$sfrun
@@ -1837,12 +1866,12 @@ play <- function(lang="en", ...) {
                         evalval <- 0
                      .texttop(.text(matetype))
                   }
-                  threefold <- any(table(sapply(strsplit(sub$moves$fen, " "), function(x) paste(x[1:4], collapse = " "))) == 3L)
+                  threefold <- any(table(sapply(strsplit(sub$moves$fen, " ", fixed=TRUE), function(x) paste(x[1:4], collapse = " "))) == 3L)
                   if (threefold) {
                      .texttop(.text("threefold"))
                      evalval <- 0
                   }
-                  fifty <- identical(strsplit(fen, " ")[[1]][5], "100")
+                  fifty <- identical(strsplit(fen, " ", fixed=TRUE)[[1]][5], "100")
                   if (fifty) {
                      .texttop(.text("fifty"))
                      evalval <- 0
@@ -1889,9 +1918,10 @@ play <- function(lang="en", ...) {
                .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
                if (mode %in% c("add","analysis")) {
                   fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
-                  res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
-                  evalval  <- res.sf$eval
-                  bestmove <- res.sf$bestmove
+                  res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv=5, sflim=NA, fen, usesfcache=TRUE)
+                  evalval  <- res.sf$eval[1:multipv1]
+                  bestmove <- res.sf$bestmove[1:multipv1]
+                  bestmove[.is.null(bestmove)] <- ""
                   matetype <- res.sf$matetype
                   sfproc   <- res.sf$sfproc
                   sfrun    <- res.sf$sfrun
@@ -1988,9 +2018,10 @@ play <- function(lang="en", ...) {
                .draweval(sub$moves$eval[i-1], oldeval, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                if (mode %in% c("add","analysis")) {
                   fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
-                  res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
-                  evalval  <- res.sf$eval
-                  bestmove <- res.sf$bestmove
+                  res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv=5, sflim=NA, fen, usesfcache=TRUE)
+                  evalval  <- res.sf$eval[1:multipv1]
+                  bestmove <- res.sf$bestmove[1:multipv1]
+                  bestmove[.is.null(bestmove)] <- ""
                   matetype <- res.sf$matetype
                   sfproc   <- res.sf$sfproc
                   sfrun    <- res.sf$sfrun
@@ -2050,9 +2081,10 @@ play <- function(lang="en", ...) {
                sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
                .textbot(mode, opening=opening, onlyeco=TRUE)
                fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
-               res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
-               evalval  <- res.sf$eval
-               bestmove <- res.sf$bestmove
+               res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv=5, sflim=NA, fen, usesfcache=TRUE)
+               evalval  <- res.sf$eval[1:multipv1]
+               bestmove <- res.sf$bestmove[1:multipv1]
+               bestmove[.is.null(bestmove)] <- ""
                matetype <- res.sf$matetype
                sfproc   <- res.sf$sfproc
                sfrun    <- res.sf$sfrun
@@ -2069,7 +2101,7 @@ play <- function(lang="en", ...) {
 
             # u to update the evaluations for the current sequence/game
 
-            if (mode %in% c("test","play","analysis") && identical(click, "u")) {
+            if (identical(click, "u")) {
 
                if (is.null(sfproc) || !sfrun) {
 
@@ -2108,14 +2140,14 @@ play <- function(lang="en", ...) {
 
                      .flush()
                      cat(.text("evalupdateold"))
-                     print(sub$moves[1:7])
+                     print(sub$moves[1:8])
                      cat(.text("evalupdatestart"))
 
                      if (!is.null(sub$pos)) {
                         fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i=1)
-                        res.sf <- .sf.eval(sfproc, sfrun, depth2, multipv=1, sflim=NA, fen, sidetoplay, progbar=TRUE)
-                        evalval  <- res.sf$eval
-                        bestmove <- res.sf$bestmove
+                        res.sf <- .sf.eval(sfproc, sfrun, depth2, multipv=5, sflim=NA, fen, progbar=TRUE, usesfcache=TRUE)
+                        evalval  <- res.sf$eval[1]
+                        bestmove <- res.sf$bestmove[1]
                         matetype <- res.sf$matetype
                         sfproc   <- res.sf$sfproc
                         sfrun    <- res.sf$sfrun
@@ -2129,9 +2161,9 @@ play <- function(lang="en", ...) {
                         sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                         sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
                         fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i+1)
-                        res.sf <- .sf.eval(sfproc, sfrun, depth2, multipv=1, sflim=NA, fen, sidetoplay, progbar=TRUE)
-                        evalval  <- res.sf$eval
-                        bestmove <- res.sf$bestmove
+                        res.sf <- .sf.eval(sfproc, sfrun, depth2, multipv=5, sflim=NA, fen, progbar=TRUE, usesfcache=TRUE)
+                        evalval  <- res.sf$eval[1]
+                        bestmove <- res.sf$bestmove[1]
                         matetype <- res.sf$matetype
                         sfproc   <- res.sf$sfproc
                         sfrun    <- res.sf$sfrun
@@ -2143,7 +2175,7 @@ play <- function(lang="en", ...) {
                      .textbot(mode, i=i, totalmoves=totalmoves, onlyi=TRUE)
                      sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
                      cat(.text("evalupdatenew"))
-                     print(sub$moves[1:7])
+                     print(sub$moves[1:8])
                      cat("\n")
                      if (mode == "test")
                         saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
@@ -2476,9 +2508,10 @@ play <- function(lang="en", ...) {
                #opening <- .findopening(sub$moves[seq_len(i-1),1:4], flip=flip, opening="", openings=openings, mode=mode, posnull=is.null(sub$pos))
                sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
                fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
-               res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
-               evalval  <- res.sf$eval
-               bestmove <- res.sf$bestmove
+               res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv=5, sflim=NA, fen, usesfcache=TRUE)
+               evalval  <- res.sf$eval[1:multipv1]
+               bestmove <- res.sf$bestmove[1:multipv1]
+               bestmove[.is.null(bestmove)] <- ""
                matetype <- res.sf$matetype
                sfproc   <- res.sf$sfproc
                sfrun    <- res.sf$sfrun
@@ -2700,9 +2733,10 @@ play <- function(lang="en", ...) {
                if (!.is.start.pos(pos)) {
                   sub$pos <- pos
                   fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
-                  res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
-                  evalval  <- res.sf$eval
-                  bestmove <- res.sf$bestmove
+                  res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv=5, sflim=NA, fen, usesfcache=TRUE)
+                  evalval  <- res.sf$eval[1:multipv1]
+                  bestmove <- res.sf$bestmove[1:multipv1]
+                  bestmove[.is.null(bestmove)] <- ""
                   matetype <- res.sf$matetype
                   sfproc   <- res.sf$sfproc
                   sfrun    <- res.sf$sfrun
@@ -2733,11 +2767,11 @@ play <- function(lang="en", ...) {
             # I to toggle use of Lichess cache on/off
 
             if (identical(click, "I")) {
-               usecache <- !usecache
-               assign("usecache", usecache, envir=.chesstrainer)
-               .texttop(.text("usecache", usecache), sleep=1.5)
+               uselicache <- !uselicache
+               assign("uselicache", uselicache, envir=.chesstrainer)
+               .texttop(.text("uselicache", uselicache), sleep=1.5)
                .texttop(texttop)
-               settings$usecache <- usecache
+               settings$uselicache <- uselicache
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
@@ -3299,7 +3333,7 @@ play <- function(lang="en", ...) {
                # C: ... (or c: or K: or k:) entered (search among the comments)
 
                if (grepl("^[CcKk]:\\s.*$", searchterm)) {
-                  searchterm <- tolower(trimws(strsplit(searchterm, ":")[[1]][2]))
+                  searchterm <- tolower(trimws(strsplit(searchterm, ":", fixed=TRUE)[[1]][2]))
                   seqident <- sapply(dat.all, function(x) any(grepl(searchterm, tolower(c(x$moves$comment, x$commentend)), fixed=TRUE)))
                   if (any(seqident)) {
                      cat(.text("seqsmatchcomment"))
@@ -3522,7 +3556,7 @@ play <- function(lang="en", ...) {
                notnull <- !sapply(seqident, is.null)
                seqident <- seqident[notnull]
                if (any(notnull)) {
-                  eval(expr=switch1)
+                  #eval(expr=switch1)
                   cat(.text("seqsmatchstart"))
                   tab <- data.frame(files.all[notnull])
                   if (movestoshow > 0) {
@@ -3535,17 +3569,18 @@ play <- function(lang="en", ...) {
                   }
                   rownames(tab) <- which(notnull)
                   .printdf(tab, align=c("l",rep("r",movestoshow)))
-                  selmatches <- readline(prompt=.text("selmatches"))
-                  if (identical(selmatches, "") || .confirm(selmatches)) {
+                  #eval(expr=switch2)
+                  .texttop(.text("selmatchestop"))
+                  selmatches <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=.keyfun)
+                  if (identical(selmatches, "\r") || identical(selmatches, "ctrl-J") || .confirm(selmatches)) {
                      cat(.text("selmatchesconfirm", sum(notnull)))
                      selected <- files.all[notnull]
                      .newround(seqno1=TRUE)
                   }
-                  eval(expr=switch2)
                } else {
                   .texttop(.text("noseqsfound"), sleep=1.5)
-                  .texttop(texttop)
                }
+               .texttop(texttop)
                next
             }
 
@@ -3571,7 +3606,7 @@ play <- function(lang="en", ...) {
                notnull <- !sapply(seqident, is.null)
                seqident <- seqident[notnull]
                if (any(notnull)) {
-                  eval(expr=switch1)
+                  #eval(expr=switch1)
                   cat(.text("seqsinclpos"))
                   tab <- data.frame(files.all[notnull])
                   if (movestoshow > 0) {
@@ -3585,14 +3620,16 @@ play <- function(lang="en", ...) {
                   rownames(tab) <- which(notnull)
                   .printdf(tab, align=c("l",rep("r",movestoshow)))
                   if (identical(click, "'")) {
-                     selmatches <- readline(prompt=.text("selmatches"))
-                     if (identical(selmatches, "") || .confirm(selmatches)) {
+                     .texttop(.text("selmatchestop"))
+                     selmatches <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=.keyfun)
+                     if (identical(selmatches, "\r") || identical(selmatches, "ctrl-J") || .confirm(selmatches)) {
                         cat(.text("selmatchesconfirm", sum(notnull)))
                         selected <- files.all[notnull]
                         .newround(seqno1=TRUE)
                      }
+                     .texttop(texttop)
                   }
-                  eval(expr=switch2)
+                  #eval(expr=switch2)
                } else {
                   .texttop(.text("noseqsfound"), sleep=1.5)
                   .texttop(texttop)
@@ -3630,15 +3667,14 @@ play <- function(lang="en", ...) {
                      .texttop(texttop)
                   } else {
                      tab <- as.data.frame(table(nextmoves))
-                     eval(expr=switch1)
-                     #cat(.text("seqsinclpos"))
+                     #eval(expr=switch1)
                      tab <- tab[order(tab$Freq, decreasing=TRUE),,drop=FALSE]
                      rownames(tab) <- NULL
                      tab$perc <- .percent(tab$Freq)
                      colnames(tab) <- c(.text("move"),"n","%")
                      print(tab, print.gap=2)
+                     #eval(expr=switch2)
                   }
-                  eval(expr=switch2)
                   next
                } else {
                   .texttop(.text("noseqsfound"), sleep=1.5)
@@ -3656,23 +3692,24 @@ play <- function(lang="en", ...) {
                searchterm <- paste(strsplit(searchterm, " ", fixed=TRUE)[[1]][1:3], collapse=" ")
                seqident <- sapply(dat.all, function(x) grepl(searchterm, tail(x$moves$fen, 1), fixed=TRUE) && identical(flip, x$flip))
                if (any(seqident)) {
-                  eval(expr=switch1)
+                  #eval(expr=switch1)
                   cat(.text("seqsendpos"))
                   tab <- data.frame(files.all[seqident])
                   colnames(tab) <- .text("sequence")
                   rownames(tab) <- which(seqident)
                   .printdf(tab, align="l")
-                  selmatches <- readline(prompt=.text("selmatches"))
-                  if (identical(selmatches, "") || .confirm(selmatches)) {
+                  .texttop(.text("selmatchestop"))
+                  selmatches <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=.keyfun)
+                  if (identical(selmatches, "\r") || identical(selmatches, "ctrl-J") || .confirm(selmatches)) {
                      cat(.text("selmatchesconfirm", sum(seqident)))
                      selected <- files.all[seqident]
                      .newround(seqno1=TRUE)
                   }
-                  eval(expr=switch2)
+                  #eval(expr=switch2)
                } else {
                   .texttop(.text("noseqsfound"), sleep=1.5)
-                  .texttop(texttop)
                }
+               .texttop(texttop)
                next
             }
 
@@ -3734,23 +3771,24 @@ play <- function(lang="en", ...) {
                   any(whattofind == whattofinds) && identical(flip, x$flip)
                })
                if (any(seqident)) {
-                  eval(expr=switch1)
+                  #eval(expr=switch1)
                   cat(.text("seqsmatchpossquare"))
                   tab <- data.frame(files.all[seqident])
                   colnames(tab) <- .text("sequence")
                   rownames(tab) <- which(seqident)
                   .printdf(tab, align="l")
-                  selmatches <- readline(prompt=.text("selmatches"))
-                  if (identical(selmatches, "") || .confirm(selmatches)) {
+                  .texttop(.text("selmatchestop"))
+                  selmatches <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=.keyfun)
+                  if (identical(selmatches, "\r") || identical(selmatches, "ctrl-J") || .confirm(selmatches)) {
                      cat(.text("selmatchesconfirm", sum(seqident)))
                      selected <- files.all[seqident]
                      .newround(seqno1=TRUE)
                   }
-                  eval(expr=switch2)
+                  #eval(expr=switch2)
                } else {
                   .texttop(.text("noseqsfound"), sleep=1.5)
-                  .texttop(texttop)
                }
+               .texttop(texttop)
                next
             }
 
@@ -3801,8 +3839,8 @@ play <- function(lang="en", ...) {
                            volume=volume, showgraph=showgraph, repmistake=repmistake, target=target,
                            # cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
                            difffun=difffun, difflen=difflen, diffmin=diffmin,
-                           sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, contanalysis=contanalysis)
-                           #speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb, token=paste0(rep("*", nchar(token), collapse=""), usecache=usecache, libar=libar)
+                           sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, monthssfcache=monthssfcache, contanalysis=contanalysis)
+                           #speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb, token=paste0(rep("*", nchar(token), collapse=""), uselicache=uselicache, libar=libar, monthslicache=monthslicache)
                .showsettings(tab)
                .redrawpos(pos, flip=flip)
                .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
@@ -3870,31 +3908,33 @@ play <- function(lang="en", ...) {
             # F7 to adjust the Stockfish settings
 
             if (identical(click, "F7")) {
-               eval(expr=switch1)
-               tmp <- .sfsettings(sfproc, sfrun, sfpath, depth1, depth2, depth3, sflim, multipv1, multipv2, threads, hash, hintdepth)
-               eval(expr=switch2)
-               sfproc    <- tmp$sfproc
-               sfrun     <- tmp$sfrun
-               sfpath    <- tmp$sfpath
-               depth1    <- tmp$depth1
-               depth2    <- tmp$depth2
-               depth3    <- tmp$depth3
-               sflim     <- tmp$sflim
-               multipv1  <- tmp$multipv1
-               multipv2  <- tmp$multipv2
-               threads   <- tmp$threads
-               hash      <- tmp$hash
-               hintdepth <- tmp$hintdepth
-               settings$sfpath    <- sfpath
-               settings$depth1    <- depth1
-               settings$depth2    <- depth2
-               settings$depth3    <- depth3
-               settings$sflim     <- sflim
-               settings$multipv1  <- multipv1
-               settings$multipv2  <- multipv2
-               settings$threads   <- threads
-               settings$hash      <- hash
-               settings$hintdepth <- hintdepth
+               tmp <- .sfsettings(sfproc, sfrun, sfpath, depth1, depth2, depth3, sflim, multipv1, multipv2, threads, hash, hintdepth, monthssfcache)
+               .redrawpos(pos, flip=flip)
+               .drawannot(circles=circles, arrows=arrows, glyph=glyph)
+               sfproc        <- tmp$sfproc
+               sfrun         <- tmp$sfrun
+               sfpath        <- tmp$sfpath
+               depth1        <- tmp$depth1
+               depth2        <- tmp$depth2
+               depth3        <- tmp$depth3
+               sflim         <- tmp$sflim
+               multipv1      <- tmp$multipv1
+               multipv2      <- tmp$multipv2
+               threads       <- tmp$threads
+               hash          <- tmp$hash
+               hintdepth     <- tmp$hintdepth
+               monthssfcache <- tmp$monthssfcache
+               settings$sfpath        <- sfpath
+               settings$depth1        <- depth1
+               settings$depth2        <- depth2
+               settings$depth3        <- depth3
+               settings$sflim         <- sflim
+               settings$multipv1      <- multipv1
+               settings$multipv2      <- multipv2
+               settings$threads       <- threads
+               settings$hash          <- hash
+               settings$hintdepth     <- hintdepth
+               settings$monthssfcache <- monthssfcache
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
@@ -3902,24 +3942,23 @@ play <- function(lang="en", ...) {
             # F8 to adjust the Lichess database settings
 
             if (identical(click, "F8")) {
-               tmp <- .lichesssettings(speeds, ratings, lichessdb, usecache, barlen, invertbar, token, isonline)
+               tmp <- .lichesssettings(speeds, ratings, lichessdb, uselicache, barlen, invertbar, token, monthslicache, isonline)
                .redrawpos(pos, flip=flip)
-               .textbot(mode, score=score, onlyscore=TRUE)
                .drawannot(circles=circles, arrows=arrows, glyph=glyph)
-               speeds    <- tmp$speeds
-               ratings   <- tmp$ratings
-               lichessdb <- tmp$lichessdb
-               usecache  <- tmp$usecache
-               barlen    <- tmp$barlen
-               invertbar <- tmp$invertbar
-               token     <- tmp$token
-               settings$speeds    <- speeds
-               settings$ratings   <- ratings
-               settings$lichessdb <- lichessdb
-               settings$usecache  <- usecache
-               settings$barlen    <- barlen
-               settings$invertbar <- invertbar
-               settings$token     <- token
+               speeds     <- tmp$speeds
+               ratings    <- tmp$ratings
+               lichessdb  <- tmp$lichessdb
+               uselicache <- tmp$uselicache
+               barlen     <- tmp$barlen
+               invertbar  <- tmp$invertbar
+               token      <- tmp$token
+               settings$speeds     <- speeds
+               settings$ratings    <- ratings
+               settings$lichessdb  <- lichessdb
+               settings$uselicache <- uselicache
+               settings$barlen     <- barlen
+               settings$invertbar  <- invertbar
+               settings$token      <- token
                if (contliquery)
                   .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, mode)
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
@@ -4461,9 +4500,10 @@ play <- function(lang="en", ...) {
                         .draweval(sub$moves$eval[i-1], NA, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                         sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
                         fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
-                        res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
-                        evalval  <- res.sf$eval
-                        bestmove <- res.sf$bestmove
+                        res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv=5, sflim=NA, fen, usesfcache=TRUE)
+                        evalval  <- res.sf$eval[1:multipv1]
+                        bestmove <- res.sf$bestmove[1:multipv1]
+                        bestmove[.is.null(bestmove)] <- ""
                         matetype <- res.sf$matetype
                         sfproc   <- res.sf$sfproc
                         sfrun    <- res.sf$sfrun
@@ -4495,18 +4535,21 @@ play <- function(lang="en", ...) {
                         fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                         compmove <- (flip && sidetoplay == "w") || (!flip && sidetoplay == "b")
                         if (compmove) {
-                           res.sf <- .sf.eval(sfproc, ifelse(contliquery, FALSE, sfrun), depth3, multipv1, sflim, fen, sidetoplay)
+                           res.sf <- .sf.eval(sfproc, ifelse(contliquery, FALSE, sfrun), depth3, multipv1, sflim, fen)
+                           evalval  <- res.sf$eval
+                           bestmove <- res.sf$bestmove
                         } else {
-                           res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
+                           res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv=5, sflim=NA, fen, usesfcache=TRUE)
+                           evalval  <- res.sf$eval[1:multipv1]
+                           bestmove <- res.sf$bestmove[1:multipv1]
+                           bestmove[.is.null(bestmove)] <- ""
                         }
-                        evalval  <- res.sf$eval
-                        bestmove <- res.sf$bestmove
                         matetype <- res.sf$matetype
                         sfproc   <- res.sf$sfproc
                         sfrun    <- ifelse(contliquery, sfrun, res.sf$sfrun)
                         if (compmove && (contliquery || !is.na(sflim) || depth1 > depth3)) {
-                           res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
-                           evalval  <- res.sf$eval
+                           res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv=5, sflim=NA, fen, usesfcache=TRUE)
+                           evalval  <- res.sf$eval[1:multipv1]
                            matetype <- res.sf$matetype
                            sfproc   <- res.sf$sfproc
                            sfrun    <- res.sf$sfrun
@@ -4643,13 +4686,16 @@ play <- function(lang="en", ...) {
             fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
             if (mode %in% c("add","analysis")) {
                # in add and analysis mode, get the evaluation and next bestmove using depth1
-               res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
+               res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv=5, sflim=NA, fen, usesfcache=TRUE)
+               evalval  <- res.sf$eval[1:multipv1]
+               bestmove <- res.sf$bestmove[1:multipv1] # [d]
+               bestmove[.is.null(bestmove)] <- ""
             } else {
                # in play mode, get the evaluation and next bestmove using depth3 (with sflim), but we can skip this is contliquery is on
-               res.sf <- .sf.eval(sfproc, sfrun=ifelse(contliquery, FALSE, sfrun), depth3, multipv1, sflim, fen, sidetoplay)
+               res.sf <- .sf.eval(sfproc, sfrun=ifelse(contliquery, FALSE, sfrun), depth3, multipv1, sflim, fen)
+               evalval  <- res.sf$eval
+               bestmove <- res.sf$bestmove # [d]
             }
-            evalval  <- res.sf$eval
-            bestmove <- res.sf$bestmove # [d]
             matetype <- res.sf$matetype
             sfproc   <- res.sf$sfproc
             sfrun    <- ifelse(contliquery, sfrun, res.sf$sfrun)
@@ -4657,8 +4703,8 @@ play <- function(lang="en", ...) {
             # in play mode, run .sf.eval() one more time to base the actual evaluation on depth1 (and without sflim) and not depth3 or in case contliquery is on
 
             if (mode == "play" && (contliquery || !is.na(sflim) || depth1 > depth3)) {
-               res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv1, sflim=NA, fen, sidetoplay)
-               evalval  <- res.sf$eval
+               res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv=5, sflim=NA, fen, usesfcache=TRUE)
+               evalval  <- res.sf$eval[1:multipv1]
                matetype <- res.sf$matetype
                sfproc   <- res.sf$sfproc
                sfrun    <- res.sf$sfrun
@@ -4742,7 +4788,7 @@ play <- function(lang="en", ...) {
 
             # check for threefold repetition
 
-            threefold <- any(table(sapply(strsplit(sub$moves$fen, " "), function(x) paste(x[1:4], collapse = " "))) == 3L)
+            threefold <- any(table(sapply(strsplit(sub$moves$fen, " ", fixed=TRUE), function(x) paste(x[1:4], collapse = " "))) == 3L)
 
             if (threefold) {
                .texttop(.text("threefold"))
@@ -4758,7 +4804,7 @@ play <- function(lang="en", ...) {
 
             # check fifty-move rule
 
-            fifty <- identical(strsplit(fen, " ")[[1]][5], "100")
+            fifty <- identical(strsplit(fen, " ", fixed=TRUE)[[1]][5], "100")
 
             if (fifty) {
                .texttop(.text("fifty"))

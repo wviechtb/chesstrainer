@@ -246,7 +246,7 @@
 
 .expandfen <- function(fen) {
 
-   fields <- unlist(strsplit(fen, " "))
+   fields <- unlist(strsplit(fen, " ", fixed=TRUE))
 
    norochade <- FALSE
 
@@ -267,14 +267,14 @@
 
    # split fields and check that there are 6 of them
 
-   fields <- unlist(strsplit(fen, " "))
+   fields <- unlist(strsplit(fen, " ", fixed=TRUE))
 
    if (length(fields) != 6L)
       return(FALSE)
 
    # piece placement validation
 
-   ranks <- unlist(strsplit(fields[1], "/"))
+   ranks <- unlist(strsplit(fields[1], "/", fixed=TRUE))
 
    if (length(ranks) != 8L)
       return(FALSE)
@@ -285,7 +285,7 @@
 
    for (rank in ranks) {
       squares <- 0
-      chars <- unlist(strsplit(rank, ""))
+      chars <- unlist(strsplit(rank, "", fixed=TRUE))
       for (ch in chars) {
          if (ch %in% pieces) {
             squares <- squares + 1
@@ -309,7 +309,7 @@
    if (!grepl("^(-|[KQkq]+)$", fields[3]))
       return(FALSE)
 
-   if (fields[3] != "-" && length(unique(strsplit(fields[3], "")[[1]])) != nchar(fields[3]))
+   if (fields[3] != "-" && length(unique(strsplit(fields[3], "", fixed=TRUE)[[1]])) != nchar(fields[3]))
       return(FALSE)
 
    # validate en passant target square
@@ -335,13 +335,13 @@
 
    pos <- matrix("", nrow=8, ncol=8)
 
-   fields <- unlist(strsplit(fen, " "))
-   ranks <- unlist(strsplit(fields[1], "/"))
+   fields <- unlist(strsplit(fen, " ", fixed=TRUE))
+   ranks <- unlist(strsplit(fields[1], "/", fixed=TRUE))
 
    pieces <- c("p","n","b","r","q","k","P","N","B","R","Q","K")
 
    for (i in 1:8) {
-      chars <- unlist(strsplit(ranks[i], ""))
+      chars <- unlist(strsplit(ranks[i], "", fixed=TRUE))
       j <- 0
       for (ch in chars) {
          if (grepl("^[1-8]$", ch)) {
@@ -443,7 +443,7 @@
 
 .parsemove <- function(move, pos, flip, evalval, i, sidetoplay, rename, returnline, hintdepth, space="", san=NULL) {
 
-   move <- strsplit(move, "")
+   move <- strsplit(move, "", fixed=TRUE)
    nmoves.all <- length(move)
    move <- move[lengths(move) > 0]
    nmoves <- length(move)
@@ -1283,9 +1283,9 @@
    filename <- paste0(gsub("/", "_", fen, fixed=TRUE), ".rds")
 
    cachedir <- .get("cachedir")
-   usecache <- .get("usecache")
+   uselicache <- .get("uselicache")
 
-   if (usecache) {
+   if (uselicache) {
       files <- list.files(file.path(cachedir, lichessdb), pattern=".rds$")
    } else {
       files <- ""
@@ -1610,5 +1610,23 @@
    }
 
    return(x)
+
+}
+
+.cleancache <- function(dir, months) {
+
+   files <- list.files(dir, full.names=TRUE)
+
+   if (length(files) == 0L)
+      return()
+
+   mtimes <- file.mtime(files)
+   ages <- difftime(Sys.time(), mtimes, units="days")
+   old <- ages >= 30*months
+
+   if (any(old))
+      file.remove(files[old])
+
+   return()
 
 }
