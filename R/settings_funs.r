@@ -733,7 +733,7 @@
    lwd <- tab$lwd
 
    lang <- .get("lang")
-   tab$lang <- lang
+   tab$lang <- switch(lang, de = "Deutsch", en = "English")
 
    col.bg     <- .get("col.bg")
    col.help   <- .get("col.help")
@@ -751,6 +751,8 @@
       } else {
          tab$sflim <- paste(tab$sflim, "(Elo)")
       }
+   } else {
+      tab$sflim <- .text("none")
    }
 
    #tab$eval <- paste0(names(tab$eval[tab$eval]), collapse=", ")
@@ -782,6 +784,9 @@
    tab <- cbind(tab, .text("explsettings"))
    colnames(tab) <- c("", "")
 
+   tab[,1] <- gsub("TRUE",  .text("on"),  tab[,1], fixed=TRUE)
+   tab[,1] <- gsub("FALSE", .text("off"), tab[,1], fixed=TRUE)
+
    tab <- tab[rownames(tab) != "seqdir",]
    tab <- tab[rownames(tab) != "sfpath",]
 
@@ -799,7 +804,7 @@
       sfpath <- paste0("...", substr(sfpath, nchar(sfpath)-maxchars-3+1, nchar(sfpath)))
 
    txt <- gsub("<NA>", "NA  ", txt, fixed=TRUE)
-   sfpos <- grep("difffun", txt, fixed=TRUE)
+   sfpos <- grep("depth1", txt, fixed=TRUE)
    txt <- c(.text("generalsettings"), txt[1:(sfpos-1)], "", .text("seqdirsettings"), seqdir, "", .text("sfsettings"), txt[sfpos:length(txt)], "", .text("sfpathsettings"), sfpath)
 
    cex <- .findcex(txt, font=font.mono, x1=1.5, x2=8.2, y1=2.0, y2=8.0)

@@ -1647,6 +1647,12 @@
                          "Select gray color scheme"
    ))}
 
+   if (x == "none") {
+      return(switch(lang,
+                    de = "keins",
+                         "None"
+   ))}
+
 }
 
 .confirm <- function(x) {
