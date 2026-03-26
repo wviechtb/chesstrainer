@@ -1650,7 +1650,7 @@
    if (x == "none") {
       return(switch(lang,
                     de = "keins",
-                         "None"
+                         "none"
    ))}
 
 }
