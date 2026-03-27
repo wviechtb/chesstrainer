@@ -94,15 +94,18 @@
       fenfilename <- paste0(fenfilename, ".rds")
       if (fenfilename %in% fileswoutdepth) {
          pos <- which(fenfilename == fileswoutdepth)[1]
-         if (depths[pos] >= depth) {
-            # read in the cache file if it is of sufficient depth
-            out <- readRDS(file.path(cachedir, "stockfish", files[pos]))
+         file <- file.path(cachedir, "stockfish", files[pos])
+         if (depths[pos] >= depth) { # read in the cache file if it is of sufficient depth
+            out <- readRDS(file)
+            lastmod <- file.mtime(file)
+            if (difftime(Sys.time(), lastmod, units="days") > 1)
+               Sys.setFileTime(file, Sys.time()) # touch the file if its modification time was more than 1 day ago
             out$sfproc <- sfproc
             out$sfrun <- sfrun
             return(out)
          } else {
             # remove the lower depth cache file
-            file.remove(file.path(cachedir, "stockfish", files[pos]))
+            file.remove(file)
          }
       }
 
@@ -260,10 +263,8 @@
       bestmove <- bestmoveatend
 
    if (usesfcache) {
-
       depthfenfilename <- paste0(depth, "_", fenfilename)
       saveRDS(list(eval=eval, bestmove=bestmove, matetype="none"), file=file.path(cachedir, "stockfish", depthfenfilename))
-
    }
 
    return(list(eval=eval, bestmove=bestmove, matetype="none", sfproc=sfproc, sfrun=sfrun))

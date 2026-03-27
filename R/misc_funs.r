@@ -1293,7 +1293,11 @@
 
    if (filename %in% files) {
 
-      out <- readRDS(file.path(cachedir, lichessdb, filename))
+      file <- file.path(cachedir, lichessdb, filename)
+      out <- readRDS(file)
+      lastmod <- file.mtime(file)
+      if (difftime(Sys.time(), lastmod, units="days") > 1)
+         Sys.setFileTime(file, Sys.time()) # touch the file if its modification time was more than 1 day ago
 
    } else {
 

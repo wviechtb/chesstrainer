@@ -1714,7 +1714,7 @@
    if (is.null(x)) {
       rect(xold-0.03, y-0.08, xold+0.03, y+0.08, col=col.slider, border=col.slider)
       if (text)
-         text(xold, y + 2.0*height, oldval, family=font.mono, cex=cex, col=col.line, adj=c(0.5,0.5))
+         text(xold, y + 2.0*height, oldval, family=font.mono, cex=cex, col=col.slider, adj=c(0.5,0.5))
       return()
    } else {
       x[x < xlim[1]] <- xlim[1]
@@ -1726,7 +1726,7 @@
          return(newval)
       rect(xold-0.2, y-0.12, xold+0.2, y+0.12, col=col.bg, border=col.bg)
       if (text) {
-         rect(max(1.25, xold-1), y+0.05, min(8.75,xold+1), y + 3.0*height, col=col.bg, border=col.bg)
+         rect(max(1.25, xold-0.4), y+0.05, min(8.75,xold+0.4), y + 3.0*height, col=col.bg, border=col.bg)
          segments(max(xlim[1], xold-0.2), y, min(xlim[n], xold+0.2), y, col=col.line, lend=2)
          segments(xlim[1], y-0.06, xlim[1], y+0.06, col=col.line, lend=2)
          segments(xlim[n], y-0.06, xlim[n], y+0.06, col=col.line, lend=2)
@@ -1741,7 +1741,7 @@
    rect(xnew-0.03, y-0.08, xnew+0.03, y+0.08, col=col.slider, border=col.slider)
 
    if (text)
-      text(xnew, y + 2.0*height, newval, family=font.mono, cex=cex, col=col.line, adj=c(0.5,0.5))
+      text(xnew, y + 2.0*height, newval, family=font.mono, cex=cex, col=col.slider, adj=c(0.5,0.5))
 
    return(newval)
 

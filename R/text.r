@@ -1071,58 +1071,52 @@
                          "Not at the end of the sequence."
    ))}
 
-   if (x == "seqdiroptionwhich") {
+   if (x == "directory") {
       return(switch(lang,
-                    de = "Option (<Nummer>, 'h' (hinzuf\U000000FCgen), 'e' (entfernen), 'p' (Position ver\U000000E4ndern), oder <Enter> zum Verlassen): ",
-                         "Option (<number>, 'a' (add), 'r' (remove), 'p' (change position), or <enter> to quit): "
+                    de = "Verzeichnis",
+                         "Directory"
    ))}
 
-   if (x == "selectedseqdir") {
+   if (x == "selseqdir") {
       return(switch(lang,
-                    de = c("Verzeichnis", "ausgew\U000000E4hlt"),
-                         c("directory", "selected")
-   ))}
-
-   if (x == "addseqdir") {
-      return(switch(lang,
-                    de = "\nSequenzverzeichnis hinzuf\U000000FCgen: ",
-                         "\nSequence directory to add: "
-   ))}
-
-   if (x == "dirdoesnotexist") {
-      return(switch(lang,
-                    de = "Das angegebene Sequenzverzeichnis existiert nicht.\n",
-                         "Specified sequence directory does not exist.\n"
-   ))}
-
-   if (x == "createdir") {
-      return(switch(lang,
-                    de = "Soll das angegebene Sequenzverzeichnis erstellt werden? (J/n): ",
-                         "Should the specified sequence directory be created? (Y/n): "
+                    de = paste0("Verzeichnis ausw\U000000E4hlen (<F1> f\U000000FCr Hilfe): ", arg),
+                         paste0("Select directory (<F1> for help): ", arg)
    ))}
 
    if (x == "seqdirtoremove") {
       return(switch(lang,
-                    de = "\nSequenzverzeichnis zum Entfernen (<Nummer> oder <Enter> zum Verlassen): ",
-                         "\nSequence directory to remove (<number> or <enter> to quit)): "
-   ))}
-
-   if (x == "cannotremovesingleseqdir") {
-      return(switch(lang,
-                    de = "\nEin Verzeichnis kann nicht entfernt werden, wenn es nur ein einziges Sequenzverzeichnis gibt.\n",
-                         "\nCannot remove a directory when there is only a single sequence directory.\n"
+                    de = paste0("Verzeichnis zum Entfernen: ", arg),
+                         paste0("Directory to remove: ", arg)
    ))}
 
    if (x == "seqdirtomove") {
       return(switch(lang,
-                    de = "\nSequenzverzeichnis dessen Position ver\U000000E4ndert werden soll (<Nummer> oder <Enter> zum Verlassen): ",
-                         "\nSequence directory whose position should be changed (<number> or <enter> to quit)): "
+                    de = paste0("Verzeichnis dessen Position ver\U000000E4ndert werden soll: ", arg),
+                         paste0("Directory whose position should be changed: ", arg)
    ))}
 
    if (x == "seqdirnewpos") {
       return(switch(lang,
-                    de = "Neue Position f\U000000FCr das Sequenzverzeichnis (<Nummer> oder <Enter> zum Verlassen): ",
-                         "New position for the sequence directory (<number> or <enter> to quit)): "
+                    de = paste0("Neue Position f\U000000FCr das Verzeichnis: ", arg),
+                         paste0("New position for the directory: ", arg)
+   ))}
+
+   if (x == "cannotremovesingleseqdir") {
+      return(switch(lang,
+                    de = "Ein Verzeichnis kann nicht entfernt werden,\nwenn es nur ein einziges Sequenzverzeichnis gibt.",
+                         "Cannot remove a directory when there\nis only a single sequence directory."
+   ))}
+
+   if (x == "dirdoesnotexistcreate") {
+      return(switch(lang,
+                    de = "Das angegebene Sequenzverzeichnis existiert nicht.\nSoll das angegebene Sequenzverzeichnis erstellt werden? (J/n)",
+                         "Specified sequence directory does not exist.\rShould the specified sequence directory be created? (Y/n)"
+   ))}
+
+   if (x == "addseqdir") {
+      return(switch(lang,
+                    de = "Sequenzverzeichnis hinzuf\U000000FCgen: ",
+                         "Sequence directory to add: "
    ))}
 
    if (x == "plotlegend") {
@@ -1206,7 +1200,7 @@
    if (x == "seqdirsettings") {
       return(switch(lang,
                     de = "Sequenzverzeichnis:",
-                         "Sequence directory: "
+                         "Sequence directory:"
    ))}
 
    if (x == "sfpathsettings") {

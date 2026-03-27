@@ -1,4 +1,4 @@
-.bookmarks <- function(seqdir, seqdirpos, texttop) {
+.bookmarks <- function(seqdir, seqdirpos) {
 
    col.bg    <- .get("col.bg")
    col.help  <- .get("col.help")
@@ -8,7 +8,7 @@
 
    if (!file.exists(file.path(seqdir[seqdirpos], ".bookmarks"))) {
       .texttop(.text("nobookmarks"), sleep=1)
-      .texttop(texttop)
+      .texttop("")
       return(NA)
    }
 
@@ -19,7 +19,7 @@
    if (inherits(tmp, "try-error")) {
       try(file.remove(file.path(seqdir[seqdirpos], ".bookmarks")), silent=TRUE)
       .texttop(.text("nobookmarks"), sleep=1)
-      .texttop(texttop)
+      .texttop("")
       return(NA)
    }
 
@@ -34,7 +34,7 @@
    if (length(bookmarks) == 0L) {
       try(file.remove(file.path(seqdir[seqdirpos], ".bookmarks")), silent=TRUE)
       .texttop(.text("nobookmarks"), sleep=1)
-      .texttop(texttop)
+      .texttop("")
       return(NA)
    }
 
@@ -42,9 +42,6 @@
    num <- 0
    keymode <- "s"
    whichnum <- 1
-
-   #.clearsideindicator()
-   #.drawtimer(clear=TRUE)
 
    tmp <- .drawbookmarks(bookmarks)
    cex <- tmp$cex
@@ -78,8 +75,39 @@
          if (x >= 1.5 && x <= 8) {
             click <- which(y < ypos + dist & y > ypos - dist)
             if (length(click) == 1L) {
-               bookmark <- bookmarks[click]
-               break
+               if (keymode=="s") {
+                  bookmark <- bookmarks[click]
+                  break
+               }
+               if (keymode=="r") {
+                  bookmarks <- bookmarks[-click]
+                  num <- 0
+                  whichnum <- 1
+                  keymode <- "s"
+                  tmp <- .drawbookmarks(bookmarks)
+                  cex <- tmp$cex
+                  ypos <- tmp$ypos
+                  dist <- tmp$dist
+               }
+               if (keymode=="p") {
+                  if (whichnum==1) {
+                     posfrom <- click
+                     num <- 0
+                     whichnum <- 2
+                     next
+                  }
+                  if (whichnum==2) {
+                     posto <- click
+                     num <- 0
+                     whichnum <- 1
+                     keymode <- "s"
+                     bookmarktomove <- bookmarks[posfrom]
+                     bookmarks <- bookmarks[-posfrom]
+                     bookmarks <- append(bookmarks, bookmarktomove, after=posto-1)
+                     .drawbookmarks(bookmarks)
+                     next
+                  }
+               }
             }
          }
          next
@@ -213,7 +241,7 @@
 
 }
 
-.drawbookmarks <- function(bookmarks, cex) {
+.drawbookmarks <- function(bookmarks) {
 
    col.bg     <- .get("col.bg")
    col.help   <- .get("col.help")

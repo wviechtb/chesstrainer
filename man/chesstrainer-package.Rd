@@ -143,7 +143,7 @@
 
    The \verb{<Y>} key can be used to switch on a continuous query mode, where the database is automatically queried after each move. When the continuous query mode is on, an evaluation bar will be shown on the left indicating the outcome percentages for the current position. This bar can be toggled on and off with the \verb{<V>} key.
 
-   Sequences are saved to and selected from the current sequence directory. You can add, remove, and select sequence directories with \verb{<F9>}. Removing a sequence directory simply removes it from being shown in the list of sequence directories (i.e., it does not delete the directory or any sequences therein). Bookmarks are specific to each sequence directory. Also, selecting a sequence directory switches to the sequence selection mode that was active when it was last selected.
+   Sequences are saved to and selected from the current sequence directory. You can add, remove, and select sequence directories with \verb{<F9>} (use \verb{<F1>} while managing sequence directories to obtain help). Removing a sequence directory simply removes it from being shown in the list of sequence directories (i.e., it does not delete the directory or any sequences therein). Bookmarks are specific to each sequence directory. Also, selecting a sequence directory switches to the sequence selection mode that was active when it was last selected.
 
    Note that sequences are quite personalized, since they involve going into a particular line that one deems most appropriate (and hence wants to remember). Others may disagree and prefer a different line. Therefore, you should create sequences that you want to train yourself on, so you will be able to play them quickly from memory in actual games.
 

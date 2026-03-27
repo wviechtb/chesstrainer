@@ -59,7 +59,11 @@ play <- function(lang="en", ...) {
    multiplier[multiplier < 0] <- 0
    multiplier[multiplier > 1] <- 1
    adjustwrong[adjustwrong < 0] <- 0
+   adjustwrong[adjustwrong > 100] <- 100
+   adjustwrong <- round(adjustwrong)
    adjusthint[adjusthint < 0] <- 0
+   adjusthint[adjusthint > 100] <- 100
+   adjusthint <- round(adjusthint)
    if (length(eval) == 1L)
       eval <- c(add=eval, test=eval, play=eval, analysis=eval)
    evalsteps[evalsteps < 2] <- 2
@@ -1540,6 +1544,7 @@ play <- function(lang="en", ...) {
                   .texttop(texttop)
                   next
                }
+               oldeval <- evalval[[1]]
                .texttop(.text("sfdeepeval"))
                fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                res.sf <- .sf.eval(sfproc, sfrun, depth2, multipv=5, sflim=NA, fen, progbar=TRUE, usesfcache=TRUE)
@@ -1549,6 +1554,7 @@ play <- function(lang="en", ...) {
                matetype <- res.sf$matetype
                sfproc   <- res.sf$sfproc
                sfrun    <- res.sf$sfrun
+               .draweval(evalval[[1]], oldeval, i=i, starteval=starteval, flip=flip, eval=eval[[mode]], evalsteps=evalsteps)
                playsound(system.file("sounds", "complete.ogg", package="chesstrainer"))
                click <- "h"
             }
@@ -3170,7 +3176,7 @@ play <- function(lang="en", ...) {
             # > to select / manage bookmarks
 
             if (identical(click, ">")) {
-               bookmark <- .bookmarks(seqdir, seqdirpos, texttop) # returns NA if bookmark screen was not draw
+               bookmark <- .bookmarks(seqdir, seqdirpos) # returns NA if bookmark screen was not draw
                if (isTRUE(bookmark != "")) { # only TRUE if bookmark is neither NA nor ""
                   selected <- grepl(bookmark, files.all)
                   selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected]
@@ -3968,9 +3974,7 @@ play <- function(lang="en", ...) {
             # F9 to select / manage sequence directories
 
             if (identical(click, "F9")) {
-               eval(expr=switch1)
                tmp <- .seqdirsettings(seqdir, seqdirpos)
-               eval(expr=switch2)
                seqdirold <- seqdir
                seqdirposold <- seqdirpos
                seqdir <- tmp$seqdir
@@ -3994,6 +3998,9 @@ play <- function(lang="en", ...) {
                   if (selmodeold != selmode && !file.exists(file.path(seqdir[seqdirpos], ".sequential")))
                      .texttop(.text("selmodeswitch", selmode), sleep=1.5)
                   .newround(seqno1=TRUE)
+               } else {
+                  .redrawpos(pos, flip=flip)
+                  .drawannot(circles=circles, arrows=arrows, glyph=glyph)
                }
                next
             }
