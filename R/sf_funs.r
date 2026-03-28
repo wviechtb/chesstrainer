@@ -84,6 +84,7 @@
 
    if (usesfcache) {
 
+      files.to.remove <- NULL
       cachedir <- .get("cachedir")
       files <- list.files(file.path(cachedir, "stockfish"), pattern=".rds$")
       filessplit <- strsplit(files, "_", fixed=TRUE)
@@ -267,7 +268,8 @@
    if (usesfcache) {
       depthfenfilename <- paste0(depth, "_", fenfilename)
       saveRDS(list(eval=eval, bestmove=bestmove, matetype="none"), file=file.path(cachedir, "stockfish", depthfenfilename))
-      file.remove(files.to.remove)
+      if (!is.null(files.to.remove))
+         file.remove(files.to.remove)
    }
 
    return(list(eval=eval, bestmove=bestmove, matetype="none", sfproc=sfproc, sfrun=sfrun))
