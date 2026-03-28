@@ -250,13 +250,18 @@
 
    rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
 
-   tab <- data.frame(sub("\\.rds$", "", bookmarks))
+   bookmarks2 <- bookmarks
+   bookmarkslen <- nchar(bookmarks2)
+   maxlen <- 80
+   bookmarks2 <- unname(sapply(bookmarks2, function(x) if (nchar(x) >= maxlen) paste0("...", substr(x, max(1,nchar(x)-maxlen), nchar(x))) else x))
+
+   tab <- data.frame(sub("\\.rds$", "", bookmarks2))
    names(tab) <- ""
    txt <- capture.output(print(tab, right=FALSE, print.gap=2))[-1]
    txt <- c(.text("bookmark"), "", txt, "")
 
    ypos1 <- 8
-   ypos2 <- max(2.5, 8-0.75*length(bookmarks))
+   ypos2 <- max(2.5, 8-0.75*length(bookmarks2))
    ypos <- seq(ypos1, ypos2, length.out=length(txt))
 
    cex <- .findcex(txt, font=font.mono, x1=1.8, x2=8, y1=ypos1, y2=ypos2, mincex=1.1)

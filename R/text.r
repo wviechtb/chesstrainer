@@ -635,8 +635,8 @@
 
    if (x == "miscsetexpl") {
       return(switch(lang,
-                    de = c("Punktemultiplikator beim fehlerfreien Abschlie\U000000DFen einer Sequenz", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Anzahl der Animationsschritte f\U000000FCr die Bewertungsleiste", "Anzahl der anzuzeigenden n\U000000E4chsten Z\U000000FCge nach Suchen", "Zeit pro Zug im zeitgesteuerten Modus (Sekunden)", "Leerlaufzeit (Sekunden)", "Mindestdauer der Sitzung (Sekunden)", "Pausenanpassung (Sekunden)"),
-                         c("Score multiplier when completing a sequences without any mistakes", "Score penalty for wrong moves", "Score penalty per hint", "Number of animation steps for the evaluation bar", "Number of next moves to show after searches", "Time per move in timed mode (seconds)", "Idle time (seconds)", "Minimum session time (seconds)", "Pause adjustment (seconds)")
+                    de = c("Punktemultiplikator f\U000000FCr fehlerfrei abgeschlossene Sequenzen", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Animationsschritte f\U000000FCr die Bewertungsleiste", "Anzahl der anzuzeigenden n\U000000E4chsten Z\U000000FCge nach Suchen", "Zeit pro Zug im zeitgesteuerten Modus (Sekunden)", "Leerlaufzeit (Sekunden)", "Mindestdauer der Sitzung (Sekunden)", "Pausenanpassung (Sekunden)"),
+                         c("Score multiplier for completed sequences without mistakes", "Score penalty for wrong moves", "Score penalty per hint", "Animation steps for the evaluation bar", "Number of next moves to show after searches", "Time per move in timed mode (seconds)", "Idle time (seconds)", "Minimum session time (seconds)", "Pause adjustment (seconds)")
    ))}
 
    if (x == "cexwhich") {
@@ -797,7 +797,7 @@
 
    if (x == "sflim_level") {
       return(switch(lang,
-                    de = "Spielmodus-St\U000000E4rke-Limit (level)",
+                    de = "Spielmodus-St\U000000E4rke-Limit (Level)",
                          "Play mode strength limit (level)"
    ))}
 
@@ -823,6 +823,60 @@
       return(switch(lang,
                     de = "Hinweistiefe",
                          "Hint depth"
+   ))}
+
+   if (x == "multiplier") {
+      return(switch(lang,
+                    de = "Punktemultiplikator f\U000000FCr fehlerfrei abgeschlossene Sequenzen",
+                         "Score multiplier for completed sequences without mistakes"
+   ))}
+
+   if (x == "adjustwrong") {
+      return(switch(lang,
+                    de = "Strafpunkte f\U000000FCr falsche Z\U000000FCge",
+                         "Score penalty for wrong moves"
+   ))}
+
+   if (x == "adjusthint") {
+      return(switch(lang,
+                    de = "Strafpunkte pro Hinweis",
+                         "Score penalty per hint"
+   ))}
+
+   if (x == "timepermove") {
+      return(switch(lang,
+                    de = "Zeit pro Zug (Sekunden)",
+                         "Time per move (seconds)"
+   ))}
+
+   if (x == "movestoshow") {
+      return(switch(lang,
+                    de = "Anzuzeigende Z\U000000FCge",
+                         "Moves to show"
+   ))}
+
+   if (x == "idletime") {
+      return(switch(lang,
+                    de = "Leerlaufzeit (Sekunden)",
+                         "Idle time (seconds)"
+   ))}
+
+   if (x == "mintime") {
+      return(switch(lang,
+                    de = "Mindestdauer der Sitzung (Sekunden)",
+                         "Minimum session time (seconds)"
+   ))}
+
+   if (x == "evalsteps") {
+      return(switch(lang,
+                    de = "Animationsschritte",
+                         "Animation steps"
+   ))}
+
+   if (x == "sleepadj") {
+      return(switch(lang,
+                    de = "Pausenanpassung (Sekunden)",
+                         "Pause adjustment (seconds)"
    ))}
 
    if (x == "sfpathsuccess") {

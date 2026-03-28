@@ -3885,27 +3885,27 @@ play <- function(lang="en", ...) {
             # F6 to adjust the miscellaneous settings
 
             if (identical(click, "F6")) {
-               eval(expr=switch1)
-               tmp <- .miscsettings(multiplier, adjustwrong, adjusthint, evalsteps, movestoshow, timepermove, idletime, mintime, sleepadj)
-               eval(expr=switch2)
+               tmp <- .miscsettings(multiplier, adjustwrong, adjusthint, timepermove, movestoshow, idletime, mintime, evalsteps, sleepadj)
+               .redrawpos(pos, flip=flip)
+               .drawannot(circles=circles, arrows=arrows, glyph=glyph)
                multiplier  <- tmp$multiplier
                adjustwrong <- tmp$adjustwrong
                adjusthint  <- tmp$adjusthint
-               evalsteps   <- tmp$evalsteps
-               movestoshow <- tmp$movestoshow
                timepermove <- tmp$timepermove
+               movestoshow <- tmp$movestoshow
                idletime    <- tmp$idletime
                mintime     <- tmp$mintime
+               evalsteps   <- tmp$evalsteps
                sleepadj    <- tmp$sleepadj
                assign("sleepadj", sleepadj, envir=.chesstrainer)
                settings$multiplier  <- multiplier
                settings$adjustwrong <- adjustwrong
                settings$adjusthint  <- adjusthint
-               settings$evalsteps   <- evalsteps
-               settings$movestoshow <- movestoshow
                settings$timepermove <- timepermove
+               settings$movestoshow <- movestoshow
                settings$idletime    <- idletime
                settings$mintime     <- mintime
+               settings$evalsteps   <- evalsteps
                settings$sleepadj    <- sleepadj
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next

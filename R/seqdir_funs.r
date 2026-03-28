@@ -83,7 +83,7 @@
 
       # Escape or q to exit
 
-      if (identical(key, "\033") || identical(key, "ctrl-[") || identical(key, "q"))
+      if (identical(key, "F9") || identical(key, "q") || identical(key, "\033") || identical(key, "ctrl-["))
          break
 
       # F1 to show the help
@@ -251,13 +251,18 @@
 
    rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
 
-   tab <- data.frame(seqdir)
+   seqdir2 <- seqdir
+   seqdirlen <- nchar(seqdir2)
+   maxlen <- 80
+   seqdir2 <- unname(sapply(seqdir2, function(x) if (nchar(x) >= maxlen) paste0("...", substr(x, max(1,nchar(x)-maxlen), nchar(x))) else x))
+
+   tab <- data.frame(seqdir2)
    names(tab) <- ""
    txt <- capture.output(print(tab, right=FALSE, print.gap=2))[-1]
    txt <- c(.text("directory"), "", txt, "")
 
    ypos1 <- 8
-   ypos2 <- max(2.5, 8-0.75*length(seqdir))
+   ypos2 <- max(2.5, 8-0.75*length(seqdir2))
    ypos <- seq(ypos1, ypos2, length.out=length(txt))
 
    cex <- .findcex(txt, font=font.mono, x1=1.8, x2=8, y1=ypos1, y2=ypos2, mincex=1.1)
