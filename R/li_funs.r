@@ -15,7 +15,7 @@
 
 }
 
-.liquery <- function(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, mode, showout=TRUE, tokencheck=FALSE) {
+.liquery <- function(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, showout=TRUE, tokencheck=FALSE) {
 
    res <- list(out=NULL, selmove="")
 
@@ -119,7 +119,7 @@
 
    if (is.null(out)) {
 
-      if (mode != "play" && contliquery)
+      if (.get("mode") != "play" && contliquery)
          cat("\n", .text("posnotfound"), "\n\n", sep="")
 
    } else {

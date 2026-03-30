@@ -1,4 +1,4 @@
-.vizsettings <- function(cols.all, pos, flip=FALSE, mode="add", show=TRUE, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove) {
+.vizsettings <- function(cols.all, pos, flip=FALSE, show=TRUE, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove) {
 
    pos <- .get("pos")
    pos[7:8,1:2] <- ""
@@ -22,17 +22,19 @@
    tab <- rbind(tab, c("scheme.blue",  "", .text("scheme_blue")))
    tab <- rbind(tab, c("scheme.gray",  "", .text("scheme_gray")))
 
-   coords <- .get("coords")
-   timed <- .get("timed")
+   mode    <- .get("mode")
+   coords  <- .get("coords")
+   timed   <- .get("timed")
    zenmode <- .get("zenmode")
-   x2y2 <- .get("x2y2")
-   score <- .get("score")
+   x2y2    <- .get("x2y2")
+   score   <- .get("score")
+   assign("mode", "add", envir=.chesstrainer)
    assign("coords", TRUE, envir=.chesstrainer)
    assign("timed", FALSE, envir=.chesstrainer)
    assign("zenmode", FALSE, envir=.chesstrainer)
    assign("x2y2", c(2,5), envir=.chesstrainer)
 
-   .redrawall(pos, flip, mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
+   .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
    .addrect(4, 5, col=.get("col.hint"))
    .addrect(4, 3, col=.get("col.wrong"))
    .addrect(4, 4, col=.get("col.rect"))
@@ -46,7 +48,7 @@
    .drawarrow(3, 8, 6, 8, col=adjustcolor(.get("col.best"), alpha.f=0.7))
    .drawsideindicator("w", flip=flip)
    .drawsideindicator("b", flip=flip, clear=FALSE)
-   .draweval(0.2, flip=flip)
+   .drawevalbar(0.2, flip=flip)
    .drawlibar(totals=c(110,10,90))
    .drawtimer(settings=TRUE)
    .drawglyph("!!")
@@ -101,7 +103,7 @@
                tab[number,2] <- cex
             }
          }
-         .redrawall(pos, flip, mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
+         .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
          .addrect(4, 5, col=.get("col.hint"))
          .addrect(4, 3, col=.get("col.wrong"))
          .addrect(4, 4, col=.get("col.rect"))
@@ -115,7 +117,7 @@
          .drawarrow(3, 8, 6, 8, col=adjustcolor(.get("col.best"), alpha.f=0.7))
          .drawsideindicator("w", flip=flip)
          .drawsideindicator("b", flip=flip, clear=FALSE)
-         .draweval(0.2, flip=flip)
+         .drawevalbar(0.2, flip=flip)
          .drawlibar(totals=c(110,10,90))
          .drawtimer(settings=TRUE)
          .drawglyph("!!")
@@ -123,6 +125,7 @@
       }
    }
 
+   assign("mode", mode, envir=.chesstrainer)
    assign("coords", coords, envir=.chesstrainer)
    assign("timed", timed, envir=.chesstrainer)
    assign("zenmode", zenmode, envir=.chesstrainer)
@@ -603,6 +606,7 @@
    switch1    <- .get("switch1")
    switch2    <- .get("switch2")
    cachedir   <- .get("cachedir")
+   mode       <- .get("mode")
 
    rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
 
@@ -804,8 +808,10 @@
             uselicache <- .get("uselicache")
             contliquery <- .get("contliquery")
             assign("uselicache", FALSE, envir=.chesstrainer)
-            res.li <- .liquery(pos=.get("pos"), flip=FALSE, sidetoplay="w", sidetoplaystart="w", i=1, isonline=isonline, lichessdb="lichess", token=tmp, speeds="blitz,rapid,classical", ratings="1200,1400,1600,1800", barlen=50, invertbar=FALSE, texttop="", mode="", tokencheck=TRUE)
+            assign("mode", "", envir=.chesstrainer)
+            res.li <- .liquery(pos=.get("pos"), flip=FALSE, sidetoplay="w", sidetoplaystart="w", i=1, isonline=isonline, lichessdb="lichess", token=tmp, speeds="blitz,rapid,classical", ratings="1200,1400,1600,1800", barlen=50, invertbar=FALSE, texttop="", tokencheck=TRUE)
             assign("uselicache", uselicache, envir=.chesstrainer)
+            assign("mode", mode, envir=.chesstrainer)
             if (is.null(res.li$out)) {
                .texttop(.text("tokensetfail"), sleep=2)
                .texttop("")
@@ -871,15 +877,15 @@
       tab$sflim <- .text("none")
    }
 
-   #tab$eval <- paste0(names(tab$eval[tab$eval]), collapse=", ")
-   tab$eval <- paste0(tab$eval, collapse="/")
+   #tab$showeval <- paste0(names(tab$showeval[tab$showeval]), collapse=", ")
+   tab$showeval <- paste0(tab$showeval, collapse="/")
    if (lang == "en") {
-      tab$eval <- gsub("TRUE", "Yes", tab$eval, fixed=TRUE)
-      tab$eval <- gsub("FALSE", "No", tab$eval, fixed=TRUE)
+      tab$showeval <- gsub("TRUE", "Yes", tab$showeval, fixed=TRUE)
+      tab$showeval <- gsub("FALSE", "No", tab$showeval, fixed=TRUE)
    }
    if (lang == "de") {
-      tab$eval <- gsub("TRUE", "Ja",    tab$eval, fixed=TRUE)
-      tab$eval <- gsub("FALSE", "Nein", tab$eval, fixed=TRUE)
+      tab$showeval <- gsub("TRUE", "Ja",    tab$showeval, fixed=TRUE)
+      tab$showeval <- gsub("FALSE", "Nein", tab$showeval, fixed=TRUE)
    }
 
    if (tab$pieces == 1)

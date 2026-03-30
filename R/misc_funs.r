@@ -20,8 +20,13 @@
 
 .is.even <- function(x) x %% 2 == 0
 
-.get <- function(x)
-   unname(get(x, envir=.chesstrainer))
+.get <- function(x) {
+   if (exists(x,envir=.chesstrainer)) {
+      unname(get(x, envir=.chesstrainer))
+   } else {
+      return(NULL)
+   }
+}
 
 .is.null <- function(x) {
 
@@ -470,10 +475,8 @@
 
    for (j in 1:nmoves) {
 
-      #print(move[[j]])
-      #print(paste0(move[[j]], collapse=""))
+      # TODO: transform Lichess castling moves here?
       #if (move[[j]][1] == "e" && move[[j]][2] %in% c("1","8")) {
-      #   print("HERE")
       #}
 
       if (flip) {
@@ -1202,7 +1205,7 @@
 
 }
 
-.findopening <- function(x, flip, opening, openings, mode, posnull, draw=TRUE) {
+.findopening <- function(x, flip, opening, openings, posnull, draw=TRUE) {
 
    nrows <- nrow(x)
    oldopening <- opening
@@ -1223,12 +1226,12 @@
          opening <- openings[openingmatch[1],1:2]
          opening <- paste0(opening[1], " (", substr(opening[2], 1, 120), ")", collapse="")
          if (!identical(opening, oldopening) && draw)
-            .textbot(mode, opening=opening, onlyeco=TRUE)
+            .textbot(opening=opening, onlyeco=TRUE)
       }
 
    } else {
 
-      .textbot(mode, opening=" ", onlyeco=TRUE)
+      .textbot(opening=" ", onlyeco=TRUE)
       opening <- ""
 
    }

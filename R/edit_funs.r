@@ -1,4 +1,4 @@
-.editcomments <- function(sub, seqdir, seqname, mode) {
+.editcomments <- function(sub, seqdir, seqname) {
 
    dosave <- FALSE
 
@@ -85,7 +85,7 @@
 
    }
 
-   if (dosave && mode == "test")
+   if (dosave && .get("mode") == "test")
       saveRDS(sub, file=file.path(seqdir, seqname))
 
    return(sub)

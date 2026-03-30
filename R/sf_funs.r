@@ -104,6 +104,7 @@
                Sys.setFileTime(file, Sys.time()) # touch the file if its modification time was more than 1/2 day ago
             out$sfproc <- sfproc
             out$sfrun <- sfrun
+            assign("depth", depths[which.max(depths)], envir=.chesstrainer)
             return(out)
          } else {
             # lower depth cache file(s)
@@ -119,6 +120,8 @@
    bestmove <- as.list(rep("", multipv))
    alive    <- TRUE
 
+   assign("depth", depth, envir=.chesstrainer)
+
    if (!sfrun)
       return(list(eval=eval, bestmove=bestmove, matetype="none", sfproc=sfproc, sfrun=sfrun))
 
@@ -126,7 +129,7 @@
    col.bg  <- .get("col.bg")
    verbose <- .get("verbose")
 
-   olddepth <- 0
+   prevdepth <- 0
 
    if (progbar) {
       rect(1, 9.6, 9, 9.7, col=NA, border=col.top)
@@ -172,9 +175,9 @@
                   curdepth <- max(curdepth)
                   curdepth <- strsplit(sfout[curdepth], " ", fixed=TRUE)[[1]][3] # get <number> from 'info depth <number> ...'
                   curdepth <- as.numeric(curdepth) - 1
-                  if (curdepth > olddepth) {
+                  if (curdepth > prevdepth) {
                      rect(1, 9.6, 1+curdepth/depth*8, 9.7, col=col.top, border=NA)
-                     olddepth <- curdepth
+                     prevdepth <- curdepth
                   }
                }
             }

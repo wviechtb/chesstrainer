@@ -148,13 +148,13 @@
 
 }
 
-.redrawall <- function(pos, flip, mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove) {
+.redrawall <- function(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove) {
 
    .drawboard(pos, flip)
-   .textbot(mode, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
+   .textbot(show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
    .texttop(texttop)
    .drawcheck(pos, flip=flip)
-   if (mode == "test" && .get("timed")) {
+   if (.get("mode") == "test" && .get("timed")) {
       .drawtimer(movestoplay, movesplayed, timetotal, timepermove)
    } else {
       .drawsideindicator(sidetoplay, flip=flip)
@@ -1040,8 +1040,9 @@
 
 }
 
-.textbot <- function(mode, show, showcomp, player, seqname, seqnum, opening="", score, rounds, age=NA, difficulty=NA, i, totalmoves, selmode="default", k, seqno, onlyshow=FALSE, onlyi=FALSE, onlyscore=FALSE, onlyeco=FALSE) {
+.textbot <- function(show, showcomp, player, seqname, seqnum, opening="", score, rounds, age=NA, difficulty=NA, i, totalmoves, selmode="default", k, seqno, onlyshow=FALSE, onlyi=FALSE, onlyscore=FALSE, onlyeco=FALSE) {
 
+   mode    <- .get("mode")
    lang    <- .get("lang")
    cex     <- .get("cex.bot")
    font    <- .get("font.mono")
@@ -1227,6 +1228,8 @@
 
    }
 
+   return()
+
 }
 
 .drawsideindicator <- function(sidetoplay, flip, adj=0, clear=TRUE) {
@@ -1320,15 +1323,45 @@
 
 }
 
-.draweval <- function(val=NA_real_, last=NA_real_, i=1, starteval=NA_real_, flip=FALSE, clear=FALSE, eval=TRUE, evalsteps=10) {
+.drawdepth <- function(showeval=FALSE, clear=FALSE) {
 
-   col.bg <- .get("col.bg")
+   mode     <- .get("mode")
+   xpos     <- .get("drawevalbar.xpos")
+   indsize  <- .get("drawevalbar.indsize")
+   col.bg   <- .get("col.bg")
+   col.bot  <- .get("col.bot")
+   cex.bot  <- .get("cex.bot")
+   depth    <- .get("depth")
+   olddepth <- .get("olddepth")
 
-   xpos <- 0.12
-   indsize <- 0.25
+   if (clear || !showeval) {
+      rect(xpos-0.2, 0.7, xpos+indsize+0.4, 0.98, border=NA, col=col.bg)
+      return()
+   }
 
-   if (!eval) {
+   if (identical(olddepth, depth))
+      return()
+
+   rect(xpos-0.2, 0.7, xpos+indsize+0.4, 0.98, border=NA, col=col.bg)
+
+   if (mode != "test" && !is.null(depth))
+      text(xpos + indsize/2, 0.85, paste0("(d=", depth, ")"), cex=cex.bot, col=col.bot)
+
+   assign("olddepth", depth, envir=.chesstrainer)
+
+   return()
+
+}
+
+.drawevalbar <- function(val=NA_real_, last=NA_real_, i=1, starteval=NA_real_, flip=FALSE, clear=FALSE, showeval=TRUE, evalsteps=10) {
+
+   col.bg  <- .get("col.bg")
+   xpos    <- .get("drawevalbar.xpos")
+   indsize <- .get("drawevalbar.indsize")
+
+   if (!showeval) {
       rect(xpos, 1, xpos+indsize, 9, border=NA, col=col.bg)
+      .drawdepth(clear=TRUE)
       return()
    }
 
@@ -1346,6 +1379,7 @@
    col.fg     <- .get("col.fg")
    col.side.w <- .get("col.side.w")
    col.side.b <- .get("col.side.b")
+   cex.eval   <- .get("cex.eval")
 
    maxval <- 9.9
    ismate <- abs(val) >= 99.9
@@ -1379,9 +1413,9 @@
          }
       }
       if (val > 5) {
-         text(xpos + indsize/2, 8.9, valtxt, cex=.get("cex.eval"), col=col.side.b)
+         text(xpos + indsize/2, 8.9, valtxt, cex=cex.eval, col=col.side.b)
       } else {
-         text(xpos + indsize/2, 1.1, valtxt, cex=.get("cex.eval"), col=col.side.w)
+         text(xpos + indsize/2, 1.1, valtxt, cex=cex.eval, col=col.side.w)
       }
    } else {
       if (is.na(last)) {
@@ -1397,11 +1431,13 @@
          }
       }
       if (val > 5) {
-         text(xpos + indsize/2, 1.1, valtxt, cex=.get("cex.eval"), col=col.side.b)
+         text(xpos + indsize/2, 1.1, valtxt, cex=cex.eval, col=col.side.b)
       } else {
-         text(xpos + indsize/2, 8.9, valtxt, cex=.get("cex.eval"), col=col.side.w)
+         text(xpos + indsize/2, 8.9, valtxt, cex=cex.eval, col=col.side.w)
       }
    }
+
+   .drawdepth(showeval=showeval)
 
    segments(xpos, 5, xpos+indsize, col=col.fg)
 
@@ -1409,15 +1445,13 @@
 
 .drawlibar <- function(totals=NULL, flip=FALSE, clear=FALSE) {
 
-   col.bg   <- .get("col.bg")
-   cex.eval <- .get("cex.eval")
-   libar    <- .get("libar")
+   col.bg    <- .get("col.bg")
+   cex.eval  <- .get("cex.eval")
+   showlibar <- .get("showlibar")
+   xpos      <- .get("drawlibar.xpos")
+   indsize   <- .get("drawlibar.indsize")
 
-
-   xpos <- 0.55
-   indsize <- 0.25
-
-   if (!libar || clear || is.null(totals)) {
+   if (!showlibar || clear || is.null(totals)) {
       rect(xpos, 1, xpos+indsize, 9, border=NA, col=col.bg)
       return(NULL)
    }
@@ -1502,7 +1536,7 @@
 
 }
 
-.showbestmove <- function(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim) {
+.showbestmove <- function(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth, multipv, sflim) {
 
    texttop <- ""
    evalvals <- NULL
@@ -1511,17 +1545,20 @@
       .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), flip=flip)
       .drawannot(circles=circles, arrows=arrows)
    }
+
    harrows <- matrix(nrow=0, ncol=4)
+
    if (i == 1 && is.na(evalval[1])) {
       fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
-      res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv=5, sflim=NA, fen, usesfcache=TRUE)
-      evalval  <- res.sf$eval[1:multipv1]
-      bestmove <- res.sf$bestmove[1:multipv1]
+      res.sf <- .sf.eval(sfproc, sfrun, depth, multipv=5, sflim=NA, fen, usesfcache=TRUE)
+      evalval  <- res.sf$eval[1:multipv]
+      bestmove <- res.sf$bestmove[1:multipv]
       bestmove[.is.null(bestmove)] <- ""
       matetype <- res.sf$matetype
       sfproc   <- res.sf$sfproc
       sfrun    <- res.sf$sfrun
    }
+
    if (bestmove[[1]][1] != "") { # bestmove comes from [d] (unless it was calculate above)
       nvariations <- length(bestmove)
       bestmovetxt <- rep(NA_character_, nvariations)
@@ -1555,6 +1592,7 @@
          .texttop(.text("nomovewoutsf"), sleep=1.5)
       }
    }
+
    .drawglyph(glyph)
 
    return(list(harrows=harrows, texttop=texttop, evalvals=evalvals))

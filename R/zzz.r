@@ -90,6 +90,14 @@
    assign("volume", 50, envir=.chesstrainer)
    assign("lang", "en", envir=.chesstrainer)
 
+   assign("drawevalbar.xpos", 0.12, envir=.chesstrainer)
+   assign("drawevalbar.indsize", 0.25, envir=.chesstrainer)
+   assign("drawlibar.xpos", 0.55, envir=.chesstrainer)
+   assign("drawlibar.indsize", 0.25, envir=.chesstrainer)
+
+   xpos    <- 0.55
+   indsize <- 0.25
+
    # welcome message
 
    loadmsg <- paste0("\nWelcome to the 'chesstrainer' package!\nFor an introduction, type: help(chesstrainer)\nTo start playing, type: play()\n")
