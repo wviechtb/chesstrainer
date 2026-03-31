@@ -4092,7 +4092,7 @@ play <- function(lang="en", ...) {
                   .texttop(texttop)
                   next
                }
-               .distributions(scores.selected, rounds.selected, age.selected, difficulty.selected, multiplier, target)
+               .distributions(scores.selected, rounds.selected, age.selected, difficulty.selected, multiplier, target, difffun)
                .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
                .drawevalbar(sub$moves$eval[i-1], NA, i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]], evalsteps=evalsteps)
                .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)

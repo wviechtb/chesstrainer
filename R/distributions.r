@@ -1,4 +1,4 @@
-.distributions <- function(scores, rounds, age, difficulty, multiplier, target) {
+.distributions <- function(scores, rounds, age, difficulty, multiplier, target, difffun) {
 
    n <- length(scores)
 
@@ -51,8 +51,17 @@
    # histogram of 'difficulty'
 
    if (length(c(na.omit(difficulty))) >= 2L) {
-      hist(difficulty, breaks=20, las=1, col.axis=col.top, col.lab=col.top, col.main=col.fg,
-           xlab=.text("difficulty"), col=col.square.d, border=col.square.l, main=paste0("Histogram: ", .text("difficulty")), xlim=c(0,max(difficulty, na.rm=TRUE)))
+      # determine if difficulty values are only integers
+      if (difffun==3) {
+         tab <- table(factor(difficulty, levels=0:ceiling(max(difficulty, na.rm=TRUE))))
+         barplot(tab, las=1, col.axis=col.top, col.lab=col.top, col.main=col.fg,
+                 xlab=.text("difficulty"), col=col.square.d, border=col.square.l, main=paste0("Histogram: ", .text("difficulty")))
+         #hist(difficulty, breaks=seq(0,ceiling(max(difficulty, na.rm=TRUE))), las=1, col.axis=col.top, col.lab=col.top, col.main=col.fg,
+         #     xlab=.text("difficulty"), col=col.square.d, border=col.square.l, main=paste0("Histogram: ", .text("difficulty")))
+      } else {
+         hist(difficulty, breaks=20, las=1, col.axis=col.top, col.lab=col.top, col.main=col.fg,
+              xlab=.text("difficulty"), col=col.square.d, border=col.square.l, main=paste0("Histogram: ", .text("difficulty")), xlim=c(0,max(difficulty, na.rm=TRUE)))
+      }
    } else {
       plot(NA, xlim=c(0,1), ylim=c(0,1), xlab="", ylab="", xaxt="n", yaxt="n", bty="n")
    }

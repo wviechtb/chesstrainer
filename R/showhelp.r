@@ -106,11 +106,12 @@
       "s        - save the sequence")
 
       txt.play <- c(
-      "Shortcuts for the play and analysis mode:",
+      "Shortcuts for the play mode:",
       "t        - take back the last move (computer move and own move)",
       "\\        - switch between the play and analysis mode",
       "0        - store the current moves and position as the main variation",
       "9        - jump to the main variation",
+      "c        - comparison of moves with existing sequences on/off",
       "a and A  - switch to add mode")
 
    }
@@ -212,11 +213,12 @@
       )
 
       txt.play <- c(
-      "Tastenk\U000000FCrzel f\U000000FCr den Spiel- und Analysemodus:",
+      "Tastenk\U000000FCrzel f\U000000FCr den Spielmodus:",
       "t        - den letzten Zug zur\U000000FCcknehmen (Computerzug und eigener Zug)",
       "\\ oder \U000000E4 - zwischen dem Spiel- und Analysemodus wechseln",
       "0        - aktuelle Zugfolge und Stellung als Hauptvariante sichern",
       "9        - zur Hauptvariante springen",
+      "c        - vergleiche Z\U000000FCge mit den bestehenden Sequenzen an/aus",
       "a und A  - in den Hinzuf\U000000FCgen Modus wechseln")
 
    }
