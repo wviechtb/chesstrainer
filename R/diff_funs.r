@@ -39,7 +39,7 @@
       "7 - Wurzel des Mittelwertes der Quadrate der aufeinanderfolgenden Differenzen",
       "8 - Verfallsparameter aus einem exponentiellen Regressionsmodell",
       "n - Anzahl der letzten Werte, die f\U000000FCr die Berechnung verwendet werden",
-      "m - Mindestanzahl der Werte f\U000000FCr die Berechnung")
+      "m - Mindestanzahl der Werte, die f\U000000FCr die Berechnung ben\U000000F6tigt werden")
 
    }
 

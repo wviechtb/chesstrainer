@@ -2,7 +2,7 @@ pandoc: '2.5'
 pkgdown: 2.2.0
 pkgdown_sha: ~
 articles: {}
-last_built: 2026-03-30T07:35Z
+last_built: 2026-03-31T12:31Z
 urls:
   reference: https://wviechtb.github.io/chesstrainer/reference
   article: https://wviechtb.github.io/chesstrainer/articles

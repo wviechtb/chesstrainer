@@ -343,6 +343,9 @@
 
 }
 
+.fen123 <- function(x)
+   paste(strsplit(x, " ", fixed=TRUE)[[1]][1:3], collapse=" ")
+
 .fentopos <- function(fen) {
 
    pos <- matrix("", nrow=8, ncol=8)
@@ -1168,7 +1171,7 @@
 
    san <- .get("san")
 
-   fenshort <- paste(strsplit(fen, " ", fixed=TRUE)[[1]][1:3], collapse=" ")
+   fenshort <- .fen123(fen)
    seqident <- lapply(dat, function(x) {
       if (any(fenshort == x$fenshort[-1]) && identical(flip, x$flip) && !identical(sub$moves$fen[1:(i-1)], x$fen[1:(i-1)]) && identical(pos, x$pos)) {
          pos <- min(which(fenshort == x$fenshort[-1]))

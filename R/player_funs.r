@@ -35,7 +35,7 @@
 
       tmp.rounds <- lapply(players, function(player) {
          x <- lapply(dat, function(x) tail(x$player[[player]]$round,1))
-         x[sapply(x, is.null)] <- 0
+         x[.is.null(x)] <- 0
          unlist(x)
       })
       tmp.rounds <- do.call(cbind, tmp.rounds)
@@ -50,12 +50,15 @@
       })
       tmp.date[current == players] <- Sys.time()
       last.session <- format(as.POSIXct(tmp.date), "%Y-%m-%d %H:%M:%S")
+      days.ago <- as.numeric(difftime(Sys.time(), last.session, units="days"))
+      days.ago <- round(days.ago)
       last.session[is.na(last.session)] <- ""
       last.session <- unname(last.session)
 
-      tab <- data.frame(players, total.rounds, last.session)
-      names(tab) <- c(.text("player"), .text("rounds"), .text("lastsession"))
+      tab <- data.frame(players, total.rounds, last.session, days.ago)
+      names(tab) <- c(.text("player"), .text("rounds"), .text("lastsession"), .text("daysago"))
       tab[[2]] <- as.character(tab[[2]])
+      tab[[4]] <- trimws(as.character(tab[[4]]))
       txt <- capture.output(print(tab, right=FALSE, print.gap=3))
       txt <- c(txt[1], "", txt[-1], "")
       txt[1] <- sub("^ ", "#", txt[1])

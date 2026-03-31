@@ -242,6 +242,12 @@
                          "last session"
    ))}
 
+   if (x == "daysago") {
+      return(switch(lang,
+                    de = "Vor x Tagen",
+                         "Days Ago"
+   ))}
+
    if (x == "day") {
       return(switch(lang,
                     de = paste0("Tag", ifelse(arg, "e", "")),
@@ -317,8 +323,8 @@
 
    if (x == "seqsearch") {
       return(switch(lang,
-                    de = "Sequenzsuche (Text, Nummer1-Nummer2, Nummer, Punkte > Wert, Runden < Wert, Alter > Wert, Schwierigkeit > Wert, FEN, K: Text, *):\n",
-                         "Sequence search (string, number1-number2, number, score > value, rounds < value, age > value, difficulty > value, FEN, c: string, *):\n"
+                    de = "Sequenzsuche (Text, Nummer1-Nummer2, Nummer, Punkte > Wert, Runden < Wert, Alter > Wert, Schwierigkeit > Wert, FEN, K: Text):\n",
+                         "Sequence search (string, number1-number2, number, score > value, rounds < value, age > value, difficulty > value, FEN, c: string):\n"
    ))}
 
    if (x == "allseqselected") {
@@ -851,8 +857,8 @@
 
    if (x == "movestoshow") {
       return(switch(lang,
-                    de = "Anzuzeigende Z\U000000FCge",
-                         "Moves to show"
+                    de = "Z\U000000FCge zeigen nach Suche",
+                         "Moves to show after search"
    ))}
 
    if (x == "idletime") {
@@ -869,8 +875,8 @@
 
    if (x == "evalsteps") {
       return(switch(lang,
-                    de = "Animationsschritte",
-                         "Animation steps"
+                    de = "Balken Animationsschritte",
+                         "Animation steps for the bar"
    ))}
 
    if (x == "sleepadj") {
@@ -1583,8 +1589,8 @@
 
    if (x == "entertoken") {
       return(switch(lang,
-                    de = "API Token eingeben",
-                         "Enter API token"
+                    de = "API Token",
+                         "API token"
    ))}
 
    if (x == "token") {
@@ -1699,6 +1705,18 @@
       return(switch(lang,
                     de = "keins",
                          "none"
+   ))}
+
+   if (x == "notseqmove") {
+      return(switch(lang,
+                    de = "Nicht einer der Sequenzez\U000000FCge.",
+                         "Not one of the sequence moves."
+   ))}
+
+   if (x == "compseq") {
+      return(switch(lang,
+                    de = paste0("Vergleiche Z\U000000FCge mit den bestehenden Sequenzen: ", ifelse(arg, "an", "aus")),
+                         paste0("Compare moves to the existing sequences: ", ifelse(arg, "on", "off"))
    ))}
 
 }

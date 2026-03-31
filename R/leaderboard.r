@@ -17,7 +17,7 @@
 
       tmp.scores <- lapply(players, function(player) {
          x <- lapply(tmp, function(x) tail(x$player[[player]]$score,1))
-         x[sapply(x, is.null)] <- 100
+         x[.is.null(x)] <- 100
          unlist(x)
       })
       tmp.scores <- do.call(cbind, tmp.scores)
@@ -29,17 +29,19 @@
       sd.scores   <- round(apply(tmp.scores, 2, sd, na.rm=TRUE), digits=1)
       min.scores  <- apply(tmp.scores, 2, min, na.rm=TRUE)
       max.scores  <- apply(tmp.scores, 2, max, na.rm=TRUE)
+      q1.scores   <- apply(tmp.scores, 2, quantile, 0.25, na.rm=TRUE)
+      q3.scores   <- apply(tmp.scores, 2, quantile, 0.75, na.rm=TRUE)
 
       tmp.rounds <- lapply(players, function(player) {
          x <- lapply(tmp, function(x) tail(x$player[[player]]$round,1))
-         x[sapply(x, is.null)] <- 0
+         x[.is.null(x)] <- 0
          unlist(x)
       })
       tmp.rounds <- do.call(cbind, tmp.rounds)
       total.rounds <- round(apply(tmp.rounds, 2, sum, na.rm=TRUE))
 
-      tmp <- data.frame(players, mean.scores, sd.scores, min.scores, max.scores, total.rounds)
-      names(tmp) <- c(.text("player"), .text("score"), "SD", "Min", "Max", .text("rounds"))
+      tmp <- data.frame(players, mean.scores, sd.scores, min.scores, q1.scores, q3.scores, max.scores, total.rounds)
+      names(tmp) <- c(.text("player"), .text("score"), "SD", "Min", "Q1", "Q3", "Max", .text("rounds"))
       tmp <- tmp[order(tmp[[2]]),]
       rownames(tmp) <- NULL
 

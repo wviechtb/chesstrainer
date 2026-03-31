@@ -207,67 +207,88 @@
    sleepadj.box  <- .drawslider(x=sleepadj.xpos, sleepadj.ypos, xlab=c(0,2), cex=cex*cex.mult)
    .updateslider(NULL, sleepadj.ypos, oldval=sleepadj, xlim=sleepadj.xpos, range=c(0,2), round=0.1, cex=cex*cex.mult)
 
+   .mousedownfun <- function(button,x,y) {
+      if (length(button) == 0L)
+         button <- 3
+      button <<- button
+      xy1 <<- .calcxy(x, y, plt)
+      return(NULL)
+   }
+
+   .mouseupfun <- function(button,x,y) {
+      xy2 <<- .calcxy(x, y, plt)
+      return(1)
+   }
+
    while (TRUE) {
 
       plt <- par("plt")
 
-      resp <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.mousedownfun, onKeybd=.keyfun)
+      button <- NULL
+      xy1 <- NULL
+      xy2 <- NULL
+
+      resp <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.mousedownfun, onMouseUp=.mouseupfun, onKeybd=.keyfun)
 
       if (is.numeric(resp)) {
 
-         xy <- .calcxy(resp[1], resp[2], plt)
+         if (button == 2)
+            break
 
-         hit <- xy[1] >= multiplier.box[1] & xy[2] >= multiplier.box[2] & xy[1] <= multiplier.box[3] & xy[2] <= multiplier.box[4]
+         if (button != 0)
+            next
+
+         hit <- xy1[1] >= multiplier.box[1] & xy1[2] >= multiplier.box[2] & xy1[1] <= multiplier.box[3] & xy1[2] <= multiplier.box[4]
          if (hit) {
-            multiplier <- .updateslider(xy[1], multiplier.ypos, oldval=multiplier, xlim=multiplier.xpos, range=c(0,1), round=0.01, cex=cex*cex.mult)
+            multiplier <- .updateslider(xy2[1], multiplier.ypos, oldval=multiplier, xlim=multiplier.xpos, range=c(0,1), round=0.01, cex=cex*cex.mult)
             next
          }
 
-         hit <- xy[1] >= adjustwrong.box[1] & xy[2] >= adjustwrong.box[2] & xy[1] <= adjustwrong.box[3] & xy[2] <= adjustwrong.box[4]
+         hit <- xy1[1] >= adjustwrong.box[1] & xy1[2] >= adjustwrong.box[2] & xy1[1] <= adjustwrong.box[3] & xy1[2] <= adjustwrong.box[4]
          if (hit) {
-            adjustwrong <- .updateslider(xy[1], adjustwrong.ypos, oldval=adjustwrong, xlim=adjustwrong.xpos, range=c(0,100), round=TRUE, cex=cex*cex.mult)
+            adjustwrong <- .updateslider(xy2[1], adjustwrong.ypos, oldval=adjustwrong, xlim=adjustwrong.xpos, range=c(0,100), round=TRUE, cex=cex*cex.mult)
             next
          }
 
-         hit <- xy[1] >= adjusthint.box[1] & xy[2] >= adjusthint.box[2] & xy[1] <= adjusthint.box[3] & xy[2] <= adjusthint.box[4]
+         hit <- xy1[1] >= adjusthint.box[1] & xy1[2] >= adjusthint.box[2] & xy1[1] <= adjusthint.box[3] & xy1[2] <= adjusthint.box[4]
          if (hit) {
-            adjusthint <- .updateslider(xy[1], adjusthint.ypos, oldval=adjusthint, xlim=adjusthint.xpos, range=c(0,100), round=TRUE, cex=cex*cex.mult)
+            adjusthint <- .updateslider(xy2[1], adjusthint.ypos, oldval=adjusthint, xlim=adjusthint.xpos, range=c(0,100), round=TRUE, cex=cex*cex.mult)
             next
          }
 
-         hit <- xy[1] >= timepermove.box[1] & xy[2] >= timepermove.box[2] & xy[1] <= timepermove.box[3] & xy[2] <= timepermove.box[4]
+         hit <- xy1[1] >= timepermove.box[1] & xy1[2] >= timepermove.box[2] & xy1[1] <= timepermove.box[3] & xy1[2] <= timepermove.box[4]
          if (hit) {
-            timepermove <- .updateslider(xy[1], timepermove.ypos, oldval=timepermove, xlim=timepermove.xpos, range=c(1,20), round=TRUE, cex=cex*cex.mult)
+            timepermove <- .updateslider(xy2[1], timepermove.ypos, oldval=timepermove, xlim=timepermove.xpos, range=c(1,20), round=TRUE, cex=cex*cex.mult)
             next
          }
 
-         hit <- xy[1] >= movestoshow.box[1] & xy[2] >= movestoshow.box[2] & xy[1] <= movestoshow.box[3] & xy[2] <= movestoshow.box[4]
+         hit <- xy1[1] >= movestoshow.box[1] & xy1[2] >= movestoshow.box[2] & xy1[1] <= movestoshow.box[3] & xy1[2] <= movestoshow.box[4]
          if (hit) {
-            movestoshow <- .updateslider(xy[1], movestoshow.ypos, oldval=movestoshow, xlim=movestoshow.xpos, range=c(1,240), round=TRUE, cex=cex*cex.mult)
+            movestoshow <- .updateslider(xy2[1], movestoshow.ypos, oldval=movestoshow, xlim=movestoshow.xpos, range=c(1,240), round=TRUE, cex=cex*cex.mult)
             next
          }
 
-         hit <- xy[1] >= idletime.box[1] & xy[2] >= idletime.box[2] & xy[1] <= idletime.box[3] & xy[2] <= idletime.box[4]
+         hit <- xy1[1] >= idletime.box[1] & xy1[2] >= idletime.box[2] & xy1[1] <= idletime.box[3] & xy1[2] <= idletime.box[4]
          if (hit) {
-            idletime <- .updateslider(xy[1], idletime.ypos, oldval=idletime, xlim=idletime.xpos, range=c(1,20), round=TRUE, cex=cex*cex.mult)
+            idletime <- .updateslider(xy2[1], idletime.ypos, oldval=idletime, xlim=idletime.xpos, range=c(1,20), round=TRUE, cex=cex*cex.mult)
             next
          }
 
-         hit <- xy[1] >= mintime.box[1] & xy[2] >= mintime.box[2] & xy[1] <= mintime.box[3] & xy[2] <= mintime.box[4]
+         hit <- xy1[1] >= mintime.box[1] & xy1[2] >= mintime.box[2] & xy1[1] <= mintime.box[3] & xy1[2] <= mintime.box[4]
          if (hit) {
-            mintime <- .updateslider(xy[1], mintime.ypos, oldval=mintime, xlim=mintime.xpos, range=c(0,240), round=TRUE, cex=cex*cex.mult)
+            mintime <- .updateslider(xy2[1], mintime.ypos, oldval=mintime, xlim=mintime.xpos, range=c(0,240), round=TRUE, cex=cex*cex.mult)
             next
          }
 
-         hit <- xy[1] >= evalsteps.box[1] & xy[2] >= evalsteps.box[2] & xy[1] <= evalsteps.box[3] & xy[2] <= evalsteps.box[4]
+         hit <- xy1[1] >= evalsteps.box[1] & xy1[2] >= evalsteps.box[2] & xy1[1] <= evalsteps.box[3] & xy1[2] <= evalsteps.box[4]
          if (hit) {
-            evalsteps <- .updateslider(xy[1], evalsteps.ypos, oldval=evalsteps, xlim=evalsteps.xpos, range=c(2,20), round=TRUE, cex=cex*cex.mult)
+            evalsteps <- .updateslider(xy2[1], evalsteps.ypos, oldval=evalsteps, xlim=evalsteps.xpos, range=c(2,20), round=TRUE, cex=cex*cex.mult)
             next
          }
 
-         hit <- xy[1] >= sleepadj.box[1] & xy[2] >= sleepadj.box[2] & xy[1] <= sleepadj.box[3] & xy[2] <= sleepadj.box[4]
+         hit <- xy1[1] >= sleepadj.box[1] & xy1[2] >= sleepadj.box[2] & xy1[1] <= sleepadj.box[3] & xy1[2] <= sleepadj.box[4]
          if (hit) {
-            sleepadj <- .updateslider(xy[1], sleepadj.ypos, oldval=sleepadj, xlim=sleepadj.xpos, range=c(0,2), round=0.1, cex=cex*cex.mult)
+            sleepadj <- .updateslider(xy2[1], sleepadj.ypos, oldval=sleepadj, xlim=sleepadj.xpos, range=c(0,2), round=0.1, cex=cex*cex.mult)
             next
          }
 
@@ -411,17 +432,38 @@
    delcache.box  <- list()
    delcache.box[[1]] <- .drawbutton(delcache.xpos, delcache.ypos, text=delcache.txt, len=max(nchar(delcache.txt)), on=delcache.on, cex=cex)
 
+   .mousedownfun <- function(button,x,y) {
+      if (length(button) == 0L)
+         button <- 3
+      button <<- button
+      xy1 <<- .calcxy(x, y, plt)
+      return(NULL)
+   }
+
+   .mouseupfun <- function(button,x,y) {
+      xy2 <<- .calcxy(x, y, plt)
+      return(1)
+   }
+
    while (TRUE) {
 
       plt <- par("plt")
 
-      resp <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.mousedownfun, onKeybd=.keyfun)
+      button <- NULL
+      xy1 <- NULL
+      xy2 <- NULL
+
+      resp <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.mousedownfun, onMouseUp=.mouseupfun, onKeybd=.keyfun)
 
       if (is.numeric(resp)) {
 
-         xy <- .calcxy(resp[1], resp[2], plt)
+         if (button == 2)
+            break
 
-         hit <- xy[1] >= 1.5 & xy[2] >= title.ypos[1]-(title.ypos[1]-title.ypos[2])/2 & xy[1] <= 8.5 & xy[2] <= 8.7
+         if (button != 0)
+            next
+
+         hit <- xy1[1] >= 1.5 & xy1[2] >= title.ypos[1]-(title.ypos[1]-title.ypos[2])/2 & xy1[1] <= 8.5 & xy1[2] <= 8.7
          if (hit) {
             oldpath <- sfpath
             if (.Platform$OS.type == "windows") {
@@ -463,7 +505,7 @@
             next
          }
 
-         hit <- sapply(sfrun.box, function(coords) xy[1] >= coords[1] & xy[2] >= coords[2] & xy[1] <= coords[3] & xy[2] <= coords[4])
+         hit <- sapply(sfrun.box, function(coords) xy1[1] >= coords[1] & xy1[2] >= coords[2] & xy1[1] <= coords[3] & xy1[2] <= coords[4])
          if (any(hit)) {
             i <- which(hit)
             if (i == 1) {
@@ -487,75 +529,79 @@
             next
          }
 
-         hit <- xy[1] >= depth1.box[1] & xy[2] >= depth1.box[2] & xy[1] <= depth1.box[3] & xy[2] <= depth1.box[4]
+         hit <- xy1[1] >= depth1.box[1] & xy1[2] >= depth1.box[2] & xy1[1] <= depth1.box[3] & xy1[2] <= depth1.box[4]
          if (hit) {
-            depth1 <- .updateslider(xy[1], depth1.ypos, oldval=depth1, xlim=depth1.xpos, range=c(1,50), round=TRUE, cex=cex*cex.mult)
+            depth1 <- .updateslider(xy2[1], depth1.ypos, oldval=depth1, xlim=depth1.xpos, range=c(1,50), round=TRUE, cex=cex*cex.mult)
             next
          }
 
-         hit <- xy[1] >= depth2.box[1] & xy[2] >= depth2.box[2] & xy[1] <= depth2.box[3] & xy[2] <= depth2.box[4]
+         hit <- xy1[1] >= depth2.box[1] & xy1[2] >= depth2.box[2] & xy1[1] <= depth2.box[3] & xy1[2] <= depth2.box[4]
          if (hit) {
-            depth2 <- .updateslider(xy[1], depth2.ypos, oldval=depth2, xlim=depth2.xpos, range=c(1,50), round=TRUE, cex=cex*cex.mult)
+            depth2 <- .updateslider(xy2[1], depth2.ypos, oldval=depth2, xlim=depth2.xpos, range=c(1,50), round=TRUE, cex=cex*cex.mult)
             next
          }
 
-         hit <- xy[1] >= depth3.box[1] & xy[2] >= depth3.box[2] & xy[1] <= depth3.box[3] & xy[2] <= depth3.box[4]
+         hit <- xy1[1] >= depth3.box[1] & xy1[2] >= depth3.box[2] & xy1[1] <= depth3.box[3] & xy1[2] <= depth3.box[4]
          if (hit) {
-            depth3 <- .updateslider(xy[1], depth3.ypos, oldval=depth3, xlim=depth3.xpos, range=c(1,50), round=TRUE, cex=cex*cex.mult)
+            depth3 <- .updateslider(xy2[1], depth3.ypos, oldval=depth3, xlim=depth3.xpos, range=c(1,50), round=TRUE, cex=cex*cex.mult)
             next
          }
 
-         hit <- xy[1] >= multipv1.box[1] & xy[2] >= multipv1.box[2] & xy[1] <= multipv1.box[3] & xy[2] <= multipv1.box[4]
+         hit <- xy1[1] >= multipv1.box[1] & xy1[2] >= multipv1.box[2] & xy1[1] <= multipv1.box[3] & xy1[2] <= multipv1.box[4]
          if (hit) {
-            multipv1 <- .updateslider(xy[1], multipv1.ypos, oldval=multipv1, xlim=multipv1.xpos, range=c(1,5), round=TRUE, cex=cex*cex.mult, text=FALSE)
+            multipv1 <- .updateslider(xy2[1], multipv1.ypos, oldval=multipv1, xlim=multipv1.xpos, range=c(1,5), round=TRUE, cex=cex*cex.mult, text=FALSE)
             next
          }
 
-         hit <- xy[1] >= multipv2.box[1] & xy[2] >= multipv2.box[2] & xy[1] <= multipv2.box[3] & xy[2] <= multipv2.box[4]
+         hit <- xy1[1] >= multipv2.box[1] & xy1[2] >= multipv2.box[2] & xy1[1] <= multipv2.box[3] & xy1[2] <= multipv2.box[4]
          if (hit) {
-            multipv2 <- .updateslider(xy[1], multipv2.ypos, oldval=multipv2, xlim=multipv2.xpos, range=c(1,5), round=TRUE, cex=cex*cex.mult, text=FALSE)
+            multipv2 <- .updateslider(xy2[1], multipv2.ypos, oldval=multipv2, xlim=multipv2.xpos, range=c(1,5), round=TRUE, cex=cex*cex.mult, text=FALSE)
             next
          }
 
-         hit <- xy[1] >= hintdepth.box[1] & xy[2] >= hintdepth.box[2] & xy[1] <= hintdepth.box[3] & xy[2] <= hintdepth.box[4]
+         hit <- xy1[1] >= hintdepth.box[1] & xy1[2] >= hintdepth.box[2] & xy1[1] <= hintdepth.box[3] & xy1[2] <= hintdepth.box[4]
          if (hit) {
-            hintdepth <- .updateslider(xy[1], hintdepth.ypos, oldval=hintdepth, xlim=hintdepth.xpos, range=c(2,20), round=TRUE, cex=cex*cex.mult)
+            hintdepth <- .updateslider(xy2[1], hintdepth.ypos, oldval=hintdepth, xlim=hintdepth.xpos, range=c(2,20), round=TRUE, cex=cex*cex.mult)
             next
          }
 
-         hit <- xy[1] >= sflim_level.box[1] & xy[2] >= sflim_level.box[2] & xy[1] <= sflim_level.box[3] & xy[2] <= sflim_level.box[4]
+         hit <- xy1[1] >= sflim_level.box[1] & xy1[2] >= sflim_level.box[2] & xy1[1] <= sflim_level.box[3] & xy1[2] <= sflim_level.box[4]
          if (hit) {
-            sflim_level <- .updateslider(xy[1], sflim_level.ypos, oldval=sflim_level, xlim=sflim_level.xpos, range=c(0,20), round=TRUE, cex=cex*cex.mult)
+            sflim_level <- .updateslider(xy2[1], sflim_level.ypos, oldval=sflim_level, xlim=sflim_level.xpos, range=c(0,20), round=TRUE, cex=cex*cex.mult)
+            if (sflim_level < 20 && sflim_elo < 3190)
+               sflim_elo <- .updateslider(sflim_elo.xpos[2], sflim_elo.ypos, oldval=sflim_elo, xlim=sflim_elo.xpos, range=c(1320,3190), round=10, cex=cex*cex.mult)
             next
          }
 
-         hit <- xy[1] >= sflim_elo.box[1] & xy[2] >= sflim_elo.box[2] & xy[1] <= sflim_elo.box[3] & xy[2] <= sflim_elo.box[4]
+         hit <- xy1[1] >= sflim_elo.box[1] & xy1[2] >= sflim_elo.box[2] & xy1[1] <= sflim_elo.box[3] & xy1[2] <= sflim_elo.box[4]
          if (hit) {
-            sflim_elo <- .updateslider(xy[1], sflim_elo.ypos, oldval=sflim_elo, xlim=sflim_elo.xpos, range=c(1320,3190), round=10, cex=cex*cex.mult)
+            sflim_elo <- .updateslider(xy2[1], sflim_elo.ypos, oldval=sflim_elo, xlim=sflim_elo.xpos, range=c(1320,3190), round=10, cex=cex*cex.mult)
+            if (sflim_level < 20 && sflim_elo < 3190)
+               sflim_level <- .updateslider(sflim_level.xpos[2], sflim_level.ypos, oldval=sflim_level, xlim=sflim_level.xpos, range=c(0,20), round=TRUE, cex=cex*cex.mult)
             next
          }
 
-         hit <- xy[1] >= threads.box[1] & xy[2] >= threads.box[2] & xy[1] <= threads.box[3] & xy[2] <= threads.box[4]
+         hit <- xy1[1] >= threads.box[1] & xy1[2] >= threads.box[2] & xy1[1] <= threads.box[3] & xy1[2] <= threads.box[4]
          if (hit) {
-            threads <- .updateslider(xy[1], threads.ypos, oldval=threads, xlim=threads.xpos, range=c(1,8), round=TRUE, cex=cex*cex.mult, text=FALSE)
+            threads <- .updateslider(xy2[1], threads.ypos, oldval=threads, xlim=threads.xpos, range=c(1,8), round=TRUE, cex=cex*cex.mult, text=FALSE)
             next
          }
 
-         hit <- xy[1] >= hash.box[1] & xy[2] >= hash.box[2] & xy[1] <= hash.box[3] & xy[2] <= hash.box[4]
+         hit <- xy1[1] >= hash.box[1] & xy1[2] >= hash.box[2] & xy1[1] <= hash.box[3] & xy1[2] <= hash.box[4]
          if (hit) {
             hash <- which(hash == hash.opts)
-            hash <- .updateslider(xy[1], hash.ypos, oldval=hash, xlim=hash.xpos, range=c(1,6), round=TRUE, cex=cex*cex.mult, text=FALSE)
+            hash <- .updateslider(xy2[1], hash.ypos, oldval=hash, xlim=hash.xpos, range=c(1,6), round=TRUE, cex=cex*cex.mult, text=FALSE)
             hash <- hash.opts[hash]
             next
          }
 
-         hit <- xy[1] >= monthssfcache.box[1] & xy[2] >= monthssfcache.box[2] & xy[1] <= monthssfcache.box[3] & xy[2] <= monthssfcache.box[4]
+         hit <- xy1[1] >= monthssfcache.box[1] & xy1[2] >= monthssfcache.box[2] & xy1[1] <= monthssfcache.box[3] & xy1[2] <= monthssfcache.box[4]
          if (hit) {
-            monthssfcache <- .updateslider(xy[1], monthssfcache.ypos, oldval=monthssfcache, xlim=monthssfcache.xpos, range=c(1,60), round=TRUE, cex=cex*cex.mult)
+            monthssfcache <- .updateslider(xy2[1], monthssfcache.ypos, oldval=monthssfcache, xlim=monthssfcache.xpos, range=c(1,60), round=TRUE, cex=cex*cex.mult)
             next
          }
 
-         hit <- sapply(delcache.box, function(coords) xy[1] >= coords[1] & xy[2] >= coords[2] & xy[1] <= coords[3] & xy[2] <= coords[4])
+         hit <- sapply(delcache.box, function(coords) xy1[1] >= coords[1] & xy1[2] >= coords[2] & xy1[1] <= coords[3] & xy1[2] <= coords[4])
          if (any(hit)) {
             .texttop(.text("rlydelcache", "Stockfish"))
             answer <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=.keyfun)
@@ -697,17 +743,38 @@
 
    text(5, invertbar.ypos, paste0(rep("*", min(30,nchar(token))), collapse=""), pos=4, cex=cex, family=font.mono, col=col.text, font=2)
 
+   .mousedownfun <- function(button,x,y) {
+      if (length(button) == 0L)
+         button <- 3
+      button <<- button
+      xy1 <<- .calcxy(x, y, plt)
+      return(NULL)
+   }
+
+   .mouseupfun <- function(button,x,y) {
+      xy2 <<- .calcxy(x, y, plt)
+      return(1)
+   }
+
    while (TRUE) {
 
       plt <- par("plt")
 
-      resp <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.mousedownfun, onKeybd=.keyfun)
+      button <- NULL
+      xy1 <- NULL
+      xy2 <- NULL
+
+      resp <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.mousedownfun, onMouseUp=.mouseupfun, onKeybd=.keyfun)
 
       if (is.numeric(resp)) {
 
-         xy <- .calcxy(resp[1], resp[2], plt)
+         if (button == 2)
+            break
 
-         hit <- sapply(speeds.box, function(coords) xy[1] >= coords[1] & xy[2] >= coords[2] & xy[1] <= coords[3] & xy[2] <= coords[4])
+         if (button != 0)
+            next
+
+         hit <- sapply(speeds.box, function(coords) xy1[1] >= coords[1] & xy1[2] >= coords[2] & xy1[1] <= coords[3] & xy1[2] <= coords[4])
          if (any(hit)) {
             i <- which(hit)
             speeds.on[i] <- !speeds.on[i]
@@ -719,7 +786,7 @@
             next
          }
 
-         hit <- sapply(ratings.box, function(coords) xy[1] >= coords[1] & xy[2] >= coords[2] & xy[1] <= coords[3] & xy[2] <= coords[4])
+         hit <- sapply(ratings.box, function(coords) xy1[1] >= coords[1] & xy1[2] >= coords[2] & xy1[1] <= coords[3] & xy1[2] <= coords[4])
          if (any(hit)) {
             i <- which(hit)
             ratings.on[i] <- !ratings.on[i]
@@ -731,7 +798,7 @@
             next
          }
 
-         hit <- sapply(lichessdb.box, function(coords) xy[1] >= coords[1] & xy[2] >= coords[2] & xy[1] <= coords[3] & xy[2] <= coords[4])
+         hit <- sapply(lichessdb.box, function(coords) xy1[1] >= coords[1] & xy1[2] >= coords[2] & xy1[1] <= coords[3] & xy1[2] <= coords[4])
          if (any(hit)) {
             i <- which(hit)
             if (lichessdb.on[i])
@@ -743,7 +810,7 @@
             next
          }
 
-         hit <- sapply(uselicache.box, function(coords) xy[1] >= coords[1] & xy[2] >= coords[2] & xy[1] <= coords[3] & xy[2] <= coords[4])
+         hit <- sapply(uselicache.box, function(coords) xy1[1] >= coords[1] & xy1[2] >= coords[2] & xy1[1] <= coords[3] & xy1[2] <= coords[4])
          if (any(hit)) {
             i <- which(hit)
             if (uselicache.on[i])
@@ -755,7 +822,7 @@
             next
          }
 
-         hit <- sapply(delcache.box, function(coords) xy[1] >= coords[1] & xy[2] >= coords[2] & xy[1] <= coords[3] & xy[2] <= coords[4])
+         hit <- sapply(delcache.box, function(coords) xy1[1] >= coords[1] & xy1[2] >= coords[2] & xy1[1] <= coords[3] & xy1[2] <= coords[4])
          if (any(hit)) {
             i <- which(hit)
             .texttop(.text("rlydelcache", lichessdb.txt[i]))
@@ -769,19 +836,19 @@
             next
          }
 
-         hit <- xy[1] >= barlen.box[1] & xy[2] >= barlen.box[2] & xy[1] <= barlen.box[3] & xy[2] <= barlen.box[4]
+         hit <- xy1[1] >= barlen.box[1] & xy1[2] >= barlen.box[2] & xy1[1] <= barlen.box[3] & xy1[2] <= barlen.box[4]
          if (hit) {
-            barlen <- .updateslider(xy[1], barlen.ypos, oldval=barlen, xlim=barlen.xpos, range=c(10,100), round=TRUE, cex=cex*cex.mult)
+            barlen <- .updateslider(xy2[1], barlen.ypos, oldval=barlen, xlim=barlen.xpos, range=c(10,100), round=TRUE, cex=cex*cex.mult)
             next
          }
 
-         hit <- xy[1] >= monthslicache.box[1] & xy[2] >= monthslicache.box[2] & xy[1] <= monthslicache.box[3] & xy[2] <= monthslicache.box[4]
+         hit <- xy1[1] >= monthslicache.box[1] & xy1[2] >= monthslicache.box[2] & xy1[1] <= monthslicache.box[3] & xy1[2] <= monthslicache.box[4]
          if (hit) {
-            monthslicache <- .updateslider(xy[1], monthslicache.ypos, oldval=monthslicache, xlim=monthslicache.xpos, range=c(1,60), round=TRUE, cex=cex*cex.mult)
+            monthslicache <- .updateslider(xy2[1], monthslicache.ypos, oldval=monthslicache, xlim=monthslicache.xpos, range=c(1,60), round=TRUE, cex=cex*cex.mult)
             next
          }
 
-         hit <- sapply(invertbar.box, function(coords) xy[1] >= coords[1] & xy[2] >= coords[2] & xy[1] <= coords[3] & xy[2] <= coords[4])
+         hit <- sapply(invertbar.box, function(coords) xy1[1] >= coords[1] & xy1[2] >= coords[2] & xy1[1] <= coords[3] & xy1[2] <= coords[4])
          if (any(hit)) {
             i <- which(hit)
             if (invertbar.on[i])
@@ -793,7 +860,7 @@
             next
          }
 
-         hit <- xy[1] >= 5 & xy[2] >= invertbar.box[[1]][2] & xy[1] <= 7 & xy[2] <= (title.ypos[5]+0.2)
+         hit <- xy1[1] >= 5 & xy1[2] >= invertbar.box[[1]][2] & xy1[1] <= 7 & xy1[2] <= (title.ypos[5]+0.2)
          if (hit) {
             eval(expr=switch1)
             tmp <- readline(prompt=.text("token"))

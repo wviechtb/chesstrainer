@@ -25,7 +25,7 @@ play <- function(lang="en", ...) {
    defaults <- list(player="", seqdir="", seqdirpos=1, mode="add", selmode="score_random", timed=FALSE, timepermove=5,
                     expval=2, target=0, multiplier=0.8, adjustwrong=40, adjusthint=20, showeval=TRUE, evalsteps=5, movestoshow=5,
                     coords=TRUE, showtransp=TRUE, matdiff=TRUE, san=TRUE, pieces=1, wait=TRUE, delay=0.5, idletime=120, mintime=60, sleepadj=0, lwd=2, volume=50,
-                    showgraph=FALSE, repmistake=FALSE, zenmode=FALSE,
+                    showgraph=FALSE, repmistake=FALSE, zenmode=FALSE, compseq=TRUE,
                     cex.top=1.4, cex.bot=0.7, cex.eval=0.5, cex.coords=0.85, cex.matdiff=1.1, cex.plots=1.0, cex.glyphs=1.6,
                     sfpath="", depth1=12, depth2=20, depth3=8, sflim=NA, multipv1=1, multipv2=1, threads=1, hash=256, hintdepth=10, monthssfcache=24,
                     difffun=1, difflen=15, diffmin=5,
@@ -148,7 +148,7 @@ play <- function(lang="en", ...) {
       settings <- list(lang=lang, player=player, seqdir=seqdir, seqdirpos=seqdirpos, mode=mode, selmode=selmode, timed=timed, timepermove=timepermove,
                        expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, showeval=showeval, evalsteps=evalsteps, movestoshow=movestoshow,
                        coords=coords, showtransp=showtransp, matdiff=matdiff, san=san, pieces=pieces, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, lwd=lwd, volume=volume,
-                       showgraph=showgraph, repmistake=repmistake, zenmode=zenmode,
+                       showgraph=showgraph, repmistake=repmistake, zenmode=zenmode, compseq=compseq,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, monthssfcache=monthssfcache,
                        difffun=difffun, difflen=difflen, diffmin=diffmin,
@@ -180,7 +180,7 @@ play <- function(lang="en", ...) {
       settings <- list(lang=lang, player=player, seqdir=seqdir, seqdirpos=seqdirpos, mode=mode, selmode=selmode, timed=timed, timepermove=timepermove,
                        expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, showeval=showeval, evalsteps=evalsteps, movestoshow=movestoshow,
                        coords=coords, showtransp=showtransp, matdiff=matdiff, san=san, pieces=pieces, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, lwd=lwd, volume=volume,
-                       showgraph=showgraph, repmistake=repmistake, zenmode=zenmode,
+                       showgraph=showgraph, repmistake=repmistake, zenmode=zenmode, compseq=compseq,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, monthssfcache=monthssfcache,
                        difffun=difffun, difflen=difflen, diffmin=diffmin,
@@ -2297,20 +2297,6 @@ play <- function(lang="en", ...) {
                next
             }
 
-            # s to set a target for points (in test mode)
-
-            if (mode == "test" && identical(click, "s")) {
-               targetold <- target
-               target <- .settarget(target)
-               .redrawpos(pos, flip=flip)
-               .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
-               if (targetold != target) {
-                  settings$target <- target
-                  saveRDS(settings, file=file.path(configdir, "settings.rds"))
-               }
-               next
-            }
-
             ################################################################
 
             ### keys specific to the test mode
@@ -2351,6 +2337,22 @@ play <- function(lang="en", ...) {
                .texttop(.text("zenmode", zenmode), sleep=0.75)
                .texttop(texttop)
                .textbot(show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
+               settings$zenmode <- zenmode
+               saveRDS(settings, file=file.path(configdir, "settings.rds"))
+               next
+            }
+
+            # s to set a target for points (in test mode)
+
+            if (mode == "test" && identical(click, "s")) {
+               targetold <- target
+               target <- .settarget(target)
+               .redrawpos(pos, flip=flip)
+               .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
+               if (targetold != target) {
+                  settings$target <- target
+                  saveRDS(settings, file=file.path(configdir, "settings.rds"))
+               }
                next
             }
 
@@ -2844,6 +2846,19 @@ play <- function(lang="en", ...) {
 
             ################################################################
 
+            # c to toggle compseq on/off (in play mode)
+
+            if (mode == "play" && identical(click, "c")) {
+               compseq <- !compseq
+               .texttop(.text("compseq", compseq), sleep=2)
+               .texttop(texttop)
+               settings$compseq <- compseq
+               saveRDS(settings, file=file.path(configdir, "settings.rds"))
+               next
+            }
+
+            ################################################################
+
             ### toggles and keys related to adjusting settings
 
             # ^ (or 6) to edit the exponent value
@@ -3328,7 +3343,7 @@ play <- function(lang="en", ...) {
                # FEN entered (use piece placement, active color, and castling availability for matching)
 
                if (grepl("^([rnbqkpRNBQKP1-8]+/){7}[rnbqkpRNBQKP1-8]+ [wb] (-|[KQkq]{1,4}) (-|[a-h][36]) \\d+ \\d+$", searchterm)) {
-                  searchterm <- paste(strsplit(searchterm, " ", fixed=TRUE)[[1]][1:3], collapse=" ")
+                  searchterm <- .fen123(searchterm)
                   seqident <- lapply(dat.all.short, function(x) {
                      if (any(searchterm == x$fenshort) && identical(flip, x$flip)) {
                         pos <- min(which(searchterm == x$fenshort))
@@ -3640,7 +3655,7 @@ play <- function(lang="en", ...) {
 
             if (identical(click, "'") || identical(click, "]")) {
                searchterm <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
-               searchterm <- paste(strsplit(searchterm, " ", fixed=TRUE)[[1]][1:3], collapse=" ")
+               searchterm <- .fen123(searchterm)
                seqident <- lapply(dat.all.short, function(x) {
                   if (any(searchterm == x$fenshort) && identical(flip, x$flip)) {
                      pos <- min(which(searchterm == x$fenshort))
@@ -3693,7 +3708,7 @@ play <- function(lang="en", ...) {
 
             if (identical(click, "[")) {
                searchterm <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
-               searchterm <- paste(strsplit(searchterm, " ", fixed=TRUE)[[1]][1:3], collapse=" ")
+               searchterm <- .fen123(searchterm)
                seqident <- lapply(dat.all.short, function(x) {
                   if (any(searchterm == x$fenshort) && identical(flip, x$flip)) {
                      pos <- min(which(searchterm == x$fenshort))
@@ -3741,7 +3756,7 @@ play <- function(lang="en", ...) {
                if (i == 1)
                   next
                searchterm <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
-               searchterm <- paste(strsplit(searchterm, " ", fixed=TRUE)[[1]][1:3], collapse=" ")
+               searchterm <- .fen123(searchterm)
                seqident <- sapply(dat.all, function(x) grepl(searchterm, tail(x$moves$fen, 1), fixed=TRUE) && identical(flip, x$flip))
                if (any(seqident)) {
                   #eval(expr=switch1)
@@ -4348,12 +4363,40 @@ play <- function(lang="en", ...) {
             glyph <- ""
             texttop <- .texttop("")
 
+            # in play mode, check if there are any sequences that include this position; if so, get all possible next moves
+
+            if (compseq && mode == "play") {
+               searchterm <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
+               searchterm <- .fen123(searchterm)
+               nextmoves <- lapply(dat.all.short, function(x) {
+                  if (any(searchterm == x$fenshort) && identical(flip, x$flip)) {
+                     pos <- min(which(searchterm == x$fenshort))
+                        nextmoves <- x$move[pos]
+                     nextmoves[is.na(nextmoves)] <- ""
+                     return(nextmoves)
+                  } else {
+                     return()
+                  }
+               })
+               notnull <- !sapply(nextmoves, is.null)
+               nextmoves <- nextmoves[notnull]
+               if (any(notnull))
+                  nextmoves <- unique(unlist(nextmoves))
+            }
+
             # if in add, play, or analysis mode, make the move
 
             tmp <- .updateboard(pos, move=data.frame(click1.x, click1.y, click2.x, click2.y, NA, NA), flip=flip, autoprom=FALSE)
             moveuci <- .lan2uci(attr(tmp,"move"), sidetoplay=sidetoplay)
             movesan <- .parsemove(moveuci, pos=pos, flip=flip, evalval=NA, i=NA, sidetoplay=sidetoplay, rename=FALSE, returnline=2, hintdepth=1, san=TRUE)
             pos <- tmp
+
+            # in play mode, if the move made was not one of the possible moves from the sequences, indicate this
+
+            if (compseq && mode == "play" && any(notnull) && !is.element(attr(pos,"move"), nextmoves)) {
+               .texttop(.text("notseqmove"), sleep=2)
+               .texttop("")
+            }
 
          }
 
