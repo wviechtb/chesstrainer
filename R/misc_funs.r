@@ -775,8 +775,8 @@
          if (is.na(evalval)) {
             txt.eval <- ""
          } else {
-            #txt.eval <- paste0(formatC(evalval, format="f", digits=ifelse(abs(evalval) >= 99.9, 1, 2), flag="+"), " ", collapse="")
-            txt.eval <- paste0(formatC(evalval, format="f", digits=1, flag="+"), "   ", collapse="")
+            #txt.eval <- paste0(.fmtx(evalval, digits=ifelse(abs(evalval) >= 99.9, 1, 2), flag="+"), " ", collapse="")
+            txt.eval <- paste0(.fmtx(evalval, digits=1, flag="+"), "   ", collapse="")
          }
 
          if (j == 1)
@@ -1420,4 +1420,13 @@
 
    return()
 
+}
+
+.fmtx <- function(x, digits, flag="")
+   formatC(x, format="f", digits=digits, flag=flag)
+
+.sub9 <- function(x) {
+   m <- gregexpr("\\d+", x)
+   regmatches(x, m) <- lapply(regmatches(x, m), function(num) as.character(9 - as.numeric(num)))
+   return(x)
 }

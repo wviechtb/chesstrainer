@@ -1073,13 +1073,13 @@
    if (is.na(age)) {
       age <- ""
    } else {
-      age <- formatC(age, format="f", digits=0)
+      age <- .fmtx(age, digits=0)
    }
 
    if (is.na(difficulty)) {
       difficulty <- ""
    } else {
-      difficulty <- formatC(difficulty, format="f", digits=0)
+      difficulty <- .fmtx(difficulty, digits=0)
    }
 
    if (lang == "en") {
@@ -1332,22 +1332,16 @@
    col.bot  <- .get("col.bot")
    cex.bot  <- .get("cex.bot")
    depth    <- .get("depth")
-   olddepth <- .get("olddepth")
 
    if (clear || !showeval) {
       rect(xpos-0.2, 0.7, xpos+indsize+0.4, 0.98, border=NA, col=col.bg)
       return()
    }
 
-   if (identical(olddepth, depth))
-      return()
-
    rect(xpos-0.2, 0.7, xpos+indsize+0.4, 0.98, border=NA, col=col.bg)
 
    if (mode != "test" && !is.null(depth))
       text(xpos + indsize/2, 0.85, paste0("(d=", depth, ")"), cex=cex.bot, col=col.bot)
-
-   assign("olddepth", depth, envir=.chesstrainer)
 
    return()
 
@@ -1383,7 +1377,7 @@
 
    maxval <- 9.9
    ismate <- abs(val) >= 99.9
-   valtxt <- formatC(val, format="f", digits=1)
+   valtxt <- .fmtx(val, digits=1)
    val <- min(max(val, -maxval), maxval)
    if (ismate) {
       val <- (val + maxval) / (2*maxval) * 8 + 1 # either 1 or 9

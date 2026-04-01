@@ -90,7 +90,8 @@
       filessplit <- strsplit(files, "_", fixed=TRUE)
       depths <- as.numeric(sapply(filessplit, function(x) x[1]))
       fileswoutdepth  <- sapply(filessplit, function(x) x[2])
-      fenfilename <- gsub(" ", "%20", fen, fixed=TRUE)
+      fenfilename <- paste(strsplit(fen, " ", fixed=TRUE)[[1]][1:5], collapse = " ") # remove the fullmove number
+      fenfilename <- gsub(" ", "%20", fenfilename, fixed=TRUE)
       fenfilename <- gsub("/", "%2F", fenfilename, fixed=TRUE)
       fenfilename <- paste0(fenfilename, ".rds")
       if (fenfilename %in% fileswoutdepth) {

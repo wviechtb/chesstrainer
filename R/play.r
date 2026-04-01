@@ -639,7 +639,6 @@ play <- function(lang="en", ...) {
       assign("score", 0, envir=.chesstrainer)
       assign("x2y2", c(NA,NA), envir=.chesstrainer)
       assign("depth", NULL, envir=.chesstrainer)
-      assign("olddepth", 0, envir=.chesstrainer)
 
       circles <- matrix(nrow=0, ncol=2) # to store circles
       arrows  <- matrix(nrow=0, ncol=4) # to store arrows
@@ -1264,6 +1263,8 @@ play <- function(lang="en", ...) {
 
             ### general keys
 
+            #if (identical(click, "p")) {cat("--------------------------------------------\n\n"); print(pos); print(sub); next}
+
             # q (or ctrl-q) to quit the trainer
 
             if (identical(click, "q") || identical(click, "ctrl-Q")) {
@@ -1298,6 +1299,7 @@ play <- function(lang="en", ...) {
                arrows  <- matrix(nrow=0, ncol=4)
                harrows <- matrix(nrow=0, ncol=4)
                .drawglyph(glyph)
+               .drawdepth(showeval[[mode]])
                evalvals <- NULL
                next
             }
@@ -1571,6 +1573,12 @@ play <- function(lang="en", ...) {
                matetype <- res.sf$matetype
                sfproc   <- res.sf$sfproc
                sfrun    <- res.sf$sfrun
+               if (i > 1) {
+                  sub$moves$eval[i-1] <- evalval[1]
+               } else {
+                  if (!is.null(sub$pos))
+                     starteval <- evalval[1]
+               }
                .drawevalbar(evalval[[1]], oldeval, i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]], evalsteps=evalsteps)
                playsound(system.file("sounds", "complete.ogg", package="chesstrainer"))
                click <- "h"
@@ -2600,6 +2608,15 @@ play <- function(lang="en", ...) {
                harrows <- matrix(nrow=0, ncol=4)
                glyph   <- ""
                evalvals <- NULL
+               #sub$moves[1:4] <- 9-sub$moves[1:4]
+               #sub$moves$circles <- .sub9(sub$moves$circles)
+               #sub$moves$arrows  <- .sub9(sub$moves$arrows)
+               #attr(pos,"y1") <- 9-attr(pos,"y1")
+               #assign("x2y2", 9-.get("x2y2"), envir=.chesstrainer)
+               #if (!is.null(sub$symbolend)) {
+               #   sub$symbolend$circlesvar <- .sub9(sub$symbolend$circlesvar)
+               #   sub$symbolend$arrowsvar  <- .sub9(sub$symbolend$arrowsvar)
+               #}
                .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
                .drawevalbar(starteval, starteval, i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]], evalsteps=evalsteps)
                next
@@ -2973,7 +2990,7 @@ play <- function(lang="en", ...) {
                } else {
                   delay <- min(2, delay + 0.25)
                }
-               .texttop(.text("delaytime", formatC(delay, format="f", digits=2)), sleep=0.75)
+               .texttop(.text("delaytime", .fmtx(delay, digits=2)), sleep=0.75)
                .texttop(texttop)
                settings$delay <- delay
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
@@ -3174,7 +3191,7 @@ play <- function(lang="en", ...) {
                      bars <- round(5 * (probvals.selected - min(probvals.selected)) / (max(probvals.selected) - min(probvals.selected)))
                   }
                   bars <- sapply(bars, function(x) paste0(rep("*", x), collapse=""))
-                  tab <- data.frame(files, rounds.selected, formatC(age.selected, format="f", digits=1), scores.selected, formatC(difficulty.selected, format="f", digits=1), formatC(probvals.selected, format="f", digits=1), bars)
+                  tab <- data.frame(files, rounds.selected, .fmtx(age.selected, digits=1), scores.selected, .fmtx(difficulty.selected, digits=1), .fmtx(probvals.selected, digits=1), bars)
                   tab$bars <- format(tab$bars, justify="left")
                   names(tab) <- c(.text("sequence"), .text("rounds"), .text("age"), .text("score"), .text("diff"), "%", "")
                   tab[[1]] <- substr(tab[[1]], 1, nchar(tab[[1]])-4) # remove .rds from name
