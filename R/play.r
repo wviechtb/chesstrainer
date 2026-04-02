@@ -220,7 +220,6 @@ play <- function(lang="en", ...) {
    assign("cex.matdiff", cex.matdiff, envir=.chesstrainer)
    assign("cex.plots", cex.plots, envir=.chesstrainer)
    assign("cex.glyphs", cex.glyphs, envir=.chesstrainer)
-   assign("upsidedown", FALSE, envir=.chesstrainer)
    assign("volume", volume, envir=.chesstrainer)
    assign("lwd", lwd, envir=.chesstrainer)
    assign("mar", mar, envir=.chesstrainer)
@@ -240,7 +239,8 @@ play <- function(lang="en", ...) {
    assign("switch2", switch2, envir=.chesstrainer)
    assign("uselicache", uselicache, envir=.chesstrainer)
    assign("showlibar", showlibar, envir=.chesstrainer)
-   assign("lastget", proc.time()[[3]], envir=.chesstrainer)
+   assign("lastapirequest", proc.time()[[3]], envir=.chesstrainer)
+   assign("upsidedown", FALSE, envir=.chesstrainer) # TODO: this can be removed (also from draw_funs.r)
 
    # create cache directory
 
@@ -392,6 +392,7 @@ play <- function(lang="en", ...) {
    contliquery  <- FALSE
    updateall    <- FALSE
    savpos       <- NULL
+   upsidedown   <- FALSE
 
    assign("contliquery", contliquery, envir=.chesstrainer)
 
@@ -619,6 +620,7 @@ play <- function(lang="en", ...) {
          # when in play (Lichess) mode, stick to prior flip setting when starting a new round and set sidetoplay correctly
          sidetoplay <- sidetoplaystart
       }
+      unflip        <- FALSE
       scoreadd      <- 0
       sideindicator <- NA
       opening       <- ""
@@ -963,6 +965,14 @@ play <- function(lang="en", ...) {
 
       sidetoplaystart <- sidetoplay
 
+      # in test mode, if upsidedown is TRUE, then automatically flip the board
+
+      if (mode == "test" && upsidedown) {
+         flip <- !flip
+         list2env(.doflip(sub, pos, flip), envir=environment())
+         unflip <- TRUE
+      }
+
       # draw board and add info at the bottom
 
       .drawboard(pos, flip=flip)
@@ -1264,6 +1274,7 @@ play <- function(lang="en", ...) {
             ### general keys
 
             #if (identical(click, "p")) {cat("--------------------------------------------\n\n"); print(pos); print(sub); next}
+            if (identical(click, "p")) {print(comment); next}
 
             # q (or ctrl-q) to quit the trainer
 
@@ -2152,6 +2163,12 @@ play <- function(lang="en", ...) {
 
                } else {
 
+                  if (mode == "test" && unflip) {
+                     flip <- !flip
+                     unflip <- FALSE
+                     list2env(.doflip(sub, pos, flip), envir=environment())
+                  }
+
                   if (mode == "play") {
                      mode <- "analysis"
                      assign("mode", mode, envir=.chesstrainer)
@@ -2281,7 +2298,10 @@ play <- function(lang="en", ...) {
             # ctrl-u to toggle upsidedown
 
             if (identical(click, "ctrl-U")) {
-               assign("upsidedown", !.get("upsidedown"), envir=.chesstrainer)
+               upsidedown <- !upsidedown
+               .texttop(.text("upsidedown", upsidedown), sleep=1.5)
+               .texttop(texttop)
+               #assign("upsidedown", !.get("upsidedown"), envir=.chesstrainer)
                .newround()
                next
             }
@@ -2329,8 +2349,6 @@ play <- function(lang="en", ...) {
 
             if (mode == "test" && identical(click, "%")) {
                score <- .setscore(score)
-               #sub$player[[player]]$score[length(sub$player[[player]]$score)] <- score
-               #saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
                .redrawpos(pos, flip=flip)
                .textbot(score=score, onlyscore=TRUE)
                .drawannot(circles=circles, arrows=arrows, glyph=glyph)
@@ -2366,7 +2384,7 @@ play <- function(lang="en", ...) {
 
             # M to trigger a mistake (only in test mode and when upsidedown is TRUE)
 
-            if (.get("upsidedown") && mode == "test" && identical(click, "M")) {
+            if (mode == "test" && identical(click, "M") && upsidedown) {
                mistake <- TRUE
                if (score >= 1) {
                   scoreadd <- min(adjustwrong, 100-score)
@@ -2379,7 +2397,7 @@ play <- function(lang="en", ...) {
 
             # B to end the sequence and go to the next one (only in test mode and when upsidedown is TRUE)
 
-            if (.get("upsidedown") && mode == "test" && identical(click, "B")) {
+            if (mode == "test" && identical(click, "B") && upsidedown) {
                playsound(system.file("sounds", "complete.ogg", package="chesstrainer"))
                if (is.null(sub$commentend)) {
                   if (mistake) {
@@ -2429,6 +2447,8 @@ play <- function(lang="en", ...) {
                      }
                   }
                }
+               if (unflip)
+                  list2env(.doflip(sub, pos, !flip), envir=environment())
                saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
                Sys.sleep(2*delay)
                .newround()
@@ -2443,6 +2463,14 @@ play <- function(lang="en", ...) {
             # A does the same but starts at the position when A is pressed
 
             if (identical(click, "a") || identical(click, "A")) {
+
+               if (unflip) {
+                  flip <- !flip
+                  unflip <- FALSE
+                  list2env(.doflip(sub, pos, flip), envir=environment())
+                  .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
+                  .drawevalbar(starteval, starteval, i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]], evalsteps=evalsteps)
+               }
 
                k1A <- FALSE
 
@@ -2471,7 +2499,7 @@ play <- function(lang="en", ...) {
                assign("mode", mode, envir=.chesstrainer)
 
                sub$player <- NULL
-               sub$commentend <- NULL
+               sub$commentend <- NULL # TODO: move commentend to comment?
                sub$symbolend <- NULL
 
                texttop <- .texttop("")
@@ -2595,28 +2623,16 @@ play <- function(lang="en", ...) {
 
             # f to flip the board (only in add mode and only at the start of a sequence)
 
-            if (mode == "add" && identical(click, "f")) {
-               if (i > 1) {
-                  .texttop(.text("fliponlyatstart", show), sleep=1.25)
-                  .texttop(texttop)
-                  next
-               }
+            if (identical(click, "f")) {
                flip <- !flip
-               sub$flip <- flip
                circles <- matrix(nrow=0, ncol=2)
                arrows  <- matrix(nrow=0, ncol=4)
                harrows <- matrix(nrow=0, ncol=4)
                glyph   <- ""
                evalvals <- NULL
-               #sub$moves[1:4] <- 9-sub$moves[1:4]
-               #sub$moves$circles <- .sub9(sub$moves$circles)
-               #sub$moves$arrows  <- .sub9(sub$moves$arrows)
-               #attr(pos,"y1") <- 9-attr(pos,"y1")
-               #assign("x2y2", 9-.get("x2y2"), envir=.chesstrainer)
-               #if (!is.null(sub$symbolend)) {
-               #   sub$symbolend$circlesvar <- .sub9(sub$symbolend$circlesvar)
-               #   sub$symbolend$arrowsvar  <- .sub9(sub$symbolend$arrowsvar)
-               #}
+               list2env(.doflip(sub, pos, flip), envir=environment())
+               if (mode == "test")
+                  unflip <- !unflip
                .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
                .drawevalbar(starteval, starteval, i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]], evalsteps=evalsteps)
                next
@@ -2675,9 +2691,17 @@ play <- function(lang="en", ...) {
             # e to edit the comments using prompts
 
             if (identical(click, "e")) {
+               tmp <- sub
                eval(expr=switch1)
-               sub <- .editcomments(sub, seqdir[seqdirpos], seqname) # note: directly saves after edit in test mode
+               sub <- .editcomments(sub, seqdir[seqdirpos], seqname)
                eval(expr=switch2)
+               if (mode == "test" && !identical(tmp, sub)) {
+                  if (unflip)
+                     list2env(.doflip(sub, pos, !flip), envir=environment())
+                  saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
+                  if (unflip)
+                     list2env(.doflip(sub, pos, flip), envir=environment())
+               }
                texttop <- sub$moves$comment[i-1]
                .texttop(texttop)
                next
@@ -2686,13 +2710,19 @@ play <- function(lang="en", ...) {
             # E to edit a sequence using edit()
 
             if (identical(click, "E")) {
+               tmp <- sub
                sub$moves <- edit(sub$moves)
                sub$moves$comment[is.na(sub$moves$comment)] <- ""
                sub$moves$circles[is.na(sub$moves$circles)] <- ""
                sub$moves$arrows[is.na(sub$moves$arrows)] <- ""
                sub$moves$glyph[is.na(sub$moves$glyph)] <- ""
-               if (mode == "test") # note: save after edit in test mode
+               if (mode == "test" && !identical(tmp, sub)) {
+                  if (unflip)
+                     list2env(.doflip(sub, pos, !flip), envir=environment())
                   saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
+                  if (unflip)
+                     list2env(.doflip(sub, pos, flip), envir=environment())
+               }
                next
             }
 
@@ -2722,6 +2752,8 @@ play <- function(lang="en", ...) {
                   startpos <- sub$pos
                }
                sub$startfen <- .genfen(startpos, flip=sub$flip, sidetoplay=sidetoplaystart, sidetoplaystart=sidetoplaystart, i=1)
+               if (is.null(sub$commentend) && !identical(comment, ""))
+                  sub$commentend <- comment
                if (nrow(circles) >= 1L)
                   circlesvar <- paste0(apply(circles, 1, function(x) paste0("(",x[1],",",x[2],")")), collapse=";")
                if (nrow(arrows) >= 1L)
@@ -3140,7 +3172,7 @@ play <- function(lang="en", ...) {
                verbose <- !verbose
                if (verbose) {
                   eval(expr=switch1)
-                  .printverbose(selected, seqno, filename, lastseq, flip, replast, oldmode, i, seqname, seqnum, score, rounds, totalmoves, show, showcomp, comment, bestmove, starteval, evalval, texttop, scoreadd, sidetoplay, givehint1, givehint2, mistake, timetotal, movesplayed, movestoplay, drawcircles, drawarrows, showstartcom, pos)
+                  .printverbose(selected, seqno, filename, lastseq, upsidedown, flip, unflip, replast, oldmode, i, seqname, seqnum, score, rounds, totalmoves, show, showcomp, comment, bestmove, starteval, evalval, texttop, scoreadd, sidetoplay, givehint1, givehint2, mistake, timetotal, movesplayed, movestoplay, drawcircles, drawarrows, showstartcom, pos)
                   eval(expr=switch2)
                }
                assign("verbose", verbose, envir=.chesstrainer)
@@ -3246,9 +3278,9 @@ play <- function(lang="en", ...) {
                if (isTRUE(bookmark != "")) { # only TRUE if bookmark is neither NA nor ""
                   selected <- grepl(bookmark, files.all)
                   selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected]
-                  .newround(seqno1=TRUE)
                   mode <- oldmode <- "add"
                   assign("mode", mode, envir=.chesstrainer)
+                  .newround(seqno1=TRUE)
                } else {
                   if (isTRUE(bookmark == "")) {
                      .redrawpos(pos, flip=flip)
@@ -3350,10 +3382,10 @@ play <- function(lang="en", ...) {
                if (identical(searchterm , "*") && !identical(click, "|")) {
                   cat(.text("allseqselected"))
                   selected <- NULL
-                  .newround(seqno1=TRUE)
                   mode <- oldmode <- "add"
                   assign("mode", mode, envir=.chesstrainer)
                   eval(expr=switch2)
+                  .newround(seqno1=TRUE)
                   next
                }
 
@@ -3394,9 +3426,9 @@ play <- function(lang="en", ...) {
                      if (identical(selmatches, "") || .confirm(selmatches)) {
                         cat(.text("selmatchesconfirm", sum(notnull)))
                         selected <- files.all[notnull]
-                        .newround(seqno1=TRUE)
                         mode <- oldmode <- "add"
                         assign("mode", mode, envir=.chesstrainer)
+                        .newround(seqno1=TRUE)
                      }
                   } else {
                      cat(.text("noseqsfound"))
@@ -3421,9 +3453,9 @@ play <- function(lang="en", ...) {
                      if (identical(selmatches, "") || .confirm(selmatches)) {
                         cat(.text("selmatchesconfirm", sum(seqident)))
                         selected <- files.all[seqident]
-                        .newround(seqno1=TRUE)
                         mode <- oldmode <- "add"
                         assign("mode", mode, envir=.chesstrainer)
+                        .newround(seqno1=TRUE)
                      }
                   } else {
                      cat(.text("noseqsfound"))
@@ -3442,9 +3474,9 @@ play <- function(lang="en", ...) {
                   } else {
                      cat(.text("selseq12", c(tmp$seq.lo, tmp$seq.hi)))
                      selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[tmp$seq.lo:tmp$seq.hi]
-                     .newround(seqno1=TRUE)
                      mode <- oldmode <- "add"
                      assign("mode", mode, envir=.chesstrainer)
+                     .newround(seqno1=TRUE)
                   }
                   eval(expr=switch2)
                   next
@@ -3459,9 +3491,9 @@ play <- function(lang="en", ...) {
                   } else {
                      cat(.text("selseq", tmp))
                      selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[tmp]
-                     .newround(seqno1=TRUE)
                      mode <- oldmode <- "add"
                      assign("mode", mode, envir=.chesstrainer)
+                     .newround(seqno1=TRUE)
                   }
                   eval(expr=switch2)
                   next
@@ -3480,9 +3512,9 @@ play <- function(lang="en", ...) {
                      selected <- NULL
                   } else {
                      cat(.text("numseqfound", length(selected)))
-                     .newround(seqno1=TRUE)
                      mode <- oldmode <- "add"
                      assign("mode", mode, envir=.chesstrainer)
+                     .newround(seqno1=TRUE)
                   }
                   eval(expr=switch2)
                   next
@@ -3501,9 +3533,9 @@ play <- function(lang="en", ...) {
                      selected <- NULL
                   } else {
                      cat(.text("numseqfound", length(selected)))
-                     .newround(seqno1=TRUE)
                      mode <- oldmode <- "add"
                      assign("mode", mode, envir=.chesstrainer)
+                     .newround(seqno1=TRUE)
                   }
                   eval(expr=switch2)
                   next
@@ -3523,9 +3555,9 @@ play <- function(lang="en", ...) {
                      selected <- NULL
                   } else {
                      cat(.text("numseqfound", length(selected)))
-                     .newround(seqno1=TRUE)
                      mode <- oldmode <- "add"
                      assign("mode", mode, envir=.chesstrainer)
+                     .newround(seqno1=TRUE)
                   }
                   eval(expr=switch2)
                   next
@@ -3545,9 +3577,9 @@ play <- function(lang="en", ...) {
                      selected <- NULL
                   } else {
                      cat(.text("numseqfound", length(selected)))
-                     .newround(seqno1=TRUE)
                      mode <- oldmode <- "add"
                      assign("mode", mode, envir=.chesstrainer)
+                     .newround(seqno1=TRUE)
                   }
                   eval(expr=switch2)
                   next
@@ -3592,9 +3624,9 @@ play <- function(lang="en", ...) {
                         selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected]
                      }
                      cat(.text("numseqfound", length(selected)))
-                     .newround(seqno1=TRUE)
                      mode <- oldmode <- "add"
                      assign("mode", mode, envir=.chesstrainer)
+                     .newround(seqno1=TRUE)
                   }
                }
 
@@ -3609,9 +3641,9 @@ play <- function(lang="en", ...) {
                if (!is.null(selected)) {
                   .texttop(.text("allseqselected"), sleep=1)
                   selected <- NULL
-                  .newround(seqno1=TRUE)
                   mode <- oldmode <- "add"
                   assign("mode", mode, envir=.chesstrainer)
+                  .newround(seqno1=TRUE)
                } else {
                   .texttop(.text("allseqalreadyselected"), sleep=1)
                   .texttop(texttop)
@@ -4572,7 +4604,7 @@ play <- function(lang="en", ...) {
                   .redrawpos(pos, flip=flip)
                }
 
-               skipsave <- FALSE
+               dosave   <- TRUE
                contplay <- FALSE
 
                if (wait) {
@@ -4587,27 +4619,33 @@ play <- function(lang="en", ...) {
                      if (is.numeric(click) && identical(click[3], 0)) # left button goes to next sequence
                         break
 
+                     if (identical(click, "n")) { # n goes to next sequence without saving without saving
+                        dosave <- FALSE
+                        break
+                     }
+
                      if (identical(click, "r") || (is.numeric(click) && identical(click[3], 1))) { # r or middle button repeats the sequence
-                        saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
                         .texttop(.text("replast"), sleep=0.75)
                         replast <- TRUE
                         filename <- seqname
                         break
                      }
 
-                     if (identical(click, "n")) { # n goes to next sequence without saving
-                        skipsave <- TRUE
-                        break
-                     }
-
                      if (identical(click, "a") || identical(click, "A") || (is.numeric(click) && identical(click[3], 2))) { # a/A and right mouse button goes to add mode
-                        saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
-                        .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), flip=flip)
+                        if (unflip) {
+                           flip <- !flip
+                           unflip <- FALSE
+                           list2env(.doflip(sub, pos, flip), envir=environment())
+                           .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
+                           .drawevalbar(starteval, starteval, i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]], evalsteps=evalsteps)
+                        } else {
+                           .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), flip=flip)
+                        }
                         oldmode <- "test"
                         mode <- "add"
                         assign("mode", mode, envir=.chesstrainer)
                         sub$player <- NULL
-                        sub$commentend <- NULL
+                        sub$commentend <- NULL # TODO: move commentend to comment?
                         sub$symbolend <- NULL
                         show <- FALSE
                         showcomp <- TRUE
@@ -4637,7 +4675,6 @@ play <- function(lang="en", ...) {
                      }
 
                      if (identical(click, "\\") || identical(click, "\U000000E4")) { # \ or ä goes to play mode
-                        saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
                         .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), glyph=glyph, flip=flip)
                         glyph <- ""
                         sub$moves <- sub$moves[seq_len(i-1),,drop=FALSE]
@@ -4687,7 +4724,7 @@ play <- function(lang="en", ...) {
                         .textbot(score=score, onlyscore=TRUE)
                         .drawannot(circles=circles, arrows=arrows, glyph=glyph)
                         sub$player[[player]]$score[length(sub$player[[player]]$score)] <- score
-                        saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
+                        next
                      }
 
                      if (identical(click, "<")) {
@@ -4705,6 +4742,7 @@ play <- function(lang="en", ...) {
                         }
                         write.table(data.frame(bookmarks), file=file.path(seqdir[seqdirpos], ".bookmarks"), col.names=FALSE, row.names=FALSE, quote=FALSE)
                         .texttop(.text("bookmarked", bookmark), sleep=1.5)
+                        next
                      }
 
                      if (identical(click, "o")) {
@@ -4714,6 +4752,7 @@ play <- function(lang="en", ...) {
                         eval(expr=switch2)
                         fen <- paste0("https://lichess.org/analysis/standard/", gsub(" ", "_", fen, fixed=TRUE))
                         browseURL(fen)
+                        next
                      }
 
                      if (identical(click, "ctrl-F")) {
@@ -4723,6 +4762,7 @@ play <- function(lang="en", ...) {
                         eval(expr=switch2)
                         clipr::write_clip(fen, object_type="character")
                         .texttop(.text("copyfen"), sleep=0.75)
+                        next
                      }
 
                      if (identical(click, "ctrl-C")) {
@@ -4730,6 +4770,7 @@ play <- function(lang="en", ...) {
                         cat(seqnum, " ", seqname, "\n")
                         clipr::write_clip(seqname, object_type="character")
                         eval(expr=switch2)
+                        next
                      }
 
                      if (identical(click, "g")) {
@@ -4741,15 +4782,19 @@ play <- function(lang="en", ...) {
                         }
                         .redrawpos(pos, flip=flip)
                         .drawannot(circles=circles, arrows=arrows, glyph=glyph)
+                        next
                      }
 
-                     if (identical(click, "i"))
+                     if (identical(click, "i")) {
                         .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop)
+                        next
+                     }
 
                      if (identical(click, "ctrl-V")) {
                         eval(expr=switch1)
                         .printverbose(selected, seqno, filename, lastseq, flip, replast, oldmode, i, seqname, seqnum, score, rounds, totalmoves, show, showcomp, comment, bestmove, starteval, evalval, texttop, scoreadd, sidetoplay, givehint1, givehint2, mistake, timetotal, movesplayed, movestoplay, drawcircles, drawarrows, showstartcom, pos)
                         eval(expr=switch2)
+                        next
                      }
 
                   }
@@ -4759,11 +4804,16 @@ play <- function(lang="en", ...) {
                if (!replast)
                   seqno <- ifelse(seqno == k, 1, seqno + 1)
 
+               if (dosave) {
+                  if (unflip)
+                     list2env(.doflip(sub, pos, !flip), envir=environment())
+                  saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
+                  if (unflip)
+                     list2env(.doflip(sub, pos, flip), envir=environment())
+               }
+
                if (contplay)
                   next
-
-               if (!skipsave)
-                  saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
 
                Sys.sleep(2*delay)
 
@@ -4776,7 +4826,7 @@ play <- function(lang="en", ...) {
                   } else {
                      anyabove <- sum(scores.selected >= target)
                      scores.selected[which(seqname == files)] <- score
-                     if (!skipsave && selmode %in% c("score_random", "score_highest") && all(scores.selected < target) && anyabove) {
+                     if (dosave && selmode %in% c("score_random", "score_highest") && all(scores.selected < target) && anyabove) {
                         playsound(system.file("sounds", "finished.ogg", package="chesstrainer"))
                         .texttop(.text("belowtarget", target), sleep=2)
                      }

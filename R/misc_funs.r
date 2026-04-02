@@ -806,7 +806,7 @@
 
 }
 
-.printverbose <- function(selected, seqno, filename, lastseq, flip, replast, oldmode, i,
+.printverbose <- function(selected, seqno, filename, lastseq, upsidedown, flip, unflip, replast, oldmode, i,
                           seqname, seqnum, score, rounds, totalmoves, show, showcomp, comment, bestmove, starteval,
                           evalval, texttop, scoreadd, sidetoplay, givehint1, givehint2, mistake,
                           timetotal, movesplayed, movestoplay, drawcircles, drawarrows, showstartcom, pos) {
@@ -816,7 +816,9 @@
    cat("seqno:        ", seqno, "\n")
    cat("filename:     ", filename, "\n")
    cat("lastseq:      ", lastseq, "\n")
+   cat("upsidedown:   ", upsidedown, "\n")
    cat("flip:         ", flip, "\n")
+   cat("unflip:       ", unflip, "\n")
    cat("replast:      ", replast, "\n")
    cat("oldmode:      ", oldmode, "\n")
    cat("i:            ", i, "\n")
@@ -1429,4 +1431,21 @@
    m <- gregexpr("\\d+", x)
    regmatches(x, m) <- lapply(regmatches(x, m), function(num) as.character(9 - as.numeric(num)))
    return(x)
+}
+
+.doflip <- function(sub, pos, flip) {
+
+   sub$flip <- flip
+   sub$moves[1:4] <- 9-sub$moves[1:4]
+   sub$moves$circles <- .sub9(sub$moves$circles)
+   sub$moves$arrows  <- .sub9(sub$moves$arrows)
+   attr(pos,"y1") <- 9-attr(pos,"y1")
+   assign("x2y2", 9-.get("x2y2"), envir=.chesstrainer)
+   if (!is.null(sub$symbolend)) {
+      sub$symbolend$circlesvar <- .sub9(sub$symbolend$circlesvar)
+      sub$symbolend$arrowsvar  <- .sub9(sub$symbolend$arrowsvar)
+   }
+
+   return(list(sub=sub, pos=pos))
+
 }

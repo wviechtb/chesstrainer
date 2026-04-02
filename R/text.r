@@ -1227,12 +1227,6 @@
                          "Select via the number keys 1-9, F1-F11, or via mouse click."
    ))}
 
-   if (x == "fliponlyatstart") {
-      return(switch(lang,
-                    de = "Das Brett kann nur am Anfang einer Sequenz gedreht werden.",
-                         "Can only flip the board at the beginning of a sequence."
-   ))}
-
    if (x == "mate") {
       return(switch(lang,
                     de = "Matt!",
@@ -1717,6 +1711,12 @@
       return(switch(lang,
                     de = paste0("Vergleiche Z\U000000FCge mit den bestehenden Sequenzen: ", ifelse(arg, "an", "aus")),
                          paste0("Compare moves to the existing sequences: ", ifelse(arg, "on", "off"))
+   ))}
+
+   if (x == "upsidedown") {
+      return(switch(lang,
+                    de = paste0("Schachbrett verkehrt herum anzeigen: ", ifelse(arg, "an", "aus")),
+                         paste0("Display the chessboard upside down: ", ifelse(arg, "on", "off"))
    ))}
 
 }

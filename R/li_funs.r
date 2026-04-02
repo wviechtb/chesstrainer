@@ -34,6 +34,7 @@
    contliquery <- .get("contliquery")
 
    fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
+   fen <- paste(strsplit(fen, " ", fixed=TRUE)[[1]][1:5], collapse = " ") # remove the fullmove number
    fen <- gsub(" ", "%20", fen, fixed=TRUE)
    filename <- paste0(gsub("/", "_", fen, fixed=TRUE), ".rds")
 
@@ -65,11 +66,11 @@
       url <- paste0(url, "fen=", fen)
       header <- paste("Bearer", token)
 
-      lastget <- .get("lastget")
+      lastapirequest <- .get("lastapirequest")
 
       # ensure that there are at least 2.5 seconds between each API request
 
-      while (proc.time()[[3]] - lastget < 2.5)
+      while (proc.time()[[3]] - lastapirequest < 2.5)
          Sys.sleep(0.1)
 
       out <- try(VERB("GET", url, add_headers('Authorization'=header), content_type("application/octet-stream"), user_agent("R chesstrainer (wvb@wvbauer.com)"), timeout(2)), silent=TRUE)
@@ -79,7 +80,7 @@
          out <- try(VERB("GET", url, add_headers('Authorization'=header), content_type("application/octet-stream"), user_agent("R chesstrainer (wvb@wvbauer.com)"), timeout(2)), silent=TRUE)
       }
 
-      assign("lastget", proc.time()[[3]], envir=.chesstrainer)
+      assign("lastapirequest", proc.time()[[3]], envir=.chesstrainer)
 
       if (inherits(out, "try-error")) {
 

@@ -63,6 +63,7 @@
 
       txt.general2 <- c(
       "General shortcuts:",
+      "f        - flip the board",
       "\U00002190 and \U00002192  - go back / forward one move",
       "1 or \U00002191   - jump to the first player move or the beginning of the sequence/game",
       "2 or \U00002193   - jump to the end of the sequence/game",
@@ -89,7 +90,6 @@
 
       txt.add <- c(
       "Shortcuts for the add mode:",
-      "f        - flip the board",
       "t        - take back the last move",
       "z and Z  - show moves (own / computer) on/off",
       "c        - add a comment to the current move",
@@ -111,7 +111,7 @@
       "\\        - switch between the play and analysis mode",
       "0        - store the current moves and position as the main variation",
       "9        - jump to the main variation",
-      "c        - comparison of moves with existing sequences on/off",
+      "c        - compare moves with the existing sequences on/off",
       "a and A  - switch to add mode")
 
    }
@@ -169,6 +169,7 @@
 
       txt.general2 <- c(
       "Allgemeine Tastenk\U000000FCrzel:",
+      "f        - Brett umdrehen",
       "\U00002190 und \U00002192  - einen Zug zur\U000000FCck / vorw\U000000E4rts gehen",
       "1 oder \U00002191 - zum ersten Spielerzug oder an den Anfang der Sequenz/Partie springen",
       "2 oder \U00002193 - zum Ende der Sequenz/Partie springen",
@@ -195,7 +196,6 @@
 
       txt.add <- c(
       "Tastenk\U000000FCrzel f\U000000FCr den Hinzuf\U000000FCgen Modus:",
-      "f        - Brett umdrehen",
       "t        - den letzten Zug zur\U000000FCcknehmen",
       "z und Z  - Z\U000000FCge zeigen (eigene / Computer) an/aus",
       "c        - Kommentar zum aktuellen Zug hinzuf\U000000FCgen",
@@ -218,7 +218,7 @@
       "\\ oder \U000000E4 - zwischen dem Spiel- und Analysemodus wechseln",
       "0        - aktuelle Zugfolge und Stellung als Hauptvariante sichern",
       "9        - zur Hauptvariante springen",
-      "c        - vergleiche Z\U000000FCge mit den bestehenden Sequenzen an/aus",
+      "c        - Z\U000000FCge mit den bestehenden Sequenzen vergleichen an/aus",
       "a und A  - in den Hinzuf\U000000FCgen Modus wechseln")
 
    }

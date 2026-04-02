@@ -1,7 +1,5 @@
 .editcomments <- function(sub, seqdir, seqname) {
 
-   dosave <- FALSE
-
    while (TRUE) {
 
       if (!is.null(sub$commentstart)) {
@@ -31,7 +29,6 @@
             next
          newcom <- gsub("\\n", "\n", newcom, fixed=TRUE)
          sub$moves$comment[comnum] <- newcom
-         dosave <- TRUE
       }
 
       # d (or D, L, or l) = to delete a comment
@@ -45,16 +42,13 @@
             if (comdel < 1 || comdel > nrow(sub$moves))
                next
             sub$moves$comment[comdel] <- ""
-            dosave <- TRUE
          }
          if (grepl("^[Ee]$", comdel)) {
             sub$commentend <- NULL
-            dosave <- TRUE
             cat(.text("commentenddeleted"))
          }
          if (grepl("^[Ss]$", comdel)) {
             sub$commentstart <- NULL
-            dosave <- TRUE
             cat(.text("commentstartdeleted"))
          }
       }
@@ -68,7 +62,6 @@
          if (identical(endcom, ""))
             next
          sub$commentend <- endcom
-         dosave <- TRUE
       }
 
       # s or S = to edit the start comment
@@ -80,13 +73,9 @@
          if (identical(startcom, ""))
             next
          sub$commentstart <- startcom
-         dosave <- TRUE
       }
 
    }
-
-   if (dosave && .get("mode") == "test")
-      saveRDS(sub, file=file.path(seqdir, seqname))
 
    return(sub)
 
