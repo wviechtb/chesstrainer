@@ -54,11 +54,12 @@
    \item something like \verb{rounds < 1} to select sequences that have been played less than a certain number of times,
    \item something like \verb{age > 2} to select sequences that have been played more than a certain number of days ago,
    \item something like \verb{difficulty > 20} to select sequences with a difficulty above a certain threshold,
+   \item something like \verb{mistake < 2} to select sequences where a mistake was made a certain number of days ago,
    \item a \href{https://en.wikipedia.org/wiki/Forsyth-Edwards_Notation}{FEN} to select all sequences that contain a position matching the FEN,
    \item \verb{c:} followed by a (case insensitive) text string to select all sequences where a comment contains the text string.
    }
 
-   The keywords \verb{score}, \verb{rounds}, \verb{age}, and \verb{difficulty} can be abbreviated to \verb{s}, \verb{r}, \verb{a}, and \verb{d} (so \verb{s > 80}, \verb{r < 1}, \verb{a > 2}, and \verb{d > 20} would also work). Other comparators such as \verb{>=}, \verb{<}, and \verb{>=} can also be used (e.g., \verb{s <= 10}). When entering a text string, you can refine your search by prefixing the string with either \sQuote{\verb{& }} or \sQuote{\verb{| }}, that is, \sQuote{\verb{& <text string>}} searches for the intersection of the currently selected sequences and those matching the new text string while \sQuote{\verb{| <text string>}} searches for their union.
+   The keywords \verb{score}, \verb{rounds}, \verb{age}, \verb{difficulty}, and \verb{mistake} can be abbreviated to \verb{s}, \verb{r}, \verb{a}, \verb{d}, and \verb{m} (so \verb{s > 80}, \verb{r < 1}, \verb{a > 2}, \verb{d > 20}, and \verb{m < 2} would also work). Other comparators such as \verb{>=}, \verb{<}, and \verb{>=} can also be used (e.g., \verb{s <= 10}). When entering a text string, you can refine your search by prefixing the string with either \sQuote{\verb{& }} or \sQuote{\verb{| }}, that is, \sQuote{\verb{& <text string>}} searches for the intersection of the currently selected sequences and those matching the new text string while \sQuote{\verb{| <text string>}} searches for their union.
 
    Just pressing \verb{<enter>} at the prompt (i.e., not entering any search string) keeps the current selection. Entering \verb{*} at the prompt selects all sequences. The \verb{<*>} (or \verb{<8>}) key also selects all sequences without using \verb{</>} first. If you only want to search for sequences (without selecting them), you can use the \verb{<|>} key (instead of \verb{</>}).
 

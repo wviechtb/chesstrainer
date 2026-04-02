@@ -323,8 +323,10 @@
 
    if (x == "seqsearch") {
       return(switch(lang,
-                    de = "Sequenzsuche (Text, Nummer1-Nummer2, Nummer, Punkte > Wert, Runden < Wert, Alter > Wert, Schwierigkeit > Wert, FEN, K: Text):\n",
-                         "Sequence search (string, number1-number2, number, score > value, rounds < value, age > value, difficulty > value, FEN, c: string):\n"
+                    de = "Sequenzsuche (Text, Nummer, Nummer1-Nummer2, Punkte/Runden/Alter/Schwierigkeit/Fehler >/< Wert, FEN, K: Text):\n",
+                    #de = "Sequenzsuche (Text, Nummer, Nummer1-Nummer2, Punkte > Wert, Runden < Wert, Alter > Wert, Schwierigkeit > Wert, FEN, K: Text):\n",
+                         "Sequence search (string, number, number1-number2, score/rounds/age/difficulty/mistake >/< value, FEN, c: string):\n"
+                         #"Sequence search (string, number, number1-number2, score > value, rounds < value, age > value, difficulty > value, FEN, c: string):\n"
    ))}
 
    if (x == "allseqselected") {
@@ -367,6 +369,18 @@
       return(switch(lang,
                     de = paste0("Selektiere Sequenz ", arg, ".\n"),
                          paste0("Selecting sequence ", arg, ".\n")
+   ))}
+
+   if (x == "strcapmistake") {
+      return(switch(lang,
+                    de = "^[F|f](ehler)?\\s*(>|<|>=|<=)\\s*(\\d+\\.?\\d*)$",
+                         "^[M|m](istake)?\\s*(>|<|>=|<=)\\s*(\\d+\\.?\\d*)$"
+   ))}
+
+   if (x == "selseqmistake") {
+      return(switch(lang,
+                    de = paste0("Suche nach Sequenzen mit einem Fehler vor ", arg[[1]], " als ", arg[[2]], " Tagen.\n"),
+                         paste0("Searching for sequences with a mistake ", arg[[1]], " than ", arg[[2]], " days ago.\n")
    ))}
 
    if (x == "strcapscore") {

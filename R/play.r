@@ -1274,7 +1274,6 @@ play <- function(lang="en", ...) {
             ### general keys
 
             #if (identical(click, "p")) {cat("--------------------------------------------\n\n"); print(pos); print(sub); next}
-            if (identical(click, "p")) {print(comment); next}
 
             # q (or ctrl-q) to quit the trainer
 
@@ -3464,6 +3463,40 @@ play <- function(lang="en", ...) {
                   next
                }
 
+               # 'mistake >/</>=/<= value' entered
+
+               tmp <- strcapture(.text("strcapmistake"), searchterm, data.frame(text=character(), sign=character(), days=numeric()))
+
+               if (!is.na(tmp$days)) {
+                  cat(.text("selseqmistake", list(tmp$sign, tmp$days)))
+                  selected <- sapply(dat.all, function(x) {
+                     x <- x$player[[player]]
+                     if (is.null(x) || nrow(x) <= 1L)
+                        return(FALSE)
+                     x <- x[nrow(x):1,,drop=FALSE]
+                     diffs <- diff(x$score)
+                     if (any(diffs < 0)) {
+                        isincr <- which(diffs < 0)[1]
+                        daysago <- as.numeric(Sys.time() - as.POSIXct(x$date[isincr]), units="days")
+                        return(eval(parse(text = paste("daysago", tmp$sign, tmp$days))))
+                     } else {
+                        return(FALSE)
+                     }
+                  })
+                  selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected]
+                  if (length(selected) == 0L) {
+                     cat(.text("noseqsfound"))
+                     selected <- NULL
+                  } else {
+                     cat(.text("numseqfound", length(selected)))
+                     mode <- oldmode <- "add"
+                     assign("mode", mode, envir=.chesstrainer)
+                     .newround(seqno1=TRUE)
+                  }
+                  eval(expr=switch2)
+                  next
+               }
+
                # 'number - number' entered
 
                tmp <- strcapture("^([[:digit:]]+)\\s*-\\s*([[:digit:]]+)$", searchterm, data.frame(seq.lo=integer(), seq.hi=integer()))
@@ -4611,8 +4644,13 @@ play <- function(lang="en", ...) {
 
                   while (TRUE) {
 
-                     if (!showeval[[mode]]) # always show evaluation at end even if eval is FALSE
+                     if (!showeval[[mode]]) # always show evaluation bar at end even if eval is FALSE
                         .drawevalbar(sub$moves$eval[i-1], NA, i=i, starteval=starteval, flip=flip, showeval=TRUE, evalsteps=evalsteps)
+
+                     if (showlibar && contliquery && token != "" && isonline) { # also show the Lichess bar (but only if contliquery is on)
+                        fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
+                        .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, showout=FALSE)
+                     }
 
                      click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=.keyfun)
 
