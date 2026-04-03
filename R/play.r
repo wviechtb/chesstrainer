@@ -4156,7 +4156,11 @@ play <- function(lang="en", ...) {
                fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                cat(fen, "\n")
                eval(expr=switch2)
-               fen <- paste0("https://lichess.org/analysis/standard/", gsub(" ", "_", fen, fixed=TRUE))
+               if (flip) {
+                  fen <- paste0("https://lichess.org/analysis/standard/", gsub(" ", "_", fen, fixed=TRUE), "?color=black")
+               } else {
+                  fen <- paste0("https://lichess.org/analysis/standard/", gsub(" ", "_", fen, fixed=TRUE), "?color=white")
+               }
                browseURL(fen)
                next
             }

@@ -1,4 +1,4 @@
-# chesstrainer 0.9-158 (2026-04-02)
+# chesstrainer 0.9-159 (2026-04-03)
 
 - lots of improvements since the initial version (way too many to list here)
 

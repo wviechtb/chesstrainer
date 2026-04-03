@@ -86,7 +86,7 @@
 
       click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=.keyfun)
 
-      keys <- c("q", "\033", "ctrl-[", "n", "f", "s", "c", "r", "o", "F1", "F9", "ctrl-F")
+      keys <- c("q", "\033", "ctrl-[", "n", "f", "s", "c", "r", "e", "o", "F1", "ctrl-F")
 
       if (is.character(click) && !is.element(click, keys))
          next
@@ -172,9 +172,9 @@
          next
       }
 
-      # o to enter FEN
+      # e to enter FEN
 
-      if (identical(click, "o")) {
+      if (identical(click, "e")) {
          eval(expr=switch1)
          fen <- readline(prompt=.text("enterfen"))
          eval(expr=switch2)
@@ -203,25 +203,28 @@
          next
       }
 
+      # o to open the position on lichess.org
+
+      if (identical(click, "o")) {
+         eval(expr=switch1)
+         fen <- .genfen(.shrinkpos(pos), flip, sidetoplay, sidetoplay, i=1)
+         cat(fen, "\n")
+         eval(expr=switch2)
+         if (flip) {
+            fen <- paste0("https://lichess.org/analysis/standard/", gsub(" ", "_", fen, fixed=TRUE), "?color=black")
+         } else {
+            fen <- paste0("https://lichess.org/analysis/standard/", gsub(" ", "_", fen, fixed=TRUE), "?color=white")
+         }
+         browseURL(fen)
+         next
+      }
+
       # F1 to show the help
 
       if (identical(click, "F1")) {
          .showhelp.boardeditor()
          .boardeditor.drawboard(pos, flip, sidetoplay)
          text(6, 0.5, paste("FEN: ", curfen), col=col, cex=cex)
-         next
-      }
-
-      # F9 to print the FEN and open the position on lichess.org
-
-      if (identical(click, "F9")) {
-         eval(expr=switch1)
-         fen <- .genfen(.shrinkpos(pos), flip, sidetoplay, sidetoplay, i=1)
-         cat(fen, "\n")
-         eval(expr=switch2)
-         clipr::write_clip(fen, object_type="character")
-         fen <- paste0("https://lichess.org/analysis/standard/", gsub(" ", "_", fen, fixed=TRUE))
-         browseURL(fen)
          next
       }
 
@@ -380,9 +383,9 @@
       "n  - reset the board into the starting position",
       "c  - clear the board",
       "r  - enter castling availability",
-      "o  - enter the FEN for a given position",
-      "F1 - show this help",
-      "F9 - open the current position on lichess.org")
+      "e  - enter the FEN for a given position",
+      "o  - open the current position on lichess.org",
+      "F1 - show this help")
 
    }
 
@@ -400,9 +403,9 @@
       "n  - Brett in die Ausgangsposition zur\U000000FCcksetzen",
       "c  - Brett leer r\U000000E4umen",
       "r  - Rochadem\U000000F6glichkeiten eingeben",
-      "o  - die FEN f\U000000FCr eine bestimmte Stellung eingeben",
-      "F1 - diese Hilfe anzeigen",
-      "F9 - die aktuelle Stellung auf lichess.org \U000000F6ffnen")
+      "e  - die FEN f\U000000FCr eine bestimmte Stellung eingeben",
+      "o  - die aktuelle Stellung auf lichess.org \U000000F6ffnen",
+      "F1 - diese Hilfe anzeigen")
 
    }
 
