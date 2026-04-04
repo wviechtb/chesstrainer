@@ -50,16 +50,18 @@
    \item a text string (which is applied as a regular expression to the filenames of the sequences),
    \item a sequence number (e.g., \verb{2} to select the 2nd sequence),
    \item a sequence number range (e.g., \verb{2-5} to select sequences 2 to 5),
-   \item something like \verb{score > 80} to select sequences with a score above a certain threshold,
-   \item something like \verb{rounds < 1} to select sequences that have been played less than a certain number of times,
-   \item something like \verb{age > 2} to select sequences that have been played more than a certain number of days ago,
-   \item something like \verb{difficulty > 20} to select sequences with a difficulty above a certain threshold,
-   \item something like \verb{mistake < 2} to select sequences where a mistake was made a certain number of days ago,
+   \item something like \verb{score < 50} / \verb{score > 50} to select sequences with a score below / above 50,
+   \item something like \verb{rounds < 5} / \verb{rounds > 5} to select sequences that have been played less than / more than 5 times,
+   \item something like \verb{age < 7} / \verb{age > 7} to select sequences that have been played less than / more than 7 days ago,
+   \item something like \verb{difficulty < 20} / \verb{difficulty > 20} to select sequences with a difficulty below / above 20,
+   \item something like \verb{mistake < 2} / \verb{mistake > 2} to select sequences where the last mistake was made less than / more than 2 days ago,
    \item a \href{https://en.wikipedia.org/wiki/Forsyth-Edwards_Notation}{FEN} to select all sequences that contain a position matching the FEN,
    \item \verb{c:} followed by a (case insensitive) text string to select all sequences where a comment contains the text string.
    }
 
-   The keywords \verb{score}, \verb{rounds}, \verb{age}, \verb{difficulty}, and \verb{mistake} can be abbreviated to \verb{s}, \verb{r}, \verb{a}, \verb{d}, and \verb{m} (so \verb{s > 80}, \verb{r < 1}, \verb{a > 2}, \verb{d > 20}, and \verb{m < 2} would also work). Other comparators such as \verb{>=}, \verb{<}, and \verb{>=} can also be used (e.g., \verb{s <= 10}). When entering a text string, you can refine your search by prefixing the string with either \sQuote{\verb{& }} or \sQuote{\verb{| }}, that is, \sQuote{\verb{& <text string>}} searches for the intersection of the currently selected sequences and those matching the new text string while \sQuote{\verb{| <text string>}} searches for their union.
+   The keywords \verb{score}, \verb{rounds}, \verb{age}, \verb{difficulty}, and \verb{mistake} can be abbreviated to \verb{s}, \verb{r}, \verb{a}, \verb{d}, and \verb{m} (so \verb{s > 50}, \verb{r < 5}, \verb{a > 7}, \verb{d > 20}, and \verb{m < 2} would also work). Other comparators such as \verb{>=} and \verb{<=} can also be used (e.g., \verb{s <= 50}).
+
+   When entering a text string, you can refine your search by prefixing the string with either \sQuote{\verb{& }} or \sQuote{\verb{| }}, that is, \sQuote{\verb{& <text string>}} searches for the intersection of the currently selected sequences and those matching the new text string while \sQuote{\verb{| <text string>}} searches for their union.
 
    Just pressing \verb{<enter>} at the prompt (i.e., not entering any search string) keeps the current selection. Entering \verb{*} at the prompt selects all sequences. The \verb{<*>} (or \verb{<8>}) key also selects all sequences without using \verb{</>} first. If you only want to search for sequences (without selecting them), you can use the \verb{<|>} key (instead of \verb{</>}).
 

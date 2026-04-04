@@ -1449,3 +1449,32 @@
    return(list(sub=sub, pos=pos))
 
 }
+
+.listseqs <- function(k, files, files.all, selected, scores.selected, age.selected, rounds.selected, difficulty.selected, probvals.selected) {
+
+   if (k > 0L) {
+      if (max(probvals.selected) == min(probvals.selected)) {
+         bars <- rep(5, k)
+      } else {
+         bars <- round(5 * (probvals.selected - min(probvals.selected)) / (max(probvals.selected) - min(probvals.selected)))
+      }
+      bars <- sapply(bars, function(x) paste0(rep("*", x), collapse=""))
+      tab <- data.frame(files, rounds.selected, .fmtx(age.selected, digits=1), scores.selected, .fmtx(difficulty.selected, digits=1), .fmtx(probvals.selected, digits=1), bars)
+      tab$bars <- format(tab$bars, justify="left")
+      names(tab) <- c(.text("sequence"), .text("rounds"), .text("age"), .text("score"), .text("diff"), "%", "")
+      tab[[1]] <- substr(tab[[1]], 1, nchar(tab[[1]])-4) # remove .rds from name
+      tab[[1]] <- format(tab[[1]], justify="left")
+      names(tab)[1] <- format(c(names(tab)[1], tab[[1]]), justify="left")[1]
+      if (!is.null(selected))
+         rownames(tab) <- which(files.all %in% selected)
+      txt <- capture.output(print(tab, print.gap=2))
+      if (length(txt) > 50)
+         txt <- c(txt, txt[1])
+      .print(txt)
+   } else {
+      cat(.text("zeroseqsfound"))
+   }
+
+   return()
+
+}

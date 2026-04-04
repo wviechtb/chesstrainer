@@ -31,7 +31,7 @@ The main purpose of the chesstrainer package is to create sequences of moves (li
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chesstrainer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-158</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-160</span>
       </span>
     </div>
 
@@ -120,14 +120,15 @@ The main purpose of the chesstrainer package is to create sequences of moves (li
 <p></p><ul><li><p>a text string (which is applied as a regular expression to the filenames of the sequences),</p></li>
 <li><p>a sequence number (e.g., <code>2</code> to select the 2nd sequence),</p></li>
 <li><p>a sequence number range (e.g., <code>2-5</code> to select sequences 2 to 5),</p></li>
-<li><p>something like <code>score &gt; 80</code> to select sequences with a score above a certain threshold,</p></li>
-<li><p>something like <code>rounds &lt; 1</code> to select sequences that have been played less than a certain number of times,</p></li>
-<li><p>something like <code>age &gt; 2</code> to select sequences that have been played more than a certain number of days ago,</p></li>
-<li><p>something like <code>difficulty &gt; 20</code> to select sequences with a difficulty above a certain threshold,</p></li>
-<li><p>something like <code>mistake &lt; 2</code> to select sequences where a mistake was made a certain number of days ago,</p></li>
+<li><p>something like <code>score &lt; 50</code> / <code>score &gt; 50</code> to select sequences with a score below / above 50,</p></li>
+<li><p>something like <code>rounds &lt; 5</code> / <code>rounds &gt; 5</code> to select sequences that have been played less than / more than 5 times,</p></li>
+<li><p>something like <code>age &lt; 7</code> / <code>age &gt; 7</code> to select sequences that have been played less than / more than 7 days ago,</p></li>
+<li><p>something like <code>difficulty &lt; 20</code> / <code>difficulty &gt; 20</code> to select sequences with a difficulty below / above 20,</p></li>
+<li><p>something like <code>mistake &lt; 2</code> / <code>mistake &gt; 2</code> to select sequences where the last mistake was made less than / more than 2 days ago,</p></li>
 <li><p>a <a href="https://en.wikipedia.org/wiki/Forsyth-Edwards_Notation" class="external-link">FEN</a> to select all sequences that contain a position matching the FEN,</p></li>
 <li><p><code>c:</code> followed by a (case insensitive) text string to select all sequences where a comment contains the text string.</p></li>
-</ul><p>The keywords <code>score</code>, <code>rounds</code>, <code>age</code>, <code>difficulty</code>, and <code>mistake</code> can be abbreviated to <code>s</code>, <code>r</code>, <code>a</code>, <code>d</code>, and <code>m</code> (so <code>s &gt; 80</code>, <code>r &lt; 1</code>, <code>a &gt; 2</code>, <code>d &gt; 20</code>, and <code>m &lt; 2</code> would also work). Other comparators such as <code>&gt;=</code>, <code>&lt;</code>, and <code>&gt;=</code> can also be used (e.g., <code>s &lt;= 10</code>). When entering a text string, you can refine your search by prefixing the string with either ‘<code>&amp; </code>’ or ‘<code>| </code>’, that is, ‘<code>&amp; &lt;text string&gt;</code>’ searches for the intersection of the currently selected sequences and those matching the new text string while ‘<code>| &lt;text string&gt;</code>’ searches for their union.</p>
+</ul><p>The keywords <code>score</code>, <code>rounds</code>, <code>age</code>, <code>difficulty</code>, and <code>mistake</code> can be abbreviated to <code>s</code>, <code>r</code>, <code>a</code>, <code>d</code>, and <code>m</code> (so <code>s &gt; 50</code>, <code>r &lt; 5</code>, <code>a &gt; 7</code>, <code>d &gt; 20</code>, and <code>m &lt; 2</code> would also work). Other comparators such as <code>&gt;=</code> and <code>&lt;=</code> can also be used (e.g., <code>s &lt;= 50</code>).</p>
+<p>When entering a text string, you can refine your search by prefixing the string with either ‘<code>&amp; </code>’ or ‘<code>| </code>’, that is, ‘<code>&amp; &lt;text string&gt;</code>’ searches for the intersection of the currently selected sequences and those matching the new text string while ‘<code>| &lt;text string&gt;</code>’ searches for their union.</p>
 <p>Just pressing <code>&lt;enter&gt;</code> at the prompt (i.e., not entering any search string) keeps the current selection. Entering <code>*</code> at the prompt selects all sequences. The <code>&lt;*&gt;</code> (or <code>&lt;8&gt;</code>) key also selects all sequences without using <code>&lt;/&gt;</code> first. If you only want to search for sequences (without selecting them), you can use the <code>&lt;|&gt;</code> key (instead of <code>&lt;/&gt;</code>).</p>
 <p>In <em>test mode</em>, sequences are played by default at random based on the score as described above. However, you can toggle into a different sequence selection mode with the <code>&lt;m&gt;</code> key. Selection can be based on:</p>
 <p></p><ol><li><p>the score, where sequences with higher scores have a higher play probability (the default),</p></li>

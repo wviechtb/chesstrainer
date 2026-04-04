@@ -373,14 +373,14 @@
 
    if (x == "strcapmistake") {
       return(switch(lang,
-                    de = "^[F|f](ehler)?\\s*(>|<|>=|<=)\\s*(\\d+\\.?\\d*)$",
+                    de = "^[F|f|M|m](ehler)?\\s*(>|<|>=|<=)\\s*(\\d+\\.?\\d*)$",
                          "^[M|m](istake)?\\s*(>|<|>=|<=)\\s*(\\d+\\.?\\d*)$"
    ))}
 
    if (x == "selseqmistake") {
       return(switch(lang,
-                    de = paste0("Suche nach Sequenzen mit einem Fehler vor ", arg[[1]], " als ", arg[[2]], " Tagen.\n"),
-                         paste0("Searching for sequences with a mistake ", arg[[1]], " than ", arg[[2]], " days ago.\n")
+                    de = paste0("Suche nach Sequenzen mit dem letzten Fehler vor ", arg[[1]], " als ", arg[[2]], ifelse(arg[[2]]==1, " Tag", " Tagen"), ".\n"),
+                         paste0("Searching for sequences with the last mistake ", arg[[1]], " than ", arg[[2]], ifelse(arg[[2]]==1, " day", " days"), " ago.\n")
    ))}
 
    if (x == "strcapscore") {
@@ -397,8 +397,8 @@
 
    if (x == "numseqfound") {
       return(switch(lang,
-                    de = paste0(arg, " passende Sequenzen gefunden.\n"),
-                         paste0(arg, " matching sequences found.\n")
+                    de = paste0(arg, " passende ", ifelse(arg==1, "Sequenz", "Sequenzen"), " gefunden.\n"),
+                         paste0(arg, " matching ", ifelse(arg==1, "sequence", "sequences"), " found.\n")
    ))}
 
    if (x == "strcaprounds") {
@@ -421,8 +421,8 @@
 
    if (x == "selseqage") {
       return(switch(lang,
-                    de = paste0("Suche nach Sequenzen die vor ", arg[[1]], " als ", arg[[2]], " Tagen gespielt wurden.\n"),
-                         paste0("Searching for sequences that were played ", arg[[1]], " than ", arg[[2]], " days ago.\n")
+                    de = paste0("Suche nach Sequenzen die vor ", arg[[1]], " als ", arg[[2]], ifelse(arg[[2]]==1, " Tag", " Tagen"), " gespielt wurden.\n"),
+                         paste0("Searching for sequences that were played ", arg[[1]], " than ", arg[[2]], ifelse(arg[[2]]==1, " day", " days"), " ago.\n")
    ))}
 
    if (x == "strcapdiff") {

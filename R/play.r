@@ -393,6 +393,7 @@ play <- function(lang="en", ...) {
    updateall    <- FALSE
    savpos       <- NULL
    upsidedown   <- FALSE
+   listseqs     <- FALSE
 
    assign("contliquery", contliquery, envir=.chesstrainer)
 
@@ -985,6 +986,11 @@ play <- function(lang="en", ...) {
       if (any(!is.element(c("MouseDown", "MouseMove", "MouseUp", "Keybd"), dev.capabilities()$events))) {
          dev.off()
          stop(.text("testdevice"), call.=FALSE)
+      }
+
+      if (listseqs) {
+         .listseqs(k, files, files.all, selected, scores.selected, age.selected, rounds.selected, difficulty.selected, probvals.selected)
+         listseqs <- FALSE
       }
 
       run.rnd <- TRUE
@@ -2885,7 +2891,7 @@ play <- function(lang="en", ...) {
                if (mode == "play")
                   .textbot(show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
                if (contliquery) {
-                  .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop)
+                  .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, showout=mode!="test", showlibar=mode!="test")
                } else {
                   .drawlibar(clear=TRUE)
                }
@@ -3215,28 +3221,7 @@ play <- function(lang="en", ...) {
 
             if (identical(click, "l")) {
                eval(expr=switch1)
-               if (k > 0L) {
-                  if (max(probvals.selected) == min(probvals.selected)) {
-                     bars <- rep(5, k)
-                  } else {
-                     bars <- round(5 * (probvals.selected - min(probvals.selected)) / (max(probvals.selected) - min(probvals.selected)))
-                  }
-                  bars <- sapply(bars, function(x) paste0(rep("*", x), collapse=""))
-                  tab <- data.frame(files, rounds.selected, .fmtx(age.selected, digits=1), scores.selected, .fmtx(difficulty.selected, digits=1), .fmtx(probvals.selected, digits=1), bars)
-                  tab$bars <- format(tab$bars, justify="left")
-                  names(tab) <- c(.text("sequence"), .text("rounds"), .text("age"), .text("score"), .text("diff"), "%", "")
-                  tab[[1]] <- substr(tab[[1]], 1, nchar(tab[[1]])-4) # remove .rds from name
-                  tab[[1]] <- format(tab[[1]], justify="left")
-                  names(tab)[1] <- format(c(names(tab)[1], tab[[1]]), justify="left")[1]
-                  if (!is.null(selected))
-                     rownames(tab) <- which(files.all %in% selected)
-                  txt <- capture.output(print(tab, print.gap=2))
-                  if (length(txt) > 50)
-                     txt <- c(txt, txt[1])
-                  .print(txt)
-               } else {
-                  cat(.text("zeroseqsfound"))
-               }
+               .listseqs(k, files, files.all, selected, scores.selected, age.selected, rounds.selected, difficulty.selected, probvals.selected)
                eval(expr=switch2)
                next
             }
@@ -3427,6 +3412,7 @@ play <- function(lang="en", ...) {
                         selected <- files.all[notnull]
                         mode <- oldmode <- "add"
                         assign("mode", mode, envir=.chesstrainer)
+                        listseqs <- TRUE
                         .newround(seqno1=TRUE)
                      }
                   } else {
@@ -3454,6 +3440,7 @@ play <- function(lang="en", ...) {
                         selected <- files.all[seqident]
                         mode <- oldmode <- "add"
                         assign("mode", mode, envir=.chesstrainer)
+                        listseqs <- TRUE
                         .newround(seqno1=TRUE)
                      }
                   } else {
@@ -3463,7 +3450,7 @@ play <- function(lang="en", ...) {
                   next
                }
 
-               # 'mistake >/</>=/<= value' entered
+               # 'mistake/fehler >/</>=/<= value' entered
 
                tmp <- strcapture(.text("strcapmistake"), searchterm, data.frame(text=character(), sign=character(), days=numeric()))
 
@@ -3471,14 +3458,18 @@ play <- function(lang="en", ...) {
                   cat(.text("selseqmistake", list(tmp$sign, tmp$days)))
                   selected <- sapply(dat.all, function(x) {
                      x <- x$player[[player]]
-                     if (is.null(x) || nrow(x) <= 1L)
+                     if (is.null(x))
                         return(FALSE)
-                     x <- x[nrow(x):1,,drop=FALSE]
-                     diffs <- diff(x$score)
-                     if (any(diffs < 0)) {
-                        isincr <- which(diffs < 0)[1]
-                        daysago <- as.numeric(Sys.time() - as.POSIXct(x$date[isincr]), units="days")
-                        return(eval(parse(text = paste("daysago", tmp$sign, tmp$days))))
+                     x <- rbind(c(date=0, round=0, score=100), x)
+                     ismistake <- diff(x$score) >= 0 & x$score[-1] > 5
+                     if (any(ismistake)) {
+                        ismistake <- which(ismistake) + 1
+                        daysago <- as.numeric(Sys.time() - as.POSIXct(x$date[ismistake]), units="days")
+                        if (tmp$sign %in% c("<", "<=")) {
+                           return(any(eval(parse(text = paste("daysago", tmp$sign, tmp$days)))))
+                        } else {
+                           return(all(eval(parse(text = paste("daysago", tmp$sign, tmp$days)))))
+                        }
                      } else {
                         return(FALSE)
                      }
@@ -3491,13 +3482,14 @@ play <- function(lang="en", ...) {
                      cat(.text("numseqfound", length(selected)))
                      mode <- oldmode <- "add"
                      assign("mode", mode, envir=.chesstrainer)
+                     listseqs <- TRUE
                      .newround(seqno1=TRUE)
                   }
                   eval(expr=switch2)
                   next
                }
 
-               # 'number - number' entered
+               # 'number1 - number2' entered
 
                tmp <- strcapture("^([[:digit:]]+)\\s*-\\s*([[:digit:]]+)$", searchterm, data.frame(seq.lo=integer(), seq.hi=integer()))
 
@@ -3509,6 +3501,7 @@ play <- function(lang="en", ...) {
                      selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[tmp$seq.lo:tmp$seq.hi]
                      mode <- oldmode <- "add"
                      assign("mode", mode, envir=.chesstrainer)
+                     listseqs <- TRUE
                      .newround(seqno1=TRUE)
                   }
                   eval(expr=switch2)
@@ -3526,13 +3519,14 @@ play <- function(lang="en", ...) {
                      selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[tmp]
                      mode <- oldmode <- "add"
                      assign("mode", mode, envir=.chesstrainer)
+                     listseqs <- TRUE
                      .newround(seqno1=TRUE)
                   }
                   eval(expr=switch2)
                   next
                }
 
-               # 'score >/</>=/<= value' entered
+               # 'score/punkte >/</>=/<= value' entered
 
                tmp <- strcapture(.text("strcapscore"), searchterm, data.frame(text=character(), sign=character(), cutoff=integer()))
 
@@ -3547,13 +3541,14 @@ play <- function(lang="en", ...) {
                      cat(.text("numseqfound", length(selected)))
                      mode <- oldmode <- "add"
                      assign("mode", mode, envir=.chesstrainer)
+                     listseqs <- TRUE
                      .newround(seqno1=TRUE)
                   }
                   eval(expr=switch2)
                   next
                }
 
-               # 'rounds >/</>=/<= value' entered
+               # 'rounds/runden >/</>=/<= value' entered
 
                tmp <- strcapture(.text("strcaprounds"), searchterm, data.frame(text=character(), sign=character(), cutoff=integer()))
 
@@ -3568,13 +3563,14 @@ play <- function(lang="en", ...) {
                      cat(.text("numseqfound", length(selected)))
                      mode <- oldmode <- "add"
                      assign("mode", mode, envir=.chesstrainer)
+                     listseqs <- TRUE
                      .newround(seqno1=TRUE)
                   }
                   eval(expr=switch2)
                   next
                }
 
-               # 'age >/</>=/<= value' entered
+               # 'age/alter >/</>=/<= value' entered
 
                tmp <- strcapture(.text("strcapage"), searchterm, data.frame(text=character(), sign=character(), cutoff=numeric()))
 
@@ -3590,13 +3586,14 @@ play <- function(lang="en", ...) {
                      cat(.text("numseqfound", length(selected)))
                      mode <- oldmode <- "add"
                      assign("mode", mode, envir=.chesstrainer)
+                     listseqs <- TRUE
                      .newround(seqno1=TRUE)
                   }
                   eval(expr=switch2)
                   next
                }
 
-               # 'difficulty >/</>=/<= value' entered
+               # 'difficulty/schwierigkeit >/</>=/<= value' entered
 
                tmp <- strcapture(.text("strcapdiff"), searchterm, data.frame(text=character(), sign=character(), cutoff=numeric()))
 
@@ -3612,6 +3609,7 @@ play <- function(lang="en", ...) {
                      cat(.text("numseqfound", length(selected)))
                      mode <- oldmode <- "add"
                      assign("mode", mode, envir=.chesstrainer)
+                     listseqs <- TRUE
                      .newround(seqno1=TRUE)
                   }
                   eval(expr=switch2)
@@ -3659,6 +3657,7 @@ play <- function(lang="en", ...) {
                      cat(.text("numseqfound", length(selected)))
                      mode <- oldmode <- "add"
                      assign("mode", mode, envir=.chesstrainer)
+                     listseqs <- TRUE
                      .newround(seqno1=TRUE)
                   }
                }

@@ -15,7 +15,7 @@
 
 }
 
-.liquery <- function(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, showout=TRUE, tokencheck=FALSE) {
+.liquery <- function(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, showout=TRUE, showlibar=TRUE, tokencheck=FALSE) {
 
    res <- list(out=NULL, selmove="")
 
@@ -47,7 +47,9 @@
       files <- ""
    }
 
-   if (filename %in% files) {
+   incache <- filename %in% files
+
+   if (incache) {
 
       file <- file.path(cachedir, lichessdb, filename)
       out <- readRDS(file)
@@ -120,7 +122,7 @@
 
    if (is.null(out)) {
 
-      if (.get("mode") != "play" && contliquery)
+      if (.get("mode") %in% c("add","analysis") && contliquery)
          cat("\n", .text("posnotfound"), "\n\n", sep="")
 
    } else {
@@ -129,7 +131,7 @@
       out$total <- rowSums(out[2:4])
       totals    <- colSums(out[2:5])
 
-      if (contliquery)
+      if (contliquery && showlibar)
          .drawlibar(totals, flip=flip)
 
       out$move  <- sapply(out$move, .litouci, pos=pos)
