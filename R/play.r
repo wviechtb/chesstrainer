@@ -912,16 +912,6 @@ play <- function(lang="en", ...) {
          totalmoves <- nrow(sub$moves)
          flip <- sub$flip
 
-         # in principle, this can be removed; but leave this in just in case for now
-
-         if (nrow(sub$moves) == 0L)
-            sub$moves$glyph <- character(0)
-
-         if (is.null(sub$moves$glyph))
-            sub$moves$glyph <- ""
-
-         sub$moves <- sub$moves[c("x1", "y1", "x2", "y2", "show", "move", "san", "eval", "comment", "circles", "arrows", "glyph", "fen")]
-
          if (!is.null(sub$pos)) {
 
             # if the sequence doesn't start at the initial position, get the position
@@ -939,29 +929,32 @@ play <- function(lang="en", ...) {
                sidetoplay <- ifelse(startsWith(piece, "W"), "w", "b")
             }
 
-            # calculate starteval (in case this is missing) or get it
-
-            if (is.null(attr(pos,"starteval"))) {
-               fen <- .genfen(pos, flip, sidetoplay, sidetoplay, i)
-               res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv=5, sflim=NA, fen, usesfcache=TRUE)
-               evalval  <- res.sf$eval[1:multipv1]
-               bestmove <- res.sf$bestmove[1:multipv1]
-               bestmove[.is.null(bestmove)] <- ""
-               matetype <- res.sf$matetype
-               sfproc   <- res.sf$sfproc
-               sfrun    <- res.sf$sfrun
-               starteval <- evalval[1]
-               attr(sub$pos, "starteval") <- starteval
-            } else {
-               starteval <- attr(sub$pos, "starteval")
-            }
-
          }
 
          # compute number of moves to be made by the player (needed for the timed mode)
 
          movestoplay <- sum(!sub$moves$show)
 
+      }
+
+      fen <- .genfen(pos, flip, sidetoplay, sidetoplay, i)
+      res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv=5, sflim=NA, fen, usesfcache=TRUE)
+      evalval  <- res.sf$eval[1:multipv1]
+      bestmove <- res.sf$bestmove[1:multipv1]
+      bestmove[.is.null(bestmove)] <- ""
+      matetype <- res.sf$matetype
+      sfproc   <- res.sf$sfproc
+      sfrun    <- res.sf$sfrun
+      if (!is.na(evalval[1]))
+         starteval <- evalval[1]
+
+      if (!is.null(sub$pos)) {
+         if (is.null(attr(pos,"starteval"))) {
+            if (!is.na(starteval))
+               attr(sub$pos, "starteval") <- starteval
+         } else {
+            starteval <- attr(sub$pos, "starteval")
+         }
       }
 
       sidetoplaystart <- sidetoplay
@@ -2474,7 +2467,6 @@ play <- function(lang="en", ...) {
                   unflip <- FALSE
                   list2env(.doflip(sub, pos, flip), envir=environment())
                   .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
-                  .drawevalbar(starteval, starteval, i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]], evalsteps=evalsteps)
                }
 
                k1A <- FALSE
@@ -2626,7 +2618,7 @@ play <- function(lang="en", ...) {
                next
             }
 
-            # f to flip the board (only in add mode and only at the start of a sequence)
+            # f to flip the board
 
             if (identical(click, "f")) {
                flip <- !flip
@@ -2639,7 +2631,7 @@ play <- function(lang="en", ...) {
                if (mode == "test")
                   unflip <- !unflip
                .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
-               .drawevalbar(starteval, starteval, i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]], evalsteps=evalsteps)
+               .drawevalbar(sub$moves$eval[i-1], NA, i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]], evalsteps=evalsteps)
                next
             }
 
@@ -2824,25 +2816,26 @@ play <- function(lang="en", ...) {
                sub$moves <- sub$moves[numeric(0),]
                sub$flip <- flip
                .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
-               if (!.is.start.pos(pos)) {
+               if (!.is.start.pos(pos))
                   sub$pos <- pos
-                  fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
-                  res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv=5, sflim=NA, fen, usesfcache=TRUE)
-                  evalval  <- res.sf$eval[1:multipv1]
-                  bestmove <- res.sf$bestmove[1:multipv1]
-                  bestmove[.is.null(bestmove)] <- ""
-                  matetype <- res.sf$matetype
-                  sfproc   <- res.sf$sfproc
-                  sfrun    <- res.sf$sfrun
+               fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
+               res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv=5, sflim=NA, fen, usesfcache=TRUE)
+               evalval  <- res.sf$eval[1:multipv1]
+               bestmove <- res.sf$bestmove[1:multipv1]
+               bestmove[.is.null(bestmove)] <- ""
+               matetype <- res.sf$matetype
+               sfproc   <- res.sf$sfproc
+               sfrun    <- res.sf$sfrun
+               if (!is.na(evalval[1]))
                   starteval <- evalval[1]
+               if (!.is.start.pos(pos) && !is.na(evalval[1]))
                   attr(sub$pos, "starteval") <- starteval
-                  .drawevalbar(starteval, NA, i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]], evalsteps=evalsteps)
-                  if (mode %in% c("add","analysis") && contanalysis) {
-                     tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
-                     harrows  <- tmp$harrows
-                     texttop  <- tmp$texttop
-                     evalvals <- tmp$evalvals
-                  }
+               .drawevalbar(starteval, NA, i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]], evalsteps=evalsteps)
+               if (mode %in% c("add","analysis") && contanalysis) {
+                  tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
+                  harrows  <- tmp$harrows
+                  texttop  <- tmp$texttop
+                  evalvals <- tmp$evalvals
                }
                .drawdepth(showeval[[mode]])
                if (contliquery)
@@ -4678,7 +4671,6 @@ play <- function(lang="en", ...) {
                            unflip <- FALSE
                            list2env(.doflip(sub, pos, flip), envir=environment())
                            .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
-                           .drawevalbar(starteval, starteval, i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]], evalsteps=evalsteps)
                         } else {
                            .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), glyph=glyph, flip=flip)
                         }
@@ -4724,7 +4716,6 @@ play <- function(lang="en", ...) {
                            unflip <- FALSE
                            list2env(.doflip(sub, pos, flip), envir=environment())
                            .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
-                           .drawevalbar(starteval, starteval, i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]], evalsteps=evalsteps)
                         } else {
                            .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), glyph=glyph, flip=flip)
                         }

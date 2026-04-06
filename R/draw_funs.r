@@ -1359,6 +1359,9 @@
       return()
    }
 
+   if (is.null(val))
+      val <- NA_real_
+
    if (i == 1 && (length(last) == 0L || is.na(last)))
       last <- starteval
 

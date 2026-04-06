@@ -1289,16 +1289,29 @@
 
          dosave <- TRUE
 
-         if (is.null(sub$moves$comment))
-            sub$moves$comment <- ""
-         if (is.null(sub$moves$circles))
-            sub$moves$circles <- ""
-         if (is.null(sub$moves$arrows))
-            sub$moves$arrows <- ""
-         if (is.null(sub$moves$glyph))
-            sub$moves$glyph <- ""
-         if (is.null(sub$moves$fen))
-            sub$moves$fen <- ""
+         if (nrow(sub$moves) == 0L) {
+            if (is.null(sub$moves$comment))
+               sub$moves$comment <- character(0)
+            if (is.null(sub$moves$circles))
+               sub$moves$circles <- character(0)
+            if (is.null(sub$moves$arrows))
+               sub$moves$arrows <- character(0)
+            if (is.null(sub$moves$glyph))
+               sub$moves$glyph <- character(0)
+            if (is.null(sub$moves$fen))
+               sub$moves$fen <- character(0)
+         } else {
+            if (is.null(sub$moves$comment))
+               sub$moves$comment <- ""
+            if (is.null(sub$moves$circles))
+               sub$moves$circles <- ""
+            if (is.null(sub$moves$arrows))
+               sub$moves$arrows <- ""
+            if (is.null(sub$moves$glyph))
+               sub$moves$glyph <- ""
+            if (is.null(sub$moves$fen))
+               sub$moves$fen <- ""
+         }
 
       }
 
