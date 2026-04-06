@@ -955,13 +955,13 @@
       tab$showeval <- gsub("FALSE", "Nein", tab$showeval, fixed=TRUE)
    }
 
-   if (tab$pieces == 1)
-      tab$pieces <- "\U0000265A\U0000265B\U0000265C\U0000265D\U0000265E"
-   if (tab$pieces == 2)
-      tab$pieces <- "KQRBN"
-   if (tab$pieces == 3) {
+   if (tab$piecesymbols == 1)
+      tab$piecesymbols <- "\U0000265A\U0000265B\U0000265C\U0000265D\U0000265E"
+   if (tab$piecesymbols == 2)
+      tab$piecesymbols <- "KQRBN"
+   if (tab$piecesymbols == 3) {
       if (lang == "de")
-         tab$pieces <- "KDTLS"
+         tab$piecesymbols <- "KDTLS"
    }
 
    tab$mar  <- paste0(tab$mar,  collapse="/")

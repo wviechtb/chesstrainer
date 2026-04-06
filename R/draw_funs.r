@@ -1,6 +1,9 @@
 .drawsquare <- function(x, y, flip, col=ifelse(.is.even(x+y), .get("col.square.d"), .get("col.square.l")), adj=0) {
+
    rect(y, x, y+1, x+1, col=col, border=NA)
    .drawcoords(x=x, y=y, flip=flip, adj=adj)
+   return()
+
 }
 
 .drawcoords <- function(x, y, flip, adj=0) {
@@ -22,6 +25,8 @@
       }
    }
 
+   return()
+
 }
 
 .drawpiece <- function(x, y, piece) {
@@ -31,6 +36,8 @@
       txt <- paste0("rasterImage(img.", piece, flip, ",", y, ",", x, ",", y+1, ",", x+1, ")")
       eval(parse(text=txt), envir=.chesstrainer)
    }
+
+   return()
 
 }
 
@@ -86,6 +93,8 @@
    }
 
    .drawmatdiff(pos, flip, force=TRUE)
+
+   return()
 
 }
 
@@ -146,6 +155,8 @@
    if (drawcheck)
       .drawcheck(pos, flip=flip)
 
+   return()
+
 }
 
 .redrawall <- function(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove) {
@@ -159,6 +170,11 @@
    } else {
       .drawsideindicator(sidetoplay, flip=flip)
    }
+
+   assign("lasttotals", NULL, envir=.chesstrainer)
+   assign("matdiff", NULL, envir=.chesstrainer)
+
+   return()
 
 }
 
@@ -202,6 +218,8 @@
    }
 
    .drawsideindicator(sidetoplay, flip=flip, adj=1)
+
+   return()
 
 }
 
@@ -682,23 +700,33 @@
 }
 
 .addrect <- function(x, y, col, lwdadj=0) {
+
    lwd <- .get("lwd")
    offset <- 0.028
    rect(y+offset, x+offset, y+1-offset, x+1-offset, lwd=lwd+lwdadj, border=col, ljoin=1)
+   return()
+
 }
 
 .rmrect <- function(x, y, flip) {
+
    if (is.null(x) || is.null(y) || is.na(x) || is.na(y))
       return()
+
    lwd <- .get("lwd")
    offset <- 0.028
    rect(y+offset, x+offset, y+1-offset, x+1-offset, lwd=lwd+2, border=ifelse(.is.even(x+y), .get("col.square.d"), .get("col.square.l")), ljoin=1)
    .drawcoords(x, y, flip)
+
+   return()
+
 }
 
 .boardeditor.rmrect <- function(x, y, flip) {
+
    if (is.null(x) || is.null(y) || is.na(x) || is.na(y))
       return()
+
    lwd <- .get("lwd")
    offset <- 0.028
    if (x <= 1 || x >= 10 || y <= 1 || y >= 10) {
@@ -707,15 +735,27 @@
       rect(y+offset, x+offset, y+1-offset, x+1-offset, lwd=lwd+2, border=ifelse(.is.even(x+y), .get("col.square.d"), .get("col.square.l")), ljoin=1)
       .drawcoords(x, y, flip, adj=1)
    }
+
+   return()
+
 }
 
-.drawcircle <- function(x, y)
+.drawcircle <- function(x, y) {
+
    symbols(y+0.5, x+0.5, circles=0.45, inches=FALSE, lwd=.get("lwd")+2, fg=.get("col.annot"), add=TRUE)
+   return()
+
+}
 
 .drawcircles <- function(circles) {
+
    if (nrow(circles) == 0L)
       return()
+
    apply(circles, 1, function(x) .drawcircle(x[1], x[2]))
+
+   return()
+
 }
 
 .drawcheck <- function(pos, flip) {
@@ -768,6 +808,8 @@
 
    assign("checkpos", xy, envir=.chesstrainer)
 
+   return()
+
 }
 
 .rmcheck <- function(pos, flip) {
@@ -792,6 +834,8 @@
 
    .drawsquare(x, y, flip=flip, col=ifelse(.is.even(x+y), .get("col.square.d"), .get("col.square.l")))
    .drawpiece(x, y, piece)
+
+   return()
 
 }
 
@@ -841,11 +885,15 @@
    segments(x1, y1, x3, y3, col=col, lwd=lwd*4, lend=1)
    polygon(c(x4,x5,x2),c(y4,y5,y2), col=col, border=NA)
 
+   return()
+
 }
 
 .drawarrows <- function(arrows, hint=FALSE, evalvals, sidetoplay) {
+
    if (nrow(arrows) == 0L)
       return()
+
    if (hint) {
       n <- nrow(arrows)
       col.best <- .get("col.best")
@@ -864,6 +912,9 @@
    } else {
       apply(arrows, 1, function(x) .drawarrow(x[1], x[2], x[3], x[4]))
    }
+
+   return()
+
 }
 
 .drawglyph <- function(glyph) {
@@ -896,6 +947,8 @@
    symbols(y+yoff, x+xoff, circles=radius, inches=FALSE, lwd=1, fg=NA, bg=col, add=TRUE)
    text(y+yoff, x+xoff, glyph, font=2, col="white", offset=0, cex=.get("cex.glyphs"))
 
+   return()
+
 }
 
 .drawannot <- function(circles=NULL, arrows=NULL, harrows=NULL, glyph=NULL, hint, evalvals, sidetoplay) {
@@ -907,6 +960,8 @@
    if (!is.null(harrows) && nrow(harrows) >= 1L)
       .drawarrows(harrows, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
    .drawglyph(glyph)
+
+   return()
 
 }
 
@@ -984,6 +1039,8 @@
       }
 
    }
+
+   return()
 
 }
 
@@ -1312,6 +1369,8 @@
    # outline
    rect(xpos, 1, xpos+indsize, 9, border=col.side.d, lwd=2)
 
+   return()
+
 }
 
 .clearsideindicator <- function(adj=0) {
@@ -1362,6 +1421,9 @@
    if (is.null(val))
       val <- NA_real_
 
+   if (is.null(last))
+      last <- NA_real_
+
    if (i == 1 && (length(last) == 0L || is.na(last)))
       last <- starteval
 
@@ -1370,6 +1432,7 @@
 
    if (clear || length(val) == 0L || is.na(val)) {
       rect(xpos, 1, xpos+indsize, 9, border=NA, col=col.bg)
+      .drawdepth(clear=TRUE)
       return()
    }
 
@@ -1438,6 +1501,8 @@
 
    segments(xpos, 5, xpos+indsize, col=col.fg)
 
+   return()
+
 }
 
 .drawlibar <- function(totals=NULL, flip=FALSE, clear=FALSE) {
@@ -1450,7 +1515,8 @@
 
    if (!showlibar || clear || is.null(totals)) {
       rect(xpos, 1, xpos+indsize, 9, border=NA, col=col.bg)
-      return(NULL)
+      assign("lasttotals", NULL, envir=.chesstrainer)
+      return()
    }
 
    col.fg     <- .get("col.fg")
@@ -1531,6 +1597,8 @@
 
    .waitforclick()
 
+   return()
+
 }
 
 .showbestmove <- function(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth, multipv, sflim) {
@@ -1598,9 +1666,9 @@
 
 .drawmatdiff <- function(pos, flip, force=FALSE) {
 
-   oldscore <- .get("score")
-   col      <- .get("col.bot")
-   matdiff  <- .get("matdiff")
+   oldmatdiff  <- .get("matdiff")
+   col         <- .get("col.bot")
+   showmatdiff <- .get("showmatdiff")
    cex.matdiff <- .get("cex.matdiff")
 
    p.p <- sum(pos == "WP") - sum(pos == "BP")
@@ -1614,11 +1682,14 @@
    #pieces <- c("P", "N", "B", "R", "Q")
    pieces <- c("\U0000265F", "\U0000265E", "\U0000265D", "\U0000265C", "\U0000265B")
    value  <- c(1, 3, 3, 5, 9)
-   score  <- sum(mdiff *  value)
+   score  <- sum(mdiff * value)
 
-   assign("score", score, envir=.chesstrainer)
+   assign("matdiff", score, envir=.chesstrainer)
 
-   if (!force && (score == oldscore || !matdiff))
+   if (is.null(oldmatdiff))
+      oldmatdiff <- NA_real_
+
+   if (!force && (isTRUE(score == oldmatdiff) || !showmatdiff))
       return()
 
    .clearmatdiff()
@@ -1665,6 +1736,8 @@
 
    }
 
+   return()
+
 }
 
 .clearmatdiff <- function() {
@@ -1672,6 +1745,8 @@
    col.bg <- .get("col.bg")
    rect(5, 0.70, 9, 0.98, col=col.bg, border=NA)
    rect(5, 9.02, 9, 9.30, col=col.bg, border=NA)
+   assign("matdiff", NULL, envir=.chesstrainer)
+   return()
 
 }
 
@@ -1689,6 +1764,8 @@
 
    for (j in 1:steps)
       rect(x1pos[j], y1pos[j], x2pos[j], y2pos[j], col=col.bg, border=NA)
+
+   return()
 
 }
 
@@ -1798,5 +1875,7 @@
    }
 
    rect(-1, -1, 11, 11, col=.get("col.bg"), border=NA)
+
+   return()
 
 }

@@ -24,7 +24,7 @@ play <- function(lang="en", ...) {
 
    defaults <- list(player="", seqdir="", seqdirpos=1, mode="add", selmode="score_random", timed=FALSE, timepermove=5,
                     expval=2, target=0, multiplier=0.8, adjustwrong=40, adjusthint=20, showeval=TRUE, evalsteps=5, movestoshow=5,
-                    coords=TRUE, showtransp=TRUE, matdiff=TRUE, san=TRUE, pieces=1, wait=TRUE, delay=0.5, idletime=120, mintime=60, sleepadj=0, lwd=2, volume=50,
+                    coords=TRUE, showtransp=TRUE, showmatdiff=TRUE, san=TRUE, piecesymbols=1, wait=TRUE, delay=0.5, idletime=120, mintime=60, sleepadj=0, lwd=2, volume=50,
                     showgraph=FALSE, repmistake=FALSE, zenmode=FALSE, compseq=TRUE,
                     cex.top=1.4, cex.bot=0.7, cex.eval=0.5, cex.coords=0.85, cex.matdiff=1.1, cex.plots=1.0, cex.glyphs=1.6,
                     sfpath="", depth1=12, depth2=20, depth3=8, sflim=NA, multipv1=1, multipv2=1, threads=1, hash=256, hintdepth=10, monthssfcache=24,
@@ -70,9 +70,9 @@ play <- function(lang="en", ...) {
    evalsteps <- round(evalsteps)
    movestoshow[movestoshow < 0] <- 0
    movestoshow <- round(movestoshow)
-   pieces[pieces < 1] <- 1
-   pieces[pieces > 3] <- 3
-   pieces <- round(pieces)
+   piecesymbols[piecesymbols < 1] <- 1
+   piecesymbols[piecesymbols > 3] <- 3
+   piecesymbols <- round(piecesymbols)
    delay[delay < 0] <- 0
    idletime[idletime < 1] <- 1
    mintime[mintime < 1] <- 1
@@ -147,7 +147,7 @@ play <- function(lang="en", ...) {
          stop(.text("dircreateerror"), call.=FALSE)
       settings <- list(lang=lang, player=player, seqdir=seqdir, seqdirpos=seqdirpos, mode=mode, selmode=selmode, timed=timed, timepermove=timepermove,
                        expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, showeval=showeval, evalsteps=evalsteps, movestoshow=movestoshow,
-                       coords=coords, showtransp=showtransp, matdiff=matdiff, san=san, pieces=pieces, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, lwd=lwd, volume=volume,
+                       coords=coords, showtransp=showtransp, showmatdiff=showmatdiff, san=san, piecesymbols=piecesymbols, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, lwd=lwd, volume=volume,
                        showgraph=showgraph, repmistake=repmistake, zenmode=zenmode, compseq=compseq,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, monthssfcache=monthssfcache,
@@ -179,7 +179,7 @@ play <- function(lang="en", ...) {
       sfpath <- suppressWarnings(normalizePath(sfpath))
       settings <- list(lang=lang, player=player, seqdir=seqdir, seqdirpos=seqdirpos, mode=mode, selmode=selmode, timed=timed, timepermove=timepermove,
                        expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, showeval=showeval, evalsteps=evalsteps, movestoshow=movestoshow,
-                       coords=coords, showtransp=showtransp, matdiff=matdiff, san=san, pieces=pieces, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, lwd=lwd, volume=volume,
+                       coords=coords, showtransp=showtransp, showmatdiff=showmatdiff, san=san, piecesymbols=piecesymbols, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, lwd=lwd, volume=volume,
                        showgraph=showgraph, repmistake=repmistake, zenmode=zenmode, compseq=compseq,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, monthssfcache=monthssfcache,
@@ -225,9 +225,9 @@ play <- function(lang="en", ...) {
    assign("mar", mar, envir=.chesstrainer)
    assign("mar2", mar2, envir=.chesstrainer)
    assign("coords", coords, envir=.chesstrainer)
-   assign("matdiff", matdiff, envir=.chesstrainer)
+   assign("showmatdiff", showmatdiff, envir=.chesstrainer)
    assign("san", san, envir=.chesstrainer)
-   assign("pieces", pieces, envir=.chesstrainer)
+   assign("piecesymbols", piecesymbols, envir=.chesstrainer)
    assign("timed", timed, envir=.chesstrainer)
    assign("zenmode", zenmode, envir=.chesstrainer)
    assign("verbose", verbose, envir=.chesstrainer)
@@ -639,7 +639,7 @@ play <- function(lang="en", ...) {
       fifty         <- FALSE
       savgame       <- NULL
       assign("checkpos", c(NA,NA), envir=.chesstrainer)
-      assign("score", 0, envir=.chesstrainer)
+      assign("mattdiff", 0, envir=.chesstrainer)
       assign("x2y2", c(NA,NA), envir=.chesstrainer)
       assign("depth", NULL, envir=.chesstrainer)
 
@@ -945,8 +945,11 @@ play <- function(lang="en", ...) {
       matetype <- res.sf$matetype
       sfproc   <- res.sf$sfproc
       sfrun    <- res.sf$sfrun
-      if (!is.na(evalval[1]))
+      if (.is.start.pos(pos)) {
+         starteval <- 0.2
+      } else {
          starteval <- evalval[1]
+      }
 
       if (!is.null(sub$pos)) {
          if (is.null(attr(pos,"starteval"))) {
@@ -2985,18 +2988,18 @@ play <- function(lang="en", ...) {
             # P to toggle piece symbols
 
             if (identical(click, "P")) {
-               pieces <- pieces + 1
+               piecesymbols <- piecesymbols + 1
                if (lang=="en") {
-                  if (pieces > 2)
-                     pieces <- 1
+                  if (piecesymbols > 2)
+                     piecesymbols <- 1
                } else {
-                  if (pieces > 3)
-                     pieces <- 1
+                  if (piecesymbols > 3)
+                     piecesymbols <- 1
                }
-               assign("pieces", pieces, envir=.chesstrainer)
-               .texttop(.text("pieces", pieces), sleep=1.25)
+               assign("piecesymbols", piecesymbols, envir=.chesstrainer)
+               .texttop(.text("piecesymbols", piecesymbols), sleep=1.25)
                .texttop(texttop)
-               settings$pieces <- pieces
+               settings$piecesymbols <- piecesymbols
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
@@ -3150,16 +3153,16 @@ play <- function(lang="en", ...) {
             # K to toggle show material difference on/off
 
             if (identical(click, "K")) {
-               matdiff <- !matdiff
-               assign("matdiff", matdiff, envir=.chesstrainer)
-               if (matdiff) {
+               showmatdiff <- !showmatdiff
+               assign("showmatdiff", showmatdiff, envir=.chesstrainer)
+               if (showmatdiff) {
                   .drawmatdiff(pos, flip, force=TRUE)
                } else {
                   .clearmatdiff()
                }
-               .texttop(.text("matdiff", matdiff), sleep=0.75)
+               .texttop(.text("showmatdiff", showmatdiff), sleep=0.75)
                .texttop(texttop)
-               settings$matdiff <- matdiff
+               settings$showmatdiff <- showmatdiff
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
@@ -3976,7 +3979,7 @@ play <- function(lang="en", ...) {
             if (identical(click, "F3")) {
                tab <- list(lang=lang, player=player, mode=mode, seqdir=seqdir[seqdirpos], selmode=selmode, zenmode=zenmode, timed=timed, timepermove=timepermove, expval=expval,
                            multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, showeval=showeval, evalsteps=evalsteps, movestoshow=movestoshow,
-                           coords=coords, showtransp=showtransp, matdiff=matdiff, san=san, pieces=pieces, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, mar=mar, mar2=mar2, lwd=lwd,
+                           coords=coords, showtransp=showtransp, showmatdiff=showmatdiff, san=san, piecesymbols=piecesymbols, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, mar=mar, mar2=mar2, lwd=lwd,
                            volume=volume, showgraph=showgraph, repmistake=repmistake, target=target,
                            # cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
                            difffun=difffun, difflen=difflen, diffmin=diffmin,

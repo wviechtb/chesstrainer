@@ -122,7 +122,7 @@
                          paste0("Short algebraic notation: ", ifelse(arg, "on", "off"))
    ))}
 
-   if (x == "pieces") {
+   if (x == "piecesymbols") {
       return(switch(lang,
                     de = paste0("Figurensymbole: ", ifelse(arg == 1, "\U0000265A\U0000265B\U0000265C\U0000265D\U0000265E", ifelse(arg == 2, "KQRBN", "KDTLS"))),
                          paste0("Piece symbols: ",  ifelse(arg == 1, "\U0000265A\U0000265B\U0000265C\U0000265D\U0000265E", "KQRBN"))
@@ -134,7 +134,7 @@
                          paste0("Show move transpositions: ", ifelse(arg, "on", "off"))
    ))}
 
-   if (x == "matdiff") {
+   if (x == "showmatdiff") {
       return(switch(lang,
                     de = paste0("Materialunterschied anzeigen: ", ifelse(arg, "an", "aus")),
                          paste0("Show material difference: ", ifelse(arg, "on", "off"))

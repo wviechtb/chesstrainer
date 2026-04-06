@@ -1389,7 +1389,7 @@
 
 .rename <- function(x, withcolor=FALSE) {
 
-   pieces <- .get("pieces")
+   piecesymbols <- .get("piecesymbols")
 
    if (withcolor) {
       x[x==""]   <- "\U000000B7"
@@ -1406,14 +1406,14 @@
       x[x=="BK"] <- "\U00002654"
       x[x=="BQ"] <- "\U00002655"
    } else {
-      if (pieces == 1) {
+      if (piecesymbols == 1) {
          x <- gsub("K", "\U0000265A", x, fixed=TRUE)
          x <- gsub("Q", "\U0000265B", x, fixed=TRUE)
          x <- gsub("R", "\U0000265C", x, fixed=TRUE)
          x <- gsub("B", "\U0000265D", x, fixed=TRUE)
          x <- gsub("N", "\U0000265E", x, fixed=TRUE)
       }
-      if (pieces == 3) {
+      if (piecesymbols == 3) {
          lang <- .get("lang")
          if (lang == "de") {
             x <- gsub("K", "K", x, fixed=TRUE)
