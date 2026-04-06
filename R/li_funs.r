@@ -34,7 +34,7 @@
    contliquery <- .get("contliquery")
 
    fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
-   fen <- paste(strsplit(fen, " ", fixed=TRUE)[[1]][1:5], collapse = " ") # remove the fullmove number
+   fen <- .fenpart(fen, parts=1:5) # remove the fullmove number
    fen <- gsub(" ", "%20", fen, fixed=TRUE)
    filename <- paste0(gsub("/", "_", fen, fixed=TRUE), ".rds")
 

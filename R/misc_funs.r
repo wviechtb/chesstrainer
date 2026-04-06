@@ -343,8 +343,8 @@
 
 }
 
-.fen123 <- function(x)
-   paste(strsplit(x, " ", fixed=TRUE)[[1]][1:3], collapse=" ")
+.fenpart <- function(fen, parts=1:3)
+   paste(strsplit(fen, " ", fixed=TRUE)[[1]][parts], collapse=" ")
 
 .fentopos <- function(fen) {
 
@@ -1173,7 +1173,7 @@
 
    san <- .get("san")
 
-   fenshort <- .fen123(fen)
+   fenshort <- .fenpart(fen)
    seqident <- lapply(dat, function(x) {
       if (any(fenshort == x$fenshort[-1]) && identical(flip, x$flip) && !identical(sub$moves$fen[1:(i-1)], x$fen[1:(i-1)]) && identical(pos, x$pos)) {
          pos <- min(which(fenshort == x$fenshort[-1]))
@@ -1210,7 +1210,7 @@
 
 }
 
-.findopening <- function(x, flip, opening, openings, posnull, draw=TRUE) {
+.findopening <- function(x, pos, flip, sidetoplay, sidetoplaystart, i, opening, openings, posnull, draw=TRUE) {
 
    nrows <- nrow(x)
    oldopening <- opening
@@ -1232,6 +1232,16 @@
          opening <- paste0(opening[1], " (", substr(opening[2], 1, 120), ")", collapse="")
          if (!identical(opening, oldopening) && draw)
             .textbot(opening=opening, onlyeco=TRUE)
+      } else {
+         fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
+         fen <- .fenpart(fen, parts=1:4)
+         fenmatch <- which(fen == openings$epd)
+         if (length(fenmatch) >= 1L) {
+            opening <- openings[fenmatch[1],1:2]
+            opening <- paste0(opening[1], " (", substr(opening[2], 1, 120), ")", collapse="")
+            if (!identical(opening, oldopening) && draw)
+               .textbot(opening=opening, onlyeco=TRUE)
+         }
       }
 
    } else {

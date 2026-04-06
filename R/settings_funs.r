@@ -3,7 +3,7 @@
    pos <- .get("pos")
    pos[7:8,1:2] <- ""
 
-   tab1 <- data.frame(x=cols.all, val=unname(sapply(cols.all, function(x) .get(x))))
+   tab1 <- data.frame(x=cols.all, val=sapply(cols.all, function(x) .get(x), USE.NAMES=FALSE))
    tab1$explanation <- .text("colsetexpl")
    ncols <- nrow(tab1)
 

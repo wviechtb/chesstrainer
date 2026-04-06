@@ -253,7 +253,7 @@
    bookmarks2 <- bookmarks
    bookmarkslen <- nchar(bookmarks2)
    maxlen <- 80
-   bookmarks2 <- unname(sapply(bookmarks2, function(x) if (nchar(x) >= maxlen) paste0("...", substr(x, max(1,nchar(x)-maxlen), nchar(x))) else x))
+   bookmarks2 <- sapply(bookmarks2, function(x) if (nchar(x) >= maxlen) paste0("...", substr(x, max(1,nchar(x)-maxlen), nchar(x))) else x, USE.NAMES=FALSE)
 
    tab <- data.frame(sub("\\.rds$", "", bookmarks2))
    names(tab) <- ""

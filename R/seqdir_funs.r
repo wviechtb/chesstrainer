@@ -254,7 +254,7 @@
    seqdir2 <- seqdir
    seqdirlen <- nchar(seqdir2)
    maxlen <- 80
-   seqdir2 <- unname(sapply(seqdir2, function(x) if (nchar(x) >= maxlen) paste0("...", substr(x, max(1,nchar(x)-maxlen), nchar(x))) else x))
+   seqdir2 <- sapply(seqdir2, function(x) if (nchar(x) >= maxlen) paste0("...", substr(x, max(1,nchar(x)-maxlen), nchar(x))) else x, USE.NAMES=FALSE)
 
    tab <- data.frame(seqdir2)
    names(tab) <- ""

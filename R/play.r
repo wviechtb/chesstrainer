@@ -675,7 +675,7 @@ play <- function(lang="en", ...) {
       dat.all.short <- lapply(dat.all, function(x) list(moves    = x$moves[1:4],
                                                         flip     = x$flip,
                                                         fen      = x$moves$fen,
-                                                        fenshort = if (nrow(x$moves) == 0L) character(0) else sapply(strsplit(c(x$startfen, x$moves$fen), " ", fixed=TRUE), function(x) paste0(x[1:3], collapse=" ")),
+                                                        fenshort = if (nrow(x$moves) == 0L) character(0) else sapply(c(x$startfen, x$moves$fen), .fenpart, USE.NAMES=FALSE),
                                                         move     = x$moves$move,
                                                         san      = x$moves$san,
                                                         pos      = x$pos))
@@ -1065,7 +1065,7 @@ play <- function(lang="en", ...) {
                arrows  <- .parseannot(sub$moves$arrows[i], cols=4)
                if (nrow(circles) >= 1L || nrow(arrows) >= 1L)
                   .drawannot(circles=circles, arrows=arrows)
-               opening <- .findopening(sub$moves[seq_len(i-1),1:4], flip=flip, opening=opening, openings=openings, posnull=is.null(sub$pos))
+               opening <- .findopening(sub$moves[seq_len(i-1),1:4], pos=pos, flip=flip, sidetoplay=sidetoplay, sidetoplaystart=sidetoplaystart, i=i, opening=opening, openings=openings, posnull=is.null(sub$pos))
                Sys.sleep(delay)
             }
 
@@ -1174,7 +1174,7 @@ play <- function(lang="en", ...) {
 
                   .drawevalbar(sub$moves$eval[i-1], sub$moves$eval[i-2], i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]], evalsteps=evalsteps)
                   sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
-                  opening <- .findopening(sub$moves[seq_len(i-1),1:4], flip=flip, opening=opening, openings=openings, posnull=is.null(sub$pos))
+                  opening <- .findopening(sub$moves[seq_len(i-1),1:4], pos=pos, flip=flip, sidetoplay=sidetoplay, sidetoplaystart=sidetoplaystart, i=i, opening=opening, openings=openings, posnull=is.null(sub$pos))
 
                   if (identical(matetype, "mate")) {
                      sub$moves$move[i-1] <- sub("+", "#", sub$moves$move[i-1], fixed=TRUE)
@@ -1189,7 +1189,7 @@ play <- function(lang="en", ...) {
                      assign("mode", mode, envir=.chesstrainer)
                   }
 
-                  threefold <- any(table(sapply(strsplit(sub$moves$fen, " ", fixed=TRUE), function(x) paste(x[1:4], collapse = " "))) == 3L)
+                  threefold <- any(table(sapply(sub$moves$fen, .fenpart, parts=1:4)) == 3L)
 
                   if (threefold) {
                      .texttop(.text("threefold"))
@@ -1671,7 +1671,7 @@ play <- function(lang="en", ...) {
                      for (i in seq_len(min(firstmove)-1)) {
                         pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE, draw=FALSE)
                         sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
-                        opening <- .findopening(sub$moves[seq_len(i),1:4], flip=flip, opening=opening, openings=openings, posnull=is.null(sub$pos), draw=FALSE)
+                        opening <- .findopening(sub$moves[seq_len(i),1:4], pos=pos, flip=flip, sidetoplay=sidetoplay, sidetoplaystart=sidetoplaystart, i=i, opening=opening, openings=openings, posnull=is.null(sub$pos), draw=FALSE)
                      }
                      neweval <- sub$moves$eval[i]
                      i <- i + 1
@@ -1780,7 +1780,7 @@ play <- function(lang="en", ...) {
                   for (i in seq_len(i-1)) {
                      pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE, draw=FALSE)
                      sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
-                     opening <- .findopening(sub$moves[seq_len(i),1:4], flip=flip, opening=opening, openings=openings, posnull=is.null(sub$pos), draw=FALSE)
+                     opening <- .findopening(sub$moves[seq_len(i),1:4], pos=pos, flip=flip, sidetoplay=sidetoplay, sidetoplaystart=sidetoplaystart, i=i, opening=opening, openings=openings, posnull=is.null(sub$pos), draw=FALSE)
                   }
                   i <- i + 1
                }
@@ -1908,7 +1908,7 @@ play <- function(lang="en", ...) {
                   sub$moves <- rbind(sub$moves, data.frame(x1=tmp$x1, y1=tmp$y1, x2=tmp$x2, y2=tmp$y2, show=showval, move=tmp$txt, san=movesan, eval=evalval[1], comment="", circles=circlesvar, arrows=arrowsvar, glyph="", fen=fen))
                   comment <- ""
                   sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
-                  opening <- .findopening(sub$moves[seq_len(i-1),1:4], flip=flip, opening=opening, openings=openings, posnull=is.null(sub$pos))
+                  opening <- .findopening(sub$moves[seq_len(i-1),1:4], pos=pos, flip=flip, sidetoplay=sidetoplay, sidetoplaystart=sidetoplaystart, i=i, opening=opening, openings=openings, posnull=is.null(sub$pos))
                   if (identical(matetype, "mate")) {
                      sub$moves$move[i-1] <- sub("+", "#", sub$moves$move[i-1], fixed=TRUE)
                      sub$moves$san[i-1] <- sub("+", "#", sub$moves$san[i-1], fixed=TRUE)
@@ -1918,7 +1918,7 @@ play <- function(lang="en", ...) {
                         evalval <- 0
                      .texttop(.text(matetype))
                   }
-                  threefold <- any(table(sapply(strsplit(sub$moves$fen, " ", fixed=TRUE), function(x) paste(x[1:4], collapse = " "))) == 3L)
+                  threefold <- any(table(sapply(sub$moves$fen, .fenpart, parts=1:4)) == 3L)
                   if (threefold) {
                      .texttop(.text("threefold"))
                      evalval <- 0
@@ -1957,7 +1957,7 @@ play <- function(lang="en", ...) {
                }
                i <- i + 1
                glyph <- sub$moves$glyph[i-1]
-               opening <- .findopening(sub$moves[seq_len(i-1),1:4], flip=flip, opening=opening, openings=openings, posnull=is.null(sub$pos))
+               opening <- .findopening(sub$moves[seq_len(i-1),1:4], pos=pos, flip=flip, sidetoplay=sidetoplay, sidetoplaystart=sidetoplaystart, i=i, opening=opening, openings=openings, posnull=is.null(sub$pos))
                if (i > nrow(sub$moves)) {
                   texttop <- .texttop(sub$commentend)
                   circles <- .parseannot(sub$symbolend$circles, cols=2)
@@ -2035,7 +2035,7 @@ play <- function(lang="en", ...) {
                   pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE, draw=FALSE)
                   sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                   i <- i + 1
-                  opening <- .findopening(sub$moves[seq_len(i-1),1:4], flip=flip, opening=opening, openings=openings, posnull=is.null(sub$pos), draw=FALSE)
+                  opening <- .findopening(sub$moves[seq_len(i-1),1:4], pos=pos, flip=flip, sidetoplay=sidetoplay, sidetoplaystart=sidetoplaystart, i=i, opening=opening, openings=openings, posnull=is.null(sub$pos), draw=FALSE)
                }
                playsound(system.file("sounds", "move.ogg", package="chesstrainer"))
                .redrawpos(pos, posold, flip=flip)
@@ -2128,7 +2128,7 @@ play <- function(lang="en", ...) {
                   pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE, draw=FALSE)
                   sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                   i <- i + 1
-                  opening <- .findopening(sub$moves[seq_len(i-1),1:4], flip=flip, opening=opening, openings=openings, posnull=is.null(sub$pos), draw=FALSE)
+                  opening <- .findopening(sub$moves[seq_len(i-1),1:4], pos=pos, flip=flip, sidetoplay=sidetoplay, sidetoplaystart=sidetoplaystart, i=i, opening=opening, openings=openings, posnull=is.null(sub$pos), draw=FALSE)
                }
                playsound(system.file("sounds", "move.ogg", package="chesstrainer"))
                .redrawpos(pos, posold, flip=flip)
@@ -2568,7 +2568,7 @@ play <- function(lang="en", ...) {
                         .textbot(i=i, totalmoves=totalmoves, onlyi=TRUE)
                         .drawevalbar(sub$moves$eval[i], sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]], evalsteps=evalsteps)
                         sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
-                        opening <- .findopening(sub$moves[seq_len(i),1:4], flip=flip, opening=opening, openings=openings, posnull=is.null(sub$pos))
+                        opening <- .findopening(sub$moves[seq_len(i),1:4], pos=pos, flip=flip, sidetoplay=sidetoplay, sidetoplaystart=sidetoplaystart, i=i, opening=opening, openings=openings, posnull=is.null(sub$pos))
                         Sys.sleep(delay)
                      }
                      i <- i + 1
@@ -2585,7 +2585,7 @@ play <- function(lang="en", ...) {
 
                .drawglyph(glyph)
                .textbot(show=show, showcomp=showcomp, i=i, totalmoves=totalmoves, onlyshow=TRUE, onlyi=TRUE)
-               #opening <- .findopening(sub$moves[seq_len(i-1),1:4], flip=flip, opening="", openings=openings, posnull=is.null(sub$pos))
+               #opening <- .findopening(sub$moves[seq_len(i-1),1:4], pos=pos, flip=flip, sidetoplay=sidetoplay, sidetoplaystart=sidetoplaystart, i=i, opening="", openings=openings, posnull=is.null(sub$pos))
                sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
                fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                res.sf <- .sf.eval(sfproc, sfrun, depth1, multipv=5, sflim=NA, fen, usesfcache=TRUE)
@@ -3376,7 +3376,7 @@ play <- function(lang="en", ...) {
                # FEN entered (use piece placement, active color, and castling availability for matching)
 
                if (grepl("^([rnbqkpRNBQKP1-8]+/){7}[rnbqkpRNBQKP1-8]+ [wb] (-|[KQkq]{1,4}) (-|[a-h][36]) \\d+ \\d+$", searchterm)) {
-                  searchterm <- .fen123(searchterm)
+                  searchterm <- .fenpart(searchterm)
                   seqident <- lapply(dat.all.short, function(x) {
                      if (any(searchterm == x$fenshort) && identical(flip, x$flip)) {
                         pos <- min(which(searchterm == x$fenshort))
@@ -3736,7 +3736,7 @@ play <- function(lang="en", ...) {
 
             if (identical(click, "'") || identical(click, "]")) {
                searchterm <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
-               searchterm <- .fen123(searchterm)
+               searchterm <- .fenpart(searchterm)
                seqident <- lapply(dat.all.short, function(x) {
                   if (any(searchterm == x$fenshort) && identical(flip, x$flip)) {
                      pos <- min(which(searchterm == x$fenshort))
@@ -3789,7 +3789,7 @@ play <- function(lang="en", ...) {
 
             if (identical(click, "[")) {
                searchterm <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
-               searchterm <- .fen123(searchterm)
+               searchterm <- .fenpart(searchterm)
                seqident <- lapply(dat.all.short, function(x) {
                   if (any(searchterm == x$fenshort) && identical(flip, x$flip)) {
                      pos <- min(which(searchterm == x$fenshort))
@@ -3837,7 +3837,7 @@ play <- function(lang="en", ...) {
                if (i == 1)
                   next
                searchterm <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
-               searchterm <- .fen123(searchterm)
+               searchterm <- .fenpart(searchterm)
                seqident <- sapply(dat.all, function(x) grepl(searchterm, tail(x$moves$fen, 1), fixed=TRUE) && identical(flip, x$flip))
                if (any(seqident)) {
                   #eval(expr=switch1)
@@ -4452,7 +4452,7 @@ play <- function(lang="en", ...) {
 
             if (compseq && mode == "play") {
                searchterm <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
-               searchterm <- .fen123(searchterm)
+               searchterm <- .fenpart(searchterm)
                nextmoves <- lapply(dat.all.short, function(x) {
                   if (any(searchterm == x$fenshort) && identical(flip, x$flip)) {
                      pos <- min(which(searchterm == x$fenshort))
@@ -4569,7 +4569,7 @@ play <- function(lang="en", ...) {
 
                }
 
-               opening <- .findopening(sub$moves[seq_len(i-1),1:4], flip=flip, opening=opening, openings=openings, posnull=is.null(sub$pos))
+               opening <- .findopening(sub$moves[seq_len(i-1),1:4], pos=pos, flip=flip, sidetoplay=sidetoplay, sidetoplaystart=sidetoplaystart, i=i, opening=opening, openings=openings, posnull=is.null(sub$pos))
 
                playsound(system.file("sounds", "complete.ogg", package="chesstrainer"))
 
@@ -4997,7 +4997,7 @@ play <- function(lang="en", ...) {
 
             # check for threefold repetition
 
-            threefold <- any(table(sapply(strsplit(sub$moves$fen, " ", fixed=TRUE), function(x) paste(x[1:4], collapse = " "))) == 3L)
+            threefold <- any(table(sapply(sub$moves$fen, .fenpart, parts=1:4)) == 3L)
 
             if (threefold) {
                .texttop(.text("threefold"))
@@ -5033,7 +5033,7 @@ play <- function(lang="en", ...) {
 
          # try to match the moves with the openings in the openings database
 
-         opening <- .findopening(sub$moves[seq_len(i-1),1:4], flip=flip, opening=opening, openings=openings, posnull=is.null(sub$pos))
+         opening <- .findopening(sub$moves[seq_len(i-1),1:4], pos=pos, flip=flip, sidetoplay=sidetoplay, sidetoplaystart=sidetoplaystart, i=i, opening=opening, openings=openings, posnull=is.null(sub$pos))
 
          if (mode == "test") {
 
@@ -5069,7 +5069,7 @@ play <- function(lang="en", ...) {
                glyph <- sub$moves$glyph[i-1]
                .drawglyph(glyph)
                sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
-               opening <- .findopening(sub$moves[seq_len(i-1),1:4], flip=flip, opening=opening, openings=openings, posnull=is.null(sub$pos))
+               opening <- .findopening(sub$moves[seq_len(i-1),1:4], pos=pos, flip=flip, sidetoplay=sidetoplay, sidetoplaystart=sidetoplaystart, i=i, opening=opening, openings=openings, posnull=is.null(sub$pos))
 
                if (isTRUE(sub$moves$show[i]))
                   Sys.sleep(delay)
