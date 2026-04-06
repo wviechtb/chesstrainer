@@ -4680,8 +4680,11 @@ play <- function(lang="en", ...) {
                            .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
                            .drawevalbar(starteval, starteval, i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]], evalsteps=evalsteps)
                         } else {
-                           .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), flip=flip)
+                           .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), glyph=glyph, flip=flip)
                         }
+                        saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
+                        dosave <- FALSE
+                        glyph <- ""
                         oldmode <- "test"
                         mode <- "add"
                         assign("mode", mode, envir=.chesstrainer)
@@ -4716,13 +4719,27 @@ play <- function(lang="en", ...) {
                      }
 
                      if (identical(click, "\\") || identical(click, "\U000000E4")) { # \ or ä goes to play mode
-                        .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), glyph=glyph, flip=flip)
+                        if (unflip) {
+                           flip <- !flip
+                           unflip <- FALSE
+                           list2env(.doflip(sub, pos, flip), envir=environment())
+                           .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
+                           .drawevalbar(starteval, starteval, i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]], evalsteps=evalsteps)
+                        } else {
+                           .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), glyph=glyph, flip=flip)
+                        }
+                        saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
+                        dosave <- FALSE
                         glyph <- ""
                         sub$moves <- sub$moves[seq_len(i-1),,drop=FALSE]
                         oldmode <- "test"
                         mode <- "play"
                         assign("mode", mode, envir=.chesstrainer)
+                        sub$player <- NULL
+                        sub$commentend <- NULL # TODO: move commentend to comment?
+                        sub$symbolend <- NULL
                         show <- FALSE
+                        showcomp <- TRUE
                         timed <- FALSE
                         texttop <- .texttop("")
                         .drawevalbar(sub$moves$eval[i-1], NA, i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]], evalsteps=evalsteps)
@@ -4753,7 +4770,6 @@ play <- function(lang="en", ...) {
                            res.li <- .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop)
                            bestmove <- res.li$selmove # [d]
                         }
-
                         .textbot(show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
                         contplay <- TRUE
                         break
