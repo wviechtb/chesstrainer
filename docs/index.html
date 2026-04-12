@@ -53,7 +53,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">chesstrainer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-161</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-162</span>
       </span>
     </div>
 
@@ -110,20 +110,20 @@
 <div class="section level2">
 <h2 id="description">Description<a class="anchor" aria-label="anchor" href="#description"></a>
 </h2>
-<p>The main purpose of the <code>chesstrainer</code> package is to create sequences of moves (lines), save them, and then test yourself on these sequences. This is especially useful for training openings, but can also be used for creating chess puzzles or training tactics. Can you find the forced mate below?</p>
+<p>The main purpose of the <code>chesstrainer</code> package is to create sequences of moves (lines), save them, and then test yourself on these sequences by repeating the moves from memory. This is especially useful for training openings, but can also be used for creating chess puzzles or training tactics. Can you find the forced mate below?</p>
 <p><img src="reference/figures/screenshot.png" title="Find the mate in three!"></p>
 </div>
 <div class="section level2">
 <h2 id="features">Features<a class="anchor" aria-label="anchor" href="#features"></a>
 </h2>
 <ul>
-<li>provides an ‘add mode’ for entering sequences and a ‘test mode’ to practice these sequences</li>
+<li>provides an <em>add mode</em> for entering sequences and a <em>test mode</em> to practice these sequences</li>
 <li>tracks your performance history for each sequence</li>
-<li>sequences are presented randomly with higher probabilities for those with poorer performance</li>
-<li>alternatively sequences can be chosen based on play frequency, last play date, or difficulty</li>
-<li>automatically repeat sequences when a wrong move was made (optionally)</li>
-<li>add comments to sequences or particular moves (e.g., to name variations, provide hints, or other information)</li>
-<li>add annotations (arrows, circles, glyphs) to sequences, which can also be replayed in test mode</li>
+<li>presents sequences randomly with higher probabilities for those with poorer performance</li>
+<li>alternatively can choose sequences based on play frequency, last play date, or difficulty</li>
+<li>automatically repeats sequences when a wrong move was made</li>
+<li>can add comments to sequences or particular moves (e.g., to name variations, provide hints, or other information)</li>
+<li>can add annotations (arrows, circles, and glyphs) to sequences</li>
 <li>select sequences to practice based on their name, performance, play frequency, last play date, or moves/position</li>
 <li>a timed mode can be used to practice sequences under time pressure</li>
 <li>a board editor allows quickly setting up advanced starting positions or chess puzzles</li>
@@ -136,12 +136,12 @@
 <li>can play against Stockfish in ‘play mode’</li>
 </ul>
 </li>
-<li>can query the Lichess opening database and play against it</li>
+<li>can query the Lichess opening database</li>
 <li>can adjust colors, text sizes, and various other settings</li>
 <li>can manage multiple sequence directories</li>
 <li>can toggle the language (English or German)</li>
-<li>trainer plays move and capture sounds</li>
-<li>and keeps track of your session history</li>
+<li>can play move and capture sounds</li>
+<li>keeps track of your session history</li>
 </ul>
 </div>
 <div class="section level2">
@@ -151,6 +151,7 @@
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"remotes"</span><span class="op">)</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html" class="external-link">install_github</a></span><span class="op">(</span><span class="st">"wviechtb/chesstrainer"</span><span class="op">)</span></span></code></pre></div>
+<p>The same commands can also be used to update the package to the latest version.</p>
 </div>
 <div class="section level2">
 <h2 id="play">Play<a class="anchor" aria-label="anchor" href="#play"></a>

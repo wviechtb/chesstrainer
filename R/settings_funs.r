@@ -1,20 +1,28 @@
 .vizsettings <- function(cols.all, pos, flip=FALSE, show=TRUE, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove) {
 
+   mode       <- .get("mode")
+   showcoords <- .get("showcoords")
+   timed      <- .get("timed")
+   zenmode    <- .get("zenmode")
+   x2y2       <- .get("x2y2")
+   score      <- .get("score")
+   lasteval   <- .get("lasteval")
+   assign("mode", "add", envir=.chesstrainer)
+   assign("timed", FALSE, envir=.chesstrainer)
+   assign("zenmode", FALSE, envir=.chesstrainer)
+   assign("x2y2", c(2,5), envir=.chesstrainer)
+
    pos <- .get("pos")
    pos[7:8,1:2] <- ""
 
    tab1 <- data.frame(x=cols.all, val=sapply(cols.all, function(x) .get(x), USE.NAMES=FALSE))
    tab1$explanation <- .text("colsetexpl")
-   ncols <- nrow(tab1)
 
    tab2 <- data.frame(x = c("cex.top", "cex.bot", "cex.eval", "cex.coords", "cex.matdiff", "cex.plots", "cex.glyphs"),
                       val = c(.get("cex.top"), .get("cex.bot"), .get("cex.eval"), .get("cex.coords"), .get("cex.matdiff"), .get("cex.plots"), .get("cex.glyphs")))
    tab2$explanation <- .text("cexsetexpl")
-   ncexs <- nrow(tab2)
 
    tab <- rbind(tab1, c("", "", ""), tab2)
-   #tab <- rbind(tab1, tab2)
-   names(tab) <- c("", "", "")
 
    tab <- rbind(tab, c("", "", ""))
    tab <- rbind(tab, c("scheme.brown", "", .text("scheme_brown")))
@@ -22,17 +30,15 @@
    tab <- rbind(tab, c("scheme.blue",  "", .text("scheme_blue")))
    tab <- rbind(tab, c("scheme.gray",  "", .text("scheme_gray")))
 
-   mode    <- .get("mode")
-   coords  <- .get("coords")
-   timed   <- .get("timed")
-   zenmode <- .get("zenmode")
-   x2y2    <- .get("x2y2")
-   score   <- .get("score")
-   assign("mode", "add", envir=.chesstrainer)
-   assign("coords", TRUE, envir=.chesstrainer)
-   assign("timed", FALSE, envir=.chesstrainer)
-   assign("zenmode", FALSE, envir=.chesstrainer)
-   assign("x2y2", c(2,5), envir=.chesstrainer)
+   tab3 <- data.frame(x = "showcoords", val=ifelse(showcoords, .text("yes"), .text("no")), explanation=.text("showcoordsexpl"))
+   tab <- rbind(tab, c("", "", ""), tab3)
+
+   names(tab) <- c("", "", "")
+
+   numbers.col    <- which(startsWith(tab[,1], "col."))
+   numbers.cex    <- which(startsWith(tab[,1], "cex."))
+   numbers.scheme <- which(startsWith(tab[,1], "scheme."))
+   number.coords  <- which(tab[,1] == "showcoords")
 
    .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
    .addrect(4, 5, col=.get("col.hint"))
@@ -59,7 +65,7 @@
       cat(.text("currentsettings"))
       print(tab, right=FALSE, print.gap=3)
       cat("\n")
-      resp <- readline(prompt=.text("colcexwhich"))
+      resp <- readline(prompt=.text("whichsetting"))
       if (identical(resp, ""))
          break
       if (grepl("^[0-9]+$", resp)) {
@@ -68,11 +74,11 @@
             next
          if (number %in% which(tab[,1] == ""))
             next
-         if (number %in% which(startsWith(tab[,1], "col.")))
+         if (number %in% numbers.col)
             val <- readline(prompt=.text("colval", tab[number,2]))
-         if (number %in% which(startsWith(tab[,1], "cex.")))
+         if (number %in% numbers.cex)
             val <- readline(prompt=.text("cexval", tab[number,2]))
-         if (number %in% which(startsWith(tab[,1], "scheme."))) {
+         if (number %in% numbers.scheme) {
             if (number == which(tab[,1] == "scheme.brown"))
                scheme <- c(col.bg="#211b12", col.fg="#7a6d59", col.square.l="#f0d9b5", col.square.d="#b58863", col.top="#b09d7f", col.bot="#b09d7f", col.help="#b09d7f", col.border="#63462e", col.rect="darkseagreen4")
             if (number == which(tab[,1] == "scheme.green"))
@@ -85,16 +91,17 @@
             for (j in 1:length(scheme))
                assign(names(scheme[j]), unname(scheme[j]), envir=.chesstrainer)
          }
-         if (number <= ncols+ncexs) {
+         if (number %in% c(numbers.col, numbers.cex)) {
             val <- trimws(val)
             if (identical(val, ""))
                next
-            if (number %in% which(startsWith(tab[,1], "col."))) {
+            if (number %in% numbers.col) {
                if (!(is.element(val, colors()) || grepl("^#(?:[0-9A-Fa-f]{6}|[0-9A-Fa-f]{2})$", val)))
                   next
                assign(tab[number,1], val, envir=.chesstrainer)
                tab[number,2] <- val
-            } else {
+            }
+            if (number %in% numbers.cex) {
                if (!grepl("^[0-9.]+$", val))
                   next
                cex <- as.numeric(val)
@@ -102,6 +109,11 @@
                assign(tab[number,1], cex, envir=.chesstrainer)
                tab[number,2] <- cex
             }
+         }
+         if (number == number.coords) {
+            showcoords <- !showcoords
+            assign("showcoords", showcoords, envir=.chesstrainer)
+            tab[number.coords,2] <- ifelse(showcoords, .text("yes"), .text("no"))
          }
          .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop="Lorem ipsum", sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
          .addrect(4, 5, col=.get("col.hint"))
@@ -126,11 +138,11 @@
    }
 
    assign("mode", mode, envir=.chesstrainer)
-   assign("coords", coords, envir=.chesstrainer)
    assign("timed", timed, envir=.chesstrainer)
    assign("zenmode", zenmode, envir=.chesstrainer)
    assign("x2y2", x2y2, envir=.chesstrainer)
    assign("score", score, envir=.chesstrainer)
+   assign("lasteval", lasteval, envir=.chesstrainer)
 
    return()
 
@@ -264,7 +276,7 @@
 
          hit <- xy1[1] >= movestoshow.box[1] & xy1[2] >= movestoshow.box[2] & xy1[1] <= movestoshow.box[3] & xy1[2] <= movestoshow.box[4]
          if (hit) {
-            movestoshow <- .updateslider(xy2[1], movestoshow.ypos, oldval=movestoshow, xlim=movestoshow.xpos, range=c(1,240), round=TRUE, cex=cex*cex.mult)
+            movestoshow <- .updateslider(xy2[1], movestoshow.ypos, oldval=movestoshow, xlim=movestoshow.xpos, range=c(0,20), round=TRUE, cex=cex*cex.mult)
             next
          }
 
@@ -307,8 +319,9 @@
 
 }
 
-.sfsettings <- function(sfproc, sfrun, sfpath, depth1, depth2, depth3, sflim, multipv1, multipv2, threads, hash, hintdepth, monthssfcache) {
+.sfsettings <- function(sfproc, sfrun, sfpath, usesfcache, depth1, depth2, depth3, sflim, multipv1, multipv2, threads, hash, hintdepth, monthssfcache) {
 
+   lang       <- .get("lang")
    col.bg     <- .get("col.bg")
    col.help   <- .get("col.help")
    col.border <- .get("col.border")
@@ -333,6 +346,7 @@
 
    text(title.xpos, title.ypos[1], .text("sfpath", sfpath2), pos=4, cex=cex, family=font.mono, col=col.help, font=2)
    text(title.xpos, title.ypos[2], .text("sfrunning"),       pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(5.2,        title.ypos[2], .text("usecacheshort:"),  pos=4, cex=cex, family=font.mono, col=col.help, font=2)
    text(title.xpos, title.ypos[3], .text("depth1"),          pos=4, cex=cex, family=font.mono, col=col.help, font=2)
    text(5.2,        title.ypos[3], .text("multipv1"),        pos=4, cex=cex, family=font.mono, col=col.help, font=2)
    text(title.xpos, title.ypos[4], .text("depth2"),          pos=4, cex=cex, family=font.mono, col=col.help, font=2)
@@ -352,6 +366,19 @@
    sfrun.box  <- list()
    for (i in seq_along(sfrun.txt)) {
       sfrun.box[[i]] <- .drawbutton(sfrun.xpos[i], sfrun.ypos, text=sfrun.txt[i], len=max(nchar(sfrun.txt)), on=sfrun.on[i], cex=cex)
+   }
+
+   usesfcache.opts <- c(TRUE, TRUE)
+   if (lang == "en")
+      usesfcache.xpos <- 6.8 + 0.6 * (seq_along(usesfcache.opts) - 1)
+   if (lang == "de")
+      usesfcache.xpos <- 7.1 + 0.7 * (seq_along(usesfcache.opts) - 1)
+   usesfcache.ypos <- title.ypos[2]
+   usesfcache.txt  <- c(.text("yes"), .text("no"))
+   usesfcache.on   <- c(usesfcache, !usesfcache)
+   usesfcache.box  <- list()
+   for (i in seq_along(usesfcache.txt)) {
+      usesfcache.box[[i]] <- .drawbutton(usesfcache.xpos[i], usesfcache.ypos, text=usesfcache.txt[i], len=max(nchar(usesfcache.txt)), on=usesfcache.on[i], cex=cex)
    }
 
    depth1.xpos <- c(1.7,4.5)
@@ -529,15 +556,35 @@
             next
          }
 
+         hit <- sapply(usesfcache.box, function(coords) xy1[1] >= coords[1] & xy1[2] >= coords[2] & xy1[1] <= coords[3] & xy1[2] <= coords[4])
+         if (any(hit)) {
+            i <- which(hit)
+            if (usesfcache.on[i])
+               next
+            usesfcache.on <- !usesfcache.on
+            for (i in seq_along(usesfcache.txt)) {
+               .drawbutton(usesfcache.xpos[i], usesfcache.ypos, text=usesfcache.txt[i], len=max(nchar(usesfcache.txt)), on=usesfcache.on[i], cex=cex)
+            }
+            next
+         }
+
          hit <- xy1[1] >= depth1.box[1] & xy1[2] >= depth1.box[2] & xy1[1] <= depth1.box[3] & xy1[2] <= depth1.box[4]
          if (hit) {
             depth1 <- .updateslider(xy2[1], depth1.ypos, oldval=depth1, xlim=depth1.xpos, range=c(1,50), round=TRUE, cex=cex*cex.mult)
+            if (depth1 > depth2) {
+               xnew <- (depth1 - 1) * (depth1.xpos[2] - depth1.xpos[1]) / (50 - 1) + depth1.xpos[1]
+               depth2 <- .updateslider(xnew, depth2.ypos, oldval=depth2, xlim=depth2.xpos, range=c(1,50), round=TRUE, cex=cex*cex.mult)
+            }
             next
          }
 
          hit <- xy1[1] >= depth2.box[1] & xy1[2] >= depth2.box[2] & xy1[1] <= depth2.box[3] & xy1[2] <= depth2.box[4]
          if (hit) {
             depth2 <- .updateslider(xy2[1], depth2.ypos, oldval=depth2, xlim=depth2.xpos, range=c(1,50), round=TRUE, cex=cex*cex.mult)
+            if (depth2 < depth1) {
+               xnew <- (depth2 - 1) * (depth2.xpos[2] - depth2.xpos[1]) / (50 - 1) + depth2.xpos[1]
+               depth1 <- .updateslider(xnew, depth1.ypos, oldval=depth1, xlim=depth1.xpos, range=c(1,50), round=TRUE, cex=cex*cex.mult)
+            }
             next
          }
 
@@ -634,7 +681,11 @@
    if (sfrun)
       .sf.setoptions(sfproc, threads, hash)
 
-   out <- list(sfproc=sfproc, sfrun=sfrun, sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, monthssfcache=monthssfcache)
+   usesfcache <- usesfcache.on[1]
+
+   assign("usesfcache", usesfcache, envir=.chesstrainer)
+
+   out <- list(sfproc=sfproc, sfrun=sfrun, sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, monthssfcache=monthssfcache, usesfcache=usesfcache)
 
    #.erase(1, 1, 9, 9)
 
@@ -783,6 +834,7 @@
                next
             }
             .drawbutton(speeds.xpos[i], speeds.ypos, text=speeds.txt[i], len=max(nchar(speeds.txt)), on=speeds.on[i], cex=cex)
+            speeds <- paste0(speeds.opts[speeds.on], collapse=",")
             next
          }
 
@@ -795,6 +847,7 @@
                next
             }
             .drawbutton(ratings.xpos[i], ratings.ypos, text=ratings.txt[i], len=max(nchar(ratings.txt)), on=ratings.on[i], cex=cex)
+            ratings <- paste0(ratings.opts[ratings.on], collapse=",")
             next
          }
 
@@ -807,6 +860,7 @@
             for (i in seq_along(lichessdb.txt)) {
                .drawbutton(lichessdb.xpos[i], lichessdb.ypos, text=lichessdb.txt[i], len=max(nchar(lichessdb.txt)), on=lichessdb.on[i], cex=cex)
             }
+            lichessdb <- lichessdb.opts[lichessdb.on]
             next
          }
 
@@ -857,6 +911,7 @@
             for (i in seq_along(invertbar.txt)) {
                .drawbutton(invertbar.xpos[i], invertbar.ypos, text=invertbar.txt[i], len=max(nchar(invertbar.txt)), on=invertbar.on[i], cex=cex)
             }
+            invertbar <- invertbar.on[2]
             next
          }
 
@@ -873,7 +928,6 @@
                next
             }
             uselicache <- .get("uselicache")
-            contliquery <- .get("contliquery")
             assign("uselicache", FALSE, envir=.chesstrainer)
             assign("mode", "", envir=.chesstrainer)
             res.li <- .liquery(pos=.get("pos"), flip=FALSE, sidetoplay="w", sidetoplaystart="w", i=1, isonline=isonline, lichessdb="lichess", token=tmp, speeds="blitz,rapid,classical", ratings="1200,1400,1600,1800", barlen=50, invertbar=FALSE, texttop="", tokencheck=TRUE)
@@ -895,16 +949,27 @@
 
       }
 
+      if (identical(resp, "i")) {
+         uselicache <- .get("uselicache")
+         contliquery <- .get("contliquery")
+         assign("uselicache", FALSE, envir=.chesstrainer)
+         assign("mode", "", envir=.chesstrainer)
+         assign("contliquery", TRUE, envir=.chesstrainer)
+         .liquery(.get("pos"), flip=FALSE, sidetoplay="w", sidetoplaystart="w", i=1, isonline=isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop="", showout=TRUE, showlibar=FALSE)
+         assign("uselicache", uselicache, envir=.chesstrainer)
+         assign("mode", mode, envir=.chesstrainer)
+         assign("contliquery", contliquery, envir=.chesstrainer)
+         next
+      }
+
       if (identical(resp, "F8") || identical(resp, "\r") || identical(resp, "ctrl-J") || identical(resp, "q") || identical(resp, "\033") || identical(resp, "ctrl-[") || identical(resp, " "))
          break
 
    }
 
-   speeds     <- paste0(speeds.opts[speeds.on],   collapse=",")
-   ratings    <- paste0(ratings.opts[ratings.on], collapse=",")
-   lichessdb  <- lichessdb.opts[lichessdb.on]
    uselicache <- uselicache.on[1]
-   invertbar  <- invertbar.on[2]
+
+   assign("uselicache", uselicache, envir=.chesstrainer)
 
    out <- list(speeds=speeds, ratings=ratings, lichessdb=lichessdb, uselicache=uselicache, barlen=barlen, monthslicache=monthslicache, invertbar=invertbar, token=token)
 
@@ -1008,7 +1073,7 @@
 
    click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.mousedownfun, onKeybd=.keyfun)
 
-   if (identical(click, "L")) {
+   if (identical(click, "ctrl-L")) {
       if (lang == "de") {
          lang <- "en"
       } else {

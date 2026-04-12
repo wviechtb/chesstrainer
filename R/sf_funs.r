@@ -80,38 +80,169 @@
 
 }
 
-.sf.eval <- function(sfproc, sfrun, depth, multipv, sflim, fen, progbar=FALSE, usesfcache=FALSE) {
+.sf.eval <- function(sfproc, sfrun, depth, multipv=5, sflim=NA, fen, progbar=FALSE, compmove=FALSE, usecloud=FALSE) {
 
-   if (usesfcache) {
+   getcloudeval <- FALSE
+   usesfcache <- .get("usesfcache")
+   files.to.remove <- NULL
 
-      files.to.remove <- NULL
+   if (!compmove) {
+
+      # get the names of all cached files without the leading '<depth>_' part and get the corresponding depths
       cachedir <- .get("cachedir")
-      files <- list.files(file.path(cachedir, "stockfish"), pattern=".rds$")
-      filessplit <- strsplit(files, "_", fixed=TRUE)
+      cachefiles <- list.files(file.path(cachedir, "stockfish"), pattern=".rds$")
+      filessplit <- strsplit(cachefiles, "_", fixed=TRUE)
+      fileswoutdepth <- sapply(filessplit, function(x) x[2], USE.NAMES=FALSE)
       depths <- as.numeric(sapply(filessplit, function(x) x[1]))
-      fileswoutdepth  <- sapply(filessplit, function(x) x[2], USE.NAMES=FALSE)
-      fenfilename <- .fenpart(fen, parts=1:5) # remove the fullmove number
+
+      # construct the filename for the current FEN
+      fenfilename <- .fenpart(fen, parts=1:5) # remove the fullmove number from the FEN
       fenfilename <- gsub(" ", "%20", fenfilename, fixed=TRUE)
       fenfilename <- gsub("/", "%2F", fenfilename, fixed=TRUE)
-      fenfilename <- paste0(fenfilename, ".rds")
-      if (fenfilename %in% fileswoutdepth) {
-         depths <- depths[fenfilename == fileswoutdepth]
-         pos <- which(fenfilename == fileswoutdepth)[which.max(depths)]
-         file <- file.path(cachedir, "stockfish", files[pos])
-         if (depths[which.max(depths)] >= depth) { # read in the cache file if it is of sufficient depth
-            out <- readRDS(file)
-            lastmod <- file.mtime(file)
-            if (difftime(Sys.time(), lastmod, units="days") > 0.5)
-               Sys.setFileTime(file, Sys.time()) # touch the file if its modification time was more than 1/2 day ago
-            out$sfproc <- sfproc
-            out$sfrun <- sfrun
-            assign("depth", depths[which.max(depths)], envir=.chesstrainer)
-            return(out)
-         } else {
-            # lower depth cache file(s)
-            pos <- which(fenfilename == fileswoutdepth)
-            files.to.remove <- file.path(cachedir, "stockfish", files[pos])
+      fenfilename.rds <- paste0(fenfilename, ".rds")
+
+      if (!usesfcache) {
+         if (fenfilename.rds %in% fileswoutdepth) {
+            # cached file(s) that should be removed
+            pos <- which(fenfilename.rds == fileswoutdepth)
+            files.to.remove <- file.path(cachedir, "stockfish", cachefiles[pos])
          }
+         fileswoutdepth <- ""
+      }
+
+      if (fenfilename.rds %in% fileswoutdepth) { # if there is at least one cached file for the current FEN
+
+         # get the depths of all cached files for the current FEN
+         depths <- depths[fenfilename.rds == fileswoutdepth]
+
+         # determine the largest depth that is cached
+         maxdepth <- max(depths)
+
+         # read in the cached file with the largest depth
+         pos <- which(fenfilename.rds == fileswoutdepth)[which.max(depths)]
+         file <- file.path(cachedir, "stockfish", cachefiles[pos])
+         out <- readRDS(file)
+
+         # determine if the cached file is a cloud evaluation
+         iscloud <- isTRUE(out$cloud)
+
+         if (!usecloud)
+            iscloud <- TRUE
+
+         if (iscloud && maxdepth >= depth) { # if maxdepth >= depth, use the cached file
+
+            # touch the file if its modification time was more than 1/2 day ago
+            if (difftime(Sys.time(), file.mtime(file), units="days") > 0.5)
+               Sys.setFileTime(file, Sys.time())
+
+            # return the cached evaluation
+            out$sfproc <- sfproc
+            out$sfrun  <- sfrun
+            assign("depth", maxdepth, envir=.chesstrainer)
+            return(out)
+
+         } else { # if maxdepth is < depth, need to either use Stockfish or get the cloud evaluation
+
+            # cached file(s) that should be removed
+            pos <- which(fenfilename.rds == fileswoutdepth)
+            files.to.remove <- file.path(cachedir, "stockfish", cachefiles[pos])
+
+            if (usecloud)
+               getcloudeval <- TRUE
+
+         }
+
+      } else { # if there is no cached file for the current FEN, then either use Stockfish or get the cloud evaluation
+
+         if (usecloud)
+            getcloudeval <- TRUE
+
+      }
+
+   }
+
+   if (getcloudeval) {
+
+      # https://lichess.org/api#tag/analysis/GET/api/cloud-eval
+
+      url <- paste0("https://lichess.org/api/cloud-eval?multiPv=5&fen=", fenfilename)
+
+      lastapirequest <- .get("lastapirequest")
+
+      # ensure that there are at least 3 seconds between each API request
+
+      while (proc.time()[[3]] - lastapirequest < 3)
+         Sys.sleep(0.1)
+
+      out <- try(VERB("GET", url, content_type("application/octet-stream"), timeout(2)), silent=TRUE)
+
+      if (inherits(out, "try-error")) {
+         Sys.sleep(4)
+         out <- try(VERB("GET", url, content_type("application/octet-stream"), timeout(2)), silent=TRUE)
+      }
+
+      assign("lastapirequest", proc.time()[[3]], envir=.chesstrainer)
+
+      if (inherits(out, "try-error")) {
+         .texttop(.text("noconnect"), sleep=1.5)
+         getcloudeval <- FALSE
+      }
+
+      if (getcloudeval && out$status == 429) {
+         .texttop(.text("ratelimit"))
+         getcloudeval <- FALSE
+      }
+
+      if (getcloudeval && !is.null(content(out)$error)) {
+         .texttop(.text("posnotfound"))
+         getcloudeval <- FALSE
+      }
+
+   }
+
+   if (getcloudeval) {
+
+      # get the depth of the cloud evaluation
+      maxdepth <- content(out)$depth
+
+      if (!sfrun || maxdepth >= depth) { # if Stockfish is not running or maxdepth is >= request depth, use the cloud evaluation
+
+         eval     <- NULL
+         bestmove <- list()
+
+         sidetoplay <- strsplit(fen, " ", fixed=TRUE)[[1]][2]
+         multipv <- length(content(out)$pvs)
+
+         for (i in 1:multipv) {
+            bestmove[[i]] <- strsplit(content(out)$pvs[[i]]$moves, " ", fixed=TRUE)[[1]]
+            mateinx <- content(out)$pvs[[i]]$mate
+            if (is.null(mateinx)) {
+               eval <- c(eval, content(out)$pvs[[i]]$cp / 100)
+            } else {
+               tmp <- sign(mateinx) * 99.9
+               if (sidetoplay == "b")
+                  tmp <- -tmp
+               eval <- c(eval, tmp)
+            }
+         }
+
+         if (!is.null(files.to.remove))
+            file.remove(files.to.remove)
+
+         # no cloud evals for mates and stalemates as far as I can tell, so this is handled by !is.null(content(out)$error) above
+
+         out <- list(eval=eval, bestmove=bestmove, matetype="none")
+         out$cloud  <- TRUE
+
+         depthfenfilename <- paste0(maxdepth, "_", fenfilename.rds)
+         saveRDS(out, file=file.path(cachedir, "stockfish", depthfenfilename))
+
+         out$sfproc <- sfproc
+         out$sfrun  <- sfrun
+         assign("depth", maxdepth, envir=.chesstrainer)
+
+         return(out)
+
       }
 
    }
@@ -269,13 +400,18 @@
    if (!is.na(sflim))
       bestmove <- bestmoveatend
 
-   if (usesfcache) {
-      depthfenfilename <- paste0(depth, "_", fenfilename)
-      saveRDS(list(eval=eval, bestmove=bestmove, matetype="none"), file=file.path(cachedir, "stockfish", depthfenfilename))
-      if (!is.null(files.to.remove))
-         file.remove(files.to.remove)
+   out <- list(eval=eval, bestmove=bestmove, matetype="none")
+
+   if (!is.null(files.to.remove))
+      file.remove(files.to.remove)
+
+   if (!compmove) {
+      depthfenfilename <- paste0(depth, "_", fenfilename.rds)
+      saveRDS(out, file=file.path(cachedir, "stockfish", depthfenfilename))
    }
 
-   return(list(eval=eval, bestmove=bestmove, matetype="none", sfproc=sfproc, sfrun=sfrun))
+   out$sfproc <- sfproc
+   out$sfrun  <- sfrun
+   return(out)
 
 }

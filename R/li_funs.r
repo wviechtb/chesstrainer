@@ -59,6 +59,8 @@
 
    } else {
 
+      # https://lichess.org/api#tag/opening-explorer
+
       if (lichessdb == "lichess") {
          url <- paste0("https://explorer.lichess.org/lichess?topGames=0&recentGames=0&speeds=", speeds, "&ratings=", ratings, "&")
       } else {
@@ -85,38 +87,34 @@
       assign("lastapirequest", proc.time()[[3]], envir=.chesstrainer)
 
       if (inherits(out, "try-error")) {
-
          .texttop(.text("noconnect"), sleep=1.5)
          .texttop(texttop)
          return(res)
-
-      } else {
-
-         if (out$status == 429) {
-            .texttop(.text("ratelimit"))
-            return(res)
-         }
-
-         out <- do.call(rbind, lapply(content(out)$moves, function(x) data.frame(move=x$uci, white=x$white, draw=x$draws, black=x$black)))
-
-         if (tokencheck) {
-            if (is.null(out)) {
-               return(res)
-            } else {
-               return(list(out=TRUE))
-            }
-         }
-
-         if (is.null(out)) {
-            if (!contliquery) {
-               .texttop(.text("posnotfound"), sleep=1.5)
-               .texttop(texttop)
-            }
-         }
-
-         saveRDS(out, file=file.path(cachedir, lichessdb, filename))
-
       }
+
+      if (out$status == 429) {
+         .texttop(.text("ratelimit"))
+         return(res)
+      }
+
+      out <- do.call(rbind, lapply(content(out)$moves, function(x) data.frame(move=x$uci, white=x$white, draw=x$draws, black=x$black)))
+
+      if (tokencheck) {
+         if (is.null(out)) {
+            return(res)
+         } else {
+            return(list(out=TRUE))
+         }
+      }
+
+      if (is.null(out)) {
+         if (!contliquery) {
+            .texttop(.text("posnotfound"), sleep=1.5)
+            .texttop(texttop)
+         }
+      }
+
+      saveRDS(out, file=file.path(cachedir, lichessdb, filename))
 
    }
 

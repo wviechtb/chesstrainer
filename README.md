@@ -3,19 +3,19 @@ chesstrainer: An R Package to Create and Test Yourself on Chess Lines
 
 ## Description
 
-The main purpose of the `chesstrainer` package is to create sequences of moves (lines), save them, and then test yourself on these sequences. This is especially useful for training openings, but can also be used for creating chess puzzles or training tactics. Can you find the forced mate below?
+The main purpose of the `chesstrainer` package is to create sequences of moves (lines), save them, and then test yourself on these sequences by repeating the moves from memory. This is especially useful for training openings, but can also be used for creating chess puzzles or training tactics. Can you find the forced mate below?
 
 ![](man/figures/screenshot.png "Find the mate in three!")
 
 ## Features
 
-- provides an 'add mode' for entering sequences and a 'test mode' to practice these sequences
+- provides an *add mode* for entering sequences and a *test mode* to practice these sequences
 - tracks your performance history for each sequence
-- sequences are presented randomly with higher probabilities for those with poorer performance
-- alternatively sequences can be chosen based on play frequency, last play date, or difficulty
-- automatically repeat sequences when a wrong move was made (optionally)
-- add comments to sequences or particular moves (e.g., to name variations, provide hints, or other information)
-- add annotations (arrows, circles, glyphs) to sequences, which can also be replayed in test mode
+- presents sequences randomly with higher probabilities for those with poorer performance
+- alternatively can choose sequences based on play frequency, last play date, or difficulty
+- automatically repeats sequences when a wrong move was made
+- can add comments to sequences or particular moves (e.g., to name variations, provide hints, or other information)
+- can add annotations (arrows, circles, and glyphs) to sequences
 - select sequences to practice based on their name, performance, play frequency, last play date, or moves/position
 - a timed mode can be used to practice sequences under time pressure
 - a board editor allows quickly setting up advanced starting positions or chess puzzles
@@ -26,12 +26,12 @@ The main purpose of the `chesstrainer` package is to create sequences of moves (
   - automatically obtain and show position evaluations for each move in a sequence
   - show the best move(s) for a given position
   - can play against Stockfish in 'play mode'
-- can query the Lichess opening database and play against it
+- can query the Lichess opening database
 - can adjust colors, text sizes, and various other settings
 - can manage multiple sequence directories
 - can toggle the language (English or German)
-- trainer plays move and capture sounds
-- and keeps track of your session history
+- can play move and capture sounds
+- keeps track of your session history
 
 ## Installation
 
@@ -40,6 +40,7 @@ The development version of the `chesstrainer` package can be installed with:
 install.packages("remotes")
 remotes::install_github("wviechtb/chesstrainer")
 ```
+The same commands can also be used to update the package to the latest version.
 
 ## Play
 

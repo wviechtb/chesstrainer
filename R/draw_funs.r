@@ -8,7 +8,7 @@
 
 .drawcoords <- function(x, y, flip, adj=0) {
 
-   if (.get("coords")) {
+   if (.get("showcoords")) {
       cex.coords <- .get("cex.coords")
       col.square.l <- .get("col.square.l")
       col.square.d <- .get("col.square.d")
@@ -93,6 +93,7 @@
    }
 
    .drawmatdiff(pos, flip, force=TRUE)
+   assign("lasttotals", NULL, envir=.chesstrainer)
 
    return()
 
@@ -171,8 +172,10 @@
       .drawsideindicator(sidetoplay, flip=flip)
    }
 
-   assign("lasttotals", NULL, envir=.chesstrainer)
+   assign("lasteval", NULL, envir=.chesstrainer)
    assign("matdiff", NULL, envir=.chesstrainer)
+   #if (clearlasttotals)
+   #   assign("lasttotals", NULL, envir=.chesstrainer)
 
    return()
 
@@ -1406,7 +1409,7 @@
 
 }
 
-.drawevalbar <- function(val=NA_real_, last=NA_real_, i=1, starteval=NA_real_, flip=FALSE, clear=FALSE, showeval=TRUE, evalsteps=10) {
+.drawevalbar <- function(eval=NA_real_, i=1, starteval=NA_real_, flip=FALSE, clear=FALSE, showeval=TRUE, evalsteps=10) {
 
    col.bg  <- .get("col.bg")
    xpos    <- .get("drawevalbar.xpos")
@@ -1415,24 +1418,30 @@
    if (!showeval) {
       rect(xpos, 1, xpos+indsize, 9, border=NA, col=col.bg)
       .drawdepth(clear=TRUE)
+      assign("lasteval", NULL, envir=.chesstrainer)
       return()
    }
 
-   if (is.null(val))
-      val <- NA_real_
+   if (is.null(eval))
+      eval <- NA_real_
 
-   if (is.null(last))
-      last <- NA_real_
+   lasteval <- .get("lasteval")
 
-   if (i == 1 && (length(last) == 0L || is.na(last)))
-      last <- starteval
+   if (is.null(lasteval))
+      lasteval <- NA_real_
 
-   if (i == 1 && (length(val) == 0L || is.na(val)))
-      val <- starteval
+   if (i == 1 && (length(lasteval) == 0L || is.na(lasteval)))
+      lasteval <- starteval
 
-   if (clear || length(val) == 0L || is.na(val)) {
+   if (i == 1 && (length(eval) == 0L || is.na(eval)))
+      eval <- starteval
+
+   assign("lasteval", eval, envir=.chesstrainer)
+
+   if (clear || length(eval) == 0L || is.na(eval)) {
       rect(xpos, 1, xpos+indsize, 9, border=NA, col=col.bg)
       .drawdepth(clear=TRUE)
+      assign("lasteval", NULL, envir=.chesstrainer)
       return()
    }
 
@@ -1441,59 +1450,59 @@
    col.side.b <- .get("col.side.b")
    cex.eval   <- .get("cex.eval")
 
-   maxval <- 9.9
-   ismate <- abs(val) >= 99.9
-   valtxt <- .fmtx(val, digits=1)
-   val <- min(max(val, -maxval), maxval)
+   maxeval <- 9.9
+   ismate <- abs(eval) >= 99.9
+   evaltxt <- .fmtx(eval, digits=1)
+   eval <- min(max(eval, -maxeval), maxeval)
    if (ismate) {
-      val <- (val + maxval) / (2*maxval) * 8 + 1 # either 1 or 9
+      eval <- (eval + maxeval) / (2*maxeval) * 8 + 1 # either 1 or 9
    } else {
-      val <- (val + maxval) / (2*maxval) * 7.8 + 1.1 # ranges from 1.1 to 8.9
+      eval <- (eval + maxeval) / (2*maxeval) * 7.8 + 1.1 # ranges from 1.1 to 8.9
    }
 
-   if (length(last) == 0L)
-      last <- NA_real_
+   if (length(lasteval) == 0L)
+      lasteval <- NA_real_
 
-   last <- min(max(last, -maxval), maxval)
-   last <- (last + maxval) / (2*maxval) * 8 + 1
+   lasteval <- min(max(lasteval, -maxeval), maxeval)
+   lasteval <- (lasteval + maxeval) / (2*maxeval) * 8 + 1
 
    props <- seq(0, 1, length.out=evalsteps)^(1/5)
 
    if (flip) {
-      if (is.na(last)) {
-         rect(xpos, 10-val, xpos+indsize, 9, border=NA, col=col.side.w)
-         rect(xpos, 1, xpos+indsize, 10-val, border=NA, col=col.side.b)
+      if (is.na(lasteval)) {
+         rect(xpos, 10-eval, xpos+indsize, 9, border=NA, col=col.side.w)
+         rect(xpos, 1, xpos+indsize, 10-eval, border=NA, col=col.side.b)
       } else {
-         rect(xpos, 10-last, xpos+indsize, 9, border=NA, col=col.side.w)
-         rect(xpos, 1, xpos+indsize, 10-last, border=NA, col=col.side.b)
-         vals <- last + (val - last) * props
-         col.side.bar <- ifelse(val > last, col.side.w, col.side.b)
+         rect(xpos, 10-lasteval, xpos+indsize, 9, border=NA, col=col.side.w)
+         rect(xpos, 1, xpos+indsize, 10-lasteval, border=NA, col=col.side.b)
+         evals <- lasteval + (eval - lasteval) * props
+         col.side.bar <- ifelse(eval > lasteval, col.side.w, col.side.b)
          for (i in 2:evalsteps) {
-            rect(xpos, 10-vals[i-1], xpos+indsize, 10-vals[i], border=NA, col=col.side.bar)
+            rect(xpos, 10-evals[i-1], xpos+indsize, 10-evals[i], border=NA, col=col.side.bar)
          }
       }
-      if (val > 5) {
-         text(xpos + indsize/2, 8.9, valtxt, cex=cex.eval, col=col.side.b)
+      if (eval > 5) {
+         text(xpos + indsize/2, 8.9, evaltxt, cex=cex.eval, col=col.side.b)
       } else {
-         text(xpos + indsize/2, 1.1, valtxt, cex=cex.eval, col=col.side.w)
+         text(xpos + indsize/2, 1.1, evaltxt, cex=cex.eval, col=col.side.w)
       }
    } else {
-      if (is.na(last)) {
-         rect(xpos, val, xpos+indsize, 9, border=NA, col=col.side.b)
-         rect(xpos, 1, xpos+indsize, val, border=NA, col=col.side.w)
+      if (is.na(lasteval)) {
+         rect(xpos, eval, xpos+indsize, 9, border=NA, col=col.side.b)
+         rect(xpos, 1, xpos+indsize, eval, border=NA, col=col.side.w)
       } else {
-         rect(xpos, last, xpos+indsize, 9, border=NA, col=col.side.b)
-         rect(xpos, 1, xpos+indsize, last, border=NA, col=col.side.w)
-         vals <- last + (val - last) * props
-         col.side.bar <- ifelse(val > last, col.side.w, col.side.b)
+         rect(xpos, lasteval, xpos+indsize, 9, border=NA, col=col.side.b)
+         rect(xpos, 1, xpos+indsize, lasteval, border=NA, col=col.side.w)
+         evals <- lasteval + (eval - lasteval) * props
+         col.side.bar <- ifelse(eval > lasteval, col.side.w, col.side.b)
          for (i in 2:evalsteps) {
-            rect(xpos, vals[i-1], xpos+indsize, vals[i], border=NA, col=col.side.bar)
+            rect(xpos, evals[i-1], xpos+indsize, evals[i], border=NA, col=col.side.bar)
          }
       }
-      if (val > 5) {
-         text(xpos + indsize/2, 1.1, valtxt, cex=cex.eval, col=col.side.b)
+      if (eval > 5) {
+         text(xpos + indsize/2, 1.1, evaltxt, cex=cex.eval, col=col.side.b)
       } else {
-         text(xpos + indsize/2, 8.9, valtxt, cex=cex.eval, col=col.side.w)
+         text(xpos + indsize/2, 8.9, evaltxt, cex=cex.eval, col=col.side.w)
       }
    }
 
@@ -1615,7 +1624,7 @@
 
    if (i == 1 && is.na(evalval[1])) {
       fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
-      res.sf <- .sf.eval(sfproc, sfrun, depth, multipv=5, sflim=NA, fen, usesfcache=TRUE)
+      res.sf <- .sf.eval(sfproc=sfproc, sfrun=sfrun, depth=depth, fen=fen)
       evalval  <- res.sf$eval[1:multipv]
       bestmove <- res.sf$bestmove[1:multipv]
       bestmove[.is.null(bestmove)] <- ""

@@ -478,10 +478,6 @@
 
    for (j in 1:nmoves) {
 
-      # TODO: transform Lichess castling moves here?
-      #if (move[[j]][1] == "e" && move[[j]][2] %in% c("1","8")) {
-      #}
-
       if (flip) {
          letters8 <- letters[8:1]
          x1 <- as.numeric(which(move[[j]][2] == 8:1))
@@ -500,6 +496,46 @@
          piece <- substr(pos[x1,y1], 2, 2)
       }
 
+      # change 960-compatible castling moves (king on top of rook) to standard chess castling moves
+
+      if (piece == "K") {
+         if (flip) {
+            if (colorpiece == "WK" && identical(c(x1,y1), c(8,4)) && identical(c(x2,y2), c(8,1))) {
+               y2 <- 2
+               move[[j]][3] <- "g"
+            }
+            if (colorpiece == "WK" && identical(c(x1,y1), c(8,4)) && identical(c(x2,y2), c(8,8))) {
+               y2 <- 6
+               move[[j]][3] <- "c"
+            }
+            if (colorpiece == "BK" && identical(c(x1,y1), c(1,4)) && identical(c(x2,y2), c(1,1))) {
+               y2 <- 2
+               move[[j]][3] <- "g"
+            }
+            if (colorpiece == "BK" && identical(c(x1,y1), c(1,4)) && identical(c(x2,y2), c(1,8))) {
+               y2 <- 6
+               move[[j]][3] <- "c"
+            }
+         } else {
+            if (colorpiece == "WK" && identical(c(x1,y1), c(1,5)) && identical(c(x2,y2), c(1,8))) {
+               y2 <- 7
+               move[[j]][3] <- "g"
+            }
+            if (colorpiece == "WK" && identical(c(x1,y1), c(1,5)) && identical(c(x2,y2), c(1,1))) {
+               y2 <- 3
+               move[[j]][3] <- "c"
+            }
+            if (colorpiece == "BK" && identical(c(x1,y1), c(8,5)) && identical(c(x2,y2), c(8,8))) {
+               y2 <- 7
+               move[[j]][3] <- "g"
+            }
+            if (colorpiece == "BK" && identical(c(x1,y1), c(8,5)) && identical(c(x2,y2), c(8,1))) {
+               y2 <- 3
+               move[[j]][3] <- "c"
+            }
+         }
+      }
+
       if (j == 1) {
          bestx1 <- x1
          besty1 <- y1
@@ -512,22 +548,22 @@
       rochade <- ""
 
       if (flip) {
-         if (identical(c(x1,y1), c(8,4)) && pos[9-x1,9-y1] == "WK" && identical(c(x2,y2), c(8,2)))
+         if (colorpiece == "WK" && identical(c(x1,y1), c(8,4)) && identical(c(x2,y2), c(8,2)))
             rochade <- "0-0"
-         if (identical(c(x1,y1), c(8,4)) && pos[9-x1,9-y1] == "WK" && identical(c(x2,y2), c(8,6)))
+         if (colorpiece == "WK" && identical(c(x1,y1), c(8,4)) && identical(c(x2,y2), c(8,6)))
             rochade <- "0-0-0"
-         if (identical(c(x1,y1), c(1,4)) && pos[9-x1,9-y1] == "BK" && identical(c(x2,y2), c(1,2)))
+         if (colorpiece == "BK" && identical(c(x1,y1), c(1,4)) && identical(c(x2,y2), c(1,2)))
             rochade <- "0-0"
-         if (identical(c(x1,y1), c(1,4)) && pos[9-x1,9-y1] == "BK" && identical(c(x2,y2), c(1,6)))
+         if (colorpiece == "BK" && identical(c(x1,y1), c(1,4)) && identical(c(x2,y2), c(1,6)))
             rochade <- "0-0-0"
       } else {
-         if (identical(c(x1,y1), c(1,5)) && pos[x1,y1] == "WK" && identical(c(x2,y2), c(1,7)))
+         if (colorpiece == "WK" && identical(c(x1,y1), c(1,5)) && identical(c(x2,y2), c(1,7)))
             rochade <- "0-0"
-         if (identical(c(x1,y1), c(1,5)) && pos[x1,y1] == "WK" && identical(c(x2,y2), c(1,3)))
+         if (colorpiece == "WK" && identical(c(x1,y1), c(1,5)) && identical(c(x2,y2), c(1,3)))
             rochade <- "0-0-0"
-         if (identical(c(x1,y1), c(8,5)) && pos[x1,y1] == "BK" && identical(c(x2,y2), c(8,7)))
+         if (colorpiece == "BK" && identical(c(x1,y1), c(8,5)) && identical(c(x2,y2), c(8,7)))
             rochade <- "0-0"
-         if (identical(c(x1,y1), c(8,5)) && pos[x1,y1] == "BK" && identical(c(x2,y2), c(8,3)))
+         if (colorpiece == "BK" && identical(c(x1,y1), c(8,5)) && identical(c(x2,y2), c(8,3)))
             rochade <- "0-0-0"
       }
 
@@ -1223,8 +1259,6 @@
          ucimoves <- paste(paste0(letters[x[,2]], x[,1], letters[x[,4]], x[,3]), collapse=" ")
       }
 
-      #print(ucimoves)
-
       openingmatch <- which(ucimoves == openings$uci)
 
       if (length(openingmatch) >= 1L) {
@@ -1372,6 +1406,8 @@
 
             # add the move in SAN to the sequence
             sub$moves$san <- tmp
+
+            # ensure correct order of variables in sub$moves
             sub$moves <- sub$moves[c("x1","y1","x2","y2","show","move","san","eval","comment","circles","arrows","glyph","fen")]
 
          }

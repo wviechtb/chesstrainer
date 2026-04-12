@@ -110,12 +110,6 @@
                          paste0("Deleting the player '", arg, "' ...")
    ))}
 
-   if (x == "coords") {
-      return(switch(lang,
-                    de = paste0("Koordinaten: ", ifelse(arg, "an", "aus")),
-                         paste0("coordinates: ", ifelse(arg, "on", "off"))
-   ))}
-
    if (x == "san") {
       return(switch(lang,
                     de = paste0("Kurze algebraische Notation: ", ifelse(arg, "an", "aus")),
@@ -617,10 +611,10 @@
                          paste0("Line Width: ", arg)
    ))}
 
-   if (x == "colcexwhich") {
+   if (x == "whichsetting") {
       return(switch(lang,
-                    de = "Farbe oder Gr\U000000F6\U000000DFe \U000000E4ndern (<Nummer> oder <Enter> zum Verlassen): ",
-                         "Change color or size (<number> or <enter> to quit): "
+                    de = "Einstellung w\U000000E4hlen (<Nummer> oder <Enter> zum Verlassen): ",
+                         "Choose setting (<number> or <enter> to quit): "
    ))}
 
    if (x == "colwhich") {
@@ -649,14 +643,20 @@
 
    if (x == "cexsetexpl") {
       return(switch(lang,
-                    de = c("Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Gr\U000000F6\U000000DFe f\U000000FCr die Koordinaten", "Gr\U000000F6\U000000DFe f\U000000FCr den Materialunterschied", "Gr\U000000F6\U000000DFe f\U000000FCr Diagramme", "Gr\U000000F6\U000000DFe f\U000000FCr Text in Glyphen"),
-                         c("Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Size of the coordinates", "Size of the material difference", "Size of plots", "Size of text in glyphs")
+                    de = c("Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Gr\U000000F6\U000000DFe f\U000000FCr die Brettkoordinaten", "Gr\U000000F6\U000000DFe f\U000000FCr den Materialunterschied", "Gr\U000000F6\U000000DFe f\U000000FCr Diagramme", "Gr\U000000F6\U000000DFe f\U000000FCr Text in Glyphen"),
+                         c("Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Size of the board coordinates", "Size of the material difference", "Size of plots", "Size of text in glyphs")
    ))}
 
    if (x == "miscsetexpl") {
       return(switch(lang,
                     de = c("Punktemultiplikator f\U000000FCr fehlerfrei abgeschlossene Sequenzen", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Animationsschritte f\U000000FCr die Bewertungsleiste", "Anzahl der anzuzeigenden n\U000000E4chsten Z\U000000FCge nach Suchen", "Zeit pro Zug im zeitgesteuerten Modus (Sekunden)", "Leerlaufzeit (Sekunden)", "Mindestdauer der Sitzung (Sekunden)", "Pausenanpassung (Sekunden)"),
                          c("Score multiplier for completed sequences without mistakes", "Score penalty for wrong moves", "Score penalty per hint", "Animation steps for the evaluation bar", "Number of next moves to show after searches", "Time per move in timed mode (seconds)", "Idle time (seconds)", "Minimum session time (seconds)", "Pause adjustment (seconds)")
+   ))}
+
+   if (x == "showcoordsexpl") {
+      return(switch(lang,
+                    de = "Brettkoordinaten anzeigen",
+                         "Show board coordinates"
    ))}
 
    if (x == "cexwhich") {
@@ -695,6 +695,12 @@
                          paste0("Continuous analysis: ", ifelse(arg, "On", "Off"))
    ))}
 
+   if (x == "usesfcache") {
+      return(switch(lang,
+                    de = paste0("Positionsbewertungen aus dem Cache abrufen: ", ifelse(arg, "An", "Aus")),
+                         paste0("Get position evaluations from the cache: ", ifelse(arg, "On", "Off"))
+   ))}
+
    if (x == "uselicache") {
       return(switch(lang,
                     de = paste0("Positionsdaten aus dem Cache abrufen: ", ifelse(arg, "An", "Aus")),
@@ -703,8 +709,8 @@
 
    if (x == "contliquery") {
       return(switch(lang,
-                    de = paste0("Kontinuierliche Abfrage der Lichess Datenbank: ", ifelse(arg, "An", "Aus")),
-                         paste0("Continuous query of the Lichess database: ", ifelse(arg, "On", "Off"))
+                    de = paste0("Kontinuierliche Abfrage der Lichess Spieldatenbank: ", ifelse(arg, "An", "Aus")),
+                         paste0("Continuous query of the Lichess games database: ", ifelse(arg, "On", "Off"))
    ))}
 
    if (x == "eval") {
@@ -793,7 +799,7 @@
 
    if (x == "depth2") {
       return(switch(lang,
-                    de = "Berechnungstiefe (tief))",
+                    de = "Berechnungstiefe (tief)",
                          "Calculation depths (deep)"
    ))}
 
@@ -1003,8 +1009,8 @@
 
    if (x == "explsettings") {
       return(switch(lang,
-                    de = c("Sprache", "Spielername", "Modus", "Aktuelles Sequenzverzeichnis", "Selektionsmodus f\U000000FCr Sequenzen", "Zen Modus", "Zeitgesteuerter Modus", "Zeit pro Zug im zeitgesteuerten Modus (Sekunden)", "Exponentenwert", "Multiplikator f\U000000FCr abgeschlossene Sequenzen", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Bewertungsleiste anzuzeigen (Hinzuf\U000000FCgen/Test/Spielen/Analyse)", "Animationsschritte f\U000000FCr die Bewertungsleiste", "Anzahl der anzuzeigenden n\U000000E4chsten Z\U000000FCge nach Suchen", "Koordinaten anzeigen", "Zugumstellungen anzeigen", "Materialunterschied anzeigen", "Kurze algebraische Notation", "Figurensymbole", "Warten zwischen Sequenzen", "Verz\U000000F6gerung zwischen den Z\U000000FCgen (Sekunden)", "Leerlaufzeit (Sekunden)", "Mindestdauer der Sitzung (Sekunden)", "Pausenanpassung (Sekunden)", "Randbreite (unten/links/oben/rechts)", "Randbreite f\U000000FCr Inline-Diagramme", "Linienbreite", "Lautst\U000000E4rke (%)", "Fortschrittsdiagramm nach Sequenzen anzeigen", "Sequenzen nach Fehler wiederholen", "Zielwert f\U000000FCr Punkte", "Schwierigkeitsberechnung (Methode)", "Schwierigkeitsberechnung (Anzahl der letzten Werte)", "Schwierigkeitsberechnung (Mindestanzahl der Werte)", "Stockfish Pfad", "Berechnungstiefe (schnell)", "Berechnungstiefe (tief)", "Berechnungstiefe (spielen)", "Spielmodus-St\U000000E4rke-Limit", "Anzahl der besten Zugvarianten (schnell)", "Anzahl der besten Zugvarianten (tief)", "Anzahl der Threads f\U000000FCr Stockfish", "Hashgr\U000000F6\U000000DFe f\U000000FCr Stockfish", "Hinweistiefe", "Maximales Alter von Cache-Eintr\U000000E4gen (in Monaten)", "Kontinuierliche Analyse"),
-                         c("Language", "Player name", "Mode", "Current sequence directory", "Selection mode for sequences", "Zen mode", "Timed mode", "Time per move in timed mode (seconds)", "Exponent value", "Multiplier for completed sequences", "Score penalty for wrong moves", "Score penalty per hint", "Show evaluation bar (add/test/play/analysis)", "Animation steps for the evaluation bar", "Number of next moves to show after searches", "Show coordinates", "Show move transpositions", "Show material difference", "Short algebraic notation", "Piece symbols", "Wait between sequences", "Delay between moves (seconds)", "Idle time (seconds)", "Minimum session duration (seconds)", "Pause adjustment (seconds)", "Margin width (bottom/left/top/right)", "Margin width for inline graphs", "Line width", "Sound volume (%)", "Show progress graph after sequences", "Repeat sequences after mistake", "Target value for scores", "Difficulty calculation (method)", "Difficulty calculation (number of recent values)", "Difficulty calculation (minimum number of values)", "Stockfish path", "Calculation depth (fast)", "Calculation depth (deep)", "Calculation depth (play)", "Play mode strength limit", "Number of principal variations (fast)", "Number of principal variations (deep)", "Number of threads for Stockfish", "Hash size for Stockfish", "Hint depth", "Maximum age of cache entries (in months)", "Continuous analysis")
+                    de = c("Sprache", "Spielername", "Modus", "Aktuelles Sequenzverzeichnis", "Selektionsmodus f\U000000FCr Sequenzen", "Zen Modus", "Zeitgesteuerter Modus", "Zeit pro Zug im zeitgesteuerten Modus (Sekunden)", "Exponentenwert", "Multiplikator f\U000000FCr abgeschlossene Sequenzen", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Bewertungsleiste anzuzeigen (Hinzuf\U000000FCgen/Test/Spielen/Analyse)", "Animationsschritte f\U000000FCr die Bewertungsleiste", "Anzahl der anzuzeigenden n\U000000E4chsten Z\U000000FCge nach Suchen", "Brettkoordinaten anzeigen", "Zugumstellungen anzeigen", "Materialunterschied anzeigen", "Kurze algebraische Notation", "Figurensymbole", "Warten zwischen Sequenzen", "Verz\U000000F6gerung zwischen den Z\U000000FCgen (Sekunden)", "Leerlaufzeit (Sekunden)", "Mindestdauer der Sitzung (Sekunden)", "Pausenanpassung (Sekunden)", "Randbreite (unten/links/oben/rechts)", "Randbreite f\U000000FCr Inline-Diagramme", "Linienbreite", "Lautst\U000000E4rke (%)", "Fortschrittsdiagramm nach Sequenzen anzeigen", "Sequenzen nach Fehler wiederholen", "Zielwert f\U000000FCr Punkte", "Schwierigkeitsberechnung (Methode)", "Schwierigkeitsberechnung (Anzahl der letzten Werte)", "Schwierigkeitsberechnung (Mindestanzahl der Werte)", "Stockfish Pfad", "Berechnungstiefe (schnell)", "Berechnungstiefe (tief)", "Berechnungstiefe (spielen)", "Spielmodus-St\U000000E4rke-Limit", "Anzahl der besten Zugvarianten (schnell)", "Anzahl der besten Zugvarianten (tief)", "Anzahl der Threads f\U000000FCr Stockfish", "Hashgr\U000000F6\U000000DFe f\U000000FCr Stockfish", "Hinweistiefe", "Maximales Alter von Cache-Eintr\U000000E4gen (in Monaten)", "Kontinuierliche Analyse", "Positionsbewertungen aus dem Cache abrufen"),
+                         c("Language", "Player name", "Mode", "Current sequence directory", "Selection mode for sequences", "Zen mode", "Timed mode", "Time per move in timed mode (seconds)", "Exponent value", "Multiplier for completed sequences", "Score penalty for wrong moves", "Score penalty per hint", "Show evaluation bar (add/test/play/analysis)", "Animation steps for the evaluation bar", "Number of next moves to show after searches", "Show board coordinates", "Show move transpositions", "Show material difference", "Short algebraic notation", "Piece symbols", "Wait between sequences", "Delay between moves (seconds)", "Idle time (seconds)", "Minimum session duration (seconds)", "Pause adjustment (seconds)", "Margin width (bottom/left/top/right)", "Margin width for inline graphs", "Line width", "Sound volume (%)", "Show progress graph after sequences", "Repeat sequences after mistake", "Target value for scores", "Difficulty calculation (method)", "Difficulty calculation (number of recent values)", "Difficulty calculation (minimum number of values)", "Stockfish path", "Calculation depth (fast)", "Calculation depth (deep)", "Calculation depth (play)", "Play mode strength limit", "Number of principal variations (fast)", "Number of principal variations (deep)", "Number of threads for Stockfish", "Hash size for Stockfish", "Hint depth", "Maximum age of cache entries (in months)", "Continuous analysis", "Get position evaluations from the cache")
    ))}
 
    if (x == "comment") {
@@ -1563,6 +1569,12 @@
       return(switch(lang,
                     de = "Cache nutzen",
                          "Use cache"
+   ))}
+
+   if (x == "usecacheshort:") {
+      return(switch(lang,
+                    de = "Cache nutzen: ",
+                         "Use cache:    "
    ))}
 
    if (x == "yes") {

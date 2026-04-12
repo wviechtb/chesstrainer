@@ -14,6 +14,7 @@
 
       txt.general1 <- c(
       "General shortcuts:",
+      "Ctrl-l   - toggle the language (English/German)",
       "<space>  - switch mode (test/add)",
       "\\        - switch to play mode",
       "p        - select a player",
@@ -39,10 +40,8 @@
       "{}       - decrease/increase the margin width",
       "v        - Stockfish evaluation bar on/off",
       "V        - Lichess evaluation bar on/off",
-      "L        - toggle the language (English/German)",
       "W        - wait after completed sequences on/off",
       "K        - show material difference on/off",
-      "C        - show board coordinates on/off",
       "S        - toggle between short and long algebraic notation",
       "P        - toggle between different piece symbols",
       "Ctrl-f   - copy the FEN of the current position to the clipboard",
@@ -95,10 +94,12 @@
       "c        - add a comment to the current move",
       "e and E  - edit the comments / edit the sequence file",
       "h and H  - show the best move according to Stockfish (fast / deep evaluation)",
-      "y        - continuous analysis on/off (also in analysis mode)",
-      "i        - query the Lichess database (also in analysis/play mode)",
+      "L        - get the position evaluation from Lichess",
+      "C        - get position evaluations from the cache on/off",
+      "y        - continuous analysis with Stockfish on/off (also in analysis mode)",
+      "i        - query the Lichess games database (also in analysis/play mode)",
       "I        - get Lichess position information from the cache on/off",
-      "Y        - toggle continuous query of the Lichess database on/off",
+      "Y        - toggle continuous query of the Lichess games database on/off",
       "0        - make the current position the starting position for the sequence",
       "g        - show the evaluation graph (also in play and analysis mode)",
       "T        - show move transpositions on/off",
@@ -120,6 +121,7 @@
 
       txt.general1 <- c(
       "Allgemeine Tastenk\U000000FCrzel:",
+      "Strg-l   - Sprache wechseln (Englisch/Deutsch)",
       "<space>  - Modus wechseln (Test/Hinzuf\U000000FCgen)",
       "\\ oder \U000000E4 - in den Spielmodus wechseln",
       "p        - Spieler ausw\U000000E4hlen",
@@ -145,10 +147,8 @@
       "{}       - Randbreite verringern/erh\U000000F6hen",
       "v        - Stockfish Bewertungsbalken an/aus",
       "V        - Lichess Bewertungsbalken an/aus",
-      "L        - Sprache wechseln (Englisch/Deutsch)",
       "W        - Warten nach abgeschlossenen Sequenzen an/aus",
       "K        - Materialunterschied anzeigen an/aus",
-      "C        - Brettkoordinaten anzeigen an/aus",
       "S        - zwischen kurzer und langer algebraischer Notation wechseln",
       "P        - zwischen verschiedenen Figurensymbolen wechseln",
       "Strg-f   - FEN der aktuellen Stellung in die Zwischenablage kopieren",
@@ -179,10 +179,10 @@
       "Tastenk\U000000FCrzel f\U000000FCr den Test Modus:",
       "h        - einen Tipp bekommen (kann zweimal gew\U000000E4hlt werden)",
       "t        - Punktekerh\U000000F6hung zur\U000000FCcknehmen",
-      "%        - Punktewert f\U000000FCr aktuelle Sequenz manuell eingeben",
+      "%        - Punktewert f\U000000FCr die aktuelle Sequenz manuell eingeben",
       "z        - Zen Modus an/aus",
       "x        - Zeitgesteuerter Modus an/aus",
-      "<        - Lesezeichen f\U000000FCr aktuelle Sequenz setzen",
+      "<        - Lesezeichen f\U000000FCr die aktuelle Sequenz setzen",
       "r        - letzte Sequenz wiederholen",
       "R        - Sequenzen nach Fehler automatisch wiederholen an/aus",
       "j        - springe zu einer Sequenznummer (f\U000000FCr sequenzielle Sequenzauswahlmodi)",
@@ -201,10 +201,12 @@
       "c        - Kommentar zum aktuellen Zug hinzuf\U000000FCgen",
       "e und E  - Kommentare editieren / Sequenzfile editieren",
       "h und H  - den besten Zug laut Stockfish anzeigen (schnelle / tiefe Analyse)",
-      "y        - kontinuierliche Analyse an/aus (auch im Analysemodus)",
-      "i        - die Lichess Datenbank abfragen (auch im Spiel/Analysemodus)",
+      "L        - Positionsbewertung von Lichess abrufen",
+      "C        - Positionsbewertungen aus dem Cache abrufen an/aus",
+      "y        - kontinuierliche Analyse mit Stockfish an/aus (auch im Analysemodus)",
+      "i        - die Lichess Spieldatenbank abfragen (auch im Spiel/Analysemodus)",
       "I        - Lichess Positionsdaten aus dem Cache abrufen an/aus",
-      "Y        - kontinuierliche Abfrage der Lichess Datenbank an/aus",
+      "Y        - kontinuierliche Abfrage der Lichess Spieldatenbank an/aus",
       "0        - aktuelle Stellung zur Ausgangsstellung der Sequenz machen",
       "g        - Bewertungsdiagram anzeigen (auch im Spiel/Analysemodus)",
       "T        - Zugumstellungen anzeigen an/aus",
@@ -252,7 +254,7 @@
 
       if (redraw) {
          rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
-         text(1.5, ypos, txt, pos=4, offset=0, cex=cex, family=font.mono, font=ifelse(grepl(" :", txt), 2, 1), col=col.help)
+         text(1.5, ypos, txt, pos=4, offset=0, cex=cex, family=font.mono, font=ifelse(grepl("[a-z]:", txt), 2, 1), col=col.help)
          text(8.6, 1.4, paste0(page, " / 2"), pos=2, offset=0, cex=cex, family=font.mono, col=col.help)
          if (lang == "en")
             text(1.5, 1.4, "\U00002190/\U00002192: next page; t: show manual; m: show manual online", pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
@@ -282,7 +284,7 @@
          next
       }
 
-      if (identical(click, "L")) {
+      if (identical(click, "ctrl-L")) {
          if (lang == "de") {
             lang <- "en"
          } else {
