@@ -120,8 +120,17 @@
 
    if (is.null(out)) {
 
-      if (.get("mode") %in% c("add","analysis") && contliquery)
-         cat("\n", .text("posnotfound"), "\n\n", sep="")
+      mode <- .get("mode")
+
+      if (contliquery) {
+         if (mode %in% c("play","analysis"))
+            cat("\n", .text("posnotfound"), "\n\n", sep="")
+         if (mode == "add")
+            .flush()
+      }
+
+      if (contliquery && showlibar)
+         .drawlibar(clear=TRUE)
 
    } else {
 

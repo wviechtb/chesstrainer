@@ -1409,7 +1409,7 @@
 
 }
 
-.drawevalbar <- function(eval=NA_real_, i=1, starteval=NA_real_, flip=FALSE, clear=FALSE, showeval=TRUE, evalsteps=10) {
+.drawevalbar <- function(eval=NA_real_, i=1, starteval=NA_real_, flip=FALSE, clear=FALSE, showeval=TRUE) {
 
    col.bg  <- .get("col.bg")
    xpos    <- .get("drawevalbar.xpos")
@@ -1449,6 +1449,7 @@
    col.side.w <- .get("col.side.w")
    col.side.b <- .get("col.side.b")
    cex.eval   <- .get("cex.eval")
+   evalsteps  <- .get("evalsteps")
 
    maxeval <- 9.9
    ismate <- abs(eval) >= 99.9
@@ -1460,7 +1461,7 @@
       eval <- (eval + maxeval) / (2*maxeval) * 7.8 + 1.1 # ranges from 1.1 to 8.9
    }
 
-   if (length(lasteval) == 0L)
+   if (is.null(lasteval) || length(lasteval) == 0L)
       lasteval <- NA_real_
 
    lasteval <- min(max(lasteval, -maxeval), maxeval)
@@ -1468,11 +1469,10 @@
 
    props <- seq(0, 1, length.out=evalsteps)^(1/5)
 
+   doanim <- !is.na(lasteval) && evalsteps >= 3
+
    if (flip) {
-      if (is.na(lasteval)) {
-         rect(xpos, 10-eval, xpos+indsize, 9, border=NA, col=col.side.w)
-         rect(xpos, 1, xpos+indsize, 10-eval, border=NA, col=col.side.b)
-      } else {
+      if (doanim) {
          rect(xpos, 10-lasteval, xpos+indsize, 9, border=NA, col=col.side.w)
          rect(xpos, 1, xpos+indsize, 10-lasteval, border=NA, col=col.side.b)
          evals <- lasteval + (eval - lasteval) * props
@@ -1480,6 +1480,9 @@
          for (i in 2:evalsteps) {
             rect(xpos, 10-evals[i-1], xpos+indsize, 10-evals[i], border=NA, col=col.side.bar)
          }
+      } else {
+         rect(xpos, 10-eval, xpos+indsize, 9, border=NA, col=col.side.w)
+         rect(xpos, 1, xpos+indsize, 10-eval, border=NA, col=col.side.b)
       }
       if (eval > 5) {
          text(xpos + indsize/2, 8.9, evaltxt, cex=cex.eval, col=col.side.b)
@@ -1487,10 +1490,7 @@
          text(xpos + indsize/2, 1.1, evaltxt, cex=cex.eval, col=col.side.w)
       }
    } else {
-      if (is.na(lasteval)) {
-         rect(xpos, eval, xpos+indsize, 9, border=NA, col=col.side.b)
-         rect(xpos, 1, xpos+indsize, eval, border=NA, col=col.side.w)
-      } else {
+      if (doanim) {
          rect(xpos, lasteval, xpos+indsize, 9, border=NA, col=col.side.b)
          rect(xpos, 1, xpos+indsize, lasteval, border=NA, col=col.side.w)
          evals <- lasteval + (eval - lasteval) * props
@@ -1498,6 +1498,9 @@
          for (i in 2:evalsteps) {
             rect(xpos, evals[i-1], xpos+indsize, evals[i], border=NA, col=col.side.bar)
          }
+      } else {
+         rect(xpos, eval, xpos+indsize, 9, border=NA, col=col.side.b)
+         rect(xpos, 1, xpos+indsize, eval, border=NA, col=col.side.w)
       }
       if (eval > 5) {
          text(xpos + indsize/2, 1.1, evaltxt, cex=cex.eval, col=col.side.b)
@@ -1508,7 +1511,7 @@
 
    .drawdepth(showeval=showeval)
 
-   segments(xpos, 5, xpos+indsize, col=col.fg)
+   segments(xpos+0.005, 5, xpos+indsize-0.005, col=col.fg)
 
    return()
 
@@ -1516,53 +1519,132 @@
 
 .drawlibar <- function(totals=NULL, flip=FALSE, clear=FALSE) {
 
-   col.bg    <- .get("col.bg")
-   cex.eval  <- .get("cex.eval")
    showlibar <- .get("showlibar")
    xpos      <- .get("drawlibar.xpos")
    indsize   <- .get("drawlibar.indsize")
+   col.bg    <- .get("col.bg")
 
-   if (!showlibar || clear || is.null(totals)) {
+   if (!showlibar || clear || is.null(totals) || any(is.na(totals))) {
       rect(xpos, 1, xpos+indsize, 9, border=NA, col=col.bg)
       assign("lasttotals", NULL, envir=.chesstrainer)
       return()
    }
 
+   lasttotals <- .get("lasttotals")
+
+   if (is.null(lasttotals))
+      lasttotals <- NA_real_
+
+   cex.eval   <- .get("cex.eval")
    col.fg     <- .get("col.fg")
    col.side.w <- .get("col.side.w")
    col.side.b <- .get("col.side.b")
    col.side.d <- .get("col.side.d")
+   evalsteps  <- .get("evalsteps")
+
+   lasttotal <- sum(lasttotals[1:3])
+   lastwhite <- lasttotals[1] / lasttotal
+   lastdraw  <- lasttotals[2] / lasttotal
+   lastblack <- lasttotals[3] / lasttotal
 
    total <- sum(totals[1:3])
    white <- totals[1] / total
    draw  <- totals[2] / total
    black <- totals[3] / total
 
-   minprop <- 0.03
+   minprop <- 0.02
+
+   props <- seq(0, 1, length.out=evalsteps)^(1/5)
+
+   doanim <- !is.na(lastwhite) && !is.na(lastdraw) && !is.na(lastblack) && evalsteps >= 3
 
    if (flip) {
-      rect(xpos, 1, xpos+indsize, 1 + 8*black, border=NA, col=col.side.b)
+      if (doanim) {
+         rect(xpos, 1, xpos+indsize, 1 + 8*lastblack, border=NA, col=col.side.b)
+         rect(xpos, 9, xpos+indsize, 9 - 8*lastwhite, border=NA, col=col.side.w)
+         rect(xpos, 1 + 8*lastblack, xpos+indsize, 9 - 8*lastwhite, border=NA, col=col.side.d)
+         newprops.w <- lastwhite + (white - lastwhite) * props
+         newprops.b <- lastblack + (black - lastblack) * props
+         if (white <= lastwhite && black <= lastblack) {
+            for (i in 2:evalsteps) {
+               rect(xpos, 1 + 8*newprops.b[i-1], xpos+indsize, 1 + 8*newprops.b[i], border=NA, col=col.side.d)
+               rect(xpos, 9 - 8*newprops.w[i-1], xpos+indsize, 9 - 8*newprops.w[i], border=NA, col=col.side.d)
+            }
+         }
+         if (white <= lastwhite && black > lastblack) {
+            for (i in 2:evalsteps) {
+               rect(xpos, 9 - 8*newprops.w[i-1], xpos+indsize, 9 - 8*newprops.w[i], border=NA, col=col.side.d)
+               rect(xpos, 1 + 8*newprops.b[i-1], xpos+indsize, 1 + 8*newprops.b[i], border=NA, col=col.side.b)
+            }
+         }
+         if (white > lastwhite && black <= lastblack) {
+            for (i in 2:evalsteps) {
+               rect(xpos, 1 + 8*newprops.b[i-1], xpos+indsize, 1 + 8*newprops.b[i], border=NA, col=col.side.d)
+               rect(xpos, 9 - 8*newprops.w[i-1], xpos+indsize, 9 - 8*newprops.w[i], border=NA, col=col.side.w)
+            }
+         }
+         if (white > lastwhite && black > lastblack) {
+            for (i in 2:evalsteps) {
+               rect(xpos, 1 + 8*newprops.b[i-1], xpos+indsize, 1 + 8*newprops.b[i], border=NA, col=col.side.b)
+               rect(xpos, 9 - 8*newprops.w[i-1], xpos+indsize, 9 - 8*newprops.w[i], border=NA, col=col.side.w)
+            }
+         }
+      } else {
+         rect(xpos, 1, xpos+indsize, 1 + 8*black, border=NA, col=col.side.b)
+         rect(xpos, 9, xpos+indsize, 9 - 8*white, border=NA, col=col.side.w)
+         rect(xpos, 1 + 8*black, xpos+indsize, 9 - 8*white, border=NA, col=col.side.d)
+      }
       if (black >= minprop)
          text(xpos + indsize/2, 1.1, paste0(round(black*100), "%"), cex=cex.eval, col=col.side.w)
-      rect(xpos, 9, xpos+indsize, 9 - 8*white, border=NA, col=col.side.w)
       if (white >= minprop)
          text(xpos + indsize/2, 8.9, paste0(round(white*100), "%"), cex=cex.eval, col=col.side.b)
-      rect(xpos, 1 + 8*black, xpos+indsize, 9 - 8*white, border=NA, col=col.side.d)
       if (draw >= minprop)
          text(xpos + indsize/2, (1 + 8*black + 9 - 8*white)/2, paste0(round(draw*100), "%"), cex=cex.eval, col=col.side.b)
    } else {
-      rect(xpos, 1, xpos+indsize, 1 + 8*white, border=NA, col=col.side.w)
+      if (doanim) {
+         rect(xpos, 1, xpos+indsize, 1 + 8*lastwhite, border=NA, col=col.side.w)
+         rect(xpos, 9, xpos+indsize, 9 - 8*lastblack, border=NA, col=col.side.b)
+         rect(xpos, 1 + 8*lastwhite, xpos+indsize, 9 - 8*lastblack, border=NA, col=col.side.d)
+         newprops.w <- lastwhite + (white - lastwhite) * props
+         newprops.b <- lastblack + (black - lastblack) * props
+         if (white <= lastwhite && black <= lastblack) {
+            for (i in 2:evalsteps) {
+               rect(xpos, 1 + 8*newprops.w[i-1], xpos+indsize, 1 + 8*newprops.w[i], border=NA, col=col.side.d)
+               rect(xpos, 9 - 8*newprops.b[i-1], xpos+indsize, 9 - 8*newprops.b[i], border=NA, col=col.side.d)
+            }
+         }
+         if (white <= lastwhite && black > lastblack) {
+            for (i in 2:evalsteps) {
+               rect(xpos, 1 + 8*newprops.w[i-1], xpos+indsize, 1 + 8*newprops.w[i], border=NA, col=col.side.d)
+               rect(xpos, 9 - 8*newprops.b[i-1], xpos+indsize, 9 - 8*newprops.b[i], border=NA, col=col.side.b)
+            }
+         }
+         if (white > lastwhite && black <= lastblack) {
+            for (i in 2:evalsteps) {
+               rect(xpos, 9 - 8*newprops.b[i-1], xpos+indsize, 9 - 8*newprops.b[i], border=NA, col=col.side.d)
+               rect(xpos, 1 + 8*newprops.w[i-1], xpos+indsize, 1 + 8*newprops.w[i], border=NA, col=col.side.w)
+            }
+         }
+         if (white > lastwhite && black > lastblack) {
+            for (i in 2:evalsteps) {
+               rect(xpos, 1 + 8*newprops.w[i-1], xpos+indsize, 1 + 8*newprops.w[i], border=NA, col=col.side.w)
+               rect(xpos, 9 - 8*newprops.b[i-1], xpos+indsize, 9 - 8*newprops.b[i], border=NA, col=col.side.b)
+            }
+         }
+      } else {
+         rect(xpos, 1, xpos+indsize, 1 + 8*white, border=NA, col=col.side.w)
+         rect(xpos, 9, xpos+indsize, 9 - 8*black, border=NA, col=col.side.b)
+         rect(xpos, 1 + 8*white, xpos+indsize, 9 - 8*black, border=NA, col=col.side.d)
+      }
       if (white >= minprop)
          text(xpos + indsize/2, 1.1, paste0(round(white*100), "%"), cex=cex.eval, col=col.side.b)
-      rect(xpos, 9, xpos+indsize, 9 - 8*black, border=NA, col=col.side.b)
       if (black >= minprop)
          text(xpos + indsize/2, 8.9, paste0(round(black*100), "%"), cex=cex.eval, col=col.side.w)
-      rect(xpos, 1 + 8*white, xpos+indsize, 9 - 8*black, border=NA, col=col.side.d)
       if (draw >= minprop)
          text(xpos + indsize/2, (1 + 8*white + 9 - 8*black)/2, paste0(round(draw*100), "%"), cex=cex.eval, col=col.side.b)
    }
 
-   segments(xpos, 5, xpos+indsize, col=col.fg)
+   segments(xpos+0.005, 5, xpos+indsize-0.005, col=col.fg)
 
    assign("lasttotals", totals, envir=.chesstrainer)
 

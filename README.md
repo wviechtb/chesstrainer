@@ -26,7 +26,7 @@ The main purpose of the `chesstrainer` package is to create sequences of moves (
   - automatically obtain and show position evaluations for each move in a sequence
   - show the best move(s) for a given position
   - can play against Stockfish in 'play mode'
-- can query the Lichess opening database
+- can query the Lichess games database and obtain Lichess cloud evaluations
 - can adjust colors, text sizes, and various other settings
 - can manage multiple sequence directories
 - can toggle the language (English or German)

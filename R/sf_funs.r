@@ -80,7 +80,7 @@
 
 }
 
-.sf.eval <- function(sfproc, sfrun, depth, multipv=5, sflim=NA, fen, progbar=FALSE, compmove=FALSE, usecloud=FALSE) {
+.sf.eval <- function(sfproc, sfrun, depth, multipv=5, sflim=NA, fen, progbar=FALSE, playsound=FALSE, isdeep=FALSE, compmove=FALSE, usecloud=FALSE) {
 
    getcloudeval <- FALSE
    usesfcache <- .get("usesfcache")
@@ -263,6 +263,9 @@
 
    prevdepth <- 0
 
+   if (isdeep)
+      .texttop(.text("sfdeepeval"))
+
    if (progbar) {
       rect(1, 9.6, 9, 9.7, col=NA, border=col.top)
       segments(seq(1,9,length.out=depth+1), 9.6, seq(1,9,length.out=depth+1), 9.7, col=adjustcolor(col.top, alpha.f=0.4))
@@ -325,6 +328,9 @@
 
    if (progbar)
       .texttop("")
+
+   if (playsound)
+      playsound(system.file("sounds", "complete.ogg", package="chesstrainer"))
 
    if (!alive) {
       sfproc <- NULL
