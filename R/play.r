@@ -2315,9 +2315,9 @@ play <- function(lang="en", ...) {
                next
             }
 
-            # M to trigger a mistake (only in test mode and when upsidedown is TRUE)
+            # M to trigger a mistake (only in test mode)
 
-            if (mode == "test" && identical(click, "M") && upsidedown) {
+            if (mode == "test" && identical(click, "M")) {
                mistake <- TRUE
                if (score >= 1) {
                   scoreadd <- min(adjustwrong, 100-score)
@@ -4877,6 +4877,21 @@ play <- function(lang="en", ...) {
                            fen <- paste0("https://lichess.org/analysis/standard/", gsub(" ", "_", fen, fixed=TRUE), "?color=white")
                         }
                         browseURL(fen)
+                        next
+                     }
+
+                     if (identical(click, "M")) {
+                        if (score >= 1) {
+                           scoreadd <- min(adjustwrong, 100-score)
+                           score <- score + scoreadd
+                           .textbot(score=score, onlyscore=TRUE)
+                           sub$player[[player]]$score[length(sub$player[[player]]$score)] <- score
+                           playsound(system.file("sounds", "error.ogg", package="chesstrainer"))
+                           if (mistake && repmistake) {
+                              replast <- TRUE
+                              filename <- seqname
+                           }
+                        }
                         next
                      }
 

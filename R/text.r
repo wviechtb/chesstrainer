@@ -1501,7 +1501,7 @@
 
    if (x == "jumponlymodes") {
       return(switch(lang,
-                    de = "Das Springen zu einer Sequenznummer geht nur in sequenziellen Auswahlmodi.",
+                    de = "Das Springen zu einer Sequenznummer ist nur in sequenziellen Auswahlmodi m\U000000F6glich.",
                          "Jumping to a sequence number is only possible in sequential selection modes."
    ))}
 
