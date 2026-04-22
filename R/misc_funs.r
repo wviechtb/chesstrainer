@@ -1311,6 +1311,9 @@
 
 .checkseq <- function(dat, seqdir, files) {
 
+   if (length(dat) == 0L)
+      return()
+
    for (j in 1:length(dat)) {
 
       #print(j)
@@ -1537,3 +1540,6 @@
    return()
 
 }
+
+.genlines <- function(pos, sub, nmoves, minperc, minplays, movedb, basename, level, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop="", sfproc, sfrun, depth, seqdir)
+   return()

@@ -1733,6 +1733,12 @@
                          "Not one of the sequence moves."
    ))}
 
+   if (x == "existingseqmoves") {
+      return(switch(lang,
+                    de = paste0("Z\U000000FCge aus bereits erstellten Sequenzen:\n", arg),
+                         paste0("Moves from already existing sequences:\n", arg)
+   ))}
+
    if (x == "compseq") {
       return(switch(lang,
                     de = paste0("Vergleiche Z\U000000FCge mit den bestehenden Sequenzen: ", ifelse(arg, "an", "aus")),

@@ -15,7 +15,7 @@
 
 }
 
-.liquery <- function(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, showout=TRUE, showlibar=TRUE, tokencheck=FALSE) {
+.liquery <- function(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, showout=TRUE, showlibar=TRUE, tokencheck=FALSE, retry=4) {
 
    res <- list(out=NULL, selmove="")
 
@@ -70,21 +70,24 @@
       url <- paste0(url, "fen=", fen)
       header <- paste("Bearer", token)
 
-      lastapirequest <- .get("lastapirequest")
+      retry <- c(0, retry)
 
-      # ensure that there are at least 2.5 seconds between each API request
+      for (j in 1:length(retry)) {
 
-      while (proc.time()[[3]] - lastapirequest < 2.5)
-         Sys.sleep(0.1)
+         lastapirequest <- .get("lastapirequest")
 
-      out <- try(VERB("GET", url, add_headers('Authorization'=header), content_type("application/octet-stream"), user_agent("R chesstrainer (wvb@wvbauer.com)"), timeout(2)), silent=TRUE)
+         # ensure that there are at least <retry> seconds between each API request
+         while (proc.time()[[3]] - lastapirequest < retry[j])
+            Sys.sleep(0.1)
 
-      if (inherits(out, "try-error")) {
-         Sys.sleep(4)
          out <- try(VERB("GET", url, add_headers('Authorization'=header), content_type("application/octet-stream"), user_agent("R chesstrainer (wvb@wvbauer.com)"), timeout(2)), silent=TRUE)
-      }
 
-      assign("lastapirequest", proc.time()[[3]], envir=.chesstrainer)
+         assign("lastapirequest", proc.time()[[3]], envir=.chesstrainer)
+
+         if (!inherits(out, "try-error"))
+            break
+
+      }
 
       if (inherits(out, "try-error")) {
          .texttop(.text("noconnect"), sleep=1.5)
@@ -145,7 +148,7 @@
       res$selmove <- sample(out$move, size=1, prob=out$total)
       #if (!showout) print(paste0("Selected move: ", res$selmove))
 
-      if (!contliquery)
+      if (showout && !contliquery)
          eval(expr=.get("switch1"))
 
       if (showout) {
@@ -174,7 +177,7 @@
          #sink()
       }
 
-      if (!contliquery)
+      if (showout && !contliquery)
          eval(expr=.get("switch2"))
 
    }

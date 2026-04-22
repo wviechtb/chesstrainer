@@ -584,13 +584,14 @@ play <- function(lang="en", ...) {
 
    # define keys
 
-   keys <- c("q", "ctrl-Q", "\033", "ctrl-[", " ", "m", "d", "\\", "\U000000E4", "n", "N", "B", "p", "P", "ctrl-R",
+   keys <- c("q", "\033", " ", "m", "d", "\\", "\U000000E4", "n", "N", "B", "p", "P",
              "g", "h", "H", "y", "Y", "Left", "Right", "Up", "Down", "t", "T", "0", "1", "2", "3", "4", "5", "9",
-             "r", "o", "u", "U", "ctrl-U", "M", "j", "%",
+             "r", "o", "u", "U", "M", "j", "%",
              "a", "A", "f", "z", "Z", "c", "!", "@", "\"", "e", "E", "s", "b", "K", "C", "S",
-             "^", "6", "R", "G", "W", "-", "=", "_", "+", "[", "]", "{", "}", "(", ")", "i", "I", "x", "v", "V", "ctrl-V",
-             "l", "L", "<", ">", "ctrl-F", "ctrl-C", "ctrl-D", "/", ",", ".", "|", "*", "8", "?", "'", ";", ":",
-             "F1", "F2", "F3", "F5", "F6", "F7", "F8", "F9", "F10", "ctrl-S", "F11", "ctrl-I", "F12", "ctrl-H", "ctrl-E", "ctrl-O", "ctrl-L")
+             "^", "6", "R", "G", "W", "-", "=", "_", "+", "[", "]", "{", "}", "(", ")", "i", "x", "v", "V",
+             "l", "L", "<", ">", "/", ",", ".", "|", "*", "8", "?", "'", ";", ":",
+             "F1", "F2", "F3", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12",
+             "ctrl-F", "ctrl-C", "ctrl-D", "ctrl-R", "ctrl-[", "ctrl-Q", "ctrl-U", "ctrl-H", "ctrl-E", "ctrl-O", "ctrl-L", "ctrl-S", "ctrl-I", "ctrl-G", "ctrl-V")
 
    run.all <- TRUE
 
@@ -2685,7 +2686,7 @@ play <- function(lang="en", ...) {
                } else {
                   startpos <- sub$pos
                }
-               sub$startfen <- .genfen(startpos, flip=sub$flip, sidetoplay=sidetoplaystart, sidetoplaystart=sidetoplaystart, i=1)
+               sub$startfen <- .genfen(startpos, flip=flip, sidetoplay=sidetoplaystart, sidetoplaystart=sidetoplaystart, i=1)
                if (is.null(sub$commentend) && !identical(comment, ""))
                   sub$commentend <- comment
                if (nrow(circles) >= 1L)
@@ -2909,34 +2910,10 @@ play <- function(lang="en", ...) {
                next
             }
 
-            # C to toggle use of Stockfish cache on/off
-
-            if (identical(click, "C")) {
-               usesfcache <- !usesfcache
-               assign("usesfcache", usesfcache, envir=.chesstrainer)
-               .texttop(.text("usesfcache", usesfcache), sleep=1.5)
-               .texttop(texttop)
-               settings$usesfcache <- usesfcache
-               saveRDS(settings, file=file.path(configdir, "settings.rds"))
-               next
-            }
-
             # i to query the Lichess opening database for the current position
 
             if (identical(click, "i")) {
                .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop)
-               next
-            }
-
-            # I to toggle use of Lichess cache on/off
-
-            if (identical(click, "I")) {
-               uselicache <- !uselicache
-               assign("uselicache", uselicache, envir=.chesstrainer)
-               .texttop(.text("uselicache", uselicache), sleep=1.5)
-               .texttop(texttop)
-               settings$uselicache <- uselicache
-               saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
 
@@ -2964,19 +2941,6 @@ play <- function(lang="en", ...) {
                } else {
                   .drawlibar(clear=TRUE)
                }
-               next
-            }
-
-            ################################################################
-
-            # c to toggle compseq on/off (in play mode)
-
-            if (mode == "play" && identical(click, "c")) {
-               compseq <- !compseq
-               .texttop(.text("compseq", compseq), sleep=2)
-               .texttop(texttop)
-               settings$compseq <- compseq
-               saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
 
@@ -3028,6 +2992,17 @@ play <- function(lang="en", ...) {
                .texttop(.text("showtransp", showtransp), sleep=1)
                .texttop(texttop)
                settings$showtransp <- showtransp
+               saveRDS(settings, file=file.path(configdir, "settings.rds"))
+               next
+            }
+
+            # C to toggle compseq on/off
+
+            if (identical(click, "C")) {
+               compseq <- !compseq
+               .texttop(.text("compseq", compseq), sleep=2)
+               .texttop(texttop)
+               settings$compseq <- compseq
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
@@ -3823,9 +3798,9 @@ play <- function(lang="en", ...) {
                   if (any(searchterm == x$fenshort) && identical(flip, x$flip)) {
                      pos <- min(which(searchterm == x$fenshort))
                      if (san) {
-                        nextmoves <- x$san[pos-1+1]
+                        nextmoves <- x$san[pos]
                      } else {
-                        nextmoves <- x$move[pos-1+1]
+                        nextmoves <- x$move[pos]
                      }
                      nextmoves[is.na(nextmoves)] <- ""
                      return(nextmoves)
@@ -4106,6 +4081,7 @@ play <- function(lang="en", ...) {
                hintdepth     <- tmp$hintdepth
                monthssfcache <- tmp$monthssfcache
                usesfcache    <- tmp$usesfcache
+               assign("usesfcache", usesfcache, envir=.chesstrainer)
                settings$sfpath        <- sfpath
                settings$depth1        <- depth1
                settings$depth2        <- depth2
@@ -4135,6 +4111,7 @@ play <- function(lang="en", ...) {
                barlen     <- tmp$barlen
                invertbar  <- tmp$invertbar
                token      <- tmp$token
+               assign("uselicache", uselicache, envir=.chesstrainer)
                settings$speeds     <- speeds
                settings$ratings    <- ratings
                settings$lichessdb  <- lichessdb
@@ -4347,6 +4324,69 @@ play <- function(lang="en", ...) {
                next
             }
 
+            # ctrl-g
+
+            if (identical(click, "ctrl-G")) {
+
+               if (flip && sidetoplay == "b" || !flip && sidetoplay == "w") {
+                  cat("Wrong side to play.\n")
+                  next
+               }
+
+               if (!isonline) {
+                  cat("Not online.\n")
+                  next
+               }
+
+               eval(expr=switch1)
+
+               minperc <- readline(prompt="Minimum percent (10 is the default): ")
+               if (identical(minperc, "")) {
+                  minperc <- 10
+               } else {
+                  minperc <- as.numeric(minperc)
+               }
+
+               minplays <- readline(prompt="Minimum number of games (1000 is the default): ")
+               if (identical(minplays, "")) {
+                  minplays <- 1000
+               } else {
+                  minplays <- as.numeric(minplays)
+               }
+
+               movedb <- readline(prompt="Move database (1 = Stockfish/default, 2 = Lichess): ")
+               if (identical(movedb, "")) {
+                  movedb <- 1
+               } else {
+                  movedb <- as.numeric(movedb)
+               }
+
+               nmoves <- readline(prompt="Number of moves: ")
+               if (identical(nmoves, ""))
+                  next
+               nmoves <- as.numeric(nmoves)
+
+               basename <- readline(prompt="Filename base: ")
+               if (identical(basename, ""))
+                  next
+
+               if (is.null(sub$pos)) {
+                  startpos <- start.pos
+               } else {
+                  startpos <- sub$pos
+               }
+               sub$startfen <- .genfen(startpos, flip=flip, sidetoplay=sidetoplaystart, sidetoplaystart=sidetoplaystart, i=1)
+
+               .genlines(pos, sub, nmoves=nmoves, minperc=minperc, minplays=minplays, movedb=movedb, basename=basename, level=0, flip=flip, sidetoplay=sidetoplay, sidetoplaystart=sidetoplaystart, i=i, isonline=isonline, lichessdb=lichessdb, token=token, speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, texttop="", sfproc=sfproc, sfrun=sfrun, depth=depth2, seqdir=seqdir[seqdirpos])
+
+               cat("Done!\n")
+               playsound(system.file("sounds", "complete.ogg", package="chesstrainer"))
+
+               eval(expr=switch2)
+               next
+
+            }
+
             ##################################################################
 
             # if click is an actual click (and drag) on the board
@@ -4516,9 +4556,9 @@ play <- function(lang="en", ...) {
             glyph <- ""
             texttop <- .texttop("")
 
-            # in play mode, check if there are any sequences that include this position; if so, get all possible next moves
+            # in add/play mode, check if there are any sequences that include this position; if so, get all possible next moves
 
-            if (compseq && mode == "play") {
+            if (compseq && mode %in% c("add","play","analysis")) {
                searchterm <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                searchterm <- .fenpart(searchterm)
                nextmoves <- lapply(dat.all.short, function(x) {
@@ -4533,12 +4573,15 @@ play <- function(lang="en", ...) {
                })
                notnull <- !sapply(nextmoves, is.null)
                nextmoves <- nextmoves[notnull]
-               if (any(notnull))
+               if (any(notnull)) {
                   nextmoves <- unique(unlist(nextmoves))
+                  nextmoves <- nextmoves[nextmoves!=""]
+               }
             }
 
             # if in add, play, or analysis mode, make the move
 
+            oldpos <- pos
             tmp <- .updateboard(pos, move=data.frame(click1.x, click1.y, click2.x, click2.y, NA, NA), flip=flip, autoprom=FALSE)
             moveuci <- .lan2uci(attr(tmp,"move"), sidetoplay=sidetoplay)
             movesan <- .parsemove(moveuci, pos=pos, flip=flip, evalval=NA, i=NA, sidetoplay=sidetoplay, rename=FALSE, returnline=2, hintdepth=1, san=TRUE)
@@ -4549,6 +4592,17 @@ play <- function(lang="en", ...) {
             if (compseq && mode == "play" && any(notnull) && !is.element(attr(pos,"move"), nextmoves)) {
                .texttop(.text("notseqmove"), sleep=2)
                .texttop("")
+            }
+
+            #if (compseq && mode %in% c("add","analysis") && (flip && sidetoplay=="b" || !flip && sidetoplay=="w") && any(notnull) && !is.element(attr(pos,"move"), nextmoves)) {
+            if (compseq && mode %in% c("add","analysis") && any(notnull) && !is.element(attr(pos,"move"), nextmoves)) {
+               if (san) {
+                  movesuci <- sapply(nextmoves, .lan2uci, sidetoplay=sidetoplay)
+                  nextmoves <- sapply(movesuci, .parsemove, pos=oldpos, flip=flip, evalval=NA, i=i, sidetoplay=sidetoplay, rename=FALSE, returnline=2, hintdepth=1, san=TRUE)
+               }
+               nextmoves <- .rename(nextmoves)
+               nextmoves <- paste(nextmoves, collapse=", ")
+               .texttop(.text("existingseqmoves", nextmoves))
             }
 
          }

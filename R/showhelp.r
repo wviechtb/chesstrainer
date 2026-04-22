@@ -44,6 +44,8 @@
       "K        - show material difference on/off",
       "S        - toggle between short and long algebraic notation",
       "P        - toggle between different piece symbols",
+      "C        - compare moves with the existing sequences on/off",
+      "T        - show move transpositions on/off",
       "Ctrl-f   - copy the FEN of the current position to the clipboard",
       "<escape> - redraw the board / exit a menu",
       "o        - open the current position on lichess.org",
@@ -96,14 +98,11 @@
       "e and E  - edit the comments / edit the sequence file",
       "h and H  - show the best move according to Stockfish (fast / deep evaluation)",
       "L        - get the position evaluation from Lichess",
-      "C        - get position evaluations from the cache on/off",
       "y        - continuous analysis with Stockfish on/off (also in analysis mode)",
       "i        - query the Lichess games database (also in analysis/play mode)",
-      "I        - get Lichess position information from the cache on/off",
       "Y        - toggle continuous query of the Lichess games database on/off",
       "0        - make the current position the starting position for the sequence",
       "g        - show the evaluation graph (also in play and analysis mode)",
-      "T        - show move transpositions on/off",
       "b        - start the board editor",
       "s        - save the sequence")
 
@@ -113,7 +112,6 @@
       "\\        - switch between the play and analysis mode",
       "0        - store the current moves and position as the main variation",
       "9        - jump to the main variation",
-      "c        - compare moves with the existing sequences on/off",
       "a and A  - switch to add mode")
 
    }
@@ -152,6 +150,8 @@
       "K        - Materialunterschied anzeigen an/aus",
       "S        - zwischen kurzer und langer algebraischer Notation wechseln",
       "P        - zwischen verschiedenen Figurensymbolen wechseln",
+      "C        - Z\U000000FCge mit den bestehenden Sequenzen vergleichen an/aus",
+      "T        - Zugumstellungen anzeigen an/aus",
       "Strg-f   - FEN der aktuellen Stellung in die Zwischenablage kopieren",
       "<escape> - Brett neu zeichnen / ein Men\U000000FC verlassen",
       "o        - die aktuelle Stellung auf lichess.org \U000000F6ffnen",
@@ -204,14 +204,11 @@
       "e und E  - Kommentare editieren / Sequenzfile editieren",
       "h und H  - den besten Zug laut Stockfish anzeigen (schnelle / tiefe Analyse)",
       "L        - Positionsbewertung von Lichess abrufen",
-      "C        - Positionsbewertungen aus dem Cache abrufen an/aus",
       "y        - kontinuierliche Analyse mit Stockfish an/aus (auch im Analysemodus)",
       "i        - die Lichess Spieldatenbank abfragen (auch im Spiel/Analysemodus)",
-      "I        - Lichess Positionsdaten aus dem Cache abrufen an/aus",
       "Y        - kontinuierliche Abfrage der Lichess Spieldatenbank an/aus",
       "0        - aktuelle Stellung zur Ausgangsstellung der Sequenz machen",
       "g        - Bewertungsdiagram anzeigen (auch im Spiel/Analysemodus)",
-      "T        - Zugumstellungen anzeigen an/aus",
       "b        - Bretteditor starten",
       "s        - Sequenz abspeichern"
       )
@@ -222,7 +219,6 @@
       "\\ oder \U000000E4 - zwischen dem Spiel- und Analysemodus wechseln",
       "0        - aktuelle Zugfolge und Stellung als Hauptvariante sichern",
       "9        - zur Hauptvariante springen",
-      "c        - Z\U000000FCge mit den bestehenden Sequenzen vergleichen an/aus",
       "a und A  - in den Hinzuf\U000000FCgen Modus wechseln")
 
    }

@@ -80,7 +80,7 @@
 
 }
 
-.sf.eval <- function(sfproc, sfrun, depth, multipv=5, sflim=NA, fen, progbar=FALSE, playsound=FALSE, isdeep=FALSE, compmove=FALSE, usecloud=FALSE) {
+.sf.eval <- function(sfproc, sfrun, depth, multipv=5, sflim=NA, fen, progbar=FALSE, playsound=FALSE, isdeep=FALSE, compmove=FALSE, usecloud=FALSE, retry=4) {
 
    getcloudeval <- FALSE
    usesfcache <- .get("usesfcache")
@@ -167,21 +167,24 @@
 
       url <- paste0("https://lichess.org/api/cloud-eval?multiPv=5&fen=", fenfilename)
 
-      lastapirequest <- .get("lastapirequest")
+      retry <- c(0, retry)
 
-      # ensure that there are at least 3 seconds between each API request
+      for (j in 1:length(retry)) {
 
-      while (proc.time()[[3]] - lastapirequest < 3)
-         Sys.sleep(0.1)
+         lastapirequest <- .get("lastapirequest")
 
-      out <- try(VERB("GET", url, content_type("application/octet-stream"), timeout(2)), silent=TRUE)
+         # ensure that there are at least <retry> seconds between each API request
+         while (proc.time()[[3]] - lastapirequest < retry[j])
+            Sys.sleep(0.1)
 
-      if (inherits(out, "try-error")) {
-         Sys.sleep(4)
-         out <- try(VERB("GET", url, content_type("application/octet-stream"), timeout(2)), silent=TRUE)
+         out <- try(VERB("GET", url, content_type("application/octet-stream"), user_agent("R chesstrainer (wvb@wvbauer.com)"), timeout(2)), silent=TRUE)
+
+         assign("lastapirequest", proc.time()[[3]], envir=.chesstrainer)
+
+         if (!inherits(out, "try-error"))
+            break
+
       }
-
-      assign("lastapirequest", proc.time()[[3]], envir=.chesstrainer)
 
       if (inherits(out, "try-error")) {
          .texttop(.text("noconnect"), sleep=1.5)

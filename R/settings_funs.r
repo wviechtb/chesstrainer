@@ -683,8 +683,6 @@
 
    usesfcache <- usesfcache.on[1]
 
-   assign("usesfcache", usesfcache, envir=.chesstrainer)
-
    out <- list(sfproc=sfproc, sfrun=sfrun, sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, monthssfcache=monthssfcache, usesfcache=usesfcache)
 
    #.erase(1, 1, 9, 9)
@@ -968,8 +966,6 @@
    }
 
    uselicache <- uselicache.on[1]
-
-   assign("uselicache", uselicache, envir=.chesstrainer)
 
    out <- list(speeds=speeds, ratings=ratings, lichessdb=lichessdb, uselicache=uselicache, barlen=barlen, monthslicache=monthslicache, invertbar=invertbar, token=token)
 
