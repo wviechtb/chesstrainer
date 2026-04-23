@@ -36,7 +36,16 @@
    fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
    fen <- .fenpart(fen, parts=1:5) # remove the fullmove number
    fen <- gsub(" ", "%20", fen, fixed=TRUE)
-   filename <- paste0(gsub("/", "_", fen, fixed=TRUE), ".rds")
+
+   if (lichessdb == "lichess") {
+      speeds.opts  <- c("ultraBullet", "bullet", "blitz", "rapid", "classical", "correspondence")
+      speeds.bits  <- paste0(ifelse(speeds.opts %in% strsplit(speeds, ",")[[1]], 1, 0), collapse="")
+      ratings.opts <- c(0, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2500)
+      ratings.bits <- paste0(ifelse(ratings.opts %in% strsplit(ratings, ",")[[1]], 1, 0), collapse="")
+      filename <- paste0(gsub("/", "_", fen, fixed=TRUE), "_", speeds.bits, "_", ratings.bits, ".rds")
+   } else {
+      filename <- paste0(gsub("/", "_", fen, fixed=TRUE), ".rds")
+   }
 
    cachedir <- .get("cachedir")
    uselicache <- .get("uselicache")
