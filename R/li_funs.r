@@ -15,7 +15,7 @@
 
 }
 
-.liquery <- function(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, showout=TRUE, showlibar=TRUE, tokencheck=FALSE, retry=4) {
+.liquery <- function(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, texttop, showout=TRUE, showlibar=TRUE, tokencheck=FALSE, retry=4) {
 
    res <- list(out=NULL, selmove="")
 
@@ -175,15 +175,25 @@
          ncols <- num_ansi_colors()
          if (ncols >= 256)
             out <- out[-c(4:6)]
+         if (lisort == 2) {
+            if (sidetoplay == "w") {
+               winprop <- res$out$white / rowSums(res$out[2:4])
+            } else {
+               winprop <- res$out$black / rowSums(res$out[2:4])
+            }
+            ord <- order(winprop, decreasing=TRUE)
+            ord <- c(ord, max(ord)+1)
+            out <- out[ord,,drop=FALSE]
+            rownames(out) <- NULL
+            bars <- bars[ord]
+         }
          txt <- capture.output(print(out, print.gap=2))
-         #sink("~/downloads/output.txt")
          for (i in 1:length(txt)) {
             cat(txt[i], "  ")
             if (i > 1)
                cat(bars[i-1])
             cat("\n\n")
          }
-         #sink()
       }
 
       if (showout && !contliquery)

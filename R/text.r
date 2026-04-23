@@ -1595,6 +1595,24 @@
                          "Maximum age of cache entries (in months)"
    ))}
 
+   if (x == "lisort") {
+      return(switch(lang,
+                    de = "Z\U000000FCge sortieren nach",
+                         "Sort moves by"
+   ))}
+
+   if (x == "lisortfreq") {
+      return(switch(lang,
+                    de = "H\U000000E4ufigkeit",
+                         "Frequency"
+   ))}
+
+   if (x == "lisortwinperc") {
+      return(switch(lang,
+                    de = "Gewinn %",
+                         "Win %"
+   ))}
+
    if (x == "barlen") {
       return(switch(lang,
                     de = "Balkenl\U000000E4nge",

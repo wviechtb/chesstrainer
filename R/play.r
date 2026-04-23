@@ -30,7 +30,7 @@ play <- function(lang="en", ...) {
                     sfpath="", depth1=12, depth2=20, depth3=8, sflim=NA, multipv1=1, multipv2=1, threads=1, hash=256, hintdepth=10, monthssfcache=12, usesfcache=TRUE,
                     difffun=1, difflen=15, diffmin=5,
                     mar=c(5.5, 5.5, 5.5, 5.5), mar2=c(11, 11, 9, 9),
-                    speeds="blitz,rapid,classical", ratings="1200,1400,1600,1800", barlen=50, invertbar=FALSE, lichessdb="lichess", token="", uselicache=TRUE, showlibar=TRUE, monthslicache=12,
+                    lichessdb="lichess", speeds="blitz,rapid,classical", ratings="1200,1400,1600,1800", lisort=1, barlen=50, invertbar=FALSE, token="", uselicache=TRUE, showlibar=TRUE, monthslicache=12,
                     switch1=ifelse(isTRUE(iswin) && identical(gui, "rgui"), "bringToTop(-1)",        "invisible()"),
                     switch2=ifelse(isTRUE(iswin) && identical(gui, "rgui"), "bringToTop(dev.cur())", "invisible()"),
                     quitanim=TRUE, inhibit=FALSE, flush=FALSE, raster=TRUE) # these are not saved as part of the settings
@@ -153,7 +153,7 @@ play <- function(lang="en", ...) {
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, monthssfcache=monthssfcache, usesfcache=usesfcache,
                        difffun=difffun, difflen=difflen, diffmin=diffmin,
                        mar=mar, mar2=mar2,
-                       speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb, token=token, uselicache=uselicache, showlibar=showlibar, monthslicache=monthslicache,
+                       lichessdb=lichessdb, speeds=speeds, ratings=ratings, lisort=lisort, barlen=barlen, invertbar=invertbar, token=token, uselicache=uselicache, showlibar=showlibar, monthslicache=monthslicache,
                        switch1=switch1, switch2=switch2)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       cols <- sapply(cols.all, function(x) .get(x))
@@ -185,7 +185,7 @@ play <- function(lang="en", ...) {
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, monthssfcache=monthssfcache, usesfcache=usesfcache,
                        difffun=difffun, difflen=difflen, diffmin=diffmin,
                        mar=mar, mar2=mar2,
-                       speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb, token=token, uselicache=uselicache, showlibar=showlibar, monthslicache=monthslicache,
+                       lichessdb=lichessdb, speeds=speeds, ratings=ratings, lisort=lisort, barlen=barlen, invertbar=invertbar, token=token, uselicache=uselicache, showlibar=showlibar, monthslicache=monthslicache,
                        switch1=switch1, switch2=switch2, firstrun=settings$firstrun)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       if (file.exists(file.path(configdir, "colors.rds"))) {
@@ -1091,7 +1091,7 @@ play <- function(lang="en", ...) {
          .drawdepth(showeval[[mode]])
 
          if (mode %in% c("add","analysis") && contliquery)
-            .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop)
+            .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, texttop)
 
          input <- TRUE
          islastmove <- FALSE
@@ -1130,7 +1130,7 @@ play <- function(lang="en", ...) {
 
                   if (contliquery && !nzchar(bestmove[[1]][1])) {
                      # but if we started a new round with contliquery, then bestmove is ""
-                     res.li <- .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop)
+                     res.li <- .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, texttop)
                      bestmove <- res.li$selmove
                   }
 
@@ -1156,7 +1156,7 @@ play <- function(lang="en", ...) {
                   .textbot(i=i, totalmoves=totalmoves, onlyi=TRUE)
 
                   if (contliquery)
-                     res.li <- .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, showout=FALSE)
+                     res.li <- .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, texttop, showout=FALSE)
 
                   # get the evaluation for the move made by the computer (based on depth1, not depth3) and the best move that can be made by the player
 
@@ -1435,7 +1435,7 @@ play <- function(lang="en", ...) {
                   sfrun    <- res.sf$sfrun
                }
                if (compmove && contliquery) {
-                  res.li <- .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop)
+                  res.li <- .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, texttop)
                   bestmove <- res.li$selmove # [d]
                }
                texttop <- .texttop("")
@@ -1649,7 +1649,7 @@ play <- function(lang="en", ...) {
                   }
                   .drawdepth(showeval[[mode]])
                   if (contliquery)
-                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop)
+                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, texttop)
                }
 
                next
@@ -1757,7 +1757,7 @@ play <- function(lang="en", ...) {
                   }
                   .drawdepth(showeval[[mode]])
                   if (contliquery)
-                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, showout=mode!="play")
+                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, texttop, showout=mode!="play")
                }
                next
             }
@@ -1866,7 +1866,7 @@ play <- function(lang="en", ...) {
                   }
                   .drawdepth(showeval[[mode]])
                   if (contliquery)
-                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop)
+                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, texttop)
                   next
                }
                comment <- ""
@@ -1915,7 +1915,7 @@ play <- function(lang="en", ...) {
                   }
                   .drawdepth(showeval[[mode]])
                   if (contliquery)
-                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop)
+                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, texttop)
                }
                next
             }
@@ -2018,7 +2018,7 @@ play <- function(lang="en", ...) {
                   }
                   .drawdepth(showeval[[mode]])
                   if (contliquery)
-                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop)
+                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, texttop)
                }
                next
             }
@@ -2081,7 +2081,7 @@ play <- function(lang="en", ...) {
                }
                .drawdepth(showeval[[mode]])
                if (contliquery)
-                  .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, showout=mode!="play")
+                  .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, texttop, showout=mode!="play")
                next
             }
 
@@ -2531,7 +2531,7 @@ play <- function(lang="en", ...) {
                }
                .drawdepth(showeval[[mode]])
                if (contliquery)
-                  .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop)
+                  .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, texttop)
                next
 
             }
@@ -2777,7 +2777,7 @@ play <- function(lang="en", ...) {
                }
                .drawdepth(showeval[[mode]])
                if (contliquery)
-                  .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop)
+                  .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, texttop)
                if (verbose)
                   print(pos)
                next
@@ -2913,7 +2913,7 @@ play <- function(lang="en", ...) {
             # i to query the Lichess opening database for the current position
 
             if (identical(click, "i")) {
-               .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop)
+               .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, texttop)
                next
             }
 
@@ -2937,7 +2937,7 @@ play <- function(lang="en", ...) {
                if (mode == "play")
                   .textbot(show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
                if (contliquery) {
-                  .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, showout=mode!="test", showlibar=mode!="test")
+                  .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, texttop, showout=mode!="test", showlibar=mode!="test")
                } else {
                   .drawlibar(clear=TRUE)
                }
@@ -3175,7 +3175,7 @@ play <- function(lang="en", ...) {
                .texttop(.text("libar", showlibar), sleep=0.75)
                if (showlibar) {
                   if (contliquery)
-                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop)
+                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, texttop)
                } else {
                   .drawlibar(clear=TRUE)
                }
@@ -3992,7 +3992,7 @@ play <- function(lang="en", ...) {
                            # cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
                            difffun=difffun, difflen=difflen, diffmin=diffmin,
                            sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, monthssfcache=monthssfcache, contanalysis=contanalysis, usesfcache=usesfcache)
-                           #speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, lichessdb=lichessdb, token=paste0(rep("*", nchar(token), collapse=""), uselicache=uselicache, showlibar=showlibar, monthslicache=monthslicache)
+                           #lichessdb=lichessdb, speeds=speeds, ratings=ratings, lisort=lisort, barlen=barlen, invertbar=invertbar, token=paste0(rep("*", nchar(token), collapse=""), uselicache=uselicache, showlibar=showlibar, monthslicache=monthslicache)
                .showsettings(tab)
                .redrawpos(pos, flip=flip)
                .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
@@ -4101,13 +4101,14 @@ play <- function(lang="en", ...) {
             # F8 to adjust the Lichess database settings
 
             if (identical(click, "F8")) {
-               tmp <- .lichesssettings(speeds, ratings, lichessdb, uselicache, barlen, invertbar, token, monthslicache, isonline)
+               tmp <- .lichesssettings(speeds, ratings, lichessdb, uselicache, lisort, barlen, invertbar, token, monthslicache, isonline)
                .redrawpos(pos, flip=flip)
                .drawannot(circles=circles, arrows=arrows, glyph=glyph)
                speeds     <- tmp$speeds
                ratings    <- tmp$ratings
                lichessdb  <- tmp$lichessdb
                uselicache <- tmp$uselicache
+               lisort     <- tmp$lisort
                barlen     <- tmp$barlen
                invertbar  <- tmp$invertbar
                token      <- tmp$token
@@ -4116,11 +4117,12 @@ play <- function(lang="en", ...) {
                settings$ratings    <- ratings
                settings$lichessdb  <- lichessdb
                settings$uselicache <- uselicache
+               settings$lisort     <- lisort
                settings$barlen     <- barlen
                settings$invertbar  <- invertbar
                settings$token      <- token
                if (contliquery)
-                  .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop)
+                  .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, texttop)
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
@@ -4377,7 +4379,7 @@ play <- function(lang="en", ...) {
                }
                sub$startfen <- .genfen(startpos, flip=flip, sidetoplay=sidetoplaystart, sidetoplaystart=sidetoplaystart, i=1)
 
-               .genlines(pos, sub, nmoves=nmoves, minperc=minperc, minplays=minplays, movedb=movedb, basename=basename, level=0, flip=flip, sidetoplay=sidetoplay, sidetoplaystart=sidetoplaystart, i=i, isonline=isonline, lichessdb=lichessdb, token=token, speeds=speeds, ratings=ratings, barlen=barlen, invertbar=invertbar, texttop="", sfproc=sfproc, sfrun=sfrun, depth=depth2, seqdir=seqdir[seqdirpos])
+               .genlines(pos, sub, nmoves=nmoves, minperc=minperc, minplays=minplays, movedb=movedb, basename=basename, level=0, flip=flip, sidetoplay=sidetoplay, sidetoplaystart=sidetoplaystart, i=i, isonline=isonline, lichessdb=lichessdb, token=token, speeds=speeds, ratings=ratings, lisort=lisort, barlen=barlen, invertbar=invertbar, texttop="", sfproc=sfproc, sfrun=sfrun, depth=depth2, seqdir=seqdir[seqdirpos])
 
                cat("Done!\n")
                playsound(system.file("sounds", "complete.ogg", package="chesstrainer"))
@@ -4771,7 +4773,7 @@ play <- function(lang="en", ...) {
                      .drawevalbar(sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, showeval=TRUE)
 
                   if (showlibar && contliquery && token != "" && isonline) # also show the Lichess bar (but only if contliquery is on)
-                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop, showout=FALSE)
+                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, texttop, showout=FALSE)
 
                   while (TRUE) {
 
@@ -4831,7 +4833,7 @@ play <- function(lang="en", ...) {
                         }
                         .drawdepth(showeval[[mode]])
                         if (contliquery)
-                           .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop)
+                           .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, texttop)
                         .textbot(show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
                         contplay <- TRUE
                         break
@@ -4885,7 +4887,7 @@ play <- function(lang="en", ...) {
                            sfrun    <- res.sf$sfrun
                         }
                         if (compmove && contliquery) {
-                           res.li <- .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop)
+                           res.li <- .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, texttop)
                            bestmove <- res.li$selmove # [d]
                         }
                         .textbot(show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
@@ -4980,7 +4982,7 @@ play <- function(lang="en", ...) {
                      }
 
                      if (identical(click, "i")) {
-                        .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop)
+                        .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, texttop)
                         next
                      }
 
@@ -5075,7 +5077,7 @@ play <- function(lang="en", ...) {
             # in play mode with contliquery, set bestmove to the one selected from the Lichess database
 
             if (mode == "play" && contliquery) {
-               res.li <- .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop)
+               res.li <- .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, texttop)
                bestmove <- res.li$selmove # [d]
                Sys.sleep(max(1,4*delay)) # pause so that player can register whether their move was good or not
             }

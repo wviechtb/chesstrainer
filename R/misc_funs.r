@@ -1541,5 +1541,5 @@
 
 }
 
-.genlines <- function(pos, sub, nmoves, minperc, minplays, movedb, basename, level, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, barlen, invertbar, texttop="", sfproc, sfrun, depth, seqdir)
+.genlines <- function(pos, sub, nmoves, minperc, minplays, movedb, basename, level, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, texttop="", sfproc, sfrun, depth, seqdir)
    return()
