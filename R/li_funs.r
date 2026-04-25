@@ -107,7 +107,8 @@
       }
 
       if (out$status == 429) {
-         .texttop(.text("ratelimit"))
+         .texttop(.text("ratelimit"), sleep=1.5)
+         .texttop(texttop)
          if (contliquery && showlibar)
             .drawlibar(clear=TRUE)
          return(res)
@@ -159,6 +160,7 @@
 
       if (nrow(out) == 0L) {
          .texttop(.text("belowthreshold"), sleep=1.5)
+         .texttop(texttop)
          if (contliquery && showlibar)
             .drawlibar(clear=TRUE)
          return(res)

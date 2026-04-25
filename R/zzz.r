@@ -100,7 +100,7 @@
 
    # welcome message
 
-   loadmsg <- paste0("\nWelcome to the 'chesstrainer' package!\nFor an introduction, type: help(chesstrainer)\nTo start playing, type: play()\n")
+   loadmsg <- paste0("\nWelcome to the 'chesstrainer' package!\nTo read the manual, type: help(chesstrainer)\nTo start playing, type: play()\n")
    packageStartupMessage(loadmsg, domain=NULL, appendLF=TRUE)
 
 }
