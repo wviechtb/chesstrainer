@@ -1523,6 +1523,12 @@
                          "Position could not be found in the Lichess database."
    ))}
 
+   if (x == "belowthreshold") {
+      return(switch(lang,
+                    de = "Alle Z\U000000FCge liegen unter der (relativen) Zugh\U000000E4ufigkeitschwelle.",
+                         "All moves are below the (relative) frequency threshold."
+   ))}
+
    if (x == "ratelimit") {
       return(switch(lang,
                     de = "Die Durchsatzbegrenzung von Lichess wurde erreicht.\nBitte eine Minute vor dem n\U000000E4chsten Versuch warten.",
@@ -1611,6 +1617,18 @@
       return(switch(lang,
                     de = "Gewinn %",
                          "Win %"
+   ))}
+
+   if (x == "minfreq") {
+      return(switch(lang,
+                    de = "Mindesth\U000000E4ufigkeit",
+                         "Minimum frequency"
+   ))}
+
+   if (x == "minperc") {
+      return(switch(lang,
+                    de = "Mindestprozentsatz",
+                         "Minimum percent"
    ))}
 
    if (x == "barlen") {

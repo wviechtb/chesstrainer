@@ -176,7 +176,7 @@
 
    multiplier.xpos <- c(1.7,8)
    multiplier.ypos <- title.ypos[1] - 0.4 * (title.ypos[1]-title.ypos[2])
-   multiplier.box  <- .drawslider(x=multiplier.xpos, multiplier.ypos, xlab=c(1,1), cex=cex*cex.mult)
+   multiplier.box  <- .drawslider(x=multiplier.xpos, multiplier.ypos, xlab=c(0,1), cex=cex*cex.mult)
    .updateslider(NULL, multiplier.ypos, oldval=multiplier, xlim=multiplier.xpos, range=c(0,1), round=0.01, cex=cex*cex.mult)
 
    adjustwrong.xpos <- c(1.7,4.5)
@@ -282,7 +282,7 @@
 
          hit <- xy1[1] >= idletime.box[1] & xy1[2] >= idletime.box[2] & xy1[1] <= idletime.box[3] & xy1[2] <= idletime.box[4]
          if (hit) {
-            idletime <- .updateslider(xy2[1], idletime.ypos, oldval=idletime, xlim=idletime.xpos, range=c(1,20), round=TRUE, cex=cex*cex.mult)
+            idletime <- .updateslider(xy2[1], idletime.ypos, oldval=idletime, xlim=idletime.xpos, range=c(1,240), round=TRUE, cex=cex*cex.mult)
             next
          }
 
@@ -443,7 +443,7 @@
    hash.xpos <- c(5.4,8)
    hash.ypos <- title.ypos[7] - 0.4 * (title.ypos[7]-title.ypos[8])
    hash.box  <- .drawslider(x=hash.xpos, hash.ypos, xlab=2^(6:11), cex=cex*cex.mult)
-   hash <- which(hash == hash.opts)
+   hash <- which.min(abs(hash - hash.opts))
    .updateslider(NULL, hash.ypos, oldval=hash, xlim=hash.xpos, range=c(1,6), round=TRUE, cex=cex*cex.mult, text=FALSE)
    hash <- hash.opts[hash]
 
@@ -691,7 +691,7 @@
 
 }
 
-.lichesssettings <- function(speeds, ratings, lichessdb, uselicache, lisort, barlen, invertbar, token, monthslicache, isonline) {
+.lichesssettings <- function(speeds, ratings, lichessdb, uselicache, lisort, barlen, invertbar, minfreq, minperc, token, monthslicache, isonline) {
 
    col.bg     <- .get("col.bg")
    col.help   <- .get("col.help")
@@ -709,17 +709,20 @@
    cex.mult <- 0.8
 
    title.xpos <- 1.5
-   title.ypos <- 8.4 - 1.25 * c(0:5)
+   #title.ypos <- 8.4 - 1.25 * c(0:5)
+   title.ypos <- 8.4 - 1.02 * c(0:6)
    text(title.xpos, title.ypos[1], .text("speed"),         pos=4, cex=cex, family=font.mono, col=col.help, font=2)
    text(title.xpos, title.ypos[2], .text("rating"),        pos=4, cex=cex, family=font.mono, col=col.help, font=2)
    text(title.xpos, title.ypos[3], .text("lichessdb"),     pos=4, cex=cex, family=font.mono, col=col.help, font=2)
    text(4.2,        title.ypos[3], .text("usecacheshort"), pos=4, cex=cex, family=font.mono, col=col.help, font=2)
    text(6,          title.ypos[3], .text("delcache"),      pos=4, cex=cex, family=font.mono, col=col.help, font=2)
    text(title.xpos, title.ypos[4], .text("monthscache"),   pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(title.xpos, title.ypos[5], .text("barlen"),        pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(6,          title.ypos[5], .text("lisort"),        pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(title.xpos, title.ypos[6], .text("invertbar"),     pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(5,          title.ypos[6], .text("entertoken"),    pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(title.xpos, title.ypos[5], .text("minfreq"),       pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(5.2,        title.ypos[5], .text("minperc"),       pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(title.xpos, title.ypos[6], .text("barlen"),        pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(6,          title.ypos[6], .text("lisort"),        pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(title.xpos, title.ypos[7], .text("invertbar"),     pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(5,          title.ypos[7], .text("entertoken"),    pos=4, cex=cex, family=font.mono, col=col.help, font=2)
 
    speeds.opts <- c("ultraBullet", "bullet", "blitz", "rapid", "classical", "correspondence")
    speeds.xpos <- 2.2 + 1.1 * (seq_along(speeds.opts) - 1)
@@ -776,14 +779,28 @@
    monthslicache.box  <- .drawslider(x=monthslicache.xpos, monthslicache.ypos, xlab=c(1,60), cex=cex*cex.mult)
    .updateslider(NULL, monthslicache.ypos, oldval=monthslicache, xlim=monthslicache.xpos, range=c(1,60), round=TRUE, cex=cex*cex.mult)
 
+   minfreq.opts <- c(0, 10, 100, 1000, 10000, 100000, 1000000)
+   minfreq.txt  <- c("0", "10", "100", "1k", "10k", "100k", "1m")
+   minfreq.xpos <- c(1.7,4.5)
+   minfreq.ypos <- title.ypos[5] - 0.4 * (title.ypos[1]-title.ypos[2])
+   minfreq.box  <- .drawslider(x=minfreq.xpos, minfreq.ypos, xlab=minfreq.txt, cex=cex*cex.mult)
+   minfreq <- which.min(abs(minfreq - minfreq.opts))
+   .updateslider(NULL, minfreq.ypos, oldval=minfreq, xlim=minfreq.xpos, range=c(1,7), round=TRUE, cex=cex*cex.mult, text=FALSE)
+   minfreq <- minfreq.opts[minfreq]
+
+   minperc.xpos <- c(5.4,8)
+   minperc.ypos <- title.ypos[5] - 0.4 * (title.ypos[1]-title.ypos[2])
+   minperc.box  <- .drawslider(x=minperc.xpos, minperc.ypos, xlab=c(0,100), cex=cex*cex.mult)
+   .updateslider(NULL, minperc.ypos, oldval=minperc, xlim=minperc.xpos, range=c(0,100), round=TRUE, cex=cex*cex.mult)
+
    barlen.xpos <- c(1.7,5.5)
-   barlen.ypos <- title.ypos[5] - 0.4 * (title.ypos[1]-title.ypos[2])
+   barlen.ypos <- title.ypos[6] - 0.4 * (title.ypos[1]-title.ypos[2])
    barlen.box  <- .drawslider(x=barlen.xpos, barlen.ypos, xlab=c(10,100), cex=cex*cex.mult)
    .updateslider(NULL, barlen.ypos, oldval=barlen, xlim=barlen.xpos, range=c(10,100), round=TRUE, cex=cex*cex.mult)
 
    lisort.opts <- 1:2
    lisort.xpos <- 6.7 + 1.2 * (seq_along(lisort.opts) - 1)
-   lisort.ypos <- title.ypos[5] - 0.4 * (title.ypos[1]-title.ypos[2])
+   lisort.ypos <- title.ypos[6] - 0.4 * (title.ypos[1]-title.ypos[2])
    lisort.txt  <- c(.text("lisortfreq"), .text("lisortwinperc"))
    lisort.on   <- lisort.opts == lisort
    lisort.box  <- list()
@@ -793,7 +810,7 @@
 
    invertbar.opts <- c("No", "Yes")
    invertbar.xpos <- 2 + 0.7 * (seq_along(invertbar.opts) - 1)
-   invertbar.ypos <- title.ypos[6] - 0.4 * (title.ypos[1]-title.ypos[2])
+   invertbar.ypos <- title.ypos[7] - 0.4 * (title.ypos[1]-title.ypos[2])
    invertbar.txt  <- c(.text("no"), .text("yes"))
    invertbar.on   <- c(!invertbar, invertbar)
    invertbar.box  <- list()
@@ -925,6 +942,20 @@
             next
          }
 
+         hit <- xy1[1] >= minfreq.box[1] & xy1[2] >= minfreq.box[2] & xy1[1] <= minfreq.box[3] & xy1[2] <= minfreq.box[4]
+         if (hit) {
+            minfreq <- which(minfreq == minfreq.opts)
+            minfreq <- .updateslider(xy2[1], minfreq.ypos, oldval=minfreq, xlim=minfreq.xpos, range=c(1,7), round=TRUE, cex=cex*cex.mult, text=FALSE)
+            minfreq <- minfreq.opts[minfreq]
+            next
+         }
+
+         hit <- xy1[1] >= minperc.box[1] & xy1[2] >= minperc.box[2] & xy1[1] <= minperc.box[3] & xy1[2] <= minperc.box[4]
+         if (hit) {
+            minperc <- .updateslider(xy2[1], minperc.ypos, oldval=minperc, xlim=minperc.xpos, range=c(0,100), round=TRUE, cex=cex*cex.mult)
+            next
+         }
+
          hit <- sapply(invertbar.box, function(coords) xy1[1] >= coords[1] & xy1[2] >= coords[2] & xy1[1] <= coords[3] & xy1[2] <= coords[4])
          if (any(hit)) {
             i <- which(hit)
@@ -938,7 +969,7 @@
             next
          }
 
-         hit <- xy1[1] >= 5 & xy1[2] >= invertbar.box[[1]][2] & xy1[1] <= 7 & xy1[2] <= (title.ypos[5]+0.2)
+         hit <- xy1[1] >= 5 & xy1[2] >= invertbar.box[[1]][2] & xy1[1] <= 7 & xy1[2] <= (title.ypos[7]+0.2)
          if (hit) {
             eval(expr=switch1)
             tmp <- readline(prompt=.text("token"))
@@ -953,7 +984,7 @@
             uselicache <- .get("uselicache")
             assign("uselicache", FALSE, envir=.chesstrainer)
             assign("mode", "", envir=.chesstrainer)
-            res.li <- .liquery(pos=.get("pos"), flip=FALSE, sidetoplay="w", sidetoplaystart="w", i=1, isonline=isonline, lichessdb="lichess", token=tmp, speeds="blitz,rapid,classical", ratings="1200,1400,1600,1800", lisort=1, barlen=50, invertbar=FALSE, texttop="", tokencheck=TRUE)
+            res.li <- .liquery(pos=.get("pos"), flip=FALSE, sidetoplay="w", sidetoplaystart="w", i=1, isonline=isonline, lichessdb="lichess", token=tmp, speeds="blitz,rapid,classical", ratings="1200,1400,1600,1800", lisort=1, barlen=50, invertbar=FALSE, minfreq=0, minperc=0, texttop="", tokencheck=TRUE)
             assign("uselicache", uselicache, envir=.chesstrainer)
             assign("mode", mode, envir=.chesstrainer)
             if (is.null(res.li$out)) {
@@ -978,7 +1009,7 @@
          assign("uselicache", FALSE, envir=.chesstrainer)
          assign("mode", "", envir=.chesstrainer)
          assign("contliquery", TRUE, envir=.chesstrainer)
-         .liquery(.get("pos"), flip=FALSE, sidetoplay="w", sidetoplaystart="w", i=1, isonline=isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, texttop="", showout=TRUE, showlibar=FALSE)
+         .liquery(.get("pos"), flip=FALSE, sidetoplay="w", sidetoplaystart="w", i=1, isonline=isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, minfreq, minperc, texttop="", showout=TRUE, showlibar=FALSE)
          assign("uselicache", uselicache, envir=.chesstrainer)
          assign("mode", mode, envir=.chesstrainer)
          assign("contliquery", contliquery, envir=.chesstrainer)
@@ -992,7 +1023,7 @@
 
    uselicache <- uselicache.on[1]
 
-   out <- list(speeds=speeds, ratings=ratings, lichessdb=lichessdb, uselicache=uselicache, lisort=lisort, barlen=barlen, monthslicache=monthslicache, invertbar=invertbar, token=token)
+   out <- list(speeds=speeds, ratings=ratings, lichessdb=lichessdb, uselicache=uselicache, lisort=lisort, barlen=barlen, monthslicache=monthslicache, invertbar=invertbar, minfreq=minfreq, minperc=minperc, token=token)
 
    #.erase(1, 1, 9, 9)
 

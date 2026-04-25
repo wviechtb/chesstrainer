@@ -15,7 +15,7 @@
 
 }
 
-.liquery <- function(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, texttop, showout=TRUE, showlibar=TRUE, tokencheck=FALSE, retry=4) {
+.liquery <- function(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, minfreq, minperc, texttop, showout=TRUE, showlibar=TRUE, tokencheck=FALSE, retry=4) {
 
    res <- list(out=NULL, selmove="")
 
@@ -101,11 +101,15 @@
       if (inherits(out, "try-error")) {
          .texttop(.text("noconnect"), sleep=1.5)
          .texttop(texttop)
+         if (contliquery && showlibar)
+            .drawlibar(clear=TRUE)
          return(res)
       }
 
       if (out$status == 429) {
          .texttop(.text("ratelimit"))
+         if (contliquery && showlibar)
+            .drawlibar(clear=TRUE)
          return(res)
       }
 
@@ -148,14 +152,25 @@
 
       res$out <- out
       out$total <- rowSums(out[2:4])
-      totals    <- colSums(out[2:5])
+
+      sel <- out$total >= minfreq & out$total / sum(out$total) >= minperc/100
+      out <- out[sel,,drop=FALSE]
+      res$out <- res$out[sel,,drop=FALSE]
+
+      if (nrow(out) == 0L) {
+         .texttop(.text("belowthreshold"), sleep=1.5)
+         if (contliquery && showlibar)
+            .drawlibar(clear=TRUE)
+         return(res)
+      }
+
+      totals <- colSums(out[2:5])
 
       if (contliquery && showlibar)
          .drawlibar(totals, flip=flip)
 
-      out$move  <- sapply(out$move, .litouci, pos=pos)
+      out$move <- sapply(out$move, .litouci, pos=pos)
       res$selmove <- sample(out$move, size=1, prob=out$total)
-      #if (!showout) print(paste0("Selected move: ", res$selmove))
 
       if (showout && !contliquery)
          eval(expr=.get("switch1"))
