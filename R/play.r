@@ -4567,7 +4567,8 @@ play <- function(lang="en", ...) {
                   if (any(searchterm == x$fenshort) && identical(flip, x$flip)) {
                      pos <- min(which(searchterm == x$fenshort))
                         nextmoves <- x$move[pos]
-                     nextmoves[is.na(nextmoves)] <- ""
+                     if (is.na(nextmoves))
+                        return()
                      return(nextmoves)
                   } else {
                      return()
@@ -4596,7 +4597,6 @@ play <- function(lang="en", ...) {
                .texttop("")
             }
 
-            #if (compseq && mode %in% c("add","analysis") && (flip && sidetoplay=="b" || !flip && sidetoplay=="w") && any(notnull) && !is.element(attr(pos,"move"), nextmoves)) {
             if (compseq && mode %in% c("add","analysis") && any(notnull) && !is.element(attr(pos,"move"), nextmoves)) {
                if (san) {
                   movesuci <- sapply(nextmoves, .lan2uci, sidetoplay=sidetoplay)
