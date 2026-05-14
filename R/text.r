@@ -1775,6 +1775,12 @@
                          "Select gray color scheme"
    ))}
 
+   if (x == "scheme_light") {
+      return(switch(lang,
+                    de = "Helle Farbpalette ausw\U000000E4hlen",
+                         "Light color scheme"
+   ))}
+
    if (x == "none") {
       return(switch(lang,
                     de = "keins",
