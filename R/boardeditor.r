@@ -98,17 +98,17 @@
       if (identical(click, "q") || identical(click, "\033") || identical(click, "ctrl-[")) {
          tmp <- pos[2:9,2:9]
          if (sum(tmp == "WK") != 1L || sum(tmp == "BK") != 1L) {
-            .texttop(.text("kingswrong"), sleep=2, xadj=1, yadj=2)
+            .texttop(.text("kingswrong"), sleep=2, xadj=1, yadj=2, showlast=FALSE)
             next
          }
          ischeck <- c(.isattacked(tmp, xy=c(which(tmp=="WK", arr.ind=TRUE)), attackcolor="b"),
                       .isattacked(tmp, xy=c(which(tmp=="BK", arr.ind=TRUE)), attackcolor="w"))
          if (sum(ischeck) == 2L) {
-            .texttop(.text("doublecheck"), sleep=2, xadj=1, yadj=2)
+            .texttop(.text("doublecheck"), sleep=2, xadj=1, yadj=2, showlast=FALSE)
             next
          }
          if ((ischeck[1] && sidetoplay=="b") || (ischeck[2] && sidetoplay=="w")) {
-            .texttop(.text("wrongsidecheck"), sleep=2, xadj=1, yadj=2)
+            .texttop(.text("wrongsidecheck"), sleep=2, xadj=1, yadj=2, showlast=FALSE)
             next
          }
          break
@@ -198,7 +198,7 @@
             pos <- .expandpos(pos)
             .boardeditor.drawboard(pos, flip, sidetoplay)
          } else {
-            .texttop(.text("notvalidfen"), sleep=2, xadj=1, yadj=2)
+            .texttop(.text("notvalidfen"), sleep=2, xadj=1, yadj=2, showlast=FALSE)
          }
          next
       }

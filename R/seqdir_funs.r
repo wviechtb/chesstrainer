@@ -126,8 +126,7 @@
          }
          if (keymode=="r") {
             if (length(seqdir) == 1L) {
-               .texttop(.text("cannotremovesingleseqdir"), sleep=2)
-               .texttop("")
+               .texttop(.text("cannotremovesingleseqdir"), sleep=2, showlast=FALSE)
                num <- 0
                whichnum <- 1
                keymode <- "s"
@@ -191,13 +190,12 @@
             if (identical(seqdirnew, ""))
                next
             if (!dir.exists(seqdirnew)) {
-               .texttop(.text("dirdoesnotexistcreate"))
+               .texttop(.text("dirdoesnotexistcreate"), assign=FALSE)
                answer <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=.keyfun)
                if (identical(answer, "\r") || identical(answer, "ctrl-J") || .confirm(answer)) {
                   succces <- dir.create(seqdirnew, showWarnings=FALSE, recursive=TRUE)
                   if (!succces) {
                      .texttop(.text("dircreateerror"), sleep=2)
-                     .texttop("")
                      next
                   }
                }

@@ -33,7 +33,7 @@
    # set default colors
 
    assign("col.bg",        "#211b12",       envir=.chesstrainer)
-   assign("col.fg",        "#7a6d59",       envir=.chesstrainer)
+   assign("col.fg",        "gray75",        envir=.chesstrainer)
    assign("col.square.l",  "#f0d9b5",       envir=.chesstrainer)
    assign("col.square.d",  "#b58863",       envir=.chesstrainer)
    assign("col.square.be", "#6b6b6b",       envir=.chesstrainer)
@@ -48,7 +48,7 @@
    assign("col.annot",     "#00800080",     envir=.chesstrainer)
    assign("col.side.w",    "white",         envir=.chesstrainer)
    assign("col.side.b",    "black",         envir=.chesstrainer)
-   assign("col.side.d",    "gray",          envir=.chesstrainer)
+   assign("col.side.d",    "#6b6b6b",       envir=.chesstrainer)
    assign("col.time.fast", "#008000",       envir=.chesstrainer)
    assign("col.time.slow", "#800000",       envir=.chesstrainer)
 

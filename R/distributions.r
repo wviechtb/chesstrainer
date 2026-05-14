@@ -5,7 +5,6 @@
    par(xpd=FALSE)
 
    col.top      <- .get("col.top")
-   col.fg       <- .get("col.fg")
    col.bg       <- .get("col.bg")
    col.square.l <- .get("col.square.l")
    col.square.d <- .get("col.square.d")
@@ -20,8 +19,10 @@
 
    # histogram of 'scores'
 
-   hist(scores, breaks=20, las=1, col.axis=col.top, col.lab=col.top, col.main=col.fg,
+   hist(scores, breaks=20, las=1, col.axis=col.top, col.lab=col.top, col.main=col.top, axes=FALSE,
         xlab=.text("score"), col=col.square.d, border=col.square.l, main=paste0("Histogram: ", .text("score")), xlim=c(0,100))
+   axis(side=1, col=col.top, col.axis=col.top)
+   axis(side=2, col=col.top, col.axis=col.top, las=1)
    if (target > 0)
       abline(v=target, lty="dotted", col=col.top)
    #box(which="figure", col=col.border, lwd=lwd)
@@ -30,8 +31,10 @@
 
    # histogram of 'rounds'
 
-   hist(rounds, breaks=20, las=1, col.axis=col.top, col.lab=col.top, col.main=col.fg,
+   hist(rounds, breaks=20, las=1, col.axis=col.top, col.lab=col.top, col.main=col.top, axes=FALSE,
         xlab=.text("rounds"), col=col.square.d, border=col.square.l, main=paste0("Histogram: ", .text("rounds")))
+   axis(side=1, col=col.top, col.axis=col.top)
+   axis(side=2, col=col.top, col.axis=col.top, las=1)
    #box(which="figure", col=col.border, lwd=lwd)
 
    #########################################################################
@@ -39,8 +42,11 @@
    # histogram of 'age'
 
    if (length(c(na.omit(age))) >= 2L) {
-      hist(age, breaks=20, las=1, col.axis=col.top, col.lab=col.top, col.main=col.fg,
-           xlab=.text("day", TRUE), col=col.square.d, border=col.square.l, main=paste0("Histogram: ", .text("age")), xlim=c(0,max(age, na.rm=TRUE)))
+      tmp <- hist(age, breaks=20, plot=FALSE)
+      hist(age, breaks=20, las=1, col.axis=col.top, col.lab=col.top, col.main=col.top, axes=FALSE,
+           xlab=.text("day", TRUE), col=col.square.d, border=col.square.l, main=paste0("Histogram: ", .text("age")))#, xlim=c(0,max(age, na.rm=TRUE)))
+      axis(side=1, col=col.top, col.axis=col.top)
+      axis(side=2, col=col.top, col.axis=col.top, las=1)
    } else {
       plot(NA, xlim=c(0,1), ylim=c(0,1), xlab="", ylab="", xaxt="n", yaxt="n", bty="n")
    }
@@ -54,13 +60,16 @@
       # determine if difficulty values are only integers
       if (difffun==3) {
          tab <- table(factor(difficulty, levels=0:ceiling(max(difficulty, na.rm=TRUE))))
-         barplot(tab, las=1, col.axis=col.top, col.lab=col.top, col.main=col.fg,
+         barplot(tab, las=1, col.axis=col.top, col.lab=col.top, col.main=col.top, yaxt="n",
                  xlab=.text("difficulty"), col=col.square.d, border=col.square.l, main=paste0("Histogram: ", .text("difficulty")))
-         #hist(difficulty, breaks=seq(0,ceiling(max(difficulty, na.rm=TRUE))), las=1, col.axis=col.top, col.lab=col.top, col.main=col.fg,
+         axis(side=2, col=col.top, col.axis=col.top, las=1)
+         #hist(difficulty, breaks=seq(0,ceiling(max(difficulty, na.rm=TRUE))), las=1, col.axis=col.top, col.lab=col.top, col.main=col.top,
          #     xlab=.text("difficulty"), col=col.square.d, border=col.square.l, main=paste0("Histogram: ", .text("difficulty")))
       } else {
-         hist(difficulty, breaks=20, las=1, col.axis=col.top, col.lab=col.top, col.main=col.fg,
-              xlab=.text("difficulty"), col=col.square.d, border=col.square.l, main=paste0("Histogram: ", .text("difficulty")), xlim=c(0,max(difficulty, na.rm=TRUE)))
+         hist(difficulty, breaks=20, las=1, col.axis=col.top, col.lab=col.top, col.main=col.top, axes=FALSE,
+              xlab=.text("difficulty"), col=col.square.d, border=col.square.l, main=paste0("Histogram: ", .text("difficulty")))#, xlim=c(0,max(difficulty, na.rm=TRUE)))
+         axis(side=1, col=col.top, col.axis=col.top)
+         axis(side=2, col=col.top, col.axis=col.top, las=1)
       }
    } else {
       plot(NA, xlim=c(0,1), ylim=c(0,1), xlab="", ylab="", xaxt="n", yaxt="n", bty="n")
@@ -73,9 +82,11 @@
 
    par(mar=c(5,15,5,15))
 
-   plot(NA, las=1, col.axis=col.top, col.lab=col.top, col=col.square.l, col.main=col.fg,
+   plot(NA, las=1, col.axis=col.top, col.lab=col.top, col=col.square.l, col.main=col.top, axes=FALSE,
         bty="l", main=paste0(.text("scatterplot"), ": ", .text("rounds"), " vs. ", .text("score")), xlab=.text("rounds"), ylab=.text("score"),
         xlim=c(0,max(rounds, na.rm=TRUE)), ylim=c(0,100))
+   axis(side=1, col=col.top, col.axis=col.top)
+   axis(side=2, col=col.top, col.axis=col.top, las=1)
    xs <- seq(0, max(rounds, na.rm=TRUE), length.out=1000)
    ys <- 100 * multiplier^xs
    pt.cex <- max(0.1, 1 - 1/10 * log10(n)) # adjust point size based on n
@@ -102,7 +113,7 @@
 
    # scatterplot of 'rounds' versus 'difficulty'
 
-   #plot(NA, las=1, col.axis=col.top, col.lab=col.top, col=col.square.l, col.main=col.fg,
+   #plot(NA, las=1, col.axis=col.top, col.lab=col.top, col=col.square.l, col.main=col.top,
    #     bty="l", main=paste0(.text("rounds"), " vs. ", .text("difficulty")), xlab=.text("rounds"), ylab=.text("difficulty"),
    #     xlim=c(0,max(rounds, na.rm=TRUE)), ylim=c(0,max(difficulty, na.rm=TRUE)))
    #pt.cex <- max(0.1, 1 - 1/10 * log10(n)) # adjust point size based on n

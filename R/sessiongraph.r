@@ -7,7 +7,6 @@
    seqsplayed.total <- sum(seqsplayed)
 
    col.top      <- .get("col.top")
-   col.fg       <- .get("col.fg")
    col.bg       <- .get("col.bg")
    col.square.l <- .get("col.square.l")
    col.square.d <- .get("col.square.d")
@@ -23,9 +22,10 @@
       par(new=TRUE, mar=mar2)
       ylim <- range(round(unlist(mean.scores))) + c(-1,1)
       plot(NA, xlim=c(1,seqsplayed.total), ylim=ylim, xlab=.text("round"), ylab=.text("meanscore"),
-           bty="l", las=1, col.axis=col.top, col.lab=col.top, xaxt="n",
+           bty="l", las=1, col.axis=col.top, col.lab=col.top, axes=FALSE,
            cex=cex.plots, cex.axis=cex.plots, cex.lab=cex.plots)
-      axis(side=1, at=seq_len(seqsplayed.total), col.axis=col.top, cex.axis=cex.plots)
+      axis(side=1, at=seq_len(seqsplayed.total), col=col.top, col.axis=col.top, cex.axis=cex.plots)
+      axis(side=2, col=col.top, col.axis=col.top, cex.axis=cex.plots, las=1)
       start.pos <- 0
       for (j in 1:length(seqsplayed)) {
          segments(start.pos + 1, mean.scores[[j]][1], start.pos + seqsplayed[j], mean.scores[[j]][1], lty="dotted", col=col.top)
@@ -54,7 +54,7 @@
          } else {
             mar2 <- mar2 + 0.5
          }
-         .texttop(.text("maradj", mar2), sleep=0.5)
+         .texttop(.text("maradj", mar2), sleep=0.75)
          assign("mar2", mar2, envir=.chesstrainer)
          next
       }

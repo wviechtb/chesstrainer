@@ -844,7 +844,7 @@
 
 .printverbose <- function(selected, seqno, filename, lastseq, upsidedown, flip, unflip, replast, oldmode, i,
                           seqname, seqnum, score, rounds, totalmoves, show, showcomp, comment, bestmove, starteval,
-                          evalval, texttop, scoreadd, sidetoplay, givehint1, givehint2, mistake,
+                          evalval, scoreadd, sidetoplay, givehint1, givehint2, mistake,
                           timetotal, movesplayed, movestoplay, drawcircles, drawarrows, showstartcom, pos) {
 
    cat("\n")
@@ -869,7 +869,7 @@
    cat("bestmove:     ", sapply(bestmove, head, 1), "\n")
    cat("starteval:    ", starteval, "\n")
    cat("evalval:      ", evalval, "\n")
-   cat("texttop:      ", texttop, "\n")
+   cat("texttop:      ", paste0(.get("texttop"), collapse="\n"), "\n")
    cat("scoreadd:     ", scoreadd, "\n")
    cat("sidetoplay:   ", sidetoplay, "\n")
    cat("givehint1:    ", givehint1, "\n")
@@ -1227,7 +1227,7 @@
    notnull <- !sapply(seqident, is.null)
    seqident <- seqident[notnull]
    if (any(notnull)) {
-      .texttop(.text("transpositions", length(seqident) == 1L))
+      .texttop(.text("transpositions", length(seqident) == 1L), sleep=2)
       #eval(expr=.get("switch1"))
       cat(.text("transposseqs", length(seqident) == 1L))
       tab <- data.frame(files[notnull])
@@ -1541,5 +1541,5 @@
 
 }
 
-.genlines <- function(pos, sub, nmoves, genminperc, genminfreq, movedb, basename, level, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, minfreq, minperc, texttop="", sfproc, sfrun, depth, seqdir)
+.genlines <- function(pos, sub, nmoves, genminperc, genminfreq, movedb, basename, level, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, minfreq, minperc, sfproc, sfrun, depth, seqdir)
    return()

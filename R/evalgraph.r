@@ -95,7 +95,7 @@
          } else {
             mar2 <- mar2 + 0.5
          }
-         .texttop(.text("maradj", mar2), sleep=0.5)
+         .texttop(.text("maradj", mar2), sleep=0.75)
          assign("mar2", mar2, envir=.chesstrainer)
          next
       }

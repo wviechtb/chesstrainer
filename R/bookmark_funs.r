@@ -8,7 +8,6 @@
 
    if (!file.exists(file.path(seqdir[seqdirpos], ".bookmarks"))) {
       .texttop(.text("nobookmarks"), sleep=1)
-      .texttop("")
       return(NA)
    }
 
@@ -19,7 +18,6 @@
    if (inherits(tmp, "try-error")) {
       try(file.remove(file.path(seqdir[seqdirpos], ".bookmarks")), silent=TRUE)
       .texttop(.text("nobookmarks"), sleep=1)
-      .texttop("")
       return(NA)
    }
 
@@ -34,7 +32,6 @@
    if (length(bookmarks) == 0L) {
       try(file.remove(file.path(seqdir[seqdirpos], ".bookmarks")), silent=TRUE)
       .texttop(.text("nobookmarks"), sleep=1)
-      .texttop("")
       return(NA)
    }
 

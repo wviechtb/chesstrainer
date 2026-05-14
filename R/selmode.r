@@ -133,7 +133,7 @@
 
    if (file.exists(file.path(seqdir[seqdirpos], ".sequential")) && selmode != "sequential") {
       if (texttop)
-         .texttop(.text("sequential"), sleep=1.5)
+         .texttop(.text("sequential"), sleep=1.5, showlast=FALSE)
       selmode <- "sequential"
    }
 

@@ -14,7 +14,6 @@
    }
 
    col.top      <- .get("col.top")
-   col.fg       <- .get("col.fg")
    col.bg       <- .get("col.bg")
    col.square.l <- .get("col.square.l")
    col.square.d <- .get("col.square.d")
@@ -53,7 +52,7 @@
          years <- ifelse(duplicated(years), "", years)
          labs <- paste0(months, "\n", years)
       }
-      axis(side=1, at=x, labels=labs, col.axis=col.top, padj=0.5, cex.axis=cex.plots)
+      axis(side=1, at=x, labels=labs, col=col.top, col.axis=col.top, padj=0.5, cex.axis=cex.plots)
    }
 
    plot.playtime <- function(x) {
@@ -74,12 +73,13 @@
          yismins <- FALSE
          yvals <- yvals / 60
       }
-      plot(x[[1]], yvals, type="h", lwd=plotlwd, col=col.square.l,
+      plot(x[[1]], yvals, type="h", lwd=plotlwd, col=col.square.l, axes=FALSE,
            xlim=xlim, ylim=c(0, max(yvals)), bty="l", las=1, xlab=.text(timeframe, FALSE),
            ylab=ifelse(yismins, .text("historyplaytime_mins"), .text("historyplaytime_hours")),
-           col.axis=col.top, col.lab=col.top, col.main=col.fg, xaxt="n",
+           col.axis=col.top, col.lab=col.top, col.main=col.top, xaxt="n",
            cex=cex.plots, cex.axis=cex.plots, cex.lab=cex.plots)
       xaxis(x[[1]])
+      axis(side=2, col=col.top, col.axis=col.top, cex.axis=cex.plots, las=1)
       usr <<- par()$usr
       par(mar=mar, usr=c(1,9,1,9))
       .texttop(.text("totalplaytime", .totaltime(total.playtime)))
@@ -96,12 +96,13 @@
       } else {
          xlim <- NULL
       }
-      plot(x[[1]], x$seqsplayed, type="h", lwd=plotlwd, col=col.square.l,
+      plot(x[[1]], x$seqsplayed, type="h", lwd=plotlwd, col=col.square.l, axes=FALSE,
            xlim=xlim, ylim=c(0, max(x$seqsplayed)), bty="l", las=1,
            xlab=.text(timeframe, FALSE), ylab=.text("historyseqsplayed"),
-           col.axis=col.top, col.lab=col.top, col.main=col.fg, xaxt="n",
+           col.axis=col.top, col.lab=col.top, col.main=col.top, xaxt="n",
            cex=cex.plots, cex.axis=cex.plots, cex.lab=cex.plots)
       xaxis(x[[1]])
+      axis(side=2, col=col.top, col.axis=col.top, cex.axis=cex.plots, las=1)
       usr <<- par()$usr
       par(mar=mar, usr=c(1,9,1,9))
       .texttop(.text("totalseqsplayed", total.seqsplayed))
@@ -132,7 +133,7 @@
          } else {
             mar2 <- mar2 + 0.5
          }
-         .texttop(.text("maradj", mar2), sleep=0.5)
+         .texttop(.text("maradj", mar2), sleep=0.75)
          assign("mar2", mar2, envir=.chesstrainer)
          next
       }

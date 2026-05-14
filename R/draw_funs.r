@@ -50,7 +50,7 @@
    mar <- .get("mar")
 
    if (dev.cur() == 1L) {
-      dev.new(bg=col.bg, title="chesstrainer")
+      dev.new(bg=col.bg, title="Chesstrainer")
       if (.get("inhibit")) {
          Sys.sleep(0.2)
          dev.control(displaylist="inhibit")
@@ -160,11 +160,11 @@
 
 }
 
-.redrawall <- function(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove) {
+.redrawall <- function(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove) {
 
    .drawboard(pos, flip)
    .textbot(show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
-   .texttop(texttop)
+   .texttop(onlylast=TRUE)
    .drawcheck(pos, flip=flip)
    if (.get("mode") == "test" && .get("timed")) {
       .drawtimer(movestoplay, movesplayed, timetotal, timepermove)
@@ -1047,7 +1047,12 @@
 
 }
 
-.texttop <- function(txt, sleep=0, left=FALSE, xadj=0, yadj=0) {
+.texttop <- function(txt, sleep=0, left=FALSE, xadj=0, yadj=0, onlylast=FALSE, showlast=TRUE, assign=TRUE) {
+
+   oldtext <- .get("texttop")
+
+   if (onlylast)
+      txt <- oldtext
 
    if (length(txt) == 0L || is.na(txt))
       return()
@@ -1064,7 +1069,9 @@
 
    srt <- ifelse(.get("upsidedown"), 180, 0)
 
-   rect(xleft, ybottom-ymargin, xright, ytop+ymargin, col=.get("col.bg"), border=NA)
+   col.bg <- .get("col.bg")
+
+   rect(xleft, ybottom-ymargin, xright, ytop+ymargin, col=col.bg, border=NA)
 
    if (!identical(txt, "")) {
       txt <- gsub("\\n", "\n", txt, fixed=TRUE)
@@ -1090,10 +1097,19 @@
       }
    }
 
-   Sys.sleep(sleep + .get("sleepadj"))
+   if (sleep > 0) {
+      Sys.sleep(sleep + .get("sleepadj"))
+      rect(xleft, ybottom-ymargin, xright, ytop+ymargin, col=col.bg, border=NA)
+      if (showlast)
+         .texttop(oldtext, sleep=0, left=left, xadj=xadj, yadj=yadj, assign=FALSE)
+   }
 
-   if (sleep > 0)
-      rect(xleft, ybottom-ymargin, xright, ytop+ymargin, col=.get("col.bg"), border=NA)
+   if (sleep == 0 && assign) {
+      tmp <- paste(txt, collapse="\n")
+      if (left)
+         attr(tmp, "left") <- TRUE
+      assign("texttop", tmp, envir=.chesstrainer)
+   }
 
    txt <- paste(txt, collapse="\n")
    return(txt)
@@ -1599,7 +1615,7 @@
       if (white >= minprop)
          text(xpos + indsize/2, 8.9, paste0(round(white*100), "%"), cex=cex.eval, col=col.side.b)
       if (draw >= minprop)
-         text(xpos + indsize/2, (1 + 8*black + 9 - 8*white)/2, paste0(round(draw*100), "%"), cex=cex.eval, col=col.side.b)
+         text(xpos + indsize/2, (1 + 8*black + 9 - 8*white)/2, paste0(round(draw*100), "%"), cex=cex.eval, col=col.side.w)
    } else {
       if (doanim) {
          rect(xpos, 1, xpos+indsize, 1 + 8*lastwhite, border=NA, col=col.side.w)
@@ -1641,7 +1657,7 @@
       if (black >= minprop)
          text(xpos + indsize/2, 8.9, paste0(round(black*100), "%"), cex=cex.eval, col=col.side.w)
       if (draw >= minprop)
-         text(xpos + indsize/2, (1 + 8*white + 9 - 8*black)/2, paste0(round(draw*100), "%"), cex=cex.eval, col=col.side.b)
+         text(xpos + indsize/2, (1 + 8*white + 9 - 8*black)/2, paste0(round(draw*100), "%"), cex=cex.eval, col=col.side.w)
    }
 
    segments(xpos+0.005, 5, xpos+indsize-0.005, col=col.fg)
@@ -1694,7 +1710,6 @@
 
 .showbestmove <- function(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth, multipv, sflim) {
 
-   texttop <- ""
    evalvals <- NULL
 
    if (nrow(circles) >= 1L || nrow(arrows) >= 1L || nrow(harrows) >= 1L) {
@@ -1739,8 +1754,7 @@
       evalvals <- evalvals[!is.na(evalvals)]
       bestmovetxt <- bestmovetxt[!is.na(bestmovetxt)]
       .drawarrows(harrows, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
-      texttop <- .texttop(paste0(bestmovetxt, collapse="\n"), left=TRUE)
-      attr(texttop, "left") <- TRUE
+      .texttop(paste0(bestmovetxt, collapse="\n"), left=TRUE)
    } else {
       if (sfrun) {
          .texttop(.text("nobestmove"), sleep=1.5)
@@ -1751,7 +1765,7 @@
 
    .drawglyph(glyph)
 
-   return(list(harrows=harrows, texttop=texttop, evalvals=evalvals))
+   return(list(harrows=harrows, evalvals=evalvals))
 
 }
 

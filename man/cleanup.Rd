@@ -29,7 +29,7 @@ cleanup(config=FALSE, colors=FALSE, seqdir=FALSE, history=FALSE,
 
    Be careful with removing the other files and directories! Once deleted, they cannot be recovered.
 
-   Removing mpg123 or Stockfish with this function only removes the installations made via \code{\link{install_mpg123}} and \code{\link{install_stockfish}}. It does not touch any system files.
+   Removing mpg123 or Stockfish with this function only removes the installations made via the \code{\link{install_mpg123}()} and \code{\link{install_stockfish}()} functions. It does not touch any system files.
 
 }
 \value{

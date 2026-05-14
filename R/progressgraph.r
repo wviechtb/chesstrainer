@@ -6,7 +6,6 @@
    x <- dat
 
    col.top      <- .get("col.top")
-   col.fg       <- .get("col.fg")
    col.bg       <- .get("col.bg")
    col.square.l <- .get("col.square.l")
    col.square.d <- .get("col.square.d")
@@ -28,9 +27,10 @@
          xlim <- range(x$round)
       }
       plot(NA, xlim=xlim, ylim=c(0,100), xlab=.text("round"), ylab=.text("score"),
-           bty="l", las=1, col.axis=col.top, col.lab=col.top, xaxt="n",
+           bty="l", las=1, col.axis=col.top, col.lab=col.top, axes=FALSE,
            cex=cex.plots, cex.axis=cex.plots, cex.lab=cex.plots)
-      axis(side=1, at=x$round, col.axis=col.top, cex.axis=cex.plots)
+      axis(side=1, at=x$round, col=col.top, col.axis=col.top, cex.axis=cex.plots)
+      axis(side=2, col=col.top, col.axis=col.top, cex.axis=cex.plots, las=1)
       points(x$round, x$score, type="o", pch=21, lwd=2, col=col.square.l, bg=col.square.d, cex=cex.plots)
       usr <<- par()$usr
       par(mar=mar, usr=c(1,9,1,9))
@@ -53,7 +53,7 @@
          } else {
             mar2 <- mar2 + 0.5
          }
-         .texttop(.text("maradj", mar2), sleep=0.5)
+         .texttop(.text("maradj", mar2), sleep=0.75)
          assign("mar2", mar2, envir=.chesstrainer)
          next
       }

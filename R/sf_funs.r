@@ -192,12 +192,12 @@
       }
 
       if (getcloudeval && out$status == 429) {
-         .texttop(.text("ratelimit"))
+         .texttop(.text("ratelimit"), assign=FALSE)
          getcloudeval <- FALSE
       }
 
       if (getcloudeval && !is.null(content(out)$error)) {
-         .texttop(.text("posnotfound"))
+         .texttop(.text("posnotfound"), assign=FALSE)
          getcloudeval <- FALSE
       }
 
@@ -267,7 +267,7 @@
    prevdepth <- 0
 
    if (isdeep)
-      .texttop(.text("sfdeepeval"))
+      .texttop(.text("sfdeepeval"), assign=FALSE)
 
    if (progbar) {
       rect(1, 9.6, 9, 9.7, col=NA, border=col.top)

@@ -643,8 +643,8 @@
 
    if (x == "cexsetexpl") {
       return(switch(lang,
-                    de = c("Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Gr\U000000F6\U000000DFe f\U000000FCr die Brettkoordinaten", "Gr\U000000F6\U000000DFe f\U000000FCr den Materialunterschied", "Gr\U000000F6\U000000DFe f\U000000FCr Diagramme", "Gr\U000000F6\U000000DFe f\U000000FCr Text in Glyphen"),
-                         c("Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Size of the board coordinates", "Size of the material difference", "Size of plots", "Size of text in glyphs")
+                    de = c("Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Gr\U000000F6\U000000DFe f\U000000FCr die Brettkoordinaten", "Gr\U000000F6\U000000DFe f\U000000FCr den Materialunterschied", "Gr\U000000F6\U000000DFe f\U000000FCr Diagramme", "Gr\U000000F6\U000000DFe f\U000000FCr Text in Glyphen", "Gr\U000000F6\U000000DFe f\U000000FCr Text im Lichess Fenster"),
+                         c("Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Size of the board coordinates", "Size of the material difference", "Size of plots", "Size of text in glyphs", "Size of text in Lichess window")
    ))}
 
    if (x == "miscsetexpl") {
@@ -1507,7 +1507,7 @@
 
    if (x == "transpositions") {
       return(switch(lang,
-                    de = paste0("Es gibt ", ifelse(arg, "eine Sequenz", "mehrere Sequenzen"), " mit Zugumstellungen die zu dieser Stellung ", ifelse(arg, "f\U000000FChrt.", "f\U000000FChren.")),
+                    de = paste0("Es gibt ", ifelse(arg, "eine Sequenz", "mehrere Sequenzen"), " mit Zugumstellungen, die zu dieser Stellung ", ifelse(arg, "f\U000000FChrt.", "f\U000000FChren.")),
                          paste0("There ", ifelse(arg, "is one sequence", "are multiple sequences"), " with move transpositions that ", ifelse(arg, "leads", "lead"), "to this position.")
    ))}
 
@@ -1617,6 +1617,24 @@
       return(switch(lang,
                     de = "Gewinn %",
                          "Win %"
+   ))}
+
+   if (x == "liout") {
+      return(switch(lang,
+                    de = "Ausgabe",
+                         "Output"
+   ))}
+
+   if (x == "lioutconsole") {
+      return(switch(lang,
+                    de = "Konsole",
+                         "Console"
+   ))}
+
+   if (x == "lioutwindow") {
+      return(switch(lang,
+                    de = "Fenster",
+                         "Window"
    ))}
 
    if (x == "minfreq") {
@@ -1765,8 +1783,8 @@
 
    if (x == "notseqmove") {
       return(switch(lang,
-                    de = "Nicht einer der Sequenzez\U000000FCge.",
-                         "Not one of the sequence moves."
+                    de = "Nicht einer der Z\U000000FCge aus den Sequenzen.",
+                         "Not one of the moves from the sequences."
    ))}
 
    if (x == "existingseqmoves") {
@@ -1785,6 +1803,12 @@
       return(switch(lang,
                     de = paste0("Schachbrett verkehrt herum anzeigen: ", ifelse(arg, "an", "aus")),
                          paste0("Display the chessboard upside down: ", ifelse(arg, "on", "off"))
+   ))}
+
+   if (x == "flush") {
+      return(switch(lang,
+                    de = paste0("Flush: ", ifelse(arg, "an", "aus")),
+                         paste0("Flush: ", ifelse(arg, "on", "off"))
    ))}
 
 }

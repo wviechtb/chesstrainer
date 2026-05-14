@@ -26,12 +26,12 @@ play <- function(lang="en", ...) {
                     expval=2, target=0, multiplier=0.8, adjustwrong=40, adjusthint=20, showeval=TRUE, evalsteps=5, movestoshow=5,
                     showcoords=TRUE, showtransp=TRUE, showmatdiff=TRUE, san=TRUE, piecesymbols=1, wait=TRUE, delay=0.5, idletime=120, mintime=60, sleepadj=0, lwd=2, volume=50,
                     showgraph=FALSE, repmistake=FALSE, zenmode=FALSE, compseq=TRUE,
-                    cex.top=1.4, cex.bot=0.7, cex.eval=0.5, cex.coords=0.85, cex.matdiff=1.1, cex.plots=1.0, cex.glyphs=1.6,
+                    cex.top=1.4, cex.bot=0.7, cex.eval=0.5, cex.coords=0.85, cex.matdiff=1.1, cex.plots=1.0, cex.glyphs=1.6, cex.lichess=0.8,
                     sfpath="", depth1=12, depth2=20, depth3=8, sflim=NA, multipv1=1, multipv2=1, threads=1, hash=256, hintdepth=10, monthssfcache=12, usesfcache=TRUE,
                     difffun=1, difflen=15, diffmin=5,
                     mar=c(5.5, 5.5, 5.5, 5.5), mar2=c(11, 11, 9, 9),
-                    lichessdb="lichess", speeds="blitz,rapid,classical", ratings="1200,1400,1600,1800", lisort=1, barlen=50,
-                    invertbar=FALSE, token="", uselicache=TRUE, showlibar=TRUE, monthslicache=12, minfreq=0, minperc=0,
+                    lichessdb="lichess", speeds="blitz,rapid,classical", ratings="1200,1400,1600,1800", liout=1, lisort=1, barlen=50, invertbar=FALSE,
+                    token="", uselicache=TRUE, showlibar=TRUE, monthslicache=12, minfreq=0, minperc=0,
                     switch1=ifelse(isTRUE(iswin) && identical(gui, "rgui"), "bringToTop(-1)",        "invisible()"),
                     switch2=ifelse(isTRUE(iswin) && identical(gui, "rgui"), "bringToTop(dev.cur())", "invisible()"),
                     quitanim=TRUE, inhibit=FALSE, flush=FALSE, raster=TRUE) # these are not saved as part of the settings
@@ -83,6 +83,7 @@ play <- function(lang="en", ...) {
    cex.matdiff <- max(0.1, cex.matdiff)
    cex.plots <- max(0.1, cex.plots)
    cex.glyphs <- max(0.1, cex.glyphs)
+   cex.lichess <- max(0.1, cex.lichess)
    if (is.null(sfpath) || length(sfpath) == 0)
       sfpath <- ""
    depth1 <- max(1, depth1)
@@ -145,11 +146,11 @@ play <- function(lang="en", ...) {
                        expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, showeval=showeval, evalsteps=evalsteps, movestoshow=movestoshow,
                        showcoords=showcoords, showtransp=showtransp, showmatdiff=showmatdiff, san=san, piecesymbols=piecesymbols, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, lwd=lwd, volume=volume,
                        showgraph=showgraph, repmistake=repmistake, zenmode=zenmode, compseq=compseq,
-                       cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
+                       cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs, cex.lichess=cex.lichess,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, monthssfcache=monthssfcache, usesfcache=usesfcache,
                        difffun=difffun, difflen=difflen, diffmin=diffmin,
                        mar=mar, mar2=mar2,
-                       lichessdb=lichessdb, speeds=speeds, ratings=ratings, lisort=lisort, barlen=barlen, invertbar=invertbar, token=token, uselicache=uselicache, showlibar=showlibar, monthslicache=monthslicache, minfreq=minfreq, minperc=minperc,
+                       lichessdb=lichessdb, speeds=speeds, ratings=ratings, liout=liout, lisort=lisort, barlen=barlen, invertbar=invertbar, token=token, uselicache=uselicache, showlibar=showlibar, monthslicache=monthslicache, minfreq=minfreq, minperc=minperc,
                        switch1=switch1, switch2=switch2)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       cols <- sapply(cols.all, function(x) .get(x))
@@ -177,11 +178,11 @@ play <- function(lang="en", ...) {
                        expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, showeval=showeval, evalsteps=evalsteps, movestoshow=movestoshow,
                        showcoords=showcoords, showtransp=showtransp, showmatdiff=showmatdiff, san=san, piecesymbols=piecesymbols, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, lwd=lwd, volume=volume,
                        showgraph=showgraph, repmistake=repmistake, zenmode=zenmode, compseq=compseq,
-                       cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
+                       cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs, cex.lichess=cex.lichess,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, monthssfcache=monthssfcache, usesfcache=usesfcache,
                        difffun=difffun, difflen=difflen, diffmin=diffmin,
                        mar=mar, mar2=mar2,
-                       lichessdb=lichessdb, speeds=speeds, ratings=ratings, lisort=lisort, barlen=barlen, invertbar=invertbar, token=token, uselicache=uselicache, showlibar=showlibar, monthslicache=monthslicache, minfreq=minfreq, minperc=minperc,
+                       lichessdb=lichessdb, speeds=speeds, ratings=ratings, liout=liout, lisort=lisort, barlen=barlen, invertbar=invertbar, token=token, uselicache=uselicache, showlibar=showlibar, monthslicache=monthslicache, minfreq=minfreq, minperc=minperc,
                        switch1=switch1, switch2=switch2, firstrun=settings$firstrun)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       if (file.exists(file.path(configdir, "colors.rds"))) {
@@ -216,6 +217,7 @@ play <- function(lang="en", ...) {
    assign("cex.matdiff", cex.matdiff, envir=.chesstrainer)
    assign("cex.plots", cex.plots, envir=.chesstrainer)
    assign("cex.glyphs", cex.glyphs, envir=.chesstrainer)
+   assign("cex.lichess", cex.lichess, envir=.chesstrainer)
    assign("volume", volume, envir=.chesstrainer)
    assign("lwd", lwd, envir=.chesstrainer)
    assign("mar", mar, envir=.chesstrainer)
@@ -240,7 +242,7 @@ play <- function(lang="en", ...) {
    assign("upsidedown", FALSE, envir=.chesstrainer) # TODO: this can be removed (also from draw_funs.r)
    assign("evalsteps", evalsteps, envir=.chesstrainer)
 
-   # create cache directory
+   # create cache directories
 
    cachedir <- tools::R_user_dir(package="chesstrainer", which="cache")
 
@@ -583,7 +585,7 @@ play <- function(lang="en", ...) {
    keys <- c("q", "\033", " ", "m", "d", "\\", "\U000000E4", "n", "N", "B", "p", "P",
              "g", "h", "H", "y", "Y", "Left", "Right", "Up", "Down", "t", "T", "0", "1", "2", "3", "4", "5", "9",
              "r", "o", "u", "U", "M", "j", "%",
-             "a", "A", "f", "z", "Z", "c", "!", "@", "\"", "e", "E", "s", "b", "K", "C", "S",
+             "a", "A", "f", "z", "Z", "c", "!", "@", "\"", "e", "E", "s", "b", "K", "C", "S", "F",
              "^", "6", "R", "G", "W", "-", "=", "_", "+", "[", "]", "{", "}", "(", ")", "i", "x", "v", "V",
              "l", "L", "<", ">", "/", ",", ".", "|", "*", "8", "?", "'", ";", ":",
              "F1", "F2", "F3", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12",
@@ -612,7 +614,6 @@ play <- function(lang="en", ...) {
       comment    <- ""
       evalval    <- NA_real_
       starteval  <- 0.2
-      texttop    <- ""
       if (!(mode == "play" && contliquery)) {
          flip <- FALSE
          sidetoplay <- "w"
@@ -642,6 +643,7 @@ play <- function(lang="en", ...) {
       assign("mattdiff", 0, envir=.chesstrainer)
       assign("x2y2", c(NA,NA), envir=.chesstrainer)
       assign("depth", NULL, envir=.chesstrainer)
+      assign("texttop", "", envir=.chesstrainer)
 
       circles <- matrix(nrow=0, ncol=2) # to store circles
       arrows  <- matrix(nrow=0, ncol=4) # to store arrows
@@ -839,7 +841,7 @@ play <- function(lang="en", ...) {
                seqno <- 1
                if (k > 1L) {
                   playsound(system.file("sounds", "finished.ogg", package="chesstrainer"))
-                  .texttop(.text("finishedround"), sleep=2)
+                  .texttop(.text("finishedround"), sleep=2, showlast=FALSE)
                }
             }
          }
@@ -984,6 +986,14 @@ play <- function(lang="en", ...) {
          stop(.text("testdevice"), call.=FALSE)
       }
 
+      # open Lichess window if liout is 2 and it is not already open
+
+      if (liout == 2 && length(dev.list()) == 1L) {
+         .drawliwin()
+         dev.set(which=2L)
+         eval(expr=switch2)
+      }
+
       if (listseqs) {
          .listseqs(k, files, files.all, selected, scores.selected, age.selected, rounds.selected, difficulty.selected, probvals.selected)
          listseqs <- FALSE
@@ -1011,7 +1021,7 @@ play <- function(lang="en", ...) {
             if (i == 1 && !is.null(sub$commentstart) && showstartcom) {
                .startcomment(sub$commentstart) # waits for click
                .redrawpos(pos, flip=flip)
-               #.redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
+               #.redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
                .drawevalbar(starteval, i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]])
             }
 
@@ -1023,7 +1033,7 @@ play <- function(lang="en", ...) {
             }
 
             if (!identical(sub$moves$comment[i], "")) {
-               texttop <- .texttop(sub$moves$comment[i])
+               .texttop(sub$moves$comment[i])
                if (isTRUE(show[i+1]))
                   Sys.sleep(delay)
             }
@@ -1049,9 +1059,9 @@ play <- function(lang="en", ...) {
                i <- i + 1
                sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                if (identical(sub$moves$comment[i], "") && !identical(sub$moves$comment[i-1], "")) {
-                  texttop <- .texttop(sub$moves$comment[i-1])
+                  .texttop(sub$moves$comment[i-1])
                } else {
-                  texttop <- .texttop(sub$moves$comment[i])
+                  .texttop(sub$moves$comment[i])
                }
                .textbot(i=i, totalmoves=totalmoves, onlyi=TRUE)
                glyph <- sub$moves$glyph[i-1]
@@ -1080,14 +1090,13 @@ play <- function(lang="en", ...) {
          if (mode %in% c("add","analysis") && contanalysis && drawarrows) {
             tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
             harrows  <- tmp$harrows
-            texttop  <- tmp$texttop
             evalvals <- tmp$evalvals
          }
 
          .drawdepth(showeval[[mode]])
 
          if (mode %in% c("add","analysis") && contliquery)
-            .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, minfreq, minperc, texttop)
+            .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc)
 
          input <- TRUE
          islastmove <- FALSE
@@ -1126,7 +1135,7 @@ play <- function(lang="en", ...) {
 
                   if (contliquery && !nzchar(bestmove[[1]][1])) {
                      # but if we started a new round with contliquery, then bestmove is ""
-                     res.li <- .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, minfreq, minperc, texttop)
+                     res.li <- .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc)
                      bestmove <- res.li$selmove
                   }
 
@@ -1152,7 +1161,7 @@ play <- function(lang="en", ...) {
                   .textbot(i=i, totalmoves=totalmoves, onlyi=TRUE)
 
                   if (contliquery)
-                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, minfreq, minperc, texttop, showout=FALSE)
+                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc, showout=FALSE)
 
                   # get the evaluation for the move made by the computer (based on depth1, not depth3) and the best move that can be made by the player
 
@@ -1283,7 +1292,7 @@ play <- function(lang="en", ...) {
                session.date.end <- Sys.time()
                session.time.end <- proc.time()[[3]]
                session.playtime <- round(session.time.end - session.time.start)
-               if (session.playtime > 120) { # only save session if it was longer than x number of seconds
+               if (session.playtime > mintime) { # only save session if it was longer than <mintime> seconds
                   dates <- data.frame(date.start=session.date.start, date.end=session.date.end, playtime=session.playtime, seqsplayed=sum(session.seqsplayed))
                   player.file <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "sessions", paste0(player, ".rds"))
                   if (file.exists(player.file)) {
@@ -1299,13 +1308,15 @@ play <- function(lang="en", ...) {
                if (quitanim)
                   .quit()
                dev.off()
+               if (liout == 2 && !is.null(dev.list()))
+                  dev.off()
                next
             }
 
             # Escape to update the board
 
             if (identical(click, "\033") || identical(click, "ctrl-[")) {
-               .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
+               .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
                .drawevalbar(sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]])
                .drawlibar(.get("lasttotals"), flip=flip)
                circles <- matrix(nrow=0, ncol=2)
@@ -1330,6 +1341,8 @@ play <- function(lang="en", ...) {
                }
                settings$mode <- mode
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
+               if (liout == 2)
+                  .clearliwin(dev.after=2L)
                .newround()
                next
             }
@@ -1388,7 +1401,6 @@ play <- function(lang="en", ...) {
             if (identical(click, "\\") || identical(click, "\U000000E4")) {
                if (!contliquery && !sfrun) {
                   .texttop(.text("noplaymodewoutsf"), sleep=1.5)
-                  .texttop(texttop)
                   next
                }
                sub$moves <- sub$moves[seq_len(i-1),,drop=FALSE]
@@ -1431,10 +1443,10 @@ play <- function(lang="en", ...) {
                   sfrun    <- res.sf$sfrun
                }
                if (compmove && contliquery) {
-                  res.li <- .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, minfreq, minperc, texttop)
+                  res.li <- .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc)
                   bestmove <- res.li$selmove # [d]
                }
-               texttop <- .texttop("")
+               .texttop("")
                .textbot(show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
                .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), glyph=glyph, flip=flip)
                circles <- matrix(nrow=0, ncol=2)
@@ -1463,7 +1475,7 @@ play <- function(lang="en", ...) {
                      seqno <- 1
                      if (k > 1L) {
                         playsound(system.file("sounds", "finished.ogg", package="chesstrainer"))
-                        .texttop(.text("finishedround"), sleep=2)
+                        .texttop(.text("finishedround"), sleep=2, showlast=FALSE)
                      }
                   }
                }
@@ -1487,7 +1499,7 @@ play <- function(lang="en", ...) {
                   session.date.end <- Sys.time()
                   session.time.end <- proc.time()[[3]]
                   session.playtime <- round(session.time.end - session.time.start)
-                  if (session.playtime > 30) { # only save session if it was longer than 30 seconds
+                  if (session.playtime > mintime) { # only save session if it was longer than <mintime> seconds
                      dates <- data.frame(date.start=session.date.start, date.end=session.date.end, playtime=session.playtime, seqsplayed=sum(session.seqsplayed))
                      player.file <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "sessions", paste0(oldplayer, ".rds"))
                      if (file.exists(player.file)) {
@@ -1512,16 +1524,16 @@ play <- function(lang="en", ...) {
             # ctrl-r to remove the current player (starts a new round)
 
             if (identical(click, "ctrl-R")) {
-               .texttop(.text("rlydelplayer", player))
+               .texttop(.text("rlydelplayer", player), assign=FALSE)
                answer <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=.keyfun)
                answer <- .confirm(answer)
                if (answer) {
-                  .texttop(.text("rlyrlydelplayer", player))
+                  .texttop(.text("rlyrlydelplayer", player), assign=FALSE)
                   answer <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=.keyfun)
                   answer <- .confirm(answer)
                }
                if (answer) {
-                  .texttop(.text("delplayer", player), sleep=1)
+                  .texttop(.text("delplayer", player), assign=FALSE)
                   .removeplayer(player, seqdir[seqdirpos])
                   player <- .selectplayer(player, seqdir[seqdirpos], mustselect=TRUE)
                   session.seqsplayed <- 0
@@ -1531,7 +1543,7 @@ play <- function(lang="en", ...) {
                   session.time.start <- proc.time()[[3]]
                   .newround(seqno1=TRUE)
                } else {
-                  .texttop(texttop)
+                  .texttop(onlylast=TRUE)
                }
                next
             }
@@ -1552,7 +1564,6 @@ play <- function(lang="en", ...) {
                if (mode %in% c("add","play","analysis")) {
                   if (anyNA(sub$moves$eval) || i == 1) {
                      .texttop(.text("noevalgraph"), sleep=1.5)
-                     .texttop(texttop)
                      next
                   }
                   tmp <- .evalgraph(sub$moves, i=i, flip=flip)
@@ -1611,13 +1622,13 @@ play <- function(lang="en", ...) {
                playsound(system.file("sounds", "move.ogg", package="chesstrainer"))
                .redrawpos(pos, posold, flip=flip)
                if (mode %in% c("add","test")) {
-                  texttop <- .texttop(sub$moves$comment[i])
+                  .texttop(sub$moves$comment[i])
                   circles <- .parseannot(sub$moves$circles[i], cols=2)
                   arrows  <- .parseannot(sub$moves$arrows[i], cols=4)
                   glyph   <- sub$moves$glyph[i-1]
                   .drawannot(circles=circles, arrows=arrows, glyph=glyph)
                } else {
-                  texttop <- .texttop("")
+                  .texttop("")
                }
                if (mode == "play") {
                   mode <- "analysis"
@@ -1640,12 +1651,11 @@ play <- function(lang="en", ...) {
                   if (contanalysis) {
                      tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                      harrows  <- tmp$harrows
-                     texttop  <- tmp$texttop
                      evalvals <- tmp$evalvals
                   }
                   .drawdepth(showeval[[mode]])
                   if (contliquery)
-                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, minfreq, minperc, texttop)
+                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc)
                }
 
                next
@@ -1659,13 +1669,11 @@ play <- function(lang="en", ...) {
                   if (scoreadd > 0) {
                      score <- score - scoreadd
                      .texttop(.text("setscoreback", score), sleep=1)
-                     .texttop(texttop)
                      .textbot(score=score, onlyscore=TRUE)
                      scoreadd <- 0
                   } else {
                      if (score == 100) {
                         .texttop(.text("setscoreback100"), sleep=1)
-                        .texttop(texttop)
                      }
                   }
                   mistake <- FALSE
@@ -1712,14 +1720,14 @@ play <- function(lang="en", ...) {
                }
                playsound(system.file("sounds", "move.ogg", package="chesstrainer"))
                .redrawpos(pos, posold, flip=flip)
-               if (mode %in% c("add","test")) {
-                  texttop <- .texttop(sub$moves$comment[i])
+               if (mode %in% c("add","test") && identical(click, "Left")) {
+                  .texttop(sub$moves$comment[i])
                   circles <- .parseannot(sub$moves$circles[i], cols=2)
                   arrows  <- .parseannot(sub$moves$arrows[i], cols=4)
                   glyph   <- sub$moves$glyph[i-1]
                   .drawannot(circles=circles, arrows=arrows, glyph=glyph)
                } else {
-                  texttop <- .texttop("")
+                  .texttop("")
                }
                if (mode == "play" && identical(click, "Left")) {
                   mode <- "analysis"
@@ -1748,12 +1756,11 @@ play <- function(lang="en", ...) {
                   if (mode %in% c("add","analysis") && contanalysis) {
                      tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                      harrows  <- tmp$harrows
-                     texttop  <- tmp$texttop
                      evalvals <- tmp$evalvals
                   }
                   .drawdepth(showeval[[mode]])
                   if (contliquery)
-                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, minfreq, minperc, texttop, showout=mode!="play")
+                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc, showout=mode!="play")
                }
                next
             }
@@ -1768,7 +1775,6 @@ play <- function(lang="en", ...) {
                   if (mode == "test" || !nzchar(bestmove[[1]][1])) {
                      # but not in test mode and have to skip this if the best move is not available
                      .texttop(.text("waslastmove"), sleep=0.75)
-                     .texttop(texttop)
                      next
                   }
                   circlesvar <- ""
@@ -1789,7 +1795,7 @@ play <- function(lang="en", ...) {
                   moveuci <- .lan2uci(tmp$txt, sidetoplay=sidetoplay)
                   movesan <- .parsemove(moveuci, pos=pos, flip=flip, evalval=NA, i=i, sidetoplay=sidetoplay, rename=FALSE, returnline=2, hintdepth=1, san=TRUE)
                   pos <- .updateboard(pos, move=data.frame(x1=tmp$x1, y1=tmp$y1, x2=tmp$x2, y2=tmp$y2, show=TRUE, move=tmp$txt), flip=flip, autoprom=TRUE)
-                  texttop <- .texttop("")
+                  .texttop("")
                   i <- i + 1
                   sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                   .textbot(i=i, totalmoves=totalmoves, onlyi=TRUE)
@@ -1857,12 +1863,11 @@ play <- function(lang="en", ...) {
                   if (contanalysis) {
                      tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                      harrows  <- tmp$harrows
-                     texttop  <- tmp$texttop
                      evalvals <- tmp$evalvals
                   }
                   .drawdepth(showeval[[mode]])
                   if (contliquery)
-                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, minfreq, minperc, texttop)
+                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc)
                   next
                }
                comment <- ""
@@ -1884,11 +1889,11 @@ play <- function(lang="en", ...) {
                glyph <- sub$moves$glyph[i-1]
                opening <- .findopening(sub$moves[seq_len(i-1),1:4], pos=pos, flip=flip, sidetoplay=sidetoplay, sidetoplaystart=sidetoplaystart, i=i, opening=opening, openings=openings, posnull=is.null(sub$pos))
                if (i > nrow(sub$moves)) {
-                  texttop <- .texttop(sub$commentend)
+                  .texttop(sub$commentend)
                   circles <- .parseannot(sub$symbolend$circles, cols=2)
                   arrows  <- .parseannot(sub$symbolend$arrows, cols=4)
                } else {
-                  texttop <- .texttop(sub$moves$comment[i])
+                  .texttop(sub$moves$comment[i])
                   circles <- .parseannot(sub$moves$circles[i], cols=2)
                   arrows  <- .parseannot(sub$moves$arrows[i], cols=4)
                }
@@ -1906,12 +1911,11 @@ play <- function(lang="en", ...) {
                   if (contanalysis) {
                      tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                      harrows  <- tmp$harrows
-                     texttop  <- tmp$texttop
                      evalvals <- tmp$evalvals
                   }
                   .drawdepth(showeval[[mode]])
                   if (contliquery)
-                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, minfreq, minperc, texttop)
+                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc)
                }
                next
             }
@@ -1925,8 +1929,6 @@ play <- function(lang="en", ...) {
                   click <- "2"
                if (identical(click, "2") && i > nrow(sub$moves)) {
                   .texttop(.text("waslastmove"), sleep=0.75)
-                  if (mode %in% c("add","test"))
-                     .texttop(texttop)
                   next
                }
                if (identical(click, "2"))
@@ -1973,22 +1975,20 @@ play <- function(lang="en", ...) {
                .textbot(opening=opening, onlyeco=TRUE)
                if (mode %in% c("add","test")) {
                   if (i > nrow(sub$moves)) {
-                     texttop <- .texttop(sub$commentend)
+                     .texttop(sub$commentend)
                      if (!is.null(sub$symbolend)) {
                         circles <- .parseannot(sub$symbolend$circles, cols=2)
                         arrows  <- .parseannot(sub$symbolend$arrows, cols=4)
                         .drawannot(circles=circles, arrows=arrows)
                      }
                   } else {
-                     texttop <- .texttop(sub$moves$comment[i])
+                     .texttop(sub$moves$comment[i])
                      circles <- .parseannot(sub$moves$circles[i], cols=2)
                      arrows  <- .parseannot(sub$moves$arrows[i], cols=4)
                      .drawannot(circles=circles, arrows=arrows)
                   }
                   glyph <- sub$moves$glyph[i-1]
                   .drawglyph(glyph)
-               } else {
-                  texttop <- .texttop("")
                }
                if (mode == "play") {
                   mode <- "analysis"
@@ -2009,12 +2009,11 @@ play <- function(lang="en", ...) {
                   if (contanalysis) {
                      tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                      harrows  <- tmp$harrows
-                     texttop  <- tmp$texttop
                      evalvals <- tmp$evalvals
                   }
                   .drawdepth(showeval[[mode]])
                   if (contliquery)
-                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, minfreq, minperc, texttop)
+                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc)
                }
                next
             }
@@ -2072,12 +2071,11 @@ play <- function(lang="en", ...) {
                if (mode %in% c("add","analysis") && contanalysis) {
                   tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                   harrows  <- tmp$harrows
-                  texttop  <- tmp$texttop
                   evalvals <- tmp$evalvals
                }
                .drawdepth(showeval[[mode]])
                if (contliquery)
-                  .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, minfreq, minperc, texttop, showout=mode!="play")
+                  .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc, showout=mode!="play")
                next
             }
 
@@ -2088,7 +2086,6 @@ play <- function(lang="en", ...) {
                if (is.null(sfproc) || !sfrun) {
 
                   .texttop(.text("evalupdatenosf"), sleep=1.5)
-                  .texttop(texttop)
                   next
 
                } else {
@@ -2201,10 +2198,9 @@ play <- function(lang="en", ...) {
             if (mode == "test" && identical(click, "U")) {
                if (is.null(sfproc) || !sfrun) {
                   .texttop(.text("evalupdatenosf"), sleep=1.5)
-                  .texttop(texttop)
                   next
                } else {
-                  .texttop(.text("rlyevalupdateall"))
+                  .texttop(.text("rlyevalupdateall"), assign=FALSE)
                   answer <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=.keyfun)
                   answer <- .confirm(answer)
                   if (answer) {
@@ -2218,7 +2214,7 @@ play <- function(lang="en", ...) {
                      updateall <- TRUE
                      .sf.setoptions(sfproc, threads=1, hash)
                   } else {
-                     .texttop(texttop)
+                     .texttop(onlylast=TRUE)
                   }
                }
                .newround()
@@ -2230,7 +2226,6 @@ play <- function(lang="en", ...) {
             if (identical(click, "ctrl-U")) {
                upsidedown <- !upsidedown
                .texttop(.text("upsidedown", upsidedown), sleep=1.5)
-               .texttop(texttop)
                #assign("upsidedown", !.get("upsidedown"), envir=.chesstrainer)
                .newround()
                next
@@ -2250,7 +2245,6 @@ play <- function(lang="en", ...) {
                   }
                } else {
                   .texttop(.text("jumponlymodes"), sleep=2)
-                  .texttop(texttop)
                }
                next
             }
@@ -2264,10 +2258,9 @@ play <- function(lang="en", ...) {
             if (mode == "test" && identical(click, "r")) {
                if (lastseq == "") {
                   .texttop(.text("nolastseq"), sleep=1)
-                  .texttop(texttop)
                   next
                }
-               .texttop(.text("replast"), sleep=0.75)
+               .texttop(.text("replast"), sleep=0.75, showlast=FALSE)
                replast <- TRUE
                filename <- lastseq
                seqno <- max(1, seqno - 1)
@@ -2291,7 +2284,6 @@ play <- function(lang="en", ...) {
                zenmode <- !zenmode
                assign("zenmode", zenmode, envir=.chesstrainer)
                .texttop(.text("zenmode", zenmode), sleep=0.75)
-               .texttop(texttop)
                .textbot(show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
                settings$zenmode <- zenmode
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
@@ -2372,7 +2364,7 @@ play <- function(lang="en", ...) {
                         seqno <- 1
                         if (k > 1L) {
                            playsound(system.file("sounds", "finished.ogg", package="chesstrainer"))
-                           .texttop(.text("finishedround"), sleep=2)
+                           .texttop(.text("finishedround"), sleep=2, showlast=FALSE)
                         }
                      }
                   }
@@ -2398,7 +2390,7 @@ play <- function(lang="en", ...) {
                   flip <- !flip
                   unflip <- FALSE
                   list2env(.doflip(sub, pos, flip), envir=environment())
-                  .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
+                  .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
                }
 
                k1A <- FALSE
@@ -2428,10 +2420,10 @@ play <- function(lang="en", ...) {
                assign("mode", mode, envir=.chesstrainer)
 
                sub$player <- NULL
-               sub$commentend <- NULL # TODO: move commentend to comment?
+               sub$commentend <- NULL # TODO: move commentend to last comment?
                sub$symbolend <- NULL
 
-               texttop <- .texttop("")
+               .texttop("")
 
                if (identical(click, "A")) {
 
@@ -2475,7 +2467,7 @@ play <- function(lang="en", ...) {
                   evalvals <- NULL
 
                   if (!identical(sub$moves$comment[1], "")) {
-                     texttop <- .texttop(sub$moves$comment[1])
+                     .texttop(sub$moves$comment[1])
                      Sys.sleep(delay)
                   }
 
@@ -2485,9 +2477,9 @@ play <- function(lang="en", ...) {
                      for (i in 1:nrow(sub$moves)) {
                         pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE)
                         if (identical(sub$moves$comment[i], "") && !identical(sub$moves$comment[i-1], "")) {
-                           texttop <- .texttop(sub$moves$comment[i-1])
+                           .texttop(sub$moves$comment[i-1])
                         } else {
-                           texttop <- .texttop(sub$moves$comment[i])
+                           .texttop(sub$moves$comment[i])
                         }
                         .textbot(i=i, totalmoves=totalmoves, onlyi=TRUE)
                         .drawevalbar(sub$moves$eval[i], i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]])
@@ -2522,12 +2514,11 @@ play <- function(lang="en", ...) {
                if (contanalysis) {
                   tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                   harrows  <- tmp$harrows
-                  texttop  <- tmp$texttop
                   evalvals <- tmp$evalvals
                }
                .drawdepth(showeval[[mode]])
                if (contliquery)
-                  .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, minfreq, minperc, texttop)
+                  .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc)
                next
 
             }
@@ -2537,7 +2528,6 @@ play <- function(lang="en", ...) {
             if (mode == "add" && identical(click, "0")) {
                if (!.is.start.pos(pos)) {
                   .texttop(.text("setposstart"), sleep=1)
-                  .texttop(texttop)
                   starteval <- sub$moves$eval[i-1]
                   i <- 1
                   comment <- ""
@@ -2564,7 +2554,7 @@ play <- function(lang="en", ...) {
                list2env(.doflip(sub, pos, flip), envir=environment())
                if (mode == "test")
                   unflip <- !unflip
-               .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
+               .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
                .drawevalbar(sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]])
                next
             }
@@ -2574,7 +2564,6 @@ play <- function(lang="en", ...) {
             if (mode == "add" && identical(click, "z")) {
                show <- !show
                .texttop(.text("showmoves", show), sleep=0.75)
-               .texttop(texttop)
                .textbot(show, showcomp, onlyshow=TRUE)
                next
             }
@@ -2584,7 +2573,6 @@ play <- function(lang="en", ...) {
             if (mode == "add" && identical(click, "Z")) {
                showcomp <- !showcomp
                .texttop(.text("showmovescomp", showcomp), sleep=1)
-               .texttop(texttop)
                .textbot(show, showcomp, onlyshow=TRUE)
                next
             }
@@ -2595,8 +2583,7 @@ play <- function(lang="en", ...) {
                eval(expr=switch1)
                comment <- readline(prompt=.text("comment"))
                eval(expr=switch2)
-               texttop <- comment
-               .texttop(texttop)
+               .texttop(comment)
                next
             }
 
@@ -2633,8 +2620,7 @@ play <- function(lang="en", ...) {
                   if (unflip)
                      list2env(.doflip(sub, pos, flip), envir=environment())
                }
-               texttop <- sub$moves$comment[i-1]
-               .texttop(texttop)
+               .texttop(sub$moves$comment[i-1])
                next
             }
 
@@ -2661,15 +2647,15 @@ play <- function(lang="en", ...) {
 
             if (mode == "add" && identical(click, "s")) {
                if (all(sub$moves$show)) {
-                  .texttop(.text("allmovesshown"))
+                  .texttop(.text("allmovesshown"), sleep=1.5)
                   next
                }
                if (nrow(sub$moves) != (i-1)) {
-                  .texttop(.text("notatend"))
+                  .texttop(.text("notatend"), sleep=1)
                   next
                }
                eval(expr=switch1)
-               .texttop(.text("saveseq"))
+               .texttop(.text("saveseq"), assign=FALSE)
                seqident <- sapply(dat.all, function(x) identical(sub$moves[1:5], x$moves[1:5]) && identical(sub$pos, x$pos))
                if (any(seqident))
                   cat(.text("seqexists", files.all[which(seqident)[1]]))
@@ -2696,6 +2682,7 @@ play <- function(lang="en", ...) {
                filename <- readline(prompt=.text("filename"))
                if (identical(filename, "")) {
                   eval(expr=switch2)
+                  .texttop(onlylast=TRUE)
                   next
                }
                filename <- sub("\\.rds$", "", filename) # strip .rds from the end of filename
@@ -2738,18 +2725,18 @@ play <- function(lang="en", ...) {
                }
                sidetoplaystart <- sidetoplay
                comment <- ""
-               texttop <- ""
                opening <- ""
                evalval <- NA_real_
                circles <- matrix(nrow=0, ncol=2)
                arrows  <- matrix(nrow=0, ncol=4)
                harrows <- matrix(nrow=0, ncol=4)
                glyph   <- ""
+               .texttop("")
                assign("x2y2", c(NA,NA), envir=.chesstrainer)
                evalvals <- NULL
                sub$moves <- sub$moves[numeric(0),]
                sub$flip <- flip
-               .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
+               .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
                if (!.is.start.pos(pos))
                   sub$pos <- pos
                fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
@@ -2768,12 +2755,11 @@ play <- function(lang="en", ...) {
                if (mode %in% c("add","analysis") && contanalysis) {
                   tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                   harrows  <- tmp$harrows
-                  texttop  <- tmp$texttop
                   evalvals <- tmp$evalvals
                }
                .drawdepth(showeval[[mode]])
                if (contliquery)
-                  .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, minfreq, minperc, texttop)
+                  .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc)
                if (verbose)
                   print(pos)
                next
@@ -2788,7 +2774,6 @@ play <- function(lang="en", ...) {
             if (mode %in% c("add","play","analysis") && identical(click, "H")) {
                if (!sfrun) {
                   .texttop(.text("nomovewoutsf"), sleep=1.5)
-                  .texttop(texttop)
                   next
                }
                fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
@@ -2816,10 +2801,8 @@ play <- function(lang="en", ...) {
             if (mode %in% c("add","play","analysis") && identical(click, "L")) {
                if (!isonline) {
                   .texttop(.text("nointqueryli"), sleep=2)
-                  .texttop(texttop)
                   next
                }
-               .texttop("")
                fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                res.sf <- .sf.eval(sfproc=sfproc, sfrun=sfrun, depth=depth2, fen=fen, progbar=TRUE, playsound=TRUE, isdeep=TRUE, usecloud=TRUE)
                evalval  <- res.sf$eval[1:multipv2]
@@ -2864,7 +2847,6 @@ play <- function(lang="en", ...) {
                } else {
                   tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                   harrows  <- tmp$harrows
-                  texttop  <- tmp$texttop
                   evalvals <- tmp$evalvals
                   .drawdepth(showeval[[mode]])
                   # recalculate after showing the best move (not done at the moment)
@@ -2885,31 +2867,28 @@ play <- function(lang="en", ...) {
                if (!sfrun) {
                   .texttop(.text("nomovewoutsf"), sleep=1.5)
                   contanalysis <- FALSE
-                  .texttop(texttop)
                   next
                }
                contanalysis <- !contanalysis
-               .texttop(.text("contanalysis", contanalysis), sleep=1)
+               .texttop(.text("contanalysis", contanalysis), sleep=1, showlast=FALSE)
                if (contanalysis) {
                   tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                   harrows  <- tmp$harrows
-                  texttop  <- tmp$texttop
                   evalvals <- tmp$evalvals
                   .drawdepth(showeval[[mode]])
                } else {
+                  .texttop("")
                   .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), glyph=glyph, flip=flip)
                   harrows <- matrix(nrow=0, ncol=4)
                   .drawannot(circles=circles, arrows=arrows, glyph=glyph)
-                  texttop <- ""
                }
-               .texttop(texttop)
                next
             }
 
             # i to query the Lichess opening database for the current position
 
             if (identical(click, "i")) {
-               .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, minfreq, minperc, texttop)
+               .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc)
                next
             }
 
@@ -2918,22 +2897,19 @@ play <- function(lang="en", ...) {
             if (identical(click, "Y")) {
                if (is.null(token) || token == "") {
                   .texttop(.text("needtoken"), sleep=2)
-                  .texttop(texttop)
                   next
                }
                if (!isonline) {
                   .texttop(.text("nointqueryli"), sleep=2)
-                  .texttop(texttop)
                   next
                }
                contliquery <- !contliquery
                assign("contliquery", contliquery, envir=.chesstrainer)
                .texttop(.text("contliquery", contliquery), sleep=1)
-               .texttop(texttop)
                if (mode == "play")
                   .textbot(show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
                if (contliquery) {
-                  .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, minfreq, minperc, texttop, showout=mode!="test", showlibar=mode!="test")
+                  .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc, showout=mode!="test", showlibar=mode!="test")
                } else {
                   .drawlibar(clear=TRUE)
                }
@@ -2964,7 +2940,6 @@ play <- function(lang="en", ...) {
             if (identical(click, "R")) {
                repmistake <- !repmistake
                .texttop(.text("repmistake", repmistake), sleep=1)
-               .texttop(texttop)
                settings$repmistake <- repmistake
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
@@ -2975,7 +2950,6 @@ play <- function(lang="en", ...) {
             if (identical(click, "G")) {
                showgraph <- !showgraph
                .texttop(.text("showgraph", showgraph), sleep=1.5)
-               .texttop(texttop)
                settings$showgraph <- showgraph
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
@@ -2986,7 +2960,6 @@ play <- function(lang="en", ...) {
             if (identical(click, "T")) {
                showtransp <- !showtransp
                .texttop(.text("showtransp", showtransp), sleep=1)
-               .texttop(texttop)
                settings$showtransp <- showtransp
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
@@ -2997,7 +2970,6 @@ play <- function(lang="en", ...) {
             if (identical(click, "C")) {
                compseq <- !compseq
                .texttop(.text("compseq", compseq), sleep=2)
-               .texttop(texttop)
                settings$compseq <- compseq
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
@@ -3009,7 +2981,6 @@ play <- function(lang="en", ...) {
                san <- !san
                assign("san", san, envir=.chesstrainer)
                .texttop(.text("san", san), sleep=1)
-               .texttop(texttop)
                settings$san <- san
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
@@ -3028,7 +2999,6 @@ play <- function(lang="en", ...) {
                }
                assign("piecesymbols", piecesymbols, envir=.chesstrainer)
                .texttop(.text("piecesymbols", piecesymbols), sleep=1.25)
-               .texttop(texttop)
                settings$piecesymbols <- piecesymbols
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
@@ -3039,7 +3009,6 @@ play <- function(lang="en", ...) {
             if (identical(click, "W")) {
                wait <- !wait
                .texttop(.text("wait", wait), sleep=0.75)
-               .texttop(texttop)
                settings$wait <- wait
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
@@ -3054,7 +3023,6 @@ play <- function(lang="en", ...) {
                   delay <- min(2, delay + 0.25)
                }
                .texttop(.text("delaytime", .fmtx(delay, digits=2)), sleep=0.75)
-               .texttop(texttop)
                settings$delay <- delay
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
@@ -3064,14 +3032,13 @@ play <- function(lang="en", ...) {
 
             if (identical(click, "_") || identical(click, "+")) {
                if (identical(click, "_")) {
-                  volume <- max(0, volume - 25)
+                  volume <- round(max(0, volume - 25))
                } else {
-                  volume <- min(100, volume + 25)
+                  volume <- round(min(100, volume + 25))
                }
                assign("volume", volume, envir=.chesstrainer)
                playsound(system.file("sounds", "move.ogg", package="chesstrainer"))
-               .texttop(paste0(.text("volume", round(volume)), "%"), sleep=0.5)
-               .texttop(texttop)
+               .texttop(paste0(.text("volume", volume), "%"), sleep=0.5)
                settings$volume <- volume
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
@@ -3086,8 +3053,8 @@ play <- function(lang="en", ...) {
                   mar <- mar + 0.5
                }
                assign("mar", mar, envir=.chesstrainer)
-               .texttop(.text("maradj", mar), sleep=0.5)
-               .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
+               .texttop(.text("maradj", mar), sleep=0.75)
+               .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
                .drawevalbar(sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]])
                .drawlibar(.get("lasttotals"), flip=flip)
                .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
@@ -3106,7 +3073,6 @@ play <- function(lang="en", ...) {
                }
                assign("lwd", lwd, envir=.chesstrainer)
                .texttop(.text("lwd", lwd), sleep=0.5)
-               .texttop(texttop)
                settings$lwd <- lwd
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
@@ -3123,7 +3089,6 @@ play <- function(lang="en", ...) {
                assign("lang", lang, envir=.chesstrainer)
                .textbot(show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
                .texttop(.text("lang"), sleep=0.75)
-               .texttop(texttop)
                settings$lang <- lang
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
@@ -3135,7 +3100,6 @@ play <- function(lang="en", ...) {
                timed <- !timed
                assign("timed", timed, envir=.chesstrainer)
                .texttop(.text("timed", timed), sleep=0.75)
-               .texttop(texttop)
                settings$timed <- timed
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                if (timed) {
@@ -3157,7 +3121,6 @@ play <- function(lang="en", ...) {
                } else {
                   .drawevalbar(clear=TRUE)
                }
-               .texttop(texttop)
                settings$showeval <- showeval
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
@@ -3171,11 +3134,10 @@ play <- function(lang="en", ...) {
                .texttop(.text("libar", showlibar), sleep=0.75)
                if (showlibar) {
                   if (contliquery)
-                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, minfreq, minperc, texttop)
+                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc)
                } else {
                   .drawlibar(clear=TRUE)
                }
-               .texttop(texttop)
                settings$showlibar <- showlibar
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
@@ -3192,7 +3154,6 @@ play <- function(lang="en", ...) {
                   .clearmatdiff()
                }
                .texttop(.text("showmatdiff", showmatdiff), sleep=0.75)
-               .texttop(texttop)
                settings$showmatdiff <- showmatdiff
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
@@ -3204,14 +3165,23 @@ play <- function(lang="en", ...) {
                verbose <- !verbose
                if (verbose) {
                   eval(expr=switch1)
-                  .printverbose(selected, seqno, filename, lastseq, upsidedown, flip, unflip, replast, oldmode, i, seqname, seqnum, score, rounds, totalmoves, show, showcomp, comment, bestmove, starteval, evalval, texttop, scoreadd, sidetoplay, givehint1, givehint2, mistake, timetotal, movesplayed, movestoplay, drawcircles, drawarrows, showstartcom, pos)
+                  .printverbose(selected, seqno, filename, lastseq, upsidedown, flip, unflip, replast, oldmode, i, seqname, seqnum, score, rounds, totalmoves, show, showcomp, comment, bestmove, starteval, evalval, scoreadd, sidetoplay, givehint1, givehint2, mistake, timetotal, movesplayed, movestoplay, drawcircles, drawarrows, showstartcom, pos)
                   eval(expr=switch2)
                }
                assign("verbose", verbose, envir=.chesstrainer)
-               .texttop(.text("verbose", verbose), sleep=0.5)
-               .texttop(texttop)
+               .texttop(.text("verbose", verbose), sleep=0.75)
                next
             }
+
+            # F to toggle flush on/off
+
+            #if (identical(click, "F")) {
+            #   flush <- .get("flush")
+            #   flush <- !flush
+            #   .texttop(.text("flush", flush), sleep=0.75)
+            #   assign("flush", flush, envir=.chesstrainer)
+            #   next
+            #}
 
             ################################################################
 
@@ -3250,7 +3220,6 @@ play <- function(lang="en", ...) {
                   }
                   write.table(data.frame(bookmarks), file=file.path(seqdir[seqdirpos], ".bookmarks"), col.names=FALSE, row.names=FALSE, quote=FALSE)
                   .texttop(.text("bookmarked", sub("\\.rds$", "", bookmark)), sleep=1.5)
-                  .texttop(texttop)
                }
                next
             }
@@ -3270,6 +3239,7 @@ play <- function(lang="en", ...) {
                      .redrawpos(pos, flip=flip)
                      .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
                   }
+                  # note: if 'bookmark' is NA, then we don't need to redraw, because nothing has been drawn by .bookmarks()
                }
                next
             }
@@ -3283,7 +3253,6 @@ play <- function(lang="en", ...) {
                eval(expr=switch2)
                clipr::write_clip(fen, object_type="character")
                .texttop(.text("copyfen"), sleep=0.75)
-               .texttop(texttop)
                next
             }
 
@@ -3319,15 +3288,15 @@ play <- function(lang="en", ...) {
             # ctrl-d to delete the current sequence (only in test mode)
 
             if (mode == "test" && identical(click, "ctrl-D")) {
-               .texttop(.text("rlydelseq"))
+               .texttop(.text("rlydelseq"), assign=FALSE)
                answer <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=.keyfun)
                answer <- .confirm(answer)
                if (answer) {
-                  .texttop(.text("delseq"), sleep=1)
+                  .texttop(.text("delseq"), sleep=1, showlast=FALSE)
                   file.remove(file.path(seqdir[seqdirpos], seqname))
                   .newround(seqno1=TRUE)
                } else {
-                  .texttop(texttop)
+                  .texttop(onlylast=TRUE)
                }
                next
             }
@@ -3671,14 +3640,13 @@ play <- function(lang="en", ...) {
 
             if (mode %in% c("add","test") && (identical(click, "*") || identical(click, "8"))) {
                if (!is.null(selected)) {
-                  .texttop(.text("allseqselected"), sleep=1)
+                  .texttop(.text("allseqselected"), sleep=1, showlast=FALSE)
                   selected <- NULL
                   mode <- oldmode <- "add"
                   assign("mode", mode, envir=.chesstrainer)
                   .newround(seqno1=TRUE)
                } else {
                   .texttop(.text("allseqalreadyselected"), sleep=1)
-                  .texttop(texttop)
                }
                next
             }
@@ -3718,17 +3686,18 @@ play <- function(lang="en", ...) {
                   rownames(tab) <- which(notnull)
                   .printdf(tab, align=c("l",rep("r",movestoshow)))
                   #eval(expr=switch2)
-                  .texttop(.text("selmatchestop"))
+                  .texttop(.text("selmatchestop"), assign=FALSE)
                   selmatches <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=.keyfun)
                   if (identical(selmatches, "\r") || identical(selmatches, "ctrl-J") || .confirm(selmatches)) {
                      cat(.text("selmatchesconfirm", sum(notnull)))
                      selected <- files.all[notnull]
                      .newround(seqno1=TRUE)
+                  } else {
+                     .texttop(onlylast=TRUE)
                   }
                } else {
                   .texttop(.text("noseqsfound"), sleep=1.5)
                }
-               .texttop(texttop)
                next
             }
 
@@ -3768,19 +3737,19 @@ play <- function(lang="en", ...) {
                   rownames(tab) <- which(notnull)
                   .printdf(tab, align=c("l",rep("r",movestoshow)))
                   if (identical(click, "'")) {
-                     .texttop(.text("selmatchestop"))
+                     .texttop(.text("selmatchestop"), assign=FALSE)
                      selmatches <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=.keyfun)
                      if (identical(selmatches, "\r") || identical(selmatches, "ctrl-J") || .confirm(selmatches)) {
                         cat(.text("selmatchesconfirm", sum(notnull)))
                         selected <- files.all[notnull]
                         .newround(seqno1=TRUE)
+                     } else {
+                        .texttop(onlylast=TRUE)
                      }
-                     .texttop(texttop)
                   }
                   #eval(expr=switch2)
                } else {
                   .texttop(.text("noseqsfound"), sleep=1.5)
-                  .texttop(texttop)
                }
                next
             }
@@ -3812,7 +3781,6 @@ play <- function(lang="en", ...) {
                   nextmoves <- nextmoves[nextmoves!=""]
                   if (length(nextmoves) == 0L) {
                      .texttop(.text("noseqsfurthermoves"), sleep=1.5)
-                     .texttop(texttop)
                   } else {
                      tab <- as.data.frame(table(nextmoves))
                      #eval(expr=switch1)
@@ -3826,7 +3794,6 @@ play <- function(lang="en", ...) {
                   next
                } else {
                   .texttop(.text("noseqsfound"), sleep=1.5)
-                  .texttop(texttop)
                }
                next
             }
@@ -3846,18 +3813,19 @@ play <- function(lang="en", ...) {
                   colnames(tab) <- .text("sequence")
                   rownames(tab) <- which(seqident)
                   .printdf(tab, align="l")
-                  .texttop(.text("selmatchestop"))
+                  .texttop(.text("selmatchestop"), assign=FALSE)
                   selmatches <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=.keyfun)
                   if (identical(selmatches, "\r") || identical(selmatches, "ctrl-J") || .confirm(selmatches)) {
                      cat(.text("selmatchesconfirm", sum(seqident)))
                      selected <- files.all[seqident]
                      .newround(seqno1=TRUE)
+                  } else {
+                     .texttop(onlylast=TRUE)
                   }
                   #eval(expr=switch2)
                } else {
                   .texttop(.text("noseqsfound"), sleep=1.5)
                }
-               .texttop(texttop)
                next
             }
 
@@ -3925,18 +3893,19 @@ play <- function(lang="en", ...) {
                   colnames(tab) <- .text("sequence")
                   rownames(tab) <- which(seqident)
                   .printdf(tab, align="l")
-                  .texttop(.text("selmatchestop"))
+                  .texttop(.text("selmatchestop"), assign=FALSE)
                   selmatches <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=.keyfun)
                   if (identical(selmatches, "\r") || identical(selmatches, "ctrl-J") || .confirm(selmatches)) {
                      cat(.text("selmatchesconfirm", sum(seqident)))
                      selected <- files.all[seqident]
                      .newround(seqno1=TRUE)
+                  } else {
+                     .texttop(onlylast=TRUE)
                   }
                   #eval(expr=switch2)
                } else {
                   .texttop(.text("noseqsfound"), sleep=1.5)
                }
-               .texttop(texttop)
                next
             }
 
@@ -3970,7 +3939,6 @@ play <- function(lang="en", ...) {
                   } else {
                      .texttop(.text("noleader_selected"), sleep=1.5)
                   }
-                  .texttop(texttop)
                } else {
                   .redrawpos(pos, flip=flip)
                   .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
@@ -3985,10 +3953,10 @@ play <- function(lang="en", ...) {
                            multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, showeval=showeval, evalsteps=evalsteps, movestoshow=movestoshow,
                            showcoords=showcoords, showtransp=showtransp, showmatdiff=showmatdiff, san=san, piecesymbols=piecesymbols, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, mar=mar, mar2=mar2, lwd=lwd,
                            volume=volume, showgraph=showgraph, repmistake=repmistake, target=target,
-                           # cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs,
+                           # cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs, cex.lichess=cex.lichess,
                            difffun=difffun, difflen=difflen, diffmin=diffmin,
                            sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, monthssfcache=monthssfcache, contanalysis=contanalysis, usesfcache=usesfcache)
-                           #lichessdb=lichessdb, speeds=speeds, ratings=ratings, lisort=lisort, barlen=barlen, invertbar=invertbar, token=paste0(rep("*", nchar(token), collapse=""), uselicache=uselicache, showlibar=showlibar, monthslicache=monthslicache, minfreq=minfreq, minperc=minperc)
+                           #lichessdb=lichessdb, speeds=speeds, ratings=ratings, liout=liout, lisort=lisort, barlen=barlen, invertbar=invertbar, token=paste0(rep("*", nchar(token), collapse=""), uselicache=uselicache, showlibar=showlibar, monthslicache=monthslicache, minfreq=minfreq, minperc=minperc)
                .showsettings(tab)
                .redrawpos(pos, flip=flip)
                .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
@@ -3999,11 +3967,14 @@ play <- function(lang="en", ...) {
 
             if (identical(click, "F5")) {
                eval(expr=switch1)
-               .vizsettings(cols.all, pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
+               .vizsettings(cols.all, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove, liout)
                eval(expr=switch2)
-               .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
+               .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
                .drawevalbar(sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]])
                .drawlibar(.get("lasttotals"), flip=flip)
+               if (liout == 2) {
+                  .clearliwin(dev.after=2L)
+               }
                .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
                cols <- sapply(cols.all, function(x) .get(x))
                saveRDS(cols, file=file.path(configdir, "colors.rds"))
@@ -4014,6 +3985,7 @@ play <- function(lang="en", ...) {
                cex.matdiff <- .get("cex.matdiff")
                cex.plots   <- .get("cex.plots")
                cex.glyphs  <- .get("cex.glyphs")
+               cex.lichess <- .get("cex.lichess")
                showcoords  <- .get("showcoords")
                settings$cex.top     <- cex.top
                settings$cex.bot     <- cex.bot
@@ -4022,6 +3994,7 @@ play <- function(lang="en", ...) {
                settings$cex.matdiff <- cex.matdiff
                settings$cex.plots   <- cex.plots
                settings$cex.glyphs  <- cex.glyphs
+               settings$cex.lichess <- cex.lichess
                settings$showcoords  <- showcoords
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
@@ -4097,13 +4070,14 @@ play <- function(lang="en", ...) {
             # F8 to adjust the Lichess database settings
 
             if (identical(click, "F8")) {
-               tmp <- .lichesssettings(speeds, ratings, lichessdb, uselicache, lisort, barlen, invertbar, minfreq, minperc, token, monthslicache, isonline)
+               tmp <- .lichesssettings(speeds, ratings, lichessdb, uselicache, liout, lisort, barlen, invertbar, minfreq, minperc, token, monthslicache, isonline)
                .redrawpos(pos, flip=flip)
                .drawannot(circles=circles, arrows=arrows, glyph=glyph)
                speeds     <- tmp$speeds
                ratings    <- tmp$ratings
                lichessdb  <- tmp$lichessdb
                uselicache <- tmp$uselicache
+               liout      <- tmp$liout
                lisort     <- tmp$lisort
                barlen     <- tmp$barlen
                invertbar  <- tmp$invertbar
@@ -4115,6 +4089,7 @@ play <- function(lang="en", ...) {
                settings$ratings    <- ratings
                settings$lichessdb  <- lichessdb
                settings$uselicache <- uselicache
+               settings$liout      <- liout
                settings$lisort     <- lisort
                settings$barlen     <- barlen
                settings$invertbar  <- invertbar
@@ -4122,7 +4097,7 @@ play <- function(lang="en", ...) {
                settings$minperc    <- minperc
                settings$token      <- token
                if (contliquery)
-                  .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, minfreq, minperc, texttop)
+                  .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc)
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
@@ -4153,7 +4128,7 @@ play <- function(lang="en", ...) {
                   selmodeold <- selmode
                   selmode <- .loadselmode(seqdir, seqdirpos, selmode, texttop=TRUE)
                   if (selmodeold != selmode && !file.exists(file.path(seqdir[seqdirpos], ".sequential")))
-                     .texttop(.text("selmodeswitch", selmode), sleep=1.5)
+                     .texttop(.text("selmodeswitch", selmode), sleep=1.5, showlast=FALSE)
                   .newround(seqno1=TRUE)
                } else {
                   .redrawpos(pos, flip=flip)
@@ -4183,16 +4158,14 @@ play <- function(lang="en", ...) {
             if (identical(click, "F10") || identical(click, "ctrl-S")) {
                if (k <= 1L) {
                   .texttop(.text("toofewscores"), sleep=1.5)
-                  .texttop(texttop)
                   next
                }
                if (sum(rounds.selected) == 0) {
                   .texttop(.text("toofewplays"), sleep=1.5)
-                  .texttop(texttop)
                   next
                }
                .distributions(scores.selected, rounds.selected, age.selected, difficulty.selected, multiplier, target, difffun)
-               .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
+               .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
                .drawevalbar(sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]])
                .drawlibar(.get("lasttotals"), flip=flip)
                .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
@@ -4204,18 +4177,19 @@ play <- function(lang="en", ...) {
             if (identical(click, "F11") || identical(click, "ctrl-I")) {
                if (sum(session.seqsplayed) <= 1) {
                   .texttop(.text("toofewseqsplayed"), sleep=1.5)
-                  .texttop(texttop)
                   next
                }
                session.playtime <- round(proc.time()[[3]] - session.time.start)
+               texttop <- .get("texttop")
                tmp <- .sessiongraph(session.seqsplayed, session.mean.scores, session.playtime)
+               assign("texttop", texttop, envir=.chesstrainer)
                if (!identical(mar2, tmp$mar2)) {
                   mar2 <- tmp$mar2
                   settings$mar2 <- mar2
                   saveRDS(settings, file=file.path(configdir, "settings.rds"))
                }
                .redrawpos(pos, flip=flip)
-               .texttop(texttop)
+               .texttop(onlylast=TRUE)
                .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
                next
             }
@@ -4226,7 +4200,9 @@ play <- function(lang="en", ...) {
                player.file <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "sessions", paste0(player, ".rds"))
                if (file.exists(player.file)) {
                   session.playtime <- round(proc.time()[[3]] - session.time.start)
+                  texttop <- .get("texttop")
                   tmp <- .historygraph(player, session.date.start, session.playtime, sum(session.seqsplayed))
+                  assign("texttop", texttop, envir=.chesstrainer)
                   if (!identical(mar2, tmp$mar2)) {
                      mar2 <- tmp$mar2
                      settings$mar2 <- mar2
@@ -4234,11 +4210,10 @@ play <- function(lang="en", ...) {
                   }
                } else {
                   .texttop(.text("nosessionhistory"), sleep=1.5)
-                  .texttop(texttop)
                   next
                }
                .redrawpos(pos, flip=flip)
-               .texttop(texttop)
+               .texttop(onlylast=TRUE)
                .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
                next
             }
@@ -4289,7 +4264,6 @@ play <- function(lang="en", ...) {
                   next
                } else {
                   .texttop(.text("nosessionhistory"), sleep=1.5)
-                  .texttop(texttop)
                   next
                }
             }
@@ -4302,7 +4276,7 @@ play <- function(lang="en", ...) {
                next # remove to be able to run this
                openings$fen <- ""
                flip <- FALSE
-               .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
+               .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
                for (j in 1:nrow(openings)) {
                   print(j)
                   moves <- strsplit(openings$uci[j], " ", fixed=TRUE)[[1]]
@@ -4379,7 +4353,7 @@ play <- function(lang="en", ...) {
                }
                sub$startfen <- .genfen(startpos, flip=flip, sidetoplay=sidetoplaystart, sidetoplaystart=sidetoplaystart, i=1)
 
-               .genlines(pos, sub, nmoves=nmoves, genminperc=genminperc, genminfreq=genminfreq, movedb=movedb, basename=basename, level=0, flip=flip, sidetoplay=sidetoplay, sidetoplaystart=sidetoplaystart, i=i, isonline=isonline, lichessdb=lichessdb, token=token, speeds=speeds, ratings=ratings, lisort=lisort, barlen=barlen, invertbar=invertbar, minfreq=minfreq, minperc=minperc, texttop="", sfproc=sfproc, sfrun=sfrun, depth=depth2, seqdir=seqdir[seqdirpos])
+               .genlines(pos, sub, nmoves=nmoves, genminperc=genminperc, genminfreq=genminfreq, movedb=movedb, basename=basename, level=0, flip=flip, sidetoplay=sidetoplay, sidetoplaystart=sidetoplaystart, i=i, isonline=isonline, lichessdb=lichessdb, token=token, speeds=speeds, ratings=ratings, lisort=lisort, barlen=barlen, invertbar=invertbar, minfreq=minfreq, minperc=minperc, sfproc=sfproc, sfrun=sfrun, depth=depth2, seqdir=seqdir[seqdirpos])
 
                cat("Done!\n")
                playsound(system.file("sounds", "complete.ogg", package="chesstrainer"))
@@ -4555,8 +4529,8 @@ play <- function(lang="en", ...) {
             # if we are here, then the move is legal
 
             .rmannot(pos, glyph=glyph, flip=flip)
+            .texttop("")
             glyph <- ""
-            texttop <- .texttop("")
 
             # in add/play mode, check if there are any sequences that include this position; if so, get all possible next moves
 
@@ -4594,7 +4568,6 @@ play <- function(lang="en", ...) {
 
             if (compseq && mode == "play" && any(notnull) && !is.element(attr(pos,"move"), nextmoves)) {
                .texttop(.text("notseqmove"), sleep=2)
-               .texttop("")
             }
 
             if (compseq && mode %in% c("add","analysis") && any(notnull) && !is.element(attr(pos,"move"), nextmoves)) {
@@ -4605,6 +4578,8 @@ play <- function(lang="en", ...) {
                nextmoves <- .rename(nextmoves)
                nextmoves <- paste(nextmoves, collapse=", ")
                .texttop(.text("existingseqmoves", nextmoves))
+               if (contanalysis)
+                  Sys.sleep(1)
             }
 
          }
@@ -4773,7 +4748,7 @@ play <- function(lang="en", ...) {
                      .drawevalbar(sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, showeval=TRUE)
 
                   if (showlibar && contliquery && token != "" && isonline) # also show the Lichess bar (but only if contliquery is on)
-                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, minfreq, minperc, texttop, showout=FALSE)
+                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc, showout=FALSE)
 
                   while (TRUE) {
 
@@ -4788,7 +4763,7 @@ play <- function(lang="en", ...) {
                      }
 
                      if (identical(click, "r") || (is.numeric(click) && identical(click[3], 1))) { # r or middle button repeats the sequence
-                        .texttop(.text("replast"), sleep=0.75)
+                        .texttop(.text("replast"), sleep=0.75, showlast=FALSE)
                         replast <- TRUE
                         filename <- seqname
                         break
@@ -4799,7 +4774,7 @@ play <- function(lang="en", ...) {
                            flip <- !flip
                            unflip <- FALSE
                            list2env(.doflip(sub, pos, flip), envir=environment())
-                           .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
+                           .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
                         } else {
                            .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), glyph=glyph, flip=flip)
                         }
@@ -4810,11 +4785,11 @@ play <- function(lang="en", ...) {
                         mode <- "add"
                         assign("mode", mode, envir=.chesstrainer)
                         sub$player <- NULL
-                        sub$commentend <- NULL # TODO: move commentend to comment?
+                        sub$commentend <- NULL # TODO: move commentend to last comment?
                         sub$symbolend <- NULL
                         show <- FALSE
                         showcomp <- TRUE
-                        texttop <- .texttop("")
+                        .texttop("")
                         .drawevalbar(sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]])
                         sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
                         fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
@@ -4828,12 +4803,11 @@ play <- function(lang="en", ...) {
                         if (contanalysis) {
                            tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                            harrows  <- tmp$harrows
-                           texttop  <- tmp$texttop
                            evalvals <- tmp$evalvals
                         }
                         .drawdepth(showeval[[mode]])
                         if (contliquery)
-                           .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, minfreq, minperc, texttop)
+                           .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc)
                         .textbot(show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
                         contplay <- TRUE
                         break
@@ -4844,7 +4818,7 @@ play <- function(lang="en", ...) {
                            flip <- !flip
                            unflip <- FALSE
                            list2env(.doflip(sub, pos, flip), envir=environment())
-                           .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, texttop, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
+                           .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
                         } else {
                            .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), glyph=glyph, flip=flip)
                         }
@@ -4856,12 +4830,12 @@ play <- function(lang="en", ...) {
                         mode <- "play"
                         assign("mode", mode, envir=.chesstrainer)
                         sub$player <- NULL
-                        sub$commentend <- NULL # TODO: move commentend to comment?
+                        sub$commentend <- NULL # TODO: move commentend to last comment?
                         sub$symbolend <- NULL
                         show <- FALSE
                         showcomp <- TRUE
                         timed <- FALSE
-                        texttop <- .texttop("")
+                        .texttop("")
                         .drawevalbar(sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]])
                         sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
                         fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
@@ -4887,7 +4861,7 @@ play <- function(lang="en", ...) {
                            sfrun    <- res.sf$sfrun
                         }
                         if (compmove && contliquery) {
-                           res.li <- .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, minfreq, minperc, texttop)
+                           res.li <- .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc)
                            bestmove <- res.li$selmove # [d]
                         }
                         .textbot(show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
@@ -4982,13 +4956,13 @@ play <- function(lang="en", ...) {
                      }
 
                      if (identical(click, "i")) {
-                        .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, minfreq, minperc, texttop)
+                        .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc)
                         next
                      }
 
                      if (identical(click, "ctrl-V")) {
                         eval(expr=switch1)
-                        .printverbose(selected, seqno, filename, lastseq, flip, replast, oldmode, i, seqname, seqnum, score, rounds, totalmoves, show, showcomp, comment, bestmove, starteval, evalval, texttop, scoreadd, sidetoplay, givehint1, givehint2, mistake, timetotal, movesplayed, movestoplay, drawcircles, drawarrows, showstartcom, pos)
+                        .printverbose(selected, seqno, filename, lastseq, flip, replast, oldmode, i, seqname, seqnum, score, rounds, totalmoves, show, showcomp, comment, bestmove, starteval, evalval, scoreadd, sidetoplay, givehint1, givehint2, mistake, timetotal, movesplayed, movestoplay, drawcircles, drawarrows, showstartcom, pos)
                         eval(expr=switch2)
                         next
                      }
@@ -5017,14 +4991,14 @@ play <- function(lang="en", ...) {
                   if (selmode %in% c("sequential","sequential_len","sequential_mov","age_oldest")) {
                      if (seqno == 1) {
                         playsound(system.file("sounds", "finished.ogg", package="chesstrainer"))
-                        .texttop(.text("finishedround"), sleep=2)
+                        .texttop(.text("finishedround"), sleep=2, showlast=FALSE)
                      }
                   } else {
                      anyabove <- sum(scores.selected >= target)
                      scores.selected[which(seqname == files)] <- score
                      if (dosave && selmode %in% c("score_random", "score_highest") && all(scores.selected < target) && anyabove) {
                         playsound(system.file("sounds", "finished.ogg", package="chesstrainer"))
-                        .texttop(.text("belowtarget", target), sleep=2)
+                        .texttop(.text("belowtarget", target), sleep=2, showlast=FALSE)
                      }
                   }
                }
@@ -5077,7 +5051,7 @@ play <- function(lang="en", ...) {
             # in play mode with contliquery, set bestmove to the one selected from the Lichess database
 
             if (mode == "play" && contliquery) {
-               res.li <- .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, lisort, barlen, invertbar, minfreq, minperc, texttop)
+               res.li <- .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc)
                bestmove <- res.li$selmove # [d]
                Sys.sleep(max(1,4*delay)) # pause so that player can register whether their move was good or not
             }
@@ -5192,7 +5166,7 @@ play <- function(lang="en", ...) {
                } else {
                   sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
                }
-               texttop <- .texttop(sub$moves$comment[i])
+               .texttop(sub$moves$comment[i])
                circles <- .parseannot(sub$moves$circles[i], cols=2)
                arrows  <- .parseannot(sub$moves$arrows[i], cols=4)
                glyph   <- sub$moves$glyph[i-1]
@@ -5207,7 +5181,7 @@ play <- function(lang="en", ...) {
                .rmannot(pos, glyph=glyph, flip=flip)
                pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE)
                .drawevalbar(sub$moves$eval[i], i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]])
-               texttop <- .texttop(sub$moves$comment[i])
+               .texttop(sub$moves$comment[i])
                circles <- matrix(nrow=0, ncol=2)
                arrows  <- matrix(nrow=0, ncol=4)
                i <- i + 1
