@@ -1151,10 +1151,10 @@
                          "Not at the end of the sequence."
    ))}
 
-   if (x == "directory") {
+   if (x == "seqdir") {
       return(switch(lang,
-                    de = "Verzeichnis",
-                         "Directory"
+                    de = "Sequenzverzeichnis",
+                         "Sequence Directory"
    ))}
 
    if (x == "selseqdir") {

@@ -1,4 +1,4 @@
-.vizsettings <- function(cols.all, flip=FALSE, show=TRUE, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove, liout) {
+.vizsettings <- function(cols.all, flip=FALSE, show=TRUE, showcomp, player, seqdir, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove, liout) {
 
    mode        <- .get("mode")
    showcoords  <- .get("showcoords")
@@ -42,7 +42,7 @@
    numbers.scheme <- which(startsWith(tab[,1], "scheme."))
    number.coords  <- which(tab[,1] == "showcoords")
 
-   .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
+   .redrawall(pos, flip, show, showcomp, player, seqdir, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
    .addrect(4, 5, col=.get("col.hint"))
    .addrect(4, 3, col=.get("col.wrong"))
    .addrect(4, 4, col=.get("col.rect"))
@@ -123,7 +123,7 @@
             assign("showcoords", showcoords, envir=.chesstrainer)
             tab[number.coords,2] <- ifelse(showcoords, .text("yes"), .text("no"))
          }
-         .redrawall(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
+         .redrawall(pos, flip, show, showcomp, player, seqdir, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
          .addrect(4, 5, col=.get("col.hint"))
          .addrect(4, 3, col=.get("col.wrong"))
          .addrect(4, 4, col=.get("col.rect"))
@@ -349,6 +349,7 @@
 
    title.xpos <- 1.5
    title.ypos <- c(8.2, 7.8, 7.2 - 1.02 * c(0:6))
+   sfpath <- sub(path.expand("~"), "~", sfpath)
    sfpath2 <- sfpath
    pathlen <- nchar(sfpath2)
    maxlen <- 80
@@ -514,7 +515,7 @@
                eval(expr=switch2)
                if (identical(tmp, ""))
                   next
-               tmp <- suppressWarnings(normalizePath(tmp))
+               tmp <- suppressWarnings(normalizePath(tmp, winslash="/"))
                if (file.exists(tmp)) {
                   .texttop(.text("sfpathsuccess"), sleep=2)
                } else {
@@ -998,6 +999,7 @@
                .drawbutton(liout.xpos[i], liout.ypos, text=liout.txt[i], len=max(nchar(liout.txt)), on=liout.on[i], cex=cex)
             }
             liout <- liout.opts[liout.on]
+            assign("liout", liout, envir=.chesstrainer)
             if (liout == 1) {
                if (length(dev.list()) == 2L)
                   dev.off(which=3L)
@@ -1084,7 +1086,9 @@
    font.mono  <- .get("font.mono")
 
    seqdir <- tab$seqdir
+   seqdir <- sub(path.expand("~"), "~", seqdir)
    sfpath <- tab$sfpath
+   sfpath <- sub(path.expand("~"), "~", sfpath)
 
    tab.save <- tab
 

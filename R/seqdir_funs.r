@@ -10,6 +10,8 @@
    keymode <- "s"
    whichnum <- 1
 
+   seqdir <- normalizePath(seqdir, winslash="/")
+
    tmp <- .drawseqdir(seqdir, seqdirpos)
    cex <- tmp$cex
    ypos <- tmp$ypos
@@ -202,7 +204,7 @@
                .texttop("")
             }
          }
-         seqdirnew <- normalizePath(seqdirnew)
+         seqdirnew <- normalizePath(seqdirnew, winslash="/")
          seqdir <- c(seqdir, seqdirnew)
          tmp <- .drawseqdir(seqdir, seqdirpos)
          cex <- tmp$cex
@@ -249,6 +251,8 @@
 
    rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
 
+   seqdir <- gsub(path.expand("~"), "~", seqdir)
+
    seqdir2 <- seqdir
    seqdirlen <- nchar(seqdir2)
    maxlen <- 80
@@ -257,7 +261,7 @@
    tab <- data.frame(seqdir2)
    names(tab) <- ""
    txt <- capture.output(print(tab, right=FALSE, print.gap=2))[-1]
-   txt <- c(.text("directory"), "", txt, "")
+   txt <- c(.text("seqdir"), "", txt, "")
 
    ypos1 <- 8
    ypos2 <- max(2.5, 8-0.75*length(seqdir2))

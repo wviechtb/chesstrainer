@@ -160,10 +160,10 @@
 
 }
 
-.redrawall <- function(pos, flip, show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove) {
+.redrawall <- function(pos, flip, show, showcomp, player, seqdir, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove) {
 
    .drawboard(pos, flip)
-   .textbot(show, showcomp, player, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
+   .textbot(show, showcomp, player, seqdir, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
    .texttop(onlylast=TRUE)
    .drawcheck(pos, flip=flip)
    if (.get("mode") == "test" && .get("timed")) {
@@ -1116,7 +1116,7 @@
 
 }
 
-.textbot <- function(show, showcomp, player, seqname, seqnum, opening="", score, rounds, age=NA, difficulty=NA, i, totalmoves, selmode="default", k, seqno, onlyshow=FALSE, onlyi=FALSE, onlyscore=FALSE, onlyeco=FALSE) {
+.textbot <- function(show, showcomp, player, seqdir, seqname, seqnum, opening="", score, rounds, age=NA, difficulty=NA, i, totalmoves, selmode="default", k, seqno, onlyshow=FALSE, onlyi=FALSE, onlyscore=FALSE, onlyeco=FALSE) {
 
    mode    <- .get("mode")
    lang    <- .get("lang")
@@ -1162,22 +1162,24 @@
 
       if (mode == "add") {
          if (onlyshow) {
-            text(xleft, 0.30, paste0("      ", paste0(rep("\U00002588",8), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2, srt=srt)
-            text(xleft, 0.30, paste0("Show: ", ifelse(show, "Yes", "No"), ifelse(showcomp, "", " / No")), pos=4, cex=cex, family=font, col=col, srt=srt)
+            text(xleft,  0.30, paste0("           ", paste0(rep("\U00002588",8), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2, srt=srt)
+            text(xleft,  0.30, paste0("Show:      ", ifelse(show, "Yes", "No"), ifelse(showcomp, "", " / No")), pos=4, cex=cex, family=font, col=col, srt=srt)
          }
          if (onlyi) {
-            text(xleft, 0.15, paste0("      ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2, srt=srt)
-            text(xleft, 0.15, paste0("      ", i), pos=4, cex=cex, family=font, col=col, srt=srt)
+            text(xleft,  0.15, paste0("           ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2, srt=srt)
+            text(xleft,  0.15, paste0("           ", i), pos=4, cex=cex, family=font, col=col, srt=srt)
          }
          if (onlyeco) {
-            text(xleft, 0.00, paste0("      ", paste0(rep("\U00002588",140), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2, srt=srt)
-            text(xleft, 0.00, paste0("      ", opening), pos=4, cex=cex, family=font, col=col, srt=srt)
+            text(xleft,  0.00, paste0("           ", paste0(rep("\U00002588",140), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2, srt=srt)
+            text(xleft,  0.00, paste0("           ", opening), pos=4, cex=cex, family=font, col=col, srt=srt)
          }
          if (redraw) {
-            text(xleft, 0.45, paste0("Mode: ", "Add"), pos=4, cex=cex, family=font, col=col, srt=srt)
-            text(xleft, 0.30, paste0("Show: ", ifelse(show, "Yes", "No"), ifelse(showcomp, "", " / No")), pos=4, cex=cex, family=font, col=col, srt=srt)
-            text(xleft, 0.15, paste0("Move: ", i), pos=4, cex=cex, family=font, col=col, srt=srt)
-            text(xleft, 0.00, paste0("ECO:  ", opening), pos=4, cex=cex, family=font, col=col, srt=srt)
+            text(xleft,  0.45, paste0("Mode:      ", "Add"), pos=4, cex=cex, family=font, col=col, srt=srt)
+            text(xleft,  0.30, paste0("Show:      ", ifelse(show, "Yes", "No"), ifelse(showcomp, "", " / No")), pos=4, cex=cex, family=font, col=col, srt=srt)
+            text(xleft,  0.15, paste0("Move:      ", i), pos=4, cex=cex, family=font, col=col, srt=srt)
+            text(xleft,  0.00, paste0("ECO:       ", opening), pos=4, cex=cex, family=font, col=col, srt=srt)
+            seqdir <- sub(path.expand("~"), "~", seqdir)
+            text(xleft, -0.15, paste0("Directory: ", seqdir), pos=4, cex=cex, family=font, col=col, srt=srt)
          }
       }
 
@@ -1235,22 +1237,24 @@
 
       if (mode == "add") {
          if (onlyshow) {
-            text(xleft, 0.30, paste0("        ", paste0(rep("\U00002588",11), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2, srt=srt)
-            text(xleft, 0.30, paste0("        ", ifelse(show, "Ja", "Nein"), ifelse(showcomp, "", " / Nein")), pos=4, cex=cex, family=font, col=col, srt=srt)
+            text(xleft,  0.30, paste0("             ", paste0(rep("\U00002588",11), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2, srt=srt)
+            text(xleft,  0.30, paste0("             ", ifelse(show, "Ja", "Nein"), ifelse(showcomp, "", " / Nein")), pos=4, cex=cex, family=font, col=col, srt=srt)
          }
          if (onlyi) {
-            text(xleft, 0.15, paste0("        ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2, srt=srt)
-            text(xleft, 0.15, paste0("        ", i), pos=4, cex=cex, family=font, col=col, srt=srt)
+            text(xleft,  0.15, paste0("             ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2, srt=srt)
+            text(xleft,  0.15, paste0("             ", i), pos=4, cex=cex, family=font, col=col, srt=srt)
          }
          if (onlyeco) {
-            text(xleft, 0.00, paste0("        ", paste0(rep("\U00002588",140), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2, srt=srt)
-            text(xleft, 0.00, paste0("        ", opening), pos=4, cex=cex, family=font, col=col, srt=srt)
+            text(xleft,  0.00, paste0("             ", paste0(rep("\U00002588",140), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2, srt=srt)
+            text(xleft,  0.00, paste0("             ", opening), pos=4, cex=cex, family=font, col=col, srt=srt)
          }
          if (redraw) {
-            text(xleft, 0.45, paste0("Modus:  ", "Hinzuf\U000000FCgen"), pos=4, cex=cex, family=font, col=col, srt=srt)
-            text(xleft, 0.30, paste0("Zeigen: ", ifelse(show, "Ja", "Nein"), ifelse(showcomp, "", " / Nein")), pos=4, cex=cex, family=font, col=col, srt=srt)
-            text(xleft, 0.15, paste0("Zug:    ", i), pos=4, cex=cex, family=font, col=col, srt=srt)
-            text(xleft, 0.00, paste0("ECO:    ", opening), pos=4, cex=cex, family=font, col=col, srt=srt)
+            text(xleft,  0.45, paste0("Modus:       ", "Hinzuf\U000000FCgen"), pos=4, cex=cex, family=font, col=col, srt=srt)
+            text(xleft,  0.30, paste0("Zeigen:      ", ifelse(show, "Ja", "Nein"), ifelse(showcomp, "", " / Nein")), pos=4, cex=cex, family=font, col=col, srt=srt)
+            text(xleft,  0.15, paste0("Zug:         ", i), pos=4, cex=cex, family=font, col=col, srt=srt)
+            text(xleft,  0.00, paste0("ECO:         ", opening), pos=4, cex=cex, family=font, col=col, srt=srt)
+            seqdir <- sub(path.expand("~"), "~", seqdir)
+            text(xleft, -0.15, paste0("Verzeichnis: ", seqdir), pos=4, cex=cex, family=font, col=col, srt=srt)
          }
       }
 

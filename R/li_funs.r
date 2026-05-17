@@ -136,18 +136,18 @@
 
    }
 
+   mode <- .get("mode")
+
    if (is.null(out)) {
 
-      #mode <- .get("mode")
-
       if (liout == 1)
-         cat(.text("posnotfound"), "\n", sep="")
+         cat(.text("posnotfound"), "\n")
       if (liout == 2)
          .textliwin(.text("posnotfound"), sleep=1.5)
 
       #if (contliquery) {
       #   if (mode %in% c("play","analysis"))
-      #      cat("\n", .text("posnotfound"), "\n\n", sep="")
+      #      cat("\n", .text("posnotfound"), "\n\n")
       #   if (mode == "add" && liout == 1)
       #      .flush()
       #}
@@ -155,8 +155,7 @@
       if (contliquery && showlibar)
          .drawlibar(clear=TRUE)
 
-      #if (liout == 2)
-      #   .clearliwin(dev.after=2L)
+      #.clearliwin(dev.after=2L)
 
    } else {
 
@@ -168,10 +167,12 @@
       res$out <- res$out[sel,,drop=FALSE]
 
       if (nrow(out) == 0L) {
-         if (liout == 1)
-            .texttop(.text("belowthreshold"), sleep=1.5)
-         if (liout == 2)
-            .textliwin(.text("belowthreshold"), sleep=1.5)
+         if (mode %in% c("add","analysis")) {
+            if (liout == 1)
+               .texttop(.text("belowthreshold"), sleep=1.5)
+            if (liout == 2)
+               .textliwin(.text("belowthreshold"), sleep=1.5)
+         }
          if (contliquery && showlibar)
             .drawlibar(clear=TRUE)
          return(res)
@@ -305,6 +306,9 @@
 }
 
 .clearliwin <- function(dev.after) {
+
+   if (.get("liout") == 1)
+      return()
 
    dev.set(which=3L)
    col.bg  <- .get("col.bg")
