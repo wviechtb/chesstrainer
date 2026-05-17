@@ -144,6 +144,11 @@
 
    Also, any moves made are compared against the existing sequences. If there are sequences with the same current position and the move made is not one of the moves that are part of these sequences, then this will be noted at the top. You can toggle this on/off with the \verb{<C>} key.
 
+   Note that sequences are quite personalized, since they involve going into a particular line that one deems most appropriate (and hence wants to remember). Others may disagree and prefer a different line. Therefore, you should create sequences that you want to train yourself on, so you will be able to play them quickly from memory in actual games.
+
+}
+\section{Querying the Lichess Database}{
+
    When pressing the \verb{<i>} key, the trainer queries the Lichess games database (\url{https://database.lichess.org/#standard_games}) for the current position. If the position is found, the most frequently played moves are shown in the console, including the percentage of games won by white, the percentage of games drawn, and the percentage of games won by black.
 
    With \verb{<F8>}, you can adjust some related settings, namely which time controls and which player ratings should be included in the query, whether to query the regular player database or the masters database (for the latter, the time control and rating settings are not relevant), the minimum frequency of moves, the minimum play percentage of the moves, the length of the bars indicating the outcome percentages, how to sort the moves (either by their frequency or by their win percentage), whether to invert the bar (in case you use white text on a dark background in the console), and where to display the moves (either in the console or in a separate plotting window).
@@ -162,9 +167,10 @@
 
    The \verb{<Y>} key can be used to switch on a continuous query mode, where the database is automatically queried after each move. When the continuous query mode is on, an evaluation bar will be shown on the left indicating the outcome percentages for the current position. This bar can be toggled on and off with the \verb{<V>} key.
 
-   Sequences are saved to and selected from the current sequence directory. You can add, remove, and select sequence directories with \verb{<F9>} (use \verb{<F1>} while managing sequence directories to obtain help). Removing a sequence directory simply removes it from being shown in the list of sequence directories (i.e., it does not delete the directory or any sequences therein). Bookmarks are specific to each sequence directory. Also, selecting a sequence directory switches to the sequence selection mode that was active when it was last selected.
+}
+\section{Managing and Selecting Sequence Directories}{
 
-   Note that sequences are quite personalized, since they involve going into a particular line that one deems most appropriate (and hence wants to remember). Others may disagree and prefer a different line. Therefore, you should create sequences that you want to train yourself on, so you will be able to play them quickly from memory in actual games.
+   Sequences are saved to and selected from the current sequence directory. You can add, remove, and select sequence directories with \verb{<F9>} (use \verb{<F1>} while managing sequence directories to obtain help). Removing a sequence directory simply removes it from being shown in the list of sequence directories (i.e., it does not delete the directory or any sequences therein). Bookmarks are specific to each sequence directory. Also, selecting a sequence directory switches to the sequence selection mode that was active when it was last selected.
 
 }
 \section{The Board Editor}{
