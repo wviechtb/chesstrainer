@@ -530,7 +530,7 @@
                eval(expr=switch2)
                if (identical(tmp, ""))
                   next
-               tmp <- suppressWarnings(normalizePath(tmp, winslash="/"))
+               tmp <- suppressWarnings(normalizePath(tmp))
                if (file.exists(tmp)) {
                   .texttop(.text("sfpathsuccess"), sleep=2)
                } else {

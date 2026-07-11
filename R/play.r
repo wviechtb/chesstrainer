@@ -178,7 +178,7 @@ play <- function(lang="en", online, ...) {
             }
          }
       }
-      sfpath <- suppressWarnings(normalizePath(sfpath, winslash="/"))
+      sfpath <- suppressWarnings(normalizePath(sfpath))
       settings <- list(lang=lang, player=player, seqdir=seqdir, seqdirpos=seqdirpos, selmode=selmode, timed=timed, timepermove=timepermove,
                        expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, showeval=showeval, evalsteps=evalsteps, movestoshow=movestoshow,
                        showcoords=showcoords, showtransp=showtransp, showmatdiff=showmatdiff, san=san, piecesymbols=piecesymbols, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, lwd=lwd, volume=volume,
@@ -303,7 +303,7 @@ play <- function(lang="en", online, ...) {
    if (identical(seqdir, "")) {
 
       seqdir <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "sequences")
-      seqdir <- normalizePath(seqdir, winslash="/")
+      seqdir <- normalizePath(seqdir)
 
       if (!dir.exists(seqdir)) {
          cat(.text("createseqdir", seqdir))
@@ -358,7 +358,7 @@ play <- function(lang="en", online, ...) {
       tmp <- list.files(file.path(sfdir), pattern=".exe$", full.names=TRUE)
       if (length(tmp) != 0) {
          sfpath <- tmp[1]
-         sfpath <- normalizePath(sfpath, winslash="/")
+         sfpath <- normalizePath(sfpath)
          settings$sfpath <- sfpath
          saveRDS(settings, file=file.path(configdir, "settings.rds"))
       }

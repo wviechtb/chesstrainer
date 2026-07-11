@@ -10,7 +10,7 @@
    keymode <- "s"
    whichnum <- 1
 
-   seqdir <- normalizePath(seqdir, winslash="/")
+   seqdir <- normalizePath(seqdir)
 
    tmp <- .drawseqdir(seqdir, seqdirpos)
    cex <- tmp$cex
@@ -204,7 +204,7 @@
                .texttop("")
             }
          }
-         seqdirnew <- normalizePath(seqdirnew, winslash="/")
+         seqdirnew <- normalizePath(seqdirnew)
          seqdir <- c(seqdir, seqdirnew)
          tmp <- .drawseqdir(seqdir, seqdirpos)
          cex <- tmp$cex
