@@ -303,7 +303,6 @@ play <- function(lang="en", online, ...) {
    if (identical(seqdir, "")) {
 
       seqdir <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "sequences")
-      seqdir <- normalizePath(seqdir)
 
       if (!dir.exists(seqdir)) {
          cat(.text("createseqdir", seqdir))

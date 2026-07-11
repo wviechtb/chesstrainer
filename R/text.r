@@ -22,8 +22,8 @@
 
    if (x == "createcachedir") {
       return(switch(lang,
-                    de = paste0("Erstelle Verzeichnis f\U000000FCr den Cache: ", arg, "\n"),
-                         paste0("Creating directory for the cache: ", arg, "\n")
+                    de = paste0("Erstelle Verzeichnis f\U000000FCr Caches: ", arg, "\n"),
+                         paste0("Creating directory for caches: ", arg, "\n")
    ))}
 
    if (x == "createseqdir") {
