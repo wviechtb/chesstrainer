@@ -10,7 +10,7 @@
    keymode <- "s"
    whichnum <- 1
 
-   seqdir <- normalizePath(seqdir)
+   seqdir <- normalizePath(seqdir, winslash="/")
 
    tmp <- .drawseqdir(seqdir, seqdirpos)
    cex <- tmp$cex
@@ -204,7 +204,7 @@
                .texttop("")
             }
          }
-         seqdirnew <- normalizePath(seqdirnew)
+         seqdirnew <- normalizePath(seqdirnew, winslash="/")
          seqdir <- c(seqdir, seqdirnew)
          tmp <- .drawseqdir(seqdir, seqdirpos)
          cex <- tmp$cex
@@ -253,9 +253,10 @@
 
    rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
 
-   seqdir <- gsub(path.expand("~"), "~", seqdir)
+   seqdir <- gsub(path.expand("~"), "~", seqdir) # under Windows, the default path is usually "C:\\Users\\<User>\\Documents", but the default seqdir is under "C:\Users\<User>\AppData\..."
 
    seqdir2 <- seqdir
+   seqdir2 <- gsub("\\", "/", seqdir2, fixed=TRUE)
    seqdirlen <- nchar(seqdir2)
    maxlen <- 80
    seqdir2 <- sapply(seqdir2, function(x) if (nchar(x) >= maxlen) paste0("...", substr(x, max(1,nchar(x)-maxlen), nchar(x))) else x, USE.NAMES=FALSE)

@@ -514,9 +514,6 @@
 
    if (flip) {
 
-      if (draw)
-         .drawpiece(x2, y2, piece)
-
       iscapture <- pos[9-x2,9-y2] != "" || isenpassant != ""
 
       if (draw) {
@@ -526,6 +523,9 @@
             playsound(system.file("sounds", "move.ogg", package="chesstrainer"))
          }
       }
+
+      if (draw)
+         .drawpiece(x2, y2, piece)
 
       pos[9-x2,9-y2] <- piece
       pos[9-x1,9-y1] <- ""
@@ -540,9 +540,6 @@
 
    } else {
 
-      if (draw)
-         .drawpiece(x2, y2, piece)
-
       iscapture <- pos[x2,y2] != "" || isenpassant != ""
 
       if (draw) {
@@ -552,6 +549,9 @@
             playsound(system.file("sounds", "move.ogg", package="chesstrainer"))
          }
       }
+
+      if (draw)
+         .drawpiece(x2, y2, piece)
 
       pos[x2,y2] <- piece
       pos[x1,y1] <- ""

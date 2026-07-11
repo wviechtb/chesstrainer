@@ -303,6 +303,7 @@ play <- function(lang="en", online, ...) {
    if (identical(seqdir, "")) {
 
       seqdir <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "sequences")
+      seqdir <- normalizePath(seqdir, winslash="/", mustWork=FALSE)
 
       if (!dir.exists(seqdir)) {
          cat(.text("createseqdir", seqdir))
@@ -323,6 +324,7 @@ play <- function(lang="en", online, ...) {
    # create sessions directory if it doesn't already exist
 
    sessionsdir <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "sessions")
+   sessionsdir <- normalizePath(sessionsdir, winslash="/", mustWork=FALSE)
 
    if (!dir.exists(sessionsdir)) {
       cat(.text("createsessionsdir", sessionsdir))
@@ -4618,9 +4620,9 @@ play <- function(lang="en", online, ...) {
             .texttop("")
             glyph <- ""
 
-            # in add/play mode, check if there are any sequences that include this position; if so, get all possible next moves
+            # in add/play mode, check if there are any sequences that include this position; if so, get all possible next moves (but not for moves from the starting position)
 
-            if (compseq && mode %in% c("add","play","analysis")) {
+            if (compseq && mode %in% c("add","play","analysis") && !.is.start.pos(pos)) {
                searchterm <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                searchterm <- .fenpart(searchterm)
                nextmoves <- lapply(dat.all.short, function(x) {
@@ -4650,12 +4652,12 @@ play <- function(lang="en", online, ...) {
             movesan <- .parsemove(moveuci, pos=pos, flip=flip, evalval=NA, i=NA, sidetoplay=sidetoplay, rename=FALSE, returnline=2, hintdepth=1, san=TRUE)
             pos <- tmp
 
-            # in play mode, if the move made was not one of the possible moves from the sequences, indicate this
+            # if the move made was not one of the possible moves from the sequences, indicate this (but not for moves from the starting position)
 
-            if (compseq && mode == "play" && any(notnull) && !is.element(attr(pos,"move"), nextmoves))
+            if (compseq && mode == "play" && !.is.start.pos(oldpos) && any(notnull) && !is.element(attr(pos,"move"), nextmoves))
                .texttop(.text("notseqmove"), sleep=2)
 
-            if (compseq && mode %in% c("add","analysis") && any(notnull) && !is.element(attr(pos,"move"), nextmoves)) {
+            if (compseq && mode %in% c("add","analysis") && !.is.start.pos(oldpos) && any(notnull) && !is.element(attr(pos,"move"), nextmoves)) {
                if (san) {
                   movesuci <- sapply(nextmoves, .lan2uci, sidetoplay=sidetoplay)
                   nextmoves <- sapply(movesuci, .parsemove, pos=oldpos, flip=flip, evalval=NA, i=i, sidetoplay=sidetoplay, rename=FALSE, returnline=2, hintdepth=1, san=TRUE)

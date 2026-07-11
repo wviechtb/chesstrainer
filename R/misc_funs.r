@@ -38,10 +38,11 @@
 }
 
 .is.start.pos <- function(pos) {
-   pos <- unname(pos[1:8,1:8])
-   start.pos <- .get("pos")
-   start.pos <- unname(start.pos[1:8,1:8])
-   return(identical(pos, start.pos))
+   return(identical(c(pos), c(.get("pos"))))
+   #pos <- unname(pos[1:8,1:8])
+   #start.pos <- .get("pos")
+   #start.pos <- unname(start.pos[1:8,1:8])
+   #return(identical(pos, start.pos))
 }
 
 .flush <- function() {
