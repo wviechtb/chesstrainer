@@ -1095,6 +1095,8 @@ play <- function(lang="en", online, ...) {
                #Sys.sleep(delay)
             }
 
+            Sys.sleep(delay)
+
             show <- FALSE
             #.textbot(show, showcomp, player, seqdir, seqdirpos, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
 

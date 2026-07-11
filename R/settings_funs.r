@@ -365,7 +365,7 @@
    sfpath <- sub(path.expand("~"), "~", sfpath)
    sfpath2 <- sfpath
    pathlen <- nchar(sfpath2)
-   maxlen <- 80
+   maxlen <- 60
    if (pathlen >= maxlen)
       sfpath2 <- paste0("...", substr(sfpath2, max(1,nchar(sfpath2)-maxlen), nchar(sfpath2)))
 
