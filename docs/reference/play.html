@@ -29,7 +29,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chesstrainer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-172</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-173</span>
       </span>
     </div>
 
@@ -84,7 +84,7 @@
     </div>
 
     <div id="ref-usage">
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">play</span><span class="op">(</span>lang<span class="op">=</span><span class="st">"en"</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">play</span><span class="op">(</span>lang<span class="op">=</span><span class="st">"en"</span>, <span class="va">online</span>, <span class="va">...</span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div id="arguments">
@@ -93,13 +93,18 @@
 <dl><dt id="arg-lang">lang<a class="anchor" aria-label="anchor" href="#arg-lang"></a></dt>
 <dd><p>character string to specify the language (either <code>"en"</code> for English or <code>"de"</code> for German).</p></dd>
 
+   <dt id="arg-online">online<a class="anchor" aria-label="anchor" href="#arg-online"></a></dt>
+<dd><p>optional logical that can be used to skip the internet connectivity check.</p></dd>
+
    <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
-<dd><p>other arguments</p></dd>
+<dd><p>other arguments.</p></dd>
 
 </dl></div>
     <div id="details">
     <h2>Details</h2>
     <p>This is the main function to start the chess trainer. See the <span class="pkg"><a href="chesstrainer-package.html">chesstrainer-package</a></span> documentation for an introduction to the package.</p>
+<p>On startup, the chess trainer checks for internet connectivity (which is needed to query the Lichess databases). When offline, this check can cause a slight delay on startup. To avoid this delay, you can set <code>online=FALSE</code>.</p>
+<p>All of the settings of the chess trainer can be controlled from within the chess trainer (i.e., while it is running). For advanced users, the ‘<code>...</code>’ argument can also be used to adjust all of the settings on startup. This is undocumented behavior though, so correct usage of this argument requires understanding the internals of the package.</p>
     </div>
     <div id="value">
     <h2>Value</h2>
@@ -112,7 +117,7 @@
 <p>Most of the interactions with the chess trainer happen in the plotting window where the board is drawn and the pieces are moved. However, for some actions, one must switch to the R console. Unfortunately, except when using R under Windows with <code>Rgui</code>, there is no programmatic way in R to activate the console or the plotting window. Therefore, one must manually switch to the console or back to the plotting window, which is a bit tedious. However, your operating system may allow activating windows via the command line through various means. For example, under Linux with an X Window manager (not Wayland unfortunately), this should be possible with the <code class="command">wmctrl</code> command. To make use of such functionality, one can pass two strings via arguments called <code>switch1</code> and <code>switch2</code> to the <code>play()</code> function that are evaluated whenever a switch to the R console or back to the plotting window should happen. For example, with:</p>
 <p><code>play(switch1="system('wmctrl -x -a gnome-terminal')",
      switch2="system('wmctrl -x -a r_x11')")</code></p>
-<p>one may be able to achieve this automatic window switching. Of course, this requires <code class="command">wmctrl</code> to be installed and the window names must match those used by the operating system. Under macOS, it should be possible to achieve the same thing using <code class="command">osascript</code>. Under Windows, the trainer uses the <code>bringToTop()</code> function to achieve the same thing automatically when using <code>Rgui</code>.</p>
+<p>one may be able to achieve this automatic window switching. Of course, this requires <code class="command">wmctrl</code> to be installed and the window names must match those used by the operating system. Under macOS, it should be possible to achieve the same thing using <code class="command">osascript</code>. Under Windows, the trainer uses the <code>bringToTop()</code> function to achieve the same thing automatically when using <code>Rgui</code>, so there is no need to use the <code>switch1</code> and <code>switch2</code> arguments.</p>
     </div>
     <div id="author">
     <h2>Author</h2>

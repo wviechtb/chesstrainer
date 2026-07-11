@@ -42,6 +42,8 @@
    numbers.scheme <- which(startsWith(tab[,1], "scheme."))
    number.coords  <- which(tab[,1] == "showcoords")
 
+   dev.hold()
+
    .redrawall(pos, flip, show, showcomp, player, seqdir, seqdirpos, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
    .addrect(4, 5, col=.get("col.hint"))
    .addrect(4, 3, col=.get("col.wrong"))
@@ -61,6 +63,9 @@
    .drawtimer(settings=TRUE)
    .drawglyph("!!")
    rect(1.2, 1.2, 3.8, 3.8, col=.get("col.bg"), border=.get("col.border"), lwd=.get("lwd")+3)
+
+   dev.flush()
+
    if (liout == 2) {
       out <- structure(list(move = c("e4", "d4", "c4", "\U0000265Ef3", "e3", "g3", "b3", "f4", "d3", "b4", "\U0000265Ec3", "g4", "total"), `%` = c(61, 26, 4, 3, 1, 1, 1, 1, 1, 1, 0, 0, 100), total = c("2.1B", "907.1M", "125.8M", "115.2M", "46.7M", "39.6M", "37.3M", "34.7M", "16.5M", "16.4M", "13.4M", "9.7M", "3.5B"), `white%` = c(49, 50, 51, 51, 47, 49, 49, 50, 46, 51, 49, 49, 49), `draw%` = c(5, 5, 5, 5, 4, 5, 5, 4, 5, 5, 5, 4, 5), `black%` = c(46, 45, 44, 44, 49, 46, 46, 46, 49, 44, 46, 47, 46)), row.names = c(NA, -13L), class = "data.frame")
       .updateliwin(out)
@@ -123,6 +128,7 @@
             assign("showcoords", showcoords, envir=.chesstrainer)
             tab[number.coords,2] <- ifelse(showcoords, .text("yes"), .text("no"))
          }
+         dev.hold()
          .redrawall(pos, flip, show, showcomp, player, seqdir, seqdirpos, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
          .addrect(4, 5, col=.get("col.hint"))
          .addrect(4, 3, col=.get("col.wrong"))
@@ -142,6 +148,7 @@
          .drawtimer(settings=TRUE)
          .drawglyph("!!")
          rect(1.2, 1.2, 3.8, 3.8, col=.get("col.bg"), border=.get("col.border"), lwd=.get("lwd")+3)
+         dev.flush()
          if (liout == 2)
             .updateliwin(out)
       }
@@ -166,6 +173,8 @@
    col.border <- .get("col.border")
    font.mono  <- .get("font.mono")
    col.text   <- .get("col.square.d")
+
+   dev.hold()
 
    rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
 
@@ -229,6 +238,8 @@
    sleepadj.ypos <- title.ypos[6] - 0.4 * (title.ypos[6]-title.ypos[7])
    sleepadj.box  <- .drawslider(x=sleepadj.xpos, sleepadj.ypos, xlab=c(0,2), cex=cex*cex.mult)
    .updateslider(NULL, sleepadj.ypos, oldval=sleepadj, xlim=sleepadj.xpos, range=c(0,2), round=0.1, cex=cex*cex.mult)
+
+   dev.flush()
 
    .mousedownfun <- function(button,x,y) {
       if (length(button) == 0L)
@@ -341,6 +352,8 @@
    switch1    <- .get("switch1")
    switch2    <- .get("switch2")
    cachedir   <- .get("cachedir")
+
+   dev.hold()
 
    rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
 
@@ -470,6 +483,8 @@
    delcache.on   <- FALSE
    delcache.box  <- list()
    delcache.box[[1]] <- .drawbutton(delcache.xpos, delcache.ypos, text=delcache.txt, len=max(nchar(delcache.txt)), on=delcache.on, cex=cex)
+
+   dev.flush()
 
    .mousedownfun <- function(button,x,y) {
       if (length(button) == 0L)
@@ -713,6 +728,8 @@
    cachedir   <- .get("cachedir")
    mode       <- .get("mode")
 
+   dev.hold()
+
    rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
 
    cex <- 0.9
@@ -840,6 +857,8 @@
    }
 
    text(6.9, liout.ypos, paste0(rep("*", min(10,nchar(token))), collapse=""), pos=4, cex=cex, family=font.mono, col=col.text, font=2)
+
+   dev.flush()
 
    .mousedownfun <- function(button,x,y) {
       if (length(button) == 0L)

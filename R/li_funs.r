@@ -328,6 +328,8 @@
 
    .clearliwin()
 
+   dev.hold()
+
    ypos <- seq(0.9, 0.1, length.out=12)
    dist <- (ypos[1] - ypos[2]) / 3
 
@@ -360,6 +362,8 @@
          text((bar.s + bar.e) / 2, ypos[i], paste0(out[[6]][i], "%"), col="gray87", cex=cex.lichess)
 
    }
+
+   dev.flush()
 
    dev.set(which=2L)
 

@@ -270,11 +270,6 @@
    The sound volume can be decreased/increased with the \verb{<_>} and \verb{<+>} keys (note that this does not work with the mpg123 player under Windows; see \code{\link{playsound}}). Setting the volume to 0 disables the sound. This can also be useful if playing sounds adds too much lag.
 
 }
-\section{Cleaning Up}{
-
-   The package creates various files and directories. The \code{\link{cleanup}} function can be used to clean up files and directories created by the package.
-
-}
 \section{Notes for Windows Users}{
 
    The trainer also runs under Windows, but the \code{RStudioGD} graphics device that is used by RStudio does not support event handling (see the \sQuote{Note} section below). Running \code{windows()} before starting the trainer with \code{play()} should work. Alternatively, just run R via RGui, which uses the windows plotting device by default (this is actually the recommended way to run the trainer under Windows).
@@ -291,6 +286,11 @@
    It is advisable to regularly make a backup of the sequences you have created. The default directory where sequences are stored can be found with the command:
 
    \code{file.path(tools::R_user_dir(package="chesstrainer", which="data"), "sequences")}
+
+}
+\section{Cleaning Up}{
+
+   The package creates various files and directories. The \code{\link{cleanup}} function can be used to clean up files and directories created by the package.
 
 }
 \section{License Info}{

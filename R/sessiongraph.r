@@ -18,6 +18,7 @@
    rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
 
    plot.session <- function() {
+      dev.hold()
       rect(1.3, 1.3, 8.7, 8.7, col=col.bg, border=NA)
       par(new=TRUE, mar=mar2)
       ylim <- range(round(unlist(mean.scores))) + c(-1,1)
@@ -34,6 +35,7 @@
       }
       par(mar=mar, usr=c(1,9,1,9))
       .texttop(.text("playtime", .totaltime(playtime)))
+      dev.flush()
    }
 
    while (TRUE) {

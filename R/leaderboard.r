@@ -10,6 +10,8 @@
 
    if (nplayers >= 1) {
 
+      dev.hold()
+
       col.bg     <- .get("col.bg")
       col.help   <- .get("col.help")
       col.border <- .get("col.border")
@@ -60,6 +62,8 @@
       cex <- .findcex(txt, font=font.mono, x1=1.8, x2=8, y1=ypos1, y2=ypos2, mincex=1.2)
 
       text(1.8, ypos, txt, pos=4, offset=0, cex=cex, family=font.mono, font=c(2,rep(1, length(txt)-1)), col=col.help)
+
+      dev.flush()
 
       .waitforclick()
 

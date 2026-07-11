@@ -245,6 +245,8 @@
    col.border <- .get("col.border")
    font.mono  <- .get("font.mono")
 
+   dev.hold()
+
    rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
 
    bookmarks2 <- bookmarks
@@ -270,6 +272,8 @@
 
    dist <- (ypos[1] - ypos[2]) / 2
    ypos <- ypos[3:(length(ypos)-1)]
+
+   dev.flush()
 
    return(list(cex=cex, ypos=ypos, dist=dist))
 
@@ -308,12 +312,16 @@
 
    }
 
+   dev.hold()
+
    rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
 
    cex <- .findcex(txt, font=font.mono, x1=1.8, x2=8, y1=4.5, y2=7, mincex=1.1)
    ypos <- seq(7, 4.5, length.out=length(txt))
 
    text(1.8, ypos, txt, pos=4, offset=0, cex=cex, family=font.mono, font=c(2,rep(1, length(txt)-1)), col=col.help)
+
+   dev.flush()
 
    .waitforclick()
 

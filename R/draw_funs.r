@@ -189,6 +189,8 @@
    col.square.d <- .get("col.square.d")
    col.square.be <- .get("col.square.be")
 
+   dev.hold()
+
    par(xpd=NA, pty="s", mar=rep(2.2,4), fg=col.fg, bg=col.bg)
 
    mat <- matrix(1, nrow=10, ncol=10)
@@ -221,6 +223,8 @@
    }
 
    .drawsideindicator(sidetoplay, flip=flip, adj=1)
+
+   dev.flush()
 
    return()
 

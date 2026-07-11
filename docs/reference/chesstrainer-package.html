@@ -31,7 +31,7 @@ The main purpose of the chesstrainer package is to create sequences of moves (li
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chesstrainer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-172</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-173</span>
       </span>
     </div>
 
@@ -283,12 +283,6 @@ The main purpose of the chesstrainer package is to create sequences of moves (li
 <p>The trainer plays various sounds (e.g., when playing moves, when capturing pieces, when making a wrong move, when completing a sequence). This may or may not work depending on your operating system and configuration. See the <code><a href="playsound.html">playsound</a></code> function for further details.</p>
 <p>The sound volume can be decreased/increased with the <code>&lt;_&gt;</code> and <code>&lt;+&gt;</code> keys (note that this does not work with the mpg123 player under Windows; see <code><a href="playsound.html">playsound</a></code>). Setting the volume to 0 disables the sound. This can also be useful if playing sounds adds too much lag.</p>
     </div>
-    <div id="cleaning-up">
-    <h2>Cleaning Up</h2>
-
-
-<p>The package creates various files and directories. The <code><a href="cleanup.html">cleanup</a></code> function can be used to clean up files and directories created by the package.</p>
-    </div>
     <div id="notes-for-windows-users">
     <h2>Notes for Windows Users</h2>
 
@@ -304,6 +298,12 @@ The main purpose of the chesstrainer package is to create sequences of moves (li
 
 <p>It is advisable to regularly make a backup of the sequences you have created. The default directory where sequences are stored can be found with the command:</p>
 <p><code>file.path(tools::R_user_dir(package="chesstrainer", which="data"), "sequences")</code></p>
+    </div>
+    <div id="cleaning-up">
+    <h2>Cleaning Up</h2>
+
+
+<p>The package creates various files and directories. The <code><a href="cleanup.html">cleanup</a></code> function can be used to clean up files and directories created by the package.</p>
     </div>
     <div id="license-info">
     <h2>License Info</h2>

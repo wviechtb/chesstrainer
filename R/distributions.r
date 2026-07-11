@@ -2,8 +2,6 @@
 
    n <- length(scores)
 
-   par(xpd=FALSE)
-
    col.top      <- .get("col.top")
    col.bg       <- .get("col.bg")
    col.square.l <- .get("col.square.l")
@@ -12,6 +10,9 @@
 
    #par(mfrow=c(3,2), pty="m")
 
+   dev.hold()
+
+   par(xpd=FALSE)
    layout(matrix(c(1,2,3,4,5,5), nrow=3, byrow=TRUE))
    par(pty="m", mar=c(5,5,4,2))
 
@@ -128,6 +129,8 @@
    box(which="figure", col=col.border, lwd=.get("lwd")+3)
 
    par(xpd=NA)
+
+   dev.flush()
 
    .waitforclick()
 

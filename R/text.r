@@ -368,7 +368,7 @@
    if (x == "strcapmistake") {
       return(switch(lang,
                     de = "^[F|f|M|m](ehler)?\\s*(>|<|>=|<=)\\s*(\\d+\\.?\\d*)$",
-                         "^[M|m](istake)?\\s*(>|<|>=|<=)\\s*(\\d+\\.?\\d*)$"
+                         "^[F|f|M|m](istake)?\\s*(>|<|>=|<=)\\s*(\\d+\\.?\\d*)$"
    ))}
 
    if (x == "selseqmistake") {
@@ -1815,6 +1815,12 @@
       return(switch(lang,
                     de = paste0("Flush: ", ifelse(arg, "an", "aus")),
                          paste0("Flush: ", ifelse(arg, "on", "off"))
+   ))}
+
+   if (x == "startnewround") {
+      return(switch(lang,
+                    de = "Starte neue/n\U000000E4chste Runde ...",
+                         "Starting new/next round ..."
    ))}
 
 }
