@@ -972,7 +972,7 @@
 
 }
 
-.rmannot <- function(pos, circles=NULL, arrows=NULL, glyph=NULL, flip) {
+.rmannot <- function(pos, circles=NULL, arrows=NULL, glyph=NULL, flip, hold=TRUE) {
 
    oldpos <- pos
 
@@ -1015,6 +1015,9 @@
 
    if (any(oldpos == "x")) {
 
+      if (hold)
+         dev.hold()
+
       .redrawpos(pos, oldpos, flip=flip, drawcheck=FALSE)
 
       if (.isglyph(glyph)) {
@@ -1044,6 +1047,9 @@
             .drawcheck(pos, flip=flip)
 
       }
+
+      if (hold)
+         dev.flush()
 
    }
 

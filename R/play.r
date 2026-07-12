@@ -762,6 +762,8 @@ play <- function(lang="en", online, ...) {
       moves.selected <- sapply(dat, function(x) paste0(x$moves$move, collapse=", "))
       moves.selected <- gsub("[NBRKQ+#=]", "", moves.selected)
       moves.selected <- gsub("x", "-", moves.selected)
+      flip.selected <- sapply(dat, function(x) x$flip)
+      moves.selected <- paste0(ifelse(flip.selected, "2 ", "1 "), moves.selected) # to also sort below by whether one plays with white/black
 
       if (all(scores.selected == 0)) # in case all selected sequences have a score of 0
          scores.selected <- rep(1, k)
@@ -1097,7 +1099,8 @@ play <- function(lang="en", online, ...) {
                #Sys.sleep(delay)
             }
 
-            Sys.sleep(delay)
+            if (iswin)
+               Sys.sleep(delay/2)
 
             show <- FALSE
             #.textbot(show, showcomp, player, seqdir, seqdirpos, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
@@ -1277,10 +1280,12 @@ play <- function(lang="en", online, ...) {
             if (idle.time > idletime)
                session.time.start <- session.time.start + idle.time
 
+            dev.hold()
+
             if (remove.annotations) {
 
                if (nrow(circles) >= 1L || nrow(arrows) >= 1L || nrow(harrows) >= 1L) {
-                  .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), flip=flip)
+                  .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), flip=flip, hold=FALSE)
                   circles <- matrix(nrow=0, ncol=2)
                   arrows  <- matrix(nrow=0, ncol=4)
                   harrows <- matrix(nrow=0, ncol=4)
@@ -1290,6 +1295,8 @@ play <- function(lang="en", online, ...) {
             }
 
             .drawglyph(glyph) # redraw glyph in case it was overdrawn
+
+            dev.flush()
 
             if (is.numeric(click) && isTRUE(click == 0))
                next
@@ -1614,7 +1621,7 @@ play <- function(lang="en", online, ...) {
                if (i == 1)
                   next
                dev.hold()
-               .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), glyph=glyph, flip=flip)
+               .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), glyph=glyph, flip=flip, hold=FALSE)
                circles <- matrix(nrow=0, ncol=2)
                arrows  <- matrix(nrow=0, ncol=4)
                harrows <- matrix(nrow=0, ncol=4)
@@ -1714,7 +1721,7 @@ play <- function(lang="en", online, ...) {
                if (i == 1)
                   next
                dev.hold()
-               .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), glyph=glyph, flip=flip)
+               .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), glyph=glyph, flip=flip, hold=FALSE)
                circles <- matrix(nrow=0, ncol=2)
                arrows  <- matrix(nrow=0, ncol=4)
                harrows <- matrix(nrow=0, ncol=4)
@@ -1976,7 +1983,7 @@ play <- function(lang="en", online, ...) {
                if (movnumber == i-1)
                   next
                dev.hold()
-               .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), glyph=glyph, flip=flip)
+               .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), glyph=glyph, flip=flip, hold=FALSE)
                circles <- matrix(nrow=0, ncol=2)
                arrows  <- matrix(nrow=0, ncol=4)
                harrows <- matrix(nrow=0, ncol=4)
@@ -2065,9 +2072,9 @@ play <- function(lang="en", online, ...) {
             # 9 to jump to the main variation
 
             if (mode %in% c("play","analysis") && identical(click, "9") && !is.null(savgame)) {
-               dev.hold()
                .texttop(.text("retstoregame"), sleep=1)
-               .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), glyph=glyph, flip=flip)
+               dev.hold()
+               .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), glyph=glyph, flip=flip, hold=FALSE)
                circles <- matrix(nrow=0, ncol=2)
                arrows  <- matrix(nrow=0, ncol=4)
                harrows <- matrix(nrow=0, ncol=4)
@@ -2641,16 +2648,18 @@ play <- function(lang="en", online, ...) {
                if (i == 1 || identical(.get("x2y2"), c(NA,NA)))
                   next
                glyphchar <- ifelse(identical(click, "!"), "!", "?")
+               dev.hold()
                if (nchar(glyph) == 0L) {
                   glyph <- glyphchar
                } else if (nchar(glyph) == 1L) {
                   glyph <- paste0(glyph, glyphchar, collapse="")
                } else {
-                  .rmannot(pos, circles=circles, arrows=arrows, glyph=glyph, flip=flip)
+                  .rmannot(pos, circles=circles, arrows=arrows, glyph=glyph, flip=flip, hold=FALSE)
                   glyph <- ""
                   .drawannot(circles=circles, arrows=arrows, glyph=glyph)
                }
                .drawglyph(glyph)
+               dev.flush()
                sub$moves$glyph[i-1] <- glyph
                next
             }
@@ -2922,6 +2931,7 @@ play <- function(lang="en", online, ...) {
                }
                contanalysis <- !contanalysis
                .texttop(.text("contanalysis", contanalysis), sleep=1, showlast=FALSE)
+               dev.hold()
                if (contanalysis) {
                   tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                   harrows  <- tmp$harrows
@@ -2929,10 +2939,11 @@ play <- function(lang="en", online, ...) {
                   .drawdepth(showeval[[mode]])
                } else {
                   .texttop("")
-                  .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), glyph=glyph, flip=flip)
+                  .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), glyph=glyph, flip=flip, hold=FALSE)
                   harrows <- matrix(nrow=0, ncol=4)
                   .drawannot(circles=circles, arrows=arrows, glyph=glyph)
                }
+               dev.flush()
                next
             }
 
@@ -4506,7 +4517,7 @@ play <- function(lang="en", online, ...) {
             tmp <- apply(arrows, 1, function(x) identical(x, c(click1.x, click1.y, click2.x, click2.y)))
             if (any(tmp)) { # but if the arrow already exists, remove it
                dev.hold()
-               .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), flip=flip)
+               .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), flip=flip, hold=FALSE)
                arrows <- arrows[!tmp,,drop=FALSE]
                .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
                dev.flush()
@@ -4540,7 +4551,7 @@ play <- function(lang="en", online, ...) {
 
          dev.hold()
 
-         .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), flip=flip)
+         .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), flip=flip, hold=FALSE)
          if (nrow(circles) >= 1L)
             circlesvar <- paste0(apply(circles, 1, function(x) paste0("(",x[1],",",x[2],")")), collapse=";")
          if (nrow(arrows) >= 1L)
@@ -4863,16 +4874,16 @@ play <- function(lang="en", online, ...) {
                      }
 
                      if (identical(click, "a") || identical(click, "A") || (is.numeric(click) && identical(click[3], 2))) { # a/A and right mouse button goes to add mode
+                        dev.hold()
                         if (unflip) {
                            flip <- !flip
                            unflip <- FALSE
                            list2env(.doflip(sub, pos, flip), envir=environment())
-                           dev.hold()
                            .redrawall(pos, flip, show, showcomp, player, seqdir, seqdirpos, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
-                           dev.flush()
                         } else {
-                           .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), glyph=glyph, flip=flip)
+                           .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), glyph=glyph, flip=flip, hold=FALSE)
                         }
+                        dev.flush()
                         saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
                         dosave <- FALSE
                         glyph <- ""
@@ -4909,16 +4920,16 @@ play <- function(lang="en", online, ...) {
                      }
 
                      if (identical(click, "\\") || identical(click, "\U000000E4")) { # \ or ä goes to play mode
+                        dev.hold()
                         if (unflip) {
                            flip <- !flip
                            unflip <- FALSE
                            list2env(.doflip(sub, pos, flip), envir=environment())
-                           dev.hold()
                            .redrawall(pos, flip, show, showcomp, player, seqdir, seqdirpos, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
-                           dev.flush()
                         } else {
-                           .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), glyph=glyph, flip=flip)
+                           .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), glyph=glyph, flip=flip, hold=FALSE)
                         }
+                        dev.flush()
                         saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
                         dosave <- FALSE
                         glyph <- ""

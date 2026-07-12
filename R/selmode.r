@@ -89,6 +89,14 @@
 
          if (is.element(click, 0:length(selmodes))) {
             click <- as.numeric(click)
+            if (click == 0)
+               click <- 10
+            selmode <- selmodes[click]
+            break
+         }
+
+         if (is.element(click, c("-"))) {
+            click <- 11
             selmode <- selmodes[click]
             break
          }
