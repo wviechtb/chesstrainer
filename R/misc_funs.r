@@ -1500,6 +1500,8 @@
 
    sub$flip <- flip
    sub$moves[1:4] <- 9-sub$moves[1:4]
+   if (!is.null(sub$movesend))
+      sub$movesend[1:4] <- 9-sub$movesend[1:4]
    sub$moves$circles <- .sub9(sub$moves$circles)
    sub$moves$arrows  <- .sub9(sub$moves$arrows)
    attr(pos,"y1") <- 9-attr(pos,"y1")

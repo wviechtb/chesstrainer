@@ -6,6 +6,8 @@ play <- function(lang="en", online, ...) {
    if (!is.element(lang, c("en","de")))
       stop("Argument 'lang' must be either 'en' or 'de'.", call.=FALSE)
 
+   assign("lang", lang, envir=.chesstrainer)
+
    # set warn=1 for easier debugging
 
    owarn <- options()$warn
@@ -21,13 +23,11 @@ play <- function(lang="en", online, ...) {
       isonline <- online
    }
 
-   assign("lang", lang, envir=.chesstrainer)
-
    # get arguments passed via ... and assign values either from ... or the defaults
 
    ddd <- list(...)
 
-   defaults <- list(player="", seqdir="", seqdirpos=1, mode="add", selmode="score_random", timed=FALSE, timepermove=5,
+   defaults <- list(player="", seqdir="", seqdirpos=1, mode="add", advanced=FALSE, selmode="score_random", timed=FALSE, timepermove=5,
                     expval=2, target=0, multiplier=0.8, adjustwrong=40, adjusthint=20, showeval=TRUE, evalsteps=5, movestoshow=5,
                     showcoords=TRUE, showtransp=TRUE, showmatdiff=TRUE, san=TRUE, piecesymbols=1, wait=TRUE, delay=0.5, idletime=120, mintime=60, sleepadj=0, lwd=2, volume=50,
                     showgraph=FALSE, repmistake=FALSE, zenmode=FALSE, compseq=TRUE,
@@ -147,7 +147,7 @@ play <- function(lang="en", online, ...) {
       success <- dir.create(configdir, recursive=TRUE)
       if (!success)
          stop(.text("dircreateerror"), call.=FALSE)
-      settings <- list(lang=lang, player=player, seqdir=seqdir, seqdirpos=seqdirpos, selmode=selmode, timed=timed, timepermove=timepermove,
+      settings <- list(lang=lang, player=player, seqdir=seqdir, seqdirpos=seqdirpos, advanced=advanced, selmode=selmode, timed=timed, timepermove=timepermove,
                        expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, showeval=showeval, evalsteps=evalsteps, movestoshow=movestoshow,
                        showcoords=showcoords, showtransp=showtransp, showmatdiff=showmatdiff, san=san, piecesymbols=piecesymbols, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, lwd=lwd, volume=volume,
                        showgraph=showgraph, repmistake=repmistake, zenmode=zenmode, compseq=compseq,
@@ -179,7 +179,7 @@ play <- function(lang="en", online, ...) {
          }
       }
       sfpath <- suppressWarnings(normalizePath(sfpath))
-      settings <- list(lang=lang, player=player, seqdir=seqdir, seqdirpos=seqdirpos, selmode=selmode, timed=timed, timepermove=timepermove,
+      settings <- list(lang=lang, player=player, seqdir=seqdir, seqdirpos=seqdirpos, advanced=advanced, selmode=selmode, timed=timed, timepermove=timepermove,
                        expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, showeval=showeval, evalsteps=evalsteps, movestoshow=movestoshow,
                        showcoords=showcoords, showtransp=showtransp, showmatdiff=showmatdiff, san=san, piecesymbols=piecesymbols, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, lwd=lwd, volume=volume,
                        showgraph=showgraph, repmistake=repmistake, zenmode=zenmode, compseq=compseq,
@@ -212,6 +212,8 @@ play <- function(lang="en", online, ...) {
 
    switch1 <- parse(text=switch1)
    switch2 <- parse(text=switch2)
+
+   # assign variables to .chesstrainer environment as needed
 
    assign("lang", lang, envir=.chesstrainer)
    assign("mode", mode, envir=.chesstrainer)
@@ -268,7 +270,7 @@ play <- function(lang="en", online, ...) {
 
    assign("cachedir", cachedir, envir=.chesstrainer)
 
-   # clean up the Lichess cache based on monthslicache and the Stockfish cache based on monthssfcache
+   # clean up the Lichess caches based on monthslicache and the Stockfish cache based on monthssfcache
 
    .cleancache(file.path(cachedir, "lichess"), monthslicache)
    .cleancache(file.path(cachedir, "masters"), monthslicache)
@@ -347,6 +349,8 @@ play <- function(lang="en", online, ...) {
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
 
    }
+
+   # under Windows, set mpg123dir and sfdir to their defaults if the corresponding paths exist
 
    mpg123dir <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "mpg123")
 
@@ -594,11 +598,11 @@ play <- function(lang="en", online, ...) {
    keys <- c("q", "\033", " ", "m", "d", "\\", "\U000000E4", "n", "N", "B", "p", "P",
              "g", "h", "H", "y", "Y", "Left", "Right", "Up", "Down", "t", "T", "0", "1", "2", "3", "4", "5", "9",
              "r", "o", "u", "U", "M", "j", "%",
-             "a", "A", "f", "z", "Z", "c", "!", "@", "\"", "e", "E", "s", "b", "K", "C", "S", "F",
+             "a", "A", "f", "z", "Z", "c", "!", "@", "\"", "#", "$", "\U000000A7", "e", "E", "s", "b", "K", "C", "S", "F",
              "^", "6", "R", "G", "W", "-", "=", "_", "+", "[", "]", "{", "}", "(", ")", "i", "x", "v", "V",
              "l", "L", "<", ">", "/", ",", ".", "|", "*", "8", "?", "'", ";", ":",
              "F1", "F2", "F3", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12",
-             "ctrl-F", "ctrl-C", "ctrl-D", "ctrl-R", "ctrl-[", "ctrl-Q", "ctrl-U", "ctrl-H", "ctrl-E", "ctrl-O", "ctrl-L", "ctrl-S", "ctrl-I", "ctrl-G", "ctrl-V")
+             "ctrl-A", "ctrl-F", "ctrl-C", "ctrl-D", "ctrl-R", "ctrl-[", "ctrl-Q", "ctrl-U", "ctrl-H", "ctrl-O", "ctrl-L", "ctrl-S", "ctrl-I", "ctrl-G", "ctrl-E", "ctrl-V", "ctrl-P", "ctrl-)")
 
    run.all <- TRUE
 
@@ -1314,7 +1318,21 @@ play <- function(lang="en", online, ...) {
 
             ### general keys
 
-            #if (identical(click, "p")) {cat("--------------------------------------------\n\n"); print(pos); print(sub); next}
+            if (advanced && identical(click, "ctrl-P")) {
+               #cat("--------------------------------------------\n\n"); print(pos);
+               print(sub)
+               next
+            }
+
+            # ctrl-a to toggle advanced mode on/off
+
+            if (identical(click, "ctrl-A")) {
+               advanced <- !advanced
+               .texttop(.text("advanced", advanced), sleep=0.75)
+               settings$advanced <- advanced
+               saveRDS(settings, file=file.path(configdir, "settings.rds"))
+               next
+            }
 
             # q (or ctrl-q) to quit the trainer
 
@@ -2268,7 +2286,7 @@ play <- function(lang="en", online, ...) {
 
             # ctrl-u to toggle upsidedown
 
-            if (identical(click, "ctrl-U")) {
+            if (advanced && identical(click, "ctrl-U")) {
                upsidedown <- !upsidedown
                .texttop(.text("upsidedown", upsidedown), sleep=1.5)
                #assign("upsidedown", !.get("upsidedown"), envir=.chesstrainer)
@@ -2472,9 +2490,10 @@ play <- function(lang="en", online, ...) {
                mode <- oldmode <- "add"
                assign("mode", mode, envir=.chesstrainer)
 
-               sub$player <- NULL
+               sub$player     <- NULL
                sub$commentend <- NULL # TODO: move commentend to last comment?
-               sub$symbolend <- NULL
+               sub$symbolend  <- NULL
+               sub$endmoves   <- NULL
 
                .texttop("")
 
@@ -2642,21 +2661,59 @@ play <- function(lang="en", online, ...) {
                next
             }
 
-            # ! and @ (or ") to add glyphs with exclamation and question marks
+            # !, @ (or "), # (or \U000000A7), and $ to add glyphs (exclamation marks, question marks, other)
 
-            if (identical(click, "!") || identical(click, "@") || identical(click, "\"")) {
+            if (identical(click, "!") || identical(click, "@") || identical(click, "\"") || identical(click, "#") || identical(click, "$") || identical(click, "\U000000A7")) {
                if (i == 1 || identical(.get("x2y2"), c(NA,NA)))
                   next
-               glyphchar <- ifelse(identical(click, "!"), "!", "?")
                dev.hold()
-               if (nchar(glyph) == 0L) {
-                  glyph <- glyphchar
-               } else if (nchar(glyph) == 1L) {
-                  glyph <- paste0(glyph, glyphchar, collapse="")
-               } else {
-                  .rmannot(pos, circles=circles, arrows=arrows, glyph=glyph, flip=flip, hold=FALSE)
-                  glyph <- ""
-                  .drawannot(circles=circles, arrows=arrows, glyph=glyph)
+               glyphs1 <- c("\U000025A1", "\U000025B3", "\U00002191", "\U00002191\U00002191")
+               glyphs2 <- c("=", "\U00002A72", "\U000000B1", "\U0000002B\U00002212", "\U00002A71", "\U00002213", "\U00002212\U0000002B", "\U0000221E")
+               matchglyph1 <- glyph == glyphs1
+               matchglyph2 <- glyph == glyphs2
+               if (identical(click, "#") || identical(click, "\U000000A7")) {
+                  if (any(matchglyph1)) {
+                     matchglyph1 <- which(matchglyph1)
+                     if (matchglyph1 == length(glyphs1)) {
+                        .rmannot(pos, circles=circles, arrows=arrows, glyph=glyph, flip=flip, hold=FALSE)
+                        glyph <- ""
+                        .drawannot(circles=circles, arrows=arrows, glyph=glyph)
+                     } else {
+                        matchglyph1 <- matchglyph1 + 1
+                        glyph <- glyphs1[matchglyph1]
+                     }
+                  } else {
+                     glyph <- glyphs1[1]
+                  }
+               }
+               if (identical(click, "$")) {
+                  if (any(matchglyph2)) {
+                     matchglyph2 <- which(matchglyph2)
+                     if (matchglyph2 == length(glyphs2)) {
+                        .rmannot(pos, circles=circles, arrows=arrows, glyph=glyph, flip=flip, hold=FALSE)
+                        glyph <- ""
+                        .drawannot(circles=circles, arrows=arrows, glyph=glyph)
+                     } else {
+                        matchglyph2 <- matchglyph2 + 1
+                        glyph <- glyphs2[matchglyph2]
+                     }
+                  } else {
+                     glyph <- glyphs2[1]
+                  }
+               }
+               if (identical(click, "!") || identical(click, "@") || identical(click, "\"")) {
+                  if (any(matchglyph1) || any(matchglyph2))
+                     glyph <- ""
+                  glyphchar <- ifelse(identical(click, "!"), "!", "?")
+                  if (nchar(glyph) == 0L) {
+                     glyph <- glyphchar
+                  } else if (nchar(glyph) == 1L) {
+                     glyph <- paste0(glyph, glyphchar, collapse="")
+                  } else {
+                     .rmannot(pos, circles=circles, arrows=arrows, glyph=glyph, flip=flip, hold=FALSE)
+                     glyph <- ""
+                     .drawannot(circles=circles, arrows=arrows, glyph=glyph)
+                  }
                }
                .drawglyph(glyph)
                dev.flush()
@@ -2755,6 +2812,11 @@ play <- function(lang="en", online, ...) {
                   }
                }
                if (dosave) {
+                  # if sub$endmoves has only a single entry, remove it since it is superfluous
+                  if (!is.null(sub$endmoves)) {
+                     if (nrow(sub$endmoves) == 1L)
+                        sub$endmoves <- NULL
+                  }
                   saveRDS(sub, file=filenamefull)
                   playsound(system.file("sounds", "complete.ogg", package="chesstrainer"))
                   .newround(seqno1=TRUE)
@@ -2822,6 +2884,76 @@ play <- function(lang="en", online, ...) {
                   .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc)
                if (verbose)
                   print(pos)
+               next
+            }
+
+            # ctrl-e to add multiple ending moves
+
+            if (advanced && mode == "add" && identical(click, "ctrl-E")) {
+               if (i == 1 || flip && sidetoplay == "b" || !flip && sidetoplay == "w")
+                  next
+               .texttop(.text("addnewendmove"), sleep=0.75)
+               if (is.null(sub$endmoves))
+                  sub$endmoves <- sub$moves[i-1,] # if not null, then the move is added at [e]
+               dev.hold()
+               .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), glyph=glyph, flip=flip, hold=FALSE)
+               circles <- matrix(nrow=0, ncol=2)
+               arrows  <- matrix(nrow=0, ncol=4)
+               harrows <- matrix(nrow=0, ncol=4)
+               glyph   <- ""
+               opening <- ""
+               evalvals <- NULL
+               .rmcheck(pos, flip=flip)
+               posold <- pos
+               if (is.null(sub$pos)) {
+                  pos <- start.pos
+               } else {
+                  pos <- sub$pos
+                  starteval <- attr(pos,"starteval")
+               }
+               neweval <- starteval
+               sidetoplay <- sidetoplaystart
+               comment <- sub$moves$comment[i-1]
+               if (i == 2) {
+                  i <- 1
+               } else {
+                  i <- i - 1
+                  neweval <- sub$moves$eval[i-1]
+                  for (i in seq_len(i-1)) {
+                     pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE, draw=FALSE)
+                     sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
+                     opening <- .findopening(sub$moves[seq_len(i),1:4], pos=pos, flip=flip, sidetoplay=sidetoplay, sidetoplaystart=sidetoplaystart, i=i, opening=opening, openings=openings, posnull=is.null(sub$pos), draw=FALSE)
+                  }
+                  i <- i + 1
+               }
+               .redrawpos(pos, posold, flip=flip)
+               .texttop(sub$moves$comment[i])
+               circles <- .parseannot(sub$moves$circles[i], cols=2)
+               arrows  <- .parseannot(sub$moves$arrows[i], cols=4)
+               glyph   <- sub$moves$glyph[i-1]
+               .drawannot(circles=circles, arrows=arrows, glyph=glyph)
+               .textbot(i=i, totalmoves=totalmoves, onlyi=TRUE)
+               sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
+               .textbot(opening=opening, onlyeco=TRUE)
+               dev.flush()
+               playsound(system.file("sounds", "move.ogg", package="chesstrainer"))
+               .drawevalbar(neweval, i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]])
+               fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
+               res.sf <- .sf.eval(sfproc=sfproc, sfrun=sfrun, depth=depth1, fen=fen)
+               evalval  <- res.sf$eval[1:multipv1]
+               bestmove <- res.sf$bestmove[1:multipv1]
+               #bestmove[.is.null(bestmove)] <- ""
+               matetype <- res.sf$matetype
+               sfproc   <- res.sf$sfproc
+               sfrun    <- res.sf$sfrun
+               if (contanalysis) {
+                  tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
+                  harrows  <- tmp$harrows
+                  evalvals <- tmp$evalvals
+               }
+               .drawdepth(showeval[[mode]])
+               if (contliquery)
+                  .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc, showout=mode!="play")
                next
             }
 
@@ -3227,7 +3359,7 @@ play <- function(lang="en", online, ...) {
 
             # ctrl-v to toggle verbose mode on/off
 
-            if (identical(click, "ctrl-V")) {
+            if (advanced && identical(click, "ctrl-V")) {
                verbose <- !verbose
                if (verbose) {
                   eval(expr=switch1)
@@ -4236,7 +4368,7 @@ play <- function(lang="en", online, ...) {
                next
             }
 
-            # F10 (or ctrl-p) to show the histograms / scatterplot
+            # F10 (or ctrl-s) to show the histograms / scatterplot
 
             if (identical(click, "F10") || identical(click, "ctrl-S")) {
                if (k <= 1L) {
@@ -4307,9 +4439,9 @@ play <- function(lang="en", online, ...) {
                next
             }
 
-            # ctrl-e to edit the session history file
+            # ctrl-0 to edit the session history file
 
-            if (identical(click, "ctrl-E")) {
+            if (advanced && identical(click, "ctrl-)")) {
                player.file <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "sessions", paste0(player, ".rds"))
                if (file.exists(player.file)) {
                   dat.player <- readRDS(player.file)
@@ -4391,9 +4523,9 @@ play <- function(lang="en", online, ...) {
                next
             }
 
-            # ctrl-g
+            # ctrl-g to generate sequences
 
-            if (identical(click, "ctrl-G")) {
+            if (advanced && identical(click, "ctrl-G")) {
 
                if (flip && sidetoplay == "b" || !flip && sidetoplay == "w") {
                   cat("Wrong side to play.\n")
@@ -4504,7 +4636,7 @@ play <- function(lang="en", online, ...) {
 
             input <- FALSE
 
-         } # end of 'while (input) {}' / jumps back to [c]
+         } # end of 'while (input) {}' / jumps back to [c] but if input=FALSE, then we continue here
 
          if (!run.rnd)
             next # jumps to [b] but since run.rnd is FALSE then jumps to [a]
@@ -4688,12 +4820,17 @@ play <- function(lang="en", online, ...) {
 
                domistake <- TRUE
 
-               # if in test mode, check that the move is correct (and also check that a promotion is made correctly)
+               # if it is the last move and there are multiple endmoves, check if any of them matches; if so, copy it to sub$moves
 
-               #if (i == nrow(sub$moves)) {
-               #   # TODO: sub$movesend could be a data frame with all the moves that can be made at the end to sub$moves[i,]
-               #   # if one of them is made, copy the row to sub$moves[i,]
-               #}
+               if (i == nrow(sub$moves) && !is.null(sub$endmoves)) {
+                  endmovematch <- apply(sub$endmoves, 1, function(x) all(c(click1.x == x[1], click1.y == x[2], click2.x == x[3], click2.y == x[4])))
+                  if (any(endmovematch)) {
+                     endmovematch <- which(endmovematch)[1]
+                     sub$moves[i,] <- sub$endmoves[endmovematch,]
+                  }
+               }
+
+               # if in test mode, check that the move is correct (and also check that a promotion is made correctly)
 
                if (all(c(click1.x == sub$moves$x1[i], click1.y == sub$moves$y1[i], click2.x == sub$moves$x2[i], click2.y == sub$moves$y2[i]))) {
                   tmp <- .updateboard(pos, move=data.frame(click1.x, click1.y, click2.x, click2.y, sub$moves[i,5:6]), flip=flip, autoprom=FALSE, x2y2=FALSE)
@@ -4709,7 +4846,7 @@ play <- function(lang="en", online, ...) {
                   }
                }
 
-               # if the move was incorrect, adjust the score, show that it was the wrong move, and then jump back to [b]
+               # if the move was incorrect, adjust the score, show that it was the wrong move, and jump back to [b]
 
                if (domistake) {
                   mistake <- TRUE
@@ -4890,9 +5027,10 @@ play <- function(lang="en", online, ...) {
                         oldmode <- "test"
                         mode <- "add"
                         assign("mode", mode, envir=.chesstrainer)
-                        sub$player <- NULL
+                        sub$player     <- NULL
                         sub$commentend <- NULL # TODO: move commentend to last comment?
-                        sub$symbolend <- NULL
+                        sub$symbolend  <- NULL
+                        sub$endmoves   <- NULL
                         show <- FALSE
                         showcomp <- TRUE
                         .texttop("")
@@ -4937,9 +5075,10 @@ play <- function(lang="en", online, ...) {
                         oldmode <- "test"
                         mode <- "play"
                         assign("mode", mode, envir=.chesstrainer)
-                        sub$player <- NULL
+                        sub$player     <- NULL
                         sub$commentend <- NULL # TODO: move commentend to last comment?
-                        sub$symbolend <- NULL
+                        sub$symbolend  <- NULL
+                        sub$endmoves   <- NULL
                         show <- FALSE
                         showcomp <- TRUE
                         timed <- FALSE
@@ -5208,6 +5347,17 @@ play <- function(lang="en", online, ...) {
             if (identical(matetype, "mate")) {
                sub$moves$move[i-1] <- sub("+", "#", sub$moves$move[i-1], fixed=TRUE)
                sub$moves$san[i-1] <- sub("+", "#", sub$moves$san[i-1], fixed=TRUE)
+            }
+
+            # add the move as an endmove if endmoves is not null ([e])
+
+            if (!is.null(sub$endmoves)) {
+               if (flip && sidetoplay == "w" || !flip && sidetoplay == "b") {
+                  sub$endmoves <- rbind(sub$endmoves, sub$moves[i-1,])
+                  rownames(sub$endmoves) <- paste0(i-1, letters[seq_len(nrow(sub$endmoves))])
+               } else {
+                  sub$endmoves <- NULL # but erase endmoves if it is the wrong side to play
+               }
             }
 
             # check for (stale)mate

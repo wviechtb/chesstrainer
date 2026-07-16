@@ -1823,6 +1823,18 @@
                          "Starting new/next round ..."
    ))}
 
+   if (x == "addnewendmove") {
+      return(switch(lang,
+                    de = "F\U000000FCge einen zus\U000000E4tzlichen Schlusszug hinzu ...",
+                         "Add an additional ending move ..."
+   ))}
+
+   if (x == "advanced") {
+      return(switch(lang,
+                    de = paste0("Erweiterter Modus: ", ifelse(arg, "an", "aus")),
+                         paste0("Advanced mode: ", ifelse(arg, "on", "off"))
+   ))}
+
 }
 
 .confirm <- function(x) {
