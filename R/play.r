@@ -1117,7 +1117,7 @@ play <- function(lang="en", online, ...) {
             sideindicator <- .drawsideindicator(sidetoplay, flip=flip, clear=!identical(sideindicator, sidetoplay))
          }
 
-         if (mode %in% c("add","analysis") && contanalysis && drawarrows) {
+         if (mode %in% c("add","analysis") && contanalysis && drawarrows && identical(matetype, "none")) {
             tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
             harrows  <- tmp$harrows
             evalvals <- tmp$evalvals
@@ -1125,7 +1125,7 @@ play <- function(lang="en", online, ...) {
 
          .drawdepth(showeval[[mode]])
 
-         if (mode %in% c("add","analysis") && contliquery)
+         if (mode %in% c("add","analysis") && contliquery && identical(matetype, "none"))
             .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc)
 
          input <- TRUE
@@ -1284,12 +1284,10 @@ play <- function(lang="en", online, ...) {
             if (idle.time > idletime)
                session.time.start <- session.time.start + idle.time
 
-            dev.hold()
-
             if (remove.annotations) {
 
                if (nrow(circles) >= 1L || nrow(arrows) >= 1L || nrow(harrows) >= 1L) {
-                  .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), flip=flip, hold=FALSE)
+                  .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), flip=flip)
                   circles <- matrix(nrow=0, ncol=2)
                   arrows  <- matrix(nrow=0, ncol=4)
                   harrows <- matrix(nrow=0, ncol=4)
@@ -1298,9 +1296,11 @@ play <- function(lang="en", online, ...) {
 
             }
 
-            .drawglyph(glyph) # redraw glyph in case it was overdrawn
-
-            dev.flush()
+            if (.isglyph(glyph)) {
+               dev.hold()
+               .drawglyph(glyph) # redraw glyph in case it was overdrawn
+               dev.flush()
+            }
 
             if (is.numeric(click) && isTRUE(click == 0))
                next
@@ -1705,13 +1705,13 @@ play <- function(lang="en", online, ...) {
                   matetype <- res.sf$matetype
                   sfproc   <- res.sf$sfproc
                   sfrun    <- res.sf$sfrun
-                  if (contanalysis) {
+                  if (contanalysis && identical(matetype, "none")) {
                      tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                      harrows  <- tmp$harrows
                      evalvals <- tmp$evalvals
                   }
                   .drawdepth(showeval[[mode]])
-                  if (contliquery)
+                  if (contliquery && identical(matetype, "none"))
                      .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc)
                }
 
@@ -1812,13 +1812,13 @@ play <- function(lang="en", online, ...) {
                   matetype <- res.sf$matetype
                   sfproc   <- res.sf$sfproc
                   sfrun    <- res.sf$sfrun
-                  if (mode %in% c("add","analysis") && contanalysis) {
+                  if (mode %in% c("add","analysis") && contanalysis && identical(matetype, "none")) {
                      tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                      harrows  <- tmp$harrows
                      evalvals <- tmp$evalvals
                   }
                   .drawdepth(showeval[[mode]])
-                  if (contliquery)
+                  if (contliquery && identical(matetype, "none"))
                      .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc, showout=mode!="play")
                }
                next
@@ -1919,13 +1919,13 @@ play <- function(lang="en", online, ...) {
                      evalval <- 0
                   }
                   .drawevalbar(evalval[1], i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]])
-                  if (contanalysis) {
+                  if (contanalysis && identical(matetype, "none")) {
                      tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                      harrows  <- tmp$harrows
                      evalvals <- tmp$evalvals
                   }
                   .drawdepth(showeval[[mode]])
-                  if (contliquery)
+                  if (contliquery && identical(matetype, "none"))
                      .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc)
                   next
                }
@@ -1967,13 +1967,13 @@ play <- function(lang="en", online, ...) {
                   matetype <- res.sf$matetype
                   sfproc   <- res.sf$sfproc
                   sfrun    <- res.sf$sfrun
-                  if (contanalysis) {
+                  if (contanalysis && identical(matetype, "none")) {
                      tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                      harrows  <- tmp$harrows
                      evalvals <- tmp$evalvals
                   }
                   .drawdepth(showeval[[mode]])
-                  if (contliquery)
+                  if (contliquery && identical(matetype, "none"))
                      .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc)
                }
                next
@@ -2067,13 +2067,13 @@ play <- function(lang="en", online, ...) {
                   matetype <- res.sf$matetype
                   sfproc   <- res.sf$sfproc
                   sfrun    <- res.sf$sfrun
-                  if (contanalysis) {
+                  if (contanalysis && identical(matetype, "none")) {
                      tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                      harrows  <- tmp$harrows
                      evalvals <- tmp$evalvals
                   }
                   .drawdepth(showeval[[mode]])
-                  if (contliquery)
+                  if (contliquery && identical(matetype, "none"))
                      .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc)
                }
                next
@@ -2131,13 +2131,13 @@ play <- function(lang="en", online, ...) {
                matetype <- res.sf$matetype
                sfproc   <- res.sf$sfproc
                sfrun    <- res.sf$sfrun
-               if (mode %in% c("add","analysis") && contanalysis) {
+               if (mode %in% c("add","analysis") && contanalysis && identical(matetype, "none")) {
                   tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                   harrows  <- tmp$harrows
                   evalvals <- tmp$evalvals
                }
                .drawdepth(showeval[[mode]])
-               if (contliquery)
+               if (contliquery && identical(matetype, "none"))
                   .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc, showout=mode!="play")
                next
             }
@@ -2583,13 +2583,13 @@ play <- function(lang="en", online, ...) {
                matetype <- res.sf$matetype
                sfproc   <- res.sf$sfproc
                sfrun    <- res.sf$sfrun
-               if (contanalysis) {
+               if (contanalysis && identical(matetype, "none")) {
                   tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                   harrows  <- tmp$harrows
                   evalvals <- tmp$evalvals
                }
                .drawdepth(showeval[[mode]])
-               if (contliquery)
+               if (contliquery && identical(matetype, "none"))
                   .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc)
                next
 
@@ -2874,13 +2874,13 @@ play <- function(lang="en", online, ...) {
                if (!.is.start.pos(pos) && !is.na(evalval[1]))
                   attr(sub$pos, "starteval") <- starteval
                .drawevalbar(starteval, i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]])
-               if (mode %in% c("add","analysis") && contanalysis) {
+               if (mode %in% c("add","analysis") && contanalysis && identical(matetype, "none")) {
                   tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                   harrows  <- tmp$harrows
                   evalvals <- tmp$evalvals
                }
                .drawdepth(showeval[[mode]])
-               if (contliquery)
+               if (contliquery && identical(matetype, "none"))
                   .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc)
                if (verbose)
                   print(pos)
@@ -2946,13 +2946,13 @@ play <- function(lang="en", online, ...) {
                matetype <- res.sf$matetype
                sfproc   <- res.sf$sfproc
                sfrun    <- res.sf$sfrun
-               if (contanalysis) {
+               if (contanalysis && identical(matetype, "none")) {
                   tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                   harrows  <- tmp$harrows
                   evalvals <- tmp$evalvals
                }
                .drawdepth(showeval[[mode]])
-               if (contliquery)
+               if (contliquery && identical(matetype, "none"))
                   .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc, showout=mode!="play")
                next
             }
@@ -3595,7 +3595,7 @@ play <- function(lang="en", online, ...) {
 
                if (grepl("^[CcKk]:\\s.*$", searchterm)) {
                   searchterm <- tolower(trimws(strsplit(searchterm, ":", fixed=TRUE)[[1]][2]))
-                  seqident <- sapply(dat.all, function(x) any(grepl(searchterm, tolower(c(x$moves$comment, x$commentend)), fixed=TRUE)))
+                  seqident <- sapply(dat.all, function(x) any(grepl(searchterm, tolower(c(x$moves$comment, x$commentend, x$commentstart)), fixed=TRUE)))
                   if (any(seqident)) {
                      cat(.text("seqsmatchcomment"))
                      tab <- data.frame(Name=files.all[seqident])
@@ -4579,13 +4579,19 @@ play <- function(lang="en", online, ...) {
                .texttop(.text("genseqs"), sleep=1)
 
                .genlines(pos, sub, nmoves=nmoves, genminperc=genminperc, genminfreq=genminfreq, movedb=movedb, basename=basename, level=0, flip=flip, sidetoplay=sidetoplay, sidetoplaystart=sidetoplaystart, i=i,
-                         isonline=isonline, lichessdb=lichessdb, token=token, speeds=speeds, ratings=ratings, lisort=lisort, barlen=barlen, invertbar=invertbar, minfreq=minfreq, minperc=minperc,
+                         isonline=isonline, lichessdb=lichessdb, token=token, speeds=speeds, ratings=ratings, liout=liout, lisort=lisort, barlen=barlen, invertbar=invertbar, minfreq=minfreq, minperc=minperc,
                          sfproc=sfproc, sfrun=sfrun, depth=depth2, seqdir=seqdir[seqdirpos])
 
                cat("Done!\n")
                playsound(system.file("sounds", "complete.ogg", package="chesstrainer"))
 
                eval(expr=switch2)
+
+               dev.hold()
+               .redrawpos(pos, flip=flip)
+               dev.flush()
+               .clearliwin(dev.after=2L)
+
                next
 
             }
@@ -4989,10 +4995,12 @@ play <- function(lang="en", online, ...) {
 
                if (wait) {
 
-                  if (!showeval[[mode]]) # always show evaluation bar at end even if eval is FALSE
+                  # always show evaluation bar at end even if eval is FALSE
+                  if (!showeval[[mode]])
                      .drawevalbar(sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, showeval=TRUE)
 
-                  if (showlibar && contliquery && token != "" && isonline) # also show the Lichess bar (but only if contliquery is on)
+                  # also show the Lichess bar (but only if contliquery is on and if it not a (stale)mate)
+                  if (showlibar && contliquery && token != "" && isonline && !grepl("#", sub$moves$move[i-1], fixed=TRUE))
                      .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc, showout=FALSE)
 
                   while (TRUE) {
@@ -5048,13 +5056,13 @@ play <- function(lang="en", online, ...) {
                         matetype <- res.sf$matetype
                         sfproc   <- res.sf$sfproc
                         sfrun    <- res.sf$sfrun
-                        if (contanalysis) {
+                        if (contanalysis && identical(matetype, "none")) {
                            tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
                            harrows  <- tmp$harrows
                            evalvals <- tmp$evalvals
                         }
                         .drawdepth(showeval[[mode]])
-                        if (contliquery)
+                        if (contliquery && identical(matetype, "none"))
                            .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc)
                         .textbot(show, showcomp, player, seqdir, seqdirpos, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
                         contplay <- TRUE
