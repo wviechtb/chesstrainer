@@ -1835,6 +1835,12 @@
                          paste0("Advanced mode: ", ifelse(arg, "on", "off"))
    ))}
 
+   if (x == "genseqs") {
+      return(switch(lang,
+                    de = "Generiere Sequenzen ...",
+                         "Generating sequences ..."
+   ))}
+
 }
 
 .confirm <- function(x) {

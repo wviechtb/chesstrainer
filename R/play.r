@@ -4576,7 +4576,11 @@ play <- function(lang="en", online, ...) {
                }
                sub$startfen <- .genfen(startpos, flip=flip, sidetoplay=sidetoplaystart, sidetoplaystart=sidetoplaystart, i=1)
 
-               .genlines(pos, sub, nmoves=nmoves, genminperc=genminperc, genminfreq=genminfreq, movedb=movedb, basename=basename, level=0, flip=flip, sidetoplay=sidetoplay, sidetoplaystart=sidetoplaystart, i=i, isonline=isonline, lichessdb=lichessdb, token=token, speeds=speeds, ratings=ratings, lisort=lisort, barlen=barlen, invertbar=invertbar, minfreq=minfreq, minperc=minperc, sfproc=sfproc, sfrun=sfrun, depth=depth2, seqdir=seqdir[seqdirpos])
+               .texttop(.text("genseqs"), sleep=1)
+
+               .genlines(pos, sub, nmoves=nmoves, genminperc=genminperc, genminfreq=genminfreq, movedb=movedb, basename=basename, level=0, flip=flip, sidetoplay=sidetoplay, sidetoplaystart=sidetoplaystart, i=i,
+                         isonline=isonline, lichessdb=lichessdb, token=token, speeds=speeds, ratings=ratings, lisort=lisort, barlen=barlen, invertbar=invertbar, minfreq=minfreq, minperc=minperc,
+                         sfproc=sfproc, sfrun=sfrun, depth=depth2, seqdir=seqdir[seqdirpos])
 
                cat("Done!\n")
                playsound(system.file("sounds", "complete.ogg", package="chesstrainer"))
