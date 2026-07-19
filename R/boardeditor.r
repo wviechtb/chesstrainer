@@ -409,7 +409,7 @@
 
    }
 
-   rect(2.2, 2.2, 9.8, 9.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
+   .drawbox(2.18, 2.18, 9.82, 9.82)
 
    cex <- .findcex(txt, font=font.mono, x1=1.8, x2=8, y1=4, y2=8, mincex=1.1)
    ypos <- seq(8, 4, length.out=length(txt))

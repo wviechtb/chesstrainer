@@ -240,14 +240,12 @@
 
 .drawbookmarks <- function(bookmarks) {
 
-   col.bg     <- .get("col.bg")
-   col.help   <- .get("col.help")
-   col.border <- .get("col.border")
-   font.mono  <- .get("font.mono")
+   col.help  <- .get("col.help")
+   font.mono <- .get("font.mono")
 
    dev.hold()
 
-   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
+   .drawbox()
 
    bookmarks2 <- bookmarks
    bookmarkslen <- nchar(bookmarks2)
@@ -283,10 +281,8 @@
 
    lang <- .get("lang")
 
-   col.bg     <- .get("col.bg")
-   col.help   <- .get("col.help")
-   col.border <- .get("col.border")
-   font.mono  <- .get("font.mono")
+   col.help  <- .get("col.help")
+   font.mono <- .get("font.mono")
 
    if (lang == "en") {
 
@@ -314,7 +310,7 @@
 
    dev.hold()
 
-   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
+   .drawbox()
 
    cex <- .findcex(txt, font=font.mono, x1=1.8, x2=8, y1=4.5, y2=7, mincex=1.1)
    ypos <- seq(7, 4.5, length.out=length(txt))

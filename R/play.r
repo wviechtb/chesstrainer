@@ -29,7 +29,7 @@ play <- function(lang="en", online, ...) {
 
    defaults <- list(player="", seqdir="", seqdirpos=1, mode="add", advanced=FALSE, selmode="score_random", timed=FALSE, timepermove=5,
                     expval=2, target=0, multiplier=0.8, adjustwrong=40, adjusthint=20, showeval=TRUE, evalsteps=5, movestoshow=5,
-                    showcoords=TRUE, showtransp=TRUE, showmatdiff=TRUE, san=TRUE, piecesymbols=1, wait=TRUE, delay=0.5, idletime=120, mintime=60, sleepadj=0, lwd=2, volume=50,
+                    showcoords=TRUE, showtransp=TRUE, showmatdiff=TRUE, san=TRUE, piecesymbols=1, wait=TRUE, delay=0.5, idletime=120, mintime=60, sleepadj=0, volume=50,
                     showgraph=FALSE, repmistake=FALSE, zenmode=FALSE, compseq=TRUE,
                     cex.top=1.4, cex.bot=0.7, cex.eval=0.5, cex.coords=0.85, cex.matdiff=1.1, cex.plots=1.0, cex.glyphs=1.6, cex.lichess=0.8,
                     sfpath="", depth1=12, depth2=20, depth3=8, sflim=NA, multipv1=1, multipv2=1, threads=1, hash=256, hintdepth=10, monthssfcache=12, usesfcache=TRUE,
@@ -78,7 +78,6 @@ play <- function(lang="en", online, ...) {
    idletime <- max(1, idletime)
    mintime <- max(1, mintime)
    sleepadj <- max(0, sleepadj)
-   lwd <- max(1, lwd)
    volume <- min(100, max(0, volume))
    volume <- round(volume)
    cex.top <- max(0.1, cex.top)
@@ -135,7 +134,7 @@ play <- function(lang="en", online, ...) {
 
    cols.all <- c("col.bg", "col.fg", "col.square.l", "col.square.d", "col.square.be",
                  "col.top", "col.bot", "col.help", "col.border",
-                 "col.hint", "col.best", "col.wrong", "col.rect", "col.annot",
+                 "col.hint", "col.best1", "col.best2", "col.wrong", "col.rect", "col.annot",
                  "col.side.w", "col.side.b", "col.side.d", "col.time.fast", "col.time.slow")
 
    # create config directory and read/save settings and colors
@@ -149,7 +148,7 @@ play <- function(lang="en", online, ...) {
          stop(.text("dircreateerror"), call.=FALSE)
       settings <- list(lang=lang, player=player, seqdir=seqdir, seqdirpos=seqdirpos, advanced=advanced, selmode=selmode, timed=timed, timepermove=timepermove,
                        expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, showeval=showeval, evalsteps=evalsteps, movestoshow=movestoshow,
-                       showcoords=showcoords, showtransp=showtransp, showmatdiff=showmatdiff, san=san, piecesymbols=piecesymbols, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, lwd=lwd, volume=volume,
+                       showcoords=showcoords, showtransp=showtransp, showmatdiff=showmatdiff, san=san, piecesymbols=piecesymbols, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, volume=volume,
                        showgraph=showgraph, repmistake=repmistake, zenmode=zenmode, compseq=compseq,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs, cex.lichess=cex.lichess,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, monthssfcache=monthssfcache, usesfcache=usesfcache,
@@ -181,7 +180,7 @@ play <- function(lang="en", online, ...) {
       sfpath <- suppressWarnings(normalizePath(sfpath))
       settings <- list(lang=lang, player=player, seqdir=seqdir, seqdirpos=seqdirpos, advanced=advanced, selmode=selmode, timed=timed, timepermove=timepermove,
                        expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, showeval=showeval, evalsteps=evalsteps, movestoshow=movestoshow,
-                       showcoords=showcoords, showtransp=showtransp, showmatdiff=showmatdiff, san=san, piecesymbols=piecesymbols, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, lwd=lwd, volume=volume,
+                       showcoords=showcoords, showtransp=showtransp, showmatdiff=showmatdiff, san=san, piecesymbols=piecesymbols, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, volume=volume,
                        showgraph=showgraph, repmistake=repmistake, zenmode=zenmode, compseq=compseq,
                        cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs, cex.lichess=cex.lichess,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, monthssfcache=monthssfcache, usesfcache=usesfcache,
@@ -226,7 +225,6 @@ play <- function(lang="en", online, ...) {
    assign("cex.glyphs", cex.glyphs, envir=.chesstrainer)
    assign("cex.lichess", cex.lichess, envir=.chesstrainer)
    assign("volume", volume, envir=.chesstrainer)
-   assign("lwd", lwd, envir=.chesstrainer)
    assign("mar", mar, envir=.chesstrainer)
    assign("mar2", mar2, envir=.chesstrainer)
    assign("showcoords", showcoords, envir=.chesstrainer)
@@ -3261,21 +3259,6 @@ play <- function(lang="en", online, ...) {
                next
             }
 
-            # (/) to decrease/increase the line width
-
-            if (identical(click, "(") || identical(click, ")")) {
-               if (identical(click, "(")) {
-                  lwd <- max(1, lwd - 1)
-               } else {
-                  lwd <- lwd + 1
-               }
-               assign("lwd", lwd, envir=.chesstrainer)
-               .texttop(.text("lwd", lwd), sleep=0.5)
-               settings$lwd <- lwd
-               saveRDS(settings, file=file.path(configdir, "settings.rds"))
-               next
-            }
-
             # ctrl-L to toggle the language
 
             if (identical(click, "ctrl-L")) {
@@ -4155,7 +4138,7 @@ play <- function(lang="en", online, ...) {
             if (identical(click, "F3")) {
                tab <- list(lang=lang, player=player, mode=mode, seqdir=seqdir[seqdirpos], selmode=selmode, zenmode=zenmode, timed=timed, timepermove=timepermove, expval=expval,
                            multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, showeval=showeval, evalsteps=evalsteps, movestoshow=movestoshow,
-                           showcoords=showcoords, showtransp=showtransp, showmatdiff=showmatdiff, san=san, piecesymbols=piecesymbols, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, mar=mar, mar2=mar2, lwd=lwd,
+                           showcoords=showcoords, showtransp=showtransp, showmatdiff=showmatdiff, san=san, piecesymbols=piecesymbols, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, mar=mar, mar2=mar2,
                            volume=volume, showgraph=showgraph, repmistake=repmistake, target=target,
                            # cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs, cex.lichess=cex.lichess,
                            difffun=difffun, difflen=difflen, diffmin=diffmin,
@@ -4666,7 +4649,7 @@ play <- function(lang="en", online, ...) {
                next
             } else {
                dev.hold()
-               .drawarrow(click1.x, click1.y, click2.x, click2.y)
+               .drawarrow(click1.x, click1.y, click2.x, click2.y, col=.get("col.annot"), width=0.75)
                arrows <- rbind(arrows, c(click1.x, click1.y, click2.x, click2.y))
                .drawglyph(glyph) # redraw the glyph so it is always on top
                dev.flush()

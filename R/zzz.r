@@ -42,7 +42,8 @@
    assign("col.help",      "#b09d7f",       envir=.chesstrainer)
    assign("col.border",    "#63462e",       envir=.chesstrainer)
    assign("col.hint",      "yellow",        envir=.chesstrainer)
-   assign("col.best",      "#747a88",       envir=.chesstrainer)
+   assign("col.best1",     "#0030883d",     envir=.chesstrainer)
+   assign("col.best2",     "#4a4a4a3a",     envir=.chesstrainer)
    assign("col.wrong",     "red",           envir=.chesstrainer)
    assign("col.rect",      "darkseagreen4", envir=.chesstrainer)
    assign("col.annot",     "#00800080",     envir=.chesstrainer)
@@ -94,6 +95,9 @@
    assign("drawevalbar.indsize", 0.25, envir=.chesstrainer)
    assign("drawlibar.xpos", 0.55, envir=.chesstrainer)
    assign("drawlibar.indsize", 0.25, envir=.chesstrainer)
+
+   assign("circle.cos", cos(seq(0, 2*pi, length.out=100)), envir=.chesstrainer)
+   assign("circle.sin", sin(seq(0, 2*pi, length.out=100)), envir=.chesstrainer)
 
    xpos    <- 0.55
    indsize <- 0.25

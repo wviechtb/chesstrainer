@@ -203,9 +203,9 @@
 
    for (j in 3:8) {
       .drawsquare(1, j, flip=flip, col=col.square.be, adj=100)
-      .addrect(1, j, col.bg, lwdadj=2)
+      .addrect(1, j, col.bg)
       .drawsquare(10, j, flip=flip, col=col.square.be)
-      .addrect(10, j, col.bg, lwdadj=2)
+      .addrect(10, j, col.bg)
    }
 
    if (flip) {
@@ -706,23 +706,57 @@
 
 }
 
-.addrect <- function(x, y, col, lwdadj=0) {
+.drawbox <- function(x1=1.18, y1=1.18, x2=8.82, y2=8.82, col=.get("col.bg"), border=.get("col.border"), width=0.05) {
 
-   lwd <- .get("lwd")
-   offset <- 0.028
-   rect(y+offset, x+offset, y+1-offset, x+1-offset, lwd=lwd+lwdadj, border=col, ljoin=1)
+   xl <- x1
+   xr <- x2
+   yb <- y1
+   yt <- y2
+
+   xil <- xl + width
+   xir <- xr - width
+   yib <- yb + width
+   yit <- yt - width
+
+   rect(xil, yib, xir, yit, col = col, border = NA)
+
+   polypath(x = c(xl, xr, xr, xl, xl, NA, xil, xir, xir, xil, xil),
+            y = c(yb, yb, yt, yt, yb, NA, yib, yib, yit, yit, yib),
+            col = border, border = NA, rule = "evenodd")
+
    return()
 
 }
 
-.rmrect <- function(x, y, flip) {
+.addrect <- function(y, x, col, offset=0.02, width=0.05) {
+
+   # outer rectangle
+   xl <- x + offset
+   xr <- x + 1 - offset
+   yb <- y + offset
+   yt <- y + 1 - offset
+
+   # inner rectangle
+   xil <- xl + width
+   xir <- xr - width
+   yib <- yb + width
+   yit <- yt - width
+
+   # NA separates the outer and inner paths
+   polypath(x = c(xl, xr, xr, xl, xl, NA, xil, xir, xir, xil, xil),
+            y = c(yb, yb, yt, yt, yb, NA, yib, yib, yit, yit, yib),
+            col = col, border = NA, rule = "evenodd")
+
+   return()
+
+}
+
+.rmrect <- function(x, y, flip, offset=0.01, width=0.06) {
 
    if (is.null(x) || is.null(y) || is.na(x) || is.na(y))
       return()
 
-   lwd <- .get("lwd")
-   offset <- 0.028
-   rect(y+offset, x+offset, y+1-offset, x+1-offset, lwd=lwd+2, border=ifelse(.is.even(x+y), .get("col.square.d"), .get("col.square.l")), ljoin=1)
+   .addrect(x, y, col=ifelse(.is.even(x+y), .get("col.square.d"), .get("col.square.l")), offset=offset, width=width)
    .drawcoords(x, y, flip)
 
    return()
@@ -734,12 +768,10 @@
    if (is.null(x) || is.null(y) || is.na(x) || is.na(y))
       return()
 
-   lwd <- .get("lwd")
-   offset <- 0.028
    if (x <= 1 || x >= 10 || y <= 1 || y >= 10) {
-      rect(y+offset, x+offset, y+1-offset, x+1-offset, lwd=lwd+2, border=.get("col.bg"), ljoin=1)
+      .addrect(x, y, col=.get("col.bg"))
    } else {
-      rect(y+offset, x+offset, y+1-offset, x+1-offset, lwd=lwd+2, border=ifelse(.is.even(x+y), .get("col.square.d"), .get("col.square.l")), ljoin=1)
+      .addrect(x, y, col=ifelse(.is.even(x+y), .get("col.square.d"), .get("col.square.l")))
       .drawcoords(x, y, flip, adj=1)
    }
 
@@ -747,9 +779,21 @@
 
 }
 
-.drawcircle <- function(x, y) {
+.drawcircle <- function(x, y, offset=0.05, width=0.05, col=.get("col.annot")) {
 
-   symbols(y+0.5, x+0.5, circles=0.45, inches=FALSE, lwd=.get("lwd")+2, fg=.get("col.annot"), add=TRUE)
+   cx <- y + 0.5
+   cy <- x + 0.5
+
+   r.outer <- 0.5 - offset
+   r.inner <- r.outer - width
+
+   circle.cos <- .get("circle.cos")
+   circle.sin <- .get("circle.sin")
+
+   polypath(x = c(cx + r.outer * circle.cos, NA, cx + r.inner * circle.cos),
+            y = c(cy + r.outer * circle.sin, NA, cy + r.inner * circle.sin),
+            col = col, border = NA, rule = "evenodd")
+
    return()
 
 }
@@ -846,51 +890,56 @@
 
 }
 
-.drawarrow <- function(y1, x1, y2, x2, col=.get("col.annot")) {
-
-   lwd <- .get("lwd")
+.drawarrow <- function(y1, x1, y2, x2, col=.get("col.annot"), width=0.75) {
 
    x1 <- x1 + 0.5
    y1 <- y1 + 0.5
    x2 <- x2 + 0.5
    y2 <- y2 + 0.5
 
-   length <- min(max(0.25, lwd*4*0.015), 0.45)
-   width  <- min(max(0.15, lwd*4*0.010), 0.40)
+   width <- ifelse(width > 0, max(width, 0.4), 0)
 
-   slp <- (y2-y1) / (x2-x1)
+   head.length <- 0.62 * width
+   head.width  <- 0.42 * width
+   shaft.width <- 0.22 * width
 
-   if (is.infinite(slp)) {
-      x3 <- x1
-      y3 <- y2 + ifelse(y1 > y2, 1, -1) * length
-   } else {
-      int <- y1 - slp*x1
-      alen <- y2-y1
-      clen <- x2-x1
-      blen <- sqrt(alen^2+clen^2)
-      if (x2 > x1) {
-         x3 <- x1 + (blen-length)/sqrt(1+slp^2)
-         y3 <- int + slp*x3
-      } else {
-         x3 <- x1 - (blen-length)/sqrt(1+slp^2)
-         y3 <- int + slp*x3
-      }
-   }
+   dx <- x2 - x1
+   dy <- y2 - y1
+   d  <- sqrt(dx^2 + dy^2)
 
-   if (is.infinite(slp)) {
-      x4 <- x3 + width
-      y4 <- y3
-      x5 <- x3 - width
-      y5 <- y3
-   } else {
-      x4 <- x3 + slp*width/sqrt(1+slp^2)
-      y4 <- y3 - width/sqrt(1+slp^2)
-      x5 <- x3 - slp*width/sqrt(1+slp^2)
-      y5 <- y3 + width/sqrt(1+slp^2)
-   }
+   head.length <- min(head.length, d)
 
-   segments(x1, y1, x3, y3, col=col, lwd=lwd*4, lend=1)
-   polygon(c(x4,x5,x2),c(y4,y5,y2), col=col, border=NA)
+   ux <- dx / d
+   uy <- dy / d
+
+   px <- -uy
+   py <-  ux
+
+   x3 <- x2 - head.length * ux
+   y3 <- y2 - head.length * uy
+
+   sw <- shaft.width / 2
+
+   theta <- seq(pi, 0, length.out=20)
+
+   xcap <- x1 + sw * (cos(theta) * px - sin(theta) * ux)
+   ycap <- y1 + sw * (cos(theta) * py - sin(theta) * uy)
+
+   polygon(x = c(x1 + sw         * px,
+                 x3 + sw         * px,
+                 x3 + head.width * px,
+                 x2,
+                 x3 - head.width * px,
+                 x3 - sw         * px,
+                 xcap),
+           y = c(y1 + sw         * py,
+                 y3 + sw         * py,
+                 y3 + head.width * py,
+                 y2,
+                 y3 - head.width * py,
+                 y3 - sw         * py,
+                 ycap),
+           col=col, border=NA)
 
    return()
 
@@ -903,17 +952,20 @@
 
    if (hint) {
       n <- nrow(arrows)
-      col.best <- .get("col.best")
+      col.best1 <- .get("col.best1")
+      col.best2 <- .get("col.best2")
       if (n == 1) {
-         .drawarrow(arrows[1,1], arrows[1,2], arrows[1,3], arrows[1,4], col=adjustcolor(col.best, alpha.f=0.6))
+         .drawarrow(arrows[1,1], arrows[1,2], arrows[1,3], arrows[1,4], col=col.best1, width=1)
       } else {
          if(sidetoplay == "b")
             evalvals <- -1 * evalvals
-         diffs <- max(evalvals) - evalvals
-         alphas <- exp(-0.5 * diffs) * c(0.65, rep(0.50, n-1))
-         alphas[alphas <= 0.1] <- 0
+         winchances <- 2 / (1 + exp(-0.00368208 * evalvals*100)) - 1
+         shift <- (max(winchances) - winchances) / 2
+         widths <- ifelse(shift >= 0 & shift < 0.2, round(12 - 50 * shift), 0) / 12
+         widths <- widths / max(widths)
+         cols <- c(col.best1, rep(col.best2, n-1))[order(winchances, decreasing=TRUE)]
          for (j in 1:nrow(arrows)) {
-            .drawarrow(arrows[j,1], arrows[j,2], arrows[j,3], arrows[j,4], col=adjustcolor(col.best, alpha.f=alphas[j]))
+            .drawarrow(arrows[j,1], arrows[j,2], arrows[j,3], arrows[j,4], col=cols[j], width=widths[j])
          }
       }
    } else {
@@ -1703,7 +1755,7 @@
 
 .startcomment <- function(txt) {
 
-   rect(1.2, 1.2, 8.8, 8.8, col=.get("col.bg"), border=.get("col.border"), lwd=.get("lwd")+3)
+   .drawbox()
 
    xleft   <- 1.5
    xright  <- 8.5

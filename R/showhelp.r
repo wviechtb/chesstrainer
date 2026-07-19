@@ -5,9 +5,7 @@
 
    lang <- .get("lang")
 
-   col.bg     <- .get("col.bg")
    col.help   <- .get("col.help")
-   col.border <- .get("col.border")
    font.mono  <- .get("font.mono")
 
    if (lang == "en") {
@@ -36,7 +34,6 @@
       "d        - choose a difficulty calculation method",
       "-=       - decrease/increase the time between moves",
       "_+       - decrease/increase the sound volume",
-      "()       - decrease/increase the line width",
       "{}       - decrease/increase the margin width",
       "v        - Stockfish evaluation bar on/off",
       "V        - Lichess evaluation bar on/off",
@@ -142,7 +139,6 @@
       "d        - Methode zur Schwierigkeitsberechnung ausw\U000000E4hlen",
       "-=       - Zeit zwischen den Z\U000000FCgen verringern/erh\U000000F6hen",
       "_+       - Lautst\U000000E4rke verringern/erh\U000000F6hen",
-      "()       - Linienbreite verringern/erh\U000000F6hen",
       "{}       - Randbreite verringern/erh\U000000F6hen",
       "v        - Stockfish Bewertungsbalken an/aus",
       "V        - Lichess Bewertungsbalken an/aus",
@@ -251,7 +247,7 @@
    while (TRUE) {
 
       if (redraw) {
-         rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
+         .drawbox()
          text(1.5, ypos, txt, pos=4, offset=0, cex=cex, family=font.mono, font=ifelse(grepl("[a-z]:", txt), 2, 1), col=col.help)
          text(8.6, 1.4, paste0(page, " / 2"), pos=2, offset=0, cex=cex, family=font.mono, col=col.help)
          if (lang == "en")

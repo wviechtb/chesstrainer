@@ -4,7 +4,6 @@
    col.bg       <- .get("col.bg")
    col.square.l <- .get("col.square.l")
    col.square.d <- .get("col.square.d")
-   col.border   <- .get("col.border")
    cex.plots    <- .get("cex.plots")
    mar          <- .get("mar")
    mar2         <- .get("mar2")
@@ -31,7 +30,7 @@
 
    n <- nrow(x)
 
-   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
+   .drawbox()
 
    plot.eval <- function(x) {
       rect(1.3, 1.3, 8.7, 8.7, col=col.bg, border=NA)

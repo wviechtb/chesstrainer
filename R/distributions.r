@@ -125,9 +125,6 @@
    #par(mfrow=c(1,1), pty="s")
    layout(1)
    par(pty="s")
-
-   box(which="figure", col=col.border, lwd=.get("lwd")+3)
-
    par(xpd=NA)
 
    dev.flush()

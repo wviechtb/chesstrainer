@@ -1,13 +1,13 @@
 .vizsettings <- function(cols.all, flip=FALSE, show=TRUE, showcomp, player, seqdir, seqdirpos, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove, liout) {
 
-   mode        <- .get("mode")
-   showcoords  <- .get("showcoords")
-   timed       <- .get("timed")
-   zenmode     <- .get("zenmode")
-   x2y2        <- .get("x2y2")
-   score       <- .get("score")
-   lasteval    <- .get("lasteval")
-   texttop     <- .get("texttop")
+   mode       <- .get("mode")
+   showcoords <- .get("showcoords")
+   timed      <- .get("timed")
+   zenmode    <- .get("zenmode")
+   x2y2       <- .get("x2y2")
+   score      <- .get("score")
+   lasteval   <- .get("lasteval")
+   texttop    <- .get("texttop")
    assign("mode", "add", envir=.chesstrainer)
    assign("timed", FALSE, envir=.chesstrainer)
    assign("zenmode", FALSE, envir=.chesstrainer)
@@ -45,24 +45,25 @@
    dev.hold()
 
    .redrawall(pos, flip, show, showcomp, player, seqdir, seqdirpos, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
-   .addrect(4, 5, col=.get("col.hint"))
-   .addrect(4, 3, col=.get("col.wrong"))
-   .addrect(4, 4, col=.get("col.rect"))
+   .addrect(4, 2, col=.get("col.wrong"))
+   .addrect(4, 3, col=.get("col.rect"))
+   .addrect(4, 4, col=.get("col.hint"))
    .drawmatdiff(pos, flip=FALSE, force=TRUE)
    .drawsquare(0, 4, flip, col=.get("col.square.be"))
    .drawsquare(0, 5, flip, col=.get("col.square.be"))
-   .addrect(0, 4, .get("col.bg"), lwdadj=2)
-   .addrect(0, 5, .get("col.bg"), lwdadj=2)
-   .drawcircle(4, 6)
-   .drawarrow(3, 7, 6, 7)
-   .drawarrow(3, 8, 6, 8, col=adjustcolor(.get("col.best"), alpha.f=0.7))
+   .addrect(0, 4, .get("col.bg"))
+   .addrect(0, 5, .get("col.bg"))
+   .drawcircle(4, 5)
+   .drawarrow(3, 6, 6, 6, col=.get("col.annot"))
+   .drawarrow(3, 7, 6, 7, col=.get("col.best1"), width=1)
+   .drawarrow(3, 8, 6, 8, col=.get("col.best2"), width=1)
    .drawsideindicator("w", flip=flip)
    .drawsideindicator("b", flip=flip, clear=FALSE)
    .drawevalbar(0.2, flip=flip)
    .drawlibar(totals=c(110,10,90))
    .drawtimer(settings=TRUE)
    .drawglyph("!!")
-   rect(1.2, 1.2, 3.8, 3.8, col=.get("col.bg"), border=.get("col.border"), lwd=.get("lwd")+3)
+   .drawbox(1.18, 1.18, 3.82, 3.82)
 
    dev.flush()
 
@@ -109,7 +110,7 @@
             if (identical(val, ""))
                next
             if (number %in% numbers.col) {
-               if (!(is.element(val, colors()) || grepl("^#(?:[0-9A-Fa-f]{6}|[0-9A-Fa-f]{2})$", val)))
+               if (!(is.element(val, colors()) || grepl("^#[0-9A-Fa-f]{6}(?:[0-9A-Fa-f]{2})?$", val)))
                   next
                assign(tab[number,1], val, envir=.chesstrainer)
                tab[number,2] <- val
@@ -130,24 +131,25 @@
          }
          dev.hold()
          .redrawall(pos, flip, show, showcomp, player, seqdir, seqdirpos, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
-         .addrect(4, 5, col=.get("col.hint"))
-         .addrect(4, 3, col=.get("col.wrong"))
-         .addrect(4, 4, col=.get("col.rect"))
+         .addrect(4, 2, col=.get("col.wrong"))
+         .addrect(4, 3, col=.get("col.rect"))
+         .addrect(4, 4, col=.get("col.hint"))
          .drawmatdiff(pos, flip=FALSE, force=TRUE)
          .drawsquare(0, 4, flip, col=.get("col.square.be"))
          .drawsquare(0, 5, flip, col=.get("col.square.be"))
-         .addrect(0, 4, .get("col.bg"), lwdadj=2)
-         .addrect(0, 5, .get("col.bg"), lwdadj=2)
-         .drawcircle(4, 6)
-         .drawarrow(3, 7, 6, 7)
-         .drawarrow(3, 8, 6, 8, col=adjustcolor(.get("col.best"), alpha.f=0.7))
+         .addrect(0, 4, .get("col.bg"))
+         .addrect(0, 5, .get("col.bg"))
+         .drawcircle(4, 5)
+         .drawarrow(3, 6, 6, 6, col=.get("col.annot"))
+         .drawarrow(3, 7, 6, 7, col=.get("col.best1"), width=1)
+         .drawarrow(3, 8, 6, 8, col=.get("col.best2"), width=1)
          .drawsideindicator("w", flip=flip)
          .drawsideindicator("b", flip=flip, clear=FALSE)
          .drawevalbar(0.2, flip=flip)
          .drawlibar(totals=c(110,10,90))
          .drawtimer(settings=TRUE)
          .drawglyph("!!")
-         rect(1.2, 1.2, 3.8, 3.8, col=.get("col.bg"), border=.get("col.border"), lwd=.get("lwd")+3)
+         .drawbox(1.18, 1.18, 3.82, 3.82)
          dev.flush()
          if (liout == 2)
             .updateliwin(out)
@@ -168,15 +170,13 @@
 
 .miscsettings <- function(multiplier, adjustwrong, adjusthint, timepermove, movestoshow, idletime, mintime, evalsteps, sleepadj) {
 
-   col.bg     <- .get("col.bg")
-   col.help   <- .get("col.help")
-   col.border <- .get("col.border")
-   font.mono  <- .get("font.mono")
-   col.text   <- .get("col.square.d")
+   col.help  <- .get("col.help")
+   font.mono <- .get("font.mono")
+   col.text  <- .get("col.square.d")
 
    dev.hold()
 
-   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
+   .drawbox()
 
    cex <- 0.9
    cex.mult <- 0.8
@@ -343,19 +343,18 @@
 
 .sfsettings <- function(sfproc, sfrun, sfpath, usesfcache, depth1, depth2, depth3, sflim, multipv1, multipv2, threads, hash, hintdepth, monthssfcache) {
 
-   lang       <- .get("lang")
-   col.bg     <- .get("col.bg")
-   col.help   <- .get("col.help")
-   col.border <- .get("col.border")
-   font.mono  <- .get("font.mono")
-   col.text   <- .get("col.square.d")
-   switch1    <- .get("switch1")
-   switch2    <- .get("switch2")
-   cachedir   <- .get("cachedir")
+   lang      <- .get("lang")
+   col.bg    <- .get("col.bg")
+   col.help  <- .get("col.help")
+   font.mono <- .get("font.mono")
+   col.text  <- .get("col.square.d")
+   switch1   <- .get("switch1")
+   switch2   <- .get("switch2")
+   cachedir  <- .get("cachedir")
 
    dev.hold()
 
-   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
+   .drawbox()
 
    cex <- 0.9
    cex.mult <- 0.8
@@ -718,19 +717,18 @@
 
 .lichesssettings <- function(speeds, ratings, lichessdb, uselicache, liout, lisort, barlen, invertbar, minfreq, minperc, token, monthslicache, isonline) {
 
-   col.bg     <- .get("col.bg")
-   col.help   <- .get("col.help")
-   col.border <- .get("col.border")
-   font.mono  <- .get("font.mono")
-   col.text   <- .get("col.square.d")
-   switch1    <- .get("switch1")
-   switch2    <- .get("switch2")
-   cachedir   <- .get("cachedir")
-   mode       <- .get("mode")
+   col.bg    <- .get("col.bg")
+   col.help  <- .get("col.help")
+   font.mono <- .get("font.mono")
+   col.text  <- .get("col.square.d")
+   switch1   <- .get("switch1")
+   switch2   <- .get("switch2")
+   cachedir  <- .get("cachedir")
+   mode      <- .get("mode")
 
    dev.hold()
 
-   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=.get("lwd")+3)
+   .drawbox()
 
    cex <- 0.9
    cex.mult <- 0.8
@@ -1099,10 +1097,8 @@
    lang <- .get("lang")
    tab$lang <- switch(lang, de = "Deutsch", en = "English")
 
-   col.bg     <- .get("col.bg")
-   col.help   <- .get("col.help")
-   col.border <- .get("col.border")
-   font.mono  <- .get("font.mono")
+   col.help  <- .get("col.help")
+   font.mono <- .get("font.mono")
 
    seqdir <- tab$seqdir
    seqdir <- sub(path.expand("~"), "~", seqdir)
@@ -1179,7 +1175,7 @@
 
    langswitch <- FALSE
 
-   rect(1.2, 1.2, 8.8, 8.8, col=col.bg, border=col.border, lwd=lwd+3)
+   .drawbox()
 
    text(1.5, ypos, txt, pos=4, offset=0, cex=cex, family=font.mono, font=ifelse(grepl(":", txt), 2, 1), col=col.help)
 
