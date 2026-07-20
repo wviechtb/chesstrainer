@@ -17,19 +17,6 @@
    assign("img.BQ", png::readPNG(system.file("figures", "chess_qdt45.png", package="chesstrainer"), native=TRUE), envir=.chesstrainer)
    assign("img.BR", png::readPNG(system.file("figures", "chess_rdt45.png", package="chesstrainer"), native=TRUE), envir=.chesstrainer)
 
-   assign("img.WB.flip", png::readPNG(system.file("figures", "chess_blt45_flip.png", package="chesstrainer"), native=TRUE), envir=.chesstrainer)
-   assign("img.WK.flip", png::readPNG(system.file("figures", "chess_klt45_flip.png", package="chesstrainer"), native=TRUE), envir=.chesstrainer)
-   assign("img.WN.flip", png::readPNG(system.file("figures", "chess_nlt45_flip.png", package="chesstrainer"), native=TRUE), envir=.chesstrainer)
-   assign("img.WP.flip", png::readPNG(system.file("figures", "chess_plt45_flip.png", package="chesstrainer"), native=TRUE), envir=.chesstrainer)
-   assign("img.WQ.flip", png::readPNG(system.file("figures", "chess_qlt45_flip.png", package="chesstrainer"), native=TRUE), envir=.chesstrainer)
-   assign("img.WR.flip", png::readPNG(system.file("figures", "chess_rlt45_flip.png", package="chesstrainer"), native=TRUE), envir=.chesstrainer)
-   assign("img.BB.flip", png::readPNG(system.file("figures", "chess_bdt45_flip.png", package="chesstrainer"), native=TRUE), envir=.chesstrainer)
-   assign("img.BK.flip", png::readPNG(system.file("figures", "chess_kdt45_flip.png", package="chesstrainer"), native=TRUE), envir=.chesstrainer)
-   assign("img.BN.flip", png::readPNG(system.file("figures", "chess_ndt45_flip.png", package="chesstrainer"), native=TRUE), envir=.chesstrainer)
-   assign("img.BP.flip", png::readPNG(system.file("figures", "chess_pdt45_flip.png", package="chesstrainer"), native=TRUE), envir=.chesstrainer)
-   assign("img.BQ.flip", png::readPNG(system.file("figures", "chess_qdt45_flip.png", package="chesstrainer"), native=TRUE), envir=.chesstrainer)
-   assign("img.BR.flip", png::readPNG(system.file("figures", "chess_rdt45_flip.png", package="chesstrainer"), native=TRUE), envir=.chesstrainer)
-
    # set default colors
 
    assign("col.bg",        "#211b12",       envir=.chesstrainer)

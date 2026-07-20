@@ -245,7 +245,6 @@ play <- function(lang="en", online, ...) {
    assign("liout", liout, envir=.chesstrainer)
    assign("showlibar", showlibar, envir=.chesstrainer)
    assign("lastapirequest", proc.time()[[3]], envir=.chesstrainer)
-   assign("upsidedown", FALSE, envir=.chesstrainer) # TODO: this can be removed (also from draw_funs.r)
    assign("evalsteps", evalsteps, envir=.chesstrainer)
 
    # create cache directories
@@ -2287,7 +2286,6 @@ play <- function(lang="en", online, ...) {
             if (advanced && identical(click, "ctrl-U")) {
                upsidedown <- !upsidedown
                .texttop(.text("upsidedown", upsidedown), sleep=1.5)
-               #assign("upsidedown", !.get("upsidedown"), envir=.chesstrainer)
                .newround()
                next
             }
