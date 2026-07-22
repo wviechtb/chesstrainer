@@ -1487,6 +1487,81 @@
 
 }
 
+.touchsfcachefile <- function(fen) {
+
+   # get the names of all cached files without the leading '<depth>_' part and get the corresponding depths
+   cachedir <- .get("cachedir")
+   cachefiles <- list.files(file.path(cachedir, "stockfish"), pattern=".rds$")
+   if (length(cachefiles) == 0L)
+      return()
+   filessplit <- strsplit(cachefiles, "_", fixed=TRUE)
+   fileswoutdepth <- sapply(filessplit, function(x) x[2], USE.NAMES=FALSE)
+   depths <- as.numeric(sapply(filessplit, function(x) x[1]))
+
+   # construct the filename for the current FEN
+   fenfilename <- .fenpart(fen, parts=1:5)
+   fenfilename <- gsub(" ", "%20", fenfilename, fixed=TRUE)
+   fenfilename <- gsub("/", "%2F", fenfilename, fixed=TRUE)
+   fenfilename.rds <- paste0(fenfilename, ".rds")
+
+   if (fenfilename.rds %in% fileswoutdepth) {
+
+      # get the depths of all cached files for the current FEN
+      depths <- depths[fenfilename.rds == fileswoutdepth]
+
+      # determine the largest depth that is cached
+      maxdepth <- max(depths)
+
+      # construct the filename for the cached file with the largest depth
+      pos <- which(fenfilename.rds == fileswoutdepth)[which.max(depths)]
+      file <- file.path(cachedir, "stockfish", cachefiles[pos])
+
+      # touch the file if its modification time was more than 1/2 day ago
+      if (difftime(Sys.time(), file.mtime(file), units="days") > 0.5)
+         Sys.setFileTime(file, Sys.time())
+
+   }
+
+   return()
+
+}
+
+.touchlicachefile <- function(fen, lichessdb, speeds, ratings) {
+
+   return() # not done at the moment, so return right away
+
+   cachedir <- .get("cachedir")
+   files <- list.files(file.path(cachedir, lichessdb), pattern=".rds$")
+   if (length(files) == 0L)
+      return()
+
+   fen <- .fenpart(fen, parts=1:5)
+   fen <- gsub(" ", "%20", fen, fixed=TRUE)
+
+   if (lichessdb == "lichess") {
+      speeds.opts  <- c("ultraBullet", "bullet", "blitz", "rapid", "classical", "correspondence")
+      speeds.bits  <- paste0(ifelse(speeds.opts %in% strsplit(speeds, ",")[[1]], 1, 0), collapse="")
+      ratings.opts <- c(0, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2500)
+      ratings.bits <- paste0(ifelse(ratings.opts %in% strsplit(ratings, ",")[[1]], 1, 0), collapse="")
+      filename <- paste0(gsub("/", "_", fen, fixed=TRUE), "_", speeds.bits, "_", ratings.bits, ".rds")
+   } else {
+      filename <- paste0(gsub("/", "_", fen, fixed=TRUE), ".rds")
+   }
+
+   if (filename %in% files) {
+
+      file <- file.path(cachedir, lichessdb, filename)
+
+      # touch the file if its modification time was more than 1/2 day ago
+      if (difftime(Sys.time(), file.mtime(file), units="days") > 0.5)
+         Sys.setFileTime(file, Sys.time())
+
+   }
+
+   return()
+
+}
+
 .fmtx <- function(x, digits, flag="")
    formatC(x, format="f", digits=digits, flag=flag)
 

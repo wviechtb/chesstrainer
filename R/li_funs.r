@@ -66,9 +66,8 @@
 
       file <- file.path(cachedir, lichessdb, filename)
       out <- readRDS(file)
-      lastmod <- file.mtime(file)
-      if (difftime(Sys.time(), lastmod, units="days") > 0.5)
-         Sys.setFileTime(file, Sys.time()) # touch the file if its modification time was more than 1/2 day ago
+      #if (difftime(Sys.time(), file.mtime(file), units="days") > 0.5)
+      #   Sys.setFileTime(file, Sys.time()) # touch the file if its modification time was more than 1/2 day ago
 
    } else {
 

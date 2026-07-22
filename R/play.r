@@ -899,7 +899,7 @@ play <- function(lang="en", online, ...) {
 
          }
 
-         if (is.null(sel) || is.na(sel) || sel == 0) # just in case
+         if (is.null(sel) || is.na(sel) || length(sel) == 0L || sel == 0) # just in case
             sel <- 1
 
          sub <- dat[[sel]]
@@ -964,6 +964,9 @@ play <- function(lang="en", online, ...) {
       } else {
          starteval <- evalval[1]
       }
+
+      .touchsfcachefile(fen)
+      .touchlicachefile(fen, lichessdb, speeds, ratings)
 
       if (!is.null(sub$pos)) {
          if (is.null(attr(pos,"starteval"))) {
@@ -1097,7 +1100,9 @@ play <- function(lang="en", online, ...) {
                if (nrow(circles) >= 1L || nrow(arrows) >= 1L)
                   .drawannot(circles=circles, arrows=arrows)
                opening <- .findopening(sub$moves[seq_len(i-1),1:4], pos=pos, flip=flip, sidetoplay=sidetoplay, sidetoplaystart=sidetoplaystart, i=i, opening=opening, openings=openings, posnull=is.null(sub$pos))
-               #Sys.sleep(delay)
+               fen <- .genfen(pos, flip, sidetoplay, sidetoplay, i)
+               .touchsfcachefile(fen)
+               .touchlicachefile(fen, lichessdb, speeds, ratings)
             }
 
             if (iswin)
@@ -2526,18 +2531,20 @@ play <- function(lang="en", online, ...) {
                      sidetoplay <- ifelse(startsWith(piece, "W"), "w", "b")
                   }
 
+                  dev.hold()
                   .drawboard(pos, flip=flip)
                   .drawcheck(pos, flip=flip)
                   .textbot(show, showcomp, player, seqdir, seqdirpos, seqname, seqnum, opening, score, rounds, age, difficulty, i=1, totalmoves, selmode, k, seqno)
+                  dev.flush()
                   circles <- matrix(nrow=0, ncol=2)
                   arrows  <- matrix(nrow=0, ncol=4)
                   harrows <- matrix(nrow=0, ncol=4)
                   evalvals <- NULL
 
-                  if (!identical(sub$moves$comment[1], "")) {
+                  if (!identical(sub$moves$comment[1], ""))
                      .texttop(sub$moves$comment[1])
-                     Sys.sleep(delay)
-                  }
+
+                  Sys.sleep(delay)
 
                   sidetoplaystart <- sidetoplay
 
@@ -4864,6 +4871,10 @@ play <- function(lang="en", online, ...) {
                i <- i + 1
                sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
 
+               fen <- .genfen(pos, flip, sidetoplay, sidetoplay, i)
+               .touchsfcachefile(fen)
+               .touchlicachefile(fen, lichessdb, speeds, ratings)
+
             }
 
             if (i > nrow(sub$moves)) {
@@ -5280,6 +5291,9 @@ play <- function(lang="en", online, ...) {
             sfproc   <- res.sf$sfproc
             sfrun    <- ifelse(contliquery, sfrun, res.sf$sfrun)
 
+            .touchsfcachefile(fen)
+            .touchlicachefile(fen, lichessdb, speeds, ratings)
+
             # in play mode, run .sf.eval() one more time to base the actual evaluation on depth1 (and without sflim) and not depth3 or in case contliquery is on
 
             if (mode == "play" && (contliquery || !is.na(sflim) || depth1 > depth3)) {
@@ -5444,6 +5458,10 @@ play <- function(lang="en", online, ...) {
                .drawglyph(glyph)
                sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
                opening <- .findopening(sub$moves[seq_len(i-1),1:4], pos=pos, flip=flip, sidetoplay=sidetoplay, sidetoplaystart=sidetoplaystart, i=i, opening=opening, openings=openings, posnull=is.null(sub$pos))
+
+               fen <- .genfen(pos, flip, sidetoplay, sidetoplay, i)
+               .touchsfcachefile(fen)
+               .touchlicachefile(fen, lichessdb, speeds, ratings)
 
                if (isTRUE(sub$moves$show[i]))
                   Sys.sleep(delay)
