@@ -408,7 +408,7 @@
 
 .parseannot <- function(x, cols) {
 
-   if (is.null(x) || identical(x, ""))
+   if (is.null(x) || identical(x, "") || identical(x, NA_character_))
       return(matrix(nrow=0, ncol=cols))
 
    x <- strsplit(x, ";", fixed=TRUE)[[1]]

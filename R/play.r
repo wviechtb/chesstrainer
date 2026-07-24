@@ -599,7 +599,7 @@ play <- function(lang="en", online, ...) {
              "^", "6", "R", "G", "W", "-", "=", "_", "+", "[", "]", "{", "}", "(", ")", "i", "x", "v", "V",
              "l", "L", "<", ">", "/", ",", ".", "|", "*", "8", "?", "'", ";", ":",
              "F1", "F2", "F3", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12",
-             "ctrl-A", "ctrl-F", "ctrl-C", "ctrl-D", "ctrl-R", "ctrl-[", "ctrl-Q", "ctrl-U", "ctrl-H", "ctrl-O", "ctrl-L", "ctrl-S", "ctrl-I", "ctrl-G", "ctrl-E", "ctrl-V", "ctrl-P", "ctrl-)")
+             "ctrl-A", "ctrl-F", "ctrl-C", "ctrl-D", "ctrl-R", "ctrl-[", "ctrl-Q", "ctrl-U", "ctrl-H", "ctrl-O", "ctrl-L", "ctrl-S", "ctrl-I", "ctrl-G", "ctrl-E", "ctrl-V", "ctrl-P", "ctrl-)", "ctrl-T")
 
    run.all <- TRUE
 
@@ -2495,6 +2495,7 @@ play <- function(lang="en", online, ...) {
                sub$commentend <- NULL # TODO: move commentend to last comment?
                sub$symbolend  <- NULL
                sub$endmoves   <- NULL
+               sub$testend    <- NULL
 
                .texttop("")
 
@@ -2764,7 +2765,7 @@ play <- function(lang="en", online, ...) {
             # s to save the sequence (in add mode)
 
             if (mode == "add" && identical(click, "s")) {
-               if (all(sub$moves$show)) {
+               if (all(sub$moves$show) && is.null(sub$testend)) {
                   .texttop(.text("allmovesshown"), sleep=1.5)
                   next
                }
@@ -2794,7 +2795,7 @@ play <- function(lang="en", online, ...) {
                if (nrow(arrows) >= 1L)
                   arrowsvar <- paste0(apply(arrows, 1, function(x) paste0("(",x[1],",",x[2],",",x[3],",",x[4],")")), collapse=";")
                if (nrow(circles) >= 1L || nrow(arrows) >= 1L) {
-                  symbolend <- data.frame(circlesvar, arrowsvar)
+                  symbolend <- data.frame(circles=circlesvar, arrows=arrowsvar)
                   sub$symbolend <- symbolend
                }
                filename <- readline(prompt=.text("filename"))
@@ -2815,11 +2816,10 @@ play <- function(lang="en", online, ...) {
                   }
                }
                if (dosave) {
-                  # if sub$endmoves has only a single entry, remove it since it is superfluous
-                  if (!is.null(sub$endmoves)) {
-                     if (nrow(sub$endmoves) == 1L)
-                        sub$endmoves <- NULL
-                  }
+                  if (!is.null(sub$endmoves) && nrow(sub$endmoves) == 1L) # if sub$endmoves has only a single entry, remove it since it is superfluous
+                     sub$endmoves <- NULL
+                  if (isFALSE(sub$testend)) # remove sub$testend if it is FALSE
+                     sub$testend <- NULL
                   saveRDS(sub, file=filenamefull)
                   playsound(system.file("sounds", "complete.ogg", package="chesstrainer"))
                   .newround(seqno1=TRUE)
@@ -2957,6 +2957,23 @@ play <- function(lang="en", online, ...) {
                .drawdepth(showeval[[mode]])
                if (contliquery && identical(matetype, "none"))
                   .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc, showout=mode!="play")
+               next
+            }
+
+            # ctrl-t to toggle test at end of the sequence
+
+            if (advanced && mode == "add" && identical(click, "ctrl-T")) {
+               if (is.null(sub$testend) || isFALSE(sub$testend)) {
+                  sub$testend <- TRUE
+                  .texttop(.text("testend", sub$testend), sleep=1)
+                  eval(expr=switch1)
+                  sub <- .editcomments(sub, seqdir[seqdirpos], seqname, key="e")
+                  eval(expr=switch2)
+               } else {
+                  sub$testend <- FALSE
+                  sub$commentend <- NULL
+                  .texttop(.text("testend", sub$testend), sleep=1)
+               }
                next
             }
 
@@ -4654,7 +4671,7 @@ play <- function(lang="en", online, ...) {
                next
             } else {
                dev.hold()
-               .drawarrow(click1.x, click1.y, click2.x, click2.y, col=.get("col.annot"), width=0.75)
+               .drawarrow(click1.x, click1.y, click2.x, click2.y, col=.get("col.annot"))
                arrows <- rbind(arrows, c(click1.x, click1.y, click2.x, click2.y))
                .drawglyph(glyph) # redraw the glyph so it is always on top
                dev.flush()
@@ -4911,8 +4928,6 @@ play <- function(lang="en", online, ...) {
 
                opening <- .findopening(sub$moves[seq_len(i-1),1:4], pos=pos, flip=flip, sidetoplay=sidetoplay, sidetoplaystart=sidetoplaystart, i=i, opening=opening, openings=openings, posnull=is.null(sub$pos))
 
-               playsound(system.file("sounds", "complete.ogg", package="chesstrainer"))
-
                # show end comment (either default or commentend)
 
                if (is.null(sub$commentend)) {
@@ -4925,19 +4940,102 @@ play <- function(lang="en", online, ...) {
                   .texttop(sub$commentend)
                }
 
-               # show symbolend if it is not NULL
+               playendsound <- TRUE
+               runthis <- TRUE
+               dowait <- wait
+               waitforclick <- TRUE
 
-               if (!is.null(sub$symbolend)) {
-                  circles <- .parseannot(sub$symbolend$circles, cols=2)
-                  arrows  <- .parseannot(sub$symbolend$arrows, cols=4)
-                  .drawannot(circles=circles, arrows=arrows)
+               # if isTRUE(sub$testend), carry out the test at the end of the sequence using annotations
+
+               if (isTRUE(sub$testend)) {
+                  click1.x <- NULL
+                  click1.y <- NULL
+                  click2.x <- NULL
+                  click2.y <- NULL
+                  empty.square <- FALSE
+                  switched.square <- FALSE
+                  new.piece <- FALSE
+                  button <- 0L
+                  click.num <- 0
+                  circlesvar <- ""
+                  arrowsvar  <- ""
+                  runtest <- TRUE
+                  while (TRUE) {
+                     click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=mousemove, onMouseUp=mouseup, onKeybd=.keyfun)
+                     if (is.character(click)) { # any key press takes the user to the dowait below ([f])
+                        dosave <- FALSE
+                        dowait <- TRUE
+                        runtest <- FALSE
+                        runthis <- FALSE
+                        waitforclick <- FALSE
+                        .texttop("")
+                        break
+                     }
+                     # a and A should work
+                     # o should work
+                     if (is.null(click1.x) || is.null(click2.x) || is.null(click1.y) || is.null(click2.y))
+                        next
+                     if (is.na(click1.x) || is.na(click2.x) || is.na(click1.y) || is.na(click2.y))
+                        next
+                     if (is.character(click))
+                        next
+                     if (identical(button, 0L)) {
+                        if (nrow(circles) >= 1L)
+                           circlesvar <- paste0(apply(circles, 1, function(x) paste0("(",x[1],",",x[2],")")), collapse=";")
+                        if (nrow(arrows) >= 1L)
+                           arrowsvar <- paste0(apply(arrows, 1, function(x) paste0("(",x[1],",",x[2],",",x[3],",",x[4],")")), collapse=";")
+                        break
+                     }
+                     if (identical(button, 2L)) {
+                        dev.hold()
+                        if (click1.x == click2.x && click1.y == click2.y) {
+                           hascircle <- apply(circles, 1, function(x) isTRUE(x[1] == click1.x && x[2] == click1.y))
+                           if (any(hascircle)) {
+                              .drawsquare(click1.x, click1.y, flip)
+                              .drawpiece(click1.x, click1.y, ifelse(flip, pos[9-click1.x,9-click1.y], pos[click1.x,click1.y]))
+                              circles <- circles[!hascircle,,drop=FALSE]
+                              checkpos <- as.numeric(.get("checkpos"))
+                              if (identical(checkpos, c(click1.x, click1.y)))
+                                 .drawcheck(pos, flip=flip)
+                              .drawglyph(glyph)
+                           } else {
+                              .drawcircle(click1.x, click1.y)
+                              circles <- rbind(circles, c(click1.x, click1.y))
+                           }
+                        } else {
+                           tmp <- apply(arrows, 1, function(x) identical(x, c(click1.x, click1.y, click2.x, click2.y)))
+                           if (any(tmp)) {
+                              .rmannot(pos, circles=circles, arrows=arrows, flip=flip, hold=FALSE)
+                              arrows <- arrows[!tmp,,drop=FALSE]
+                              .drawannot(circles=circles, arrows=arrows, glyph=glyph)
+                           } else {
+                              .drawarrow(click1.x, click1.y, click2.x, click2.y, col=.get("col.annot"))
+                              arrows <- rbind(arrows, c(click1.x, click1.y, click2.x, click2.y))
+                              .drawglyph(glyph) # redraw the glyph so it is always on top
+                           }
+                        }
+                        .drawglyph(glyph)
+                        dev.flush()
+                     }
+                  }
+                  .rmannot(pos, circles=circles, arrows=arrows, flip=flip)
+                  circles <- matrix(nrow=0, ncol=2)
+                  arrows  <- matrix(nrow=0, ncol=4)
+                  if (runtest) {
+                     if (!identical(sort(strsplit(sub$symbolend$circles, ";", fixed=TRUE)[[1]]), sort(strsplit(circlesvar, ";", fixed=TRUE)[[1]])))
+                        mistake <- TRUE
+                     if (!identical(sort(strsplit(sub$symbolend$arrows, ";", fixed=TRUE)[[1]]), sort(strsplit(arrowsvar, ";", fixed=TRUE)[[1]])))
+                        mistake <- TRUE
+                     if (mistake) {
+                        playsound(system.file("sounds", "error.ogg", package="chesstrainer"))
+                        playendsound <- FALSE
+                        if (score >= 1) {
+                           scoreadd <- min(adjustwrong, 100-score)
+                           score <- score + scoreadd
+                        }
+                     }
+                  }
                }
-
-               .drawglyph(glyph)
-
-               #if (!wait && (!is.null(sub$commentend) || !is.null(sub$symbolend) || .isglyph(glyph) || (sidetoplay == "w" && !flip) || (sidetoplay == "s" && flip))) # to also wait if not ending on a player move
-               if (!wait && (!is.null(sub$commentend) || !is.null(sub$symbolend) || .isglyph(glyph)))
-                  .waitforclick()
 
                lastseq <- seqname
 
@@ -4951,53 +5049,82 @@ play <- function(lang="en", online, ...) {
                if (!mistake && score > 1)
                   score <- max(1, round(score * multiplier))
 
-               rounds <- rounds + 1
+               if (runthis) {
 
-               tmp <- data.frame(date=as.numeric(Sys.time()), round=rounds, score=score)
+                  if (playendsound)
+                     playsound(system.file("sounds", "complete.ogg", package="chesstrainer"))
 
-               if (is.null(sub$player[[player]])) {
-                  sub$player[[player]] <- tmp
-               } else {
-                  sub$player[[player]] <- rbind(sub$player[[player]], tmp)
-               }
+                  # show symbolend if it is not NULL
 
-               difficulty <- .difffun(sub$player[[player]]$score, difflen, diffmin, adjusthint, multiplier)
-
-               .textbot(show, showcomp, player, seqdir, seqdirpos, seqname, seqnum, opening, score, rounds, age=0, difficulty, i, totalmoves, selmode, k, seqno)
-
-               # increase session.seqsplayed and compute session.mean.scores
-
-               session.seqsplayed[session.length] <- session.seqsplayed[session.length] + 1
-               session.mean.scores[[session.length]] <- c(session.mean.scores[[session.length]], mean(scores.all, na.rm=TRUE))
-
-               if (showgraph) {
-                  tmp <- .progressgraph(sub$player[[player]])
-                  if (!identical(mar2, tmp$mar2)) {
-                     mar2 <- tmp$mar2
-                     settings$mar2 <- mar2
-                     saveRDS(settings, file=file.path(configdir, "settings.rds"))
+                  if (!is.null(sub$symbolend)) {
+                     circles <- .parseannot(sub$symbolend$circles, cols=2)
+                     arrows  <- .parseannot(sub$symbolend$arrows, cols=4)
+                     .drawannot(circles=circles, arrows=arrows)
                   }
-                  dev.hold()
-                  .redrawpos(pos, flip=flip)
-                  dev.flush()
+
+                  .drawglyph(glyph)
+
+                  #if (!dowait && (!is.null(sub$commentend) || !is.null(sub$symbolend) || .isglyph(glyph) || (sidetoplay == "w" && !flip) || (sidetoplay == "s" && flip))) # to also wait if not ending on a player move
+                  if (!dowait && (!is.null(sub$commentend) || !is.null(sub$symbolend) || .isglyph(glyph)))
+                     .waitforclick()
+
+                  rounds <- rounds + 1
+
+                  tmp <- data.frame(date=as.numeric(Sys.time()), round=rounds, score=score)
+
+                  if (is.null(sub$player[[player]])) {
+                     sub$player[[player]] <- tmp
+                  } else {
+                     sub$player[[player]] <- rbind(sub$player[[player]], tmp)
+                  }
+
+                  difficulty <- .difffun(sub$player[[player]]$score, difflen, diffmin, adjusthint, multiplier)
+
+                  .textbot(show, showcomp, player, seqdir, seqdirpos, seqname, seqnum, opening, score, rounds, age=0, difficulty, i, totalmoves, selmode, k, seqno)
+
+                  # increase session.seqsplayed and compute session.mean.scores
+
+                  session.seqsplayed[session.length] <- session.seqsplayed[session.length] + 1
+                  session.mean.scores[[session.length]] <- c(session.mean.scores[[session.length]], mean(scores.all, na.rm=TRUE))
+
+                  if (showgraph) {
+                     tmp <- .progressgraph(sub$player[[player]])
+                     if (!identical(mar2, tmp$mar2)) {
+                        mar2 <- tmp$mar2
+                        settings$mar2 <- mar2
+                        saveRDS(settings, file=file.path(configdir, "settings.rds"))
+                     }
+                     dev.hold()
+                     .redrawpos(pos, flip=flip)
+                     dev.flush()
+                  }
+
+                  dosave <- TRUE
+
                }
 
-               dosave   <- TRUE
                contplay <- FALSE
 
-               if (wait) {
+               if (dowait) { # [f]
 
-                  # always show evaluation bar at end even if eval is FALSE
-                  if (!showeval[[mode]])
-                     .drawevalbar(sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, showeval=TRUE)
+                  if (runthis) {
 
-                  # also show the Lichess bar (but only if contliquery is on and if it not a (stale)mate)
-                  if (showlibar && contliquery && token != "" && isonline && !grepl("#", sub$moves$move[i-1], fixed=TRUE))
-                     .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc, showout=FALSE)
+                     # always show evaluation bar at end even if eval is FALSE
+                     if (!showeval[[mode]])
+                        .drawevalbar(sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, showeval=TRUE)
+
+                     # also show the Lichess bar (but only if contliquery is on and if it not a (stale)mate)
+                     if (showlibar && contliquery && token != "" && isonline && !grepl("#", sub$moves$move[i-1], fixed=TRUE))
+                        .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc, showout=FALSE)
+
+                  }
 
                   while (TRUE) {
 
-                     click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=.keyfun)
+                     if (waitforclick)
+                        click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=function(button,x,y) return(c(x,y,button)), onKeybd=.keyfun)
+
+                     waitforclick <- TRUE
 
                      if (is.numeric(click) && identical(click[3], 0)) # left button goes to next sequence
                         break
@@ -5014,7 +5141,7 @@ play <- function(lang="en", online, ...) {
                         break
                      }
 
-                     if (identical(click, "a") || identical(click, "A") || (is.numeric(click) && identical(click[3], 2))) { # a/A and right mouse button goes to add mode
+                     if (identical(click, " ") || identical(click, "a") || identical(click, "A") || (is.numeric(click) && identical(click[3], 2))) { # space, a/A, and right mouse button goes to add mode
                         dev.hold()
                         if (unflip) {
                            flip <- !flip
@@ -5035,6 +5162,7 @@ play <- function(lang="en", online, ...) {
                         sub$commentend <- NULL # TODO: move commentend to last comment?
                         sub$symbolend  <- NULL
                         sub$endmoves   <- NULL
+                        sub$testend    <- NULL
                         show <- FALSE
                         showcomp <- TRUE
                         .texttop("")
@@ -5083,6 +5211,7 @@ play <- function(lang="en", online, ...) {
                         sub$commentend <- NULL # TODO: move commentend to last comment?
                         sub$symbolend  <- NULL
                         sub$endmoves   <- NULL
+                        sub$testend    <- NULL
                         show <- FALSE
                         showcomp <- TRUE
                         timed <- FALSE
@@ -5224,7 +5353,7 @@ play <- function(lang="en", online, ...) {
 
                   }
 
-               } # end of 'if (wait) {}'
+               } # end of 'if (dowait) {}'
 
                if (!replast)
                   seqno <- ifelse(seqno == k, 1, seqno + 1)

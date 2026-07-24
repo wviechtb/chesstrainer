@@ -1,4 +1,6 @@
-.editcomments <- function(sub, seqdir, seqname) {
+.editcomments <- function(sub, seqdir, seqname, key) {
+
+   doreadline <- missing(key)
 
    while (TRUE) {
 
@@ -11,7 +13,12 @@
          cat(.text("commentend", sub$commentend))
       cat("\n")
 
-      resp <- readline(prompt=.text("commentedit"))
+      if (doreadline) {
+         resp <- readline(prompt=.text("commentedit"))
+      } else {
+         resp <- key
+         doreadline <- TRUE
+      }
 
       # enter = exit the while loop
 

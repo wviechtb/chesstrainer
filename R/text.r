@@ -1841,6 +1841,12 @@
                          "Generating sequences ..."
    ))}
 
+   if (x == "testend") {
+      return(switch(lang,
+                    de = paste0("Test am Ende der Sequenz: ", ifelse(arg, "an", "aus")),
+                         paste0("Test at the end of the sequence: ", ifelse(arg, "on", "off"))
+   ))}
+
 }
 
 .confirm <- function(x) {
