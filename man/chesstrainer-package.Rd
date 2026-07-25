@@ -275,6 +275,9 @@
 
    Similarly, with the \verb{<!>}, \verb{<@>} (or \verb{<">}), \verb{<#>} (or \verb{<§>}), and \verb{<$>} keys, you can add (and remove) annotation glyphs (e.g., exclamation and question marks) to moves. Such annotations are also shown in \emph{test mode}.
 
+   \if{html}{\figure{annotations.png}{options: width=900}}
+   \if{latex}{\figure{annotations.png}{options: width=5.5in}}
+
    Various other settings can be adjusted while the trainer is running:
 
    \itemize{

@@ -33,6 +33,7 @@
    .drawbox()
 
    plot.eval <- function(x) {
+      dev.hold()
       rect(1.3, 1.3, 8.7, 8.7, col=col.bg, border=NA)
       par(new=TRUE, mar=mar2)
       ys <- x$eval
@@ -75,6 +76,7 @@
       if (i > 1 && i-1 != n)
          segments(i-1, -9, i-1, 9, lty="dotted", col=col.top)
       par(mar=mar, usr=c(1,9,1,9))
+      dev.flush()
    }
 
    yvalue <- "cp"
