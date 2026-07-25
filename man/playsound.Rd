@@ -22,7 +22,7 @@ playsound(sound)
 
    Unfortunately, mpg123 cannot control the output volume, so adjusting the sound volume via the trainer has no effect for this player.
 
-   \emph{For advanced users:}
+   \strong{For advanced users:}
 
    If the sound is not working, but you know what the appropriate command is that will work on your system, you can write your own \code{playsound} function (see the code for \code{playsound} to use as a template). Then use \code{assignInNamespace("playsound", playsound, ns="chesstrainer")} to replace the \code{playsound()} function with your own version. Then use the example code below to test if the sound is working.
 

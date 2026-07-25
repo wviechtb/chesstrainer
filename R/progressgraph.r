@@ -1,7 +1,9 @@
 .progressgraph <- function(dat) {
 
    if (dat$round[1] == 1)
-      dat <- rbind(data.frame(date=NA, round=0, score=100), dat)
+      dat <- rbind(data.frame(date=dat$date[1]-max(60,min(diff(dat$date))), round=0, score=100), dat)
+
+   xvals <- dat$round
 
    x <- dat
 
@@ -15,31 +17,41 @@
 
    .drawbox()
 
+   usedate <- FALSE
+
    usr <- NULL
 
-   plot.scores <- function(x) {
+   plot.scores <- function(x, usedate) {
+      dev.hold()
       rect(1.3, 1.3, 8.7, 8.7, col=col.bg, border=NA)
       par(new=TRUE, mar=mar2)
-      if (nrow(x) == 1L) {
-         xlim <- c(x$round-1, x$round+1)
+      if (usedate) {
+         xvals <- x$date - min(x$date)
       } else {
-         xlim <- range(x$round)
+         xvals <- x$round
+      }
+      xvals <<- xvals
+      if (nrow(x) == 1L) {
+         xlim <- c(xvals-1, xvals+1)
+      } else {
+         xlim <- range(xvals)
       }
       plot(NA, xlim=xlim, ylim=c(0,100), xlab=.text("round"), ylab=.text("score"),
            bty="l", las=1, col.axis=col.top, col.lab=col.top, axes=FALSE,
            cex=cex.plots, cex.axis=cex.plots, cex.lab=cex.plots)
-      axis(side=1, at=x$round, col=col.top, col.axis=col.top, cex.axis=cex.plots)
+      axis(side=1, at=xvals, labels=x$round, col=col.top, col.axis=col.top, cex.axis=cex.plots)
       axis(side=2, col=col.top, col.axis=col.top, cex.axis=cex.plots, las=1)
-      points(x$round, x$score, type="o", pch=21, lwd=2, col=col.square.l, bg=col.square.d, cex=cex.plots)
+      points(xvals, x$score, type="o", pch=21, lwd=2, col=col.square.l, bg=col.square.d, cex=cex.plots)
       usr <<- par()$usr
       par(mar=mar, usr=c(1,9,1,9))
+      dev.flush()
    }
 
    zoom <- 1
 
    while (TRUE) {
 
-      plot.scores(x)
+      plot.scores(x, usedate=usedate)
 
       click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.mousedownfun, onKeybd=.keyfun)
 
@@ -96,12 +108,17 @@
             segments(x1, usr[4], x2, usr[4], lty="dotted", col=col.top)
             Sys.sleep(0.5)
             par(mar=mar, usr=c(1,9,1,9))
-            sel <- dat$round >= min(x1,x2) & dat$round <= max(x1,x2)
+            sel <- xvals >= min(x1,x2) & xvals <= max(x1,x2)
             if (sum(sel) == 0L)
                next
             zoom <- zoom + 1
             x <- dat[sel,]
          }
+      }
+
+      if (identical(click, "Down") || identical(click, "Up") || (is.numeric(click) && click[[3]] == 1)) {
+         usedate <- !usedate
+         next
       }
 
    }

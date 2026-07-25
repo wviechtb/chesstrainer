@@ -382,3 +382,13 @@ div.csl-right-inline {
 div.csl-indent {
   margin-left: 2em;
 }
+
+em {
+  /*font-style: italic;*/
+  font-style: normal;
+  /*font-weight: bold;*/
+  background-color: rgba(128, 128, 128, 0.15);
+  padding: 0.05em 0.2em;
+  border-radius: 3px;
+}
+
