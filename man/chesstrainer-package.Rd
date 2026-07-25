@@ -24,6 +24,9 @@
 
    The trainer will then make the next move, after which you will then again have to make the correct move. This will continue until the end of the sequence. If you do not know what the correct move is, the \verb{<h>} key will provide a hint showing which piece to move. Pressing \verb{<h>} for a second time will show the target square. Once the sequence has ended, left-clicking starts a new sequence.
 
+   \if{html}{\figure{get_hint.png}{options: width=900}}
+   \if{latex}{\figure{get_hint.png}{options: width=5.5in}}
+
    In \emph{test mode}, information is shown at the bottom about the current mode, the name of the current sequence, the player name, the current move number and the total number of moves of the sequence, the number of rounds (how many times the sequence has been played so far), the age of the sequence (how many days ago the sequence was last played), the estimated difficulty of the sequence (see below), and the sequence score (also see below).
 
    With \verb{<F1>}, you can obtain an overview of all keyboard shortcuts. The \verb{<left>} and \verb{<right>} arrow keys toggle between the two help pages. The \verb{<t>} key prints this manual in text format to the console. The \verb{<m>} key opens up the manual online. The \verb{<F1>} or \verb{<escape>} keys close the help overlay.
@@ -109,6 +112,14 @@
 
    When playing a sequence in this mode, the bar to the right of the board indicates whether the current playing time is above (in green) or below (in red) the amount of time you should have spent on the moves so far (i.e., if every move took exactly the amount of time allowed by the \sQuote{time per move} setting).
 
+   \if{html}{In the screenshots below, the first move was made quickly and the bar stays green. The second move was made slowly and the time is now below the amount of time that should have been spent on the moves so far. Therefore, the bar turns red.}
+
+   \if{html}{\figure{timed_mode.png}{options: width=900}}
+
+   \if{latex}{In the screenshots below, the first move was made quickly and the bar stays green. The second move was made slowly and the time is now below the amount of time that should have been spent on the moves so far. Therefore, the bar turns red.}
+
+   \if{latex}{\figure{timed_mode.png}{options: width=5.5in}}
+
    The \sQuote{time per move} value can be adjusted via \verb{<F6>}.
 
 }
@@ -161,6 +172,31 @@
    Note that sequences are quite personalized, since they involve going into a particular line that one deems most appropriate (and hence wants to remember). Others may disagree and prefer a different line. Therefore, you should create sequences that you want to train yourself on, so you will be able to play them quickly from memory in actual games.
 
 }
+\section{Position Evaluations via Stockfish}{
+
+   If Stockfish (\verb{https://stockfishchess.org}) is installed (see the \code{\link{install_stockfish}} function), it can be used in the background to automatically obtain position evaluations when adding sequences. For this, open up the settings for Stockfish via \verb{<F7>}, click on \sQuote{Stockfish path}, and enter the path (including the executable) to Stockfish. If this is set correctly, then position evaluations will be automatically computed and added to a sequence. Evaluations are given in centipawns divided by 100, except for forced mates, which are given as \eqn{\pm99.9}. When playing a sequence, these evaluations are then shown as an evaluation bar on the left of the board.
+
+   \if{html}{\figure{eval_bar.png}{options: width=900}}
+   \if{latex}{\figure{eval_bar.png}{options: width=5.5in}}
+
+   By default, evaluations are based on a search depth of 12 half-moves (the depth is shown below the evaluation bar). Obtaining such an evaluation for a given position should be relatively quick and not add much lag when creating a sequence. In \emph{add mode}, the \verb{<h>} key shows the best move according to Stockfish in a given position. The \verb{<y>} key can be used to switch on a continuous analysis mode where the best move is automatically shown after each move. The \verb{<right>} key automatically plays the best move in a given position according to the evaluation.
+
+   \if{html}{\figure{get_best_move.png}{options: width=900}}
+   \if{latex}{\figure{get_best_move.png}{options: width=5.5in}}
+
+   The \verb{<H>} key will run a deeper analysis (by default based on search depth of 20 half-moves) and show the best move according to Stockfish. Since this may take some time, a progress bar is shown at the top while the analysis is running.
+
+   The \verb{<L>} key does the same thing, but queries Lichess for a cloud evaluation (\verb{https://database.lichess.org/#evals}). These evaluations are often based on a very deep search and can be obtained quickly since they are precalculated. If the current position cannot be found in the database, then Stockfish is used to run a deeper analysis as a fallback option (or if the depth of the cloud evaluation is lower than the search depth of a deep evaluation).
+
+   With \verb{<F7>}, you can adjust the Stockfish settings, including the calculation depths (for fast and deep evaluations and for the \emph{play mode}; see below), the number of principal variations that will be evaluated (for fast and deep evaluations), the (maximum) depth of the line(s) shown at the top of the board when asking for the best move (10 half-moves by default), the number of threads that Stockfish can use during its calculations (the default is 1), and the hash size in MB (the default is 256). If the pause after moving pieces in \emph{add mode} feels too long, lower the search depth for fast evaluations (e.g., to something like 10) for increased responsiveness.
+
+   For a given position, the evaluation obtained is actually cached (also across sessions) and reused if the same position is encountered again. This greatly helps to increase the responsiveness of the trainer, especially when adding opening sequences (where the same positions reoccur frequently). The cached evaluation is always based on the highest search depth that was used to evaluate a given position. Cached evaluations that are older than a certain number of months are automatically removed from the cache.
+
+   In the \verb{<F7>} menu, you can toggle whether the cache is used when pressing the \verb{<H>} or \verb{<L>} key. When the cache is switched off, the evaluation will either be forced to be based on a local evaluation with Stockfish (when pressing \verb{<H>}) or a cloud evaluation (when pressing \verb{<L>}).
+
+   The \verb{<u>} key updates the evaluations for all moves in a sequence by recalculating the evaluations with the current setting for a deeper analysis. Depending on the number of moves in the sequence and the search depth for deep evaluations, this can take a bit of time. With the \verb{<U>} key, all (selected) sequences can be updated in this manner. Note that this can take a very long time.
+
+}
 \section{Querying the Lichess Database}{
 
    When pressing the \verb{<i>} key, the trainer queries the Lichess games database (\verb{https://database.lichess.org}) for the current position. If the position is found, the most frequently played moves are shown in the console, including the percentage of games won by white, the percentage of games drawn, and the percentage of games won by black.
@@ -180,6 +216,9 @@
    Also, to reduce the number of times that the Lichess database is queried, the information returned is cached locally (also across sessions) and reused if the database was queried for the same position before. The cache can be cleared via the \verb{<F8>} menu. Also, cached entries that are older than a certain number of months are automatically removed from the cache. You can also switch off that information about the current position is obtained from the cache, but this implies that the Lichess database is queried even for positions seen before. Note that the API has rate limits, which might be triggered when making too many queries within a short amount of time. If this happens, please wait a minute or so before querying the database again.
 
    The \verb{<Y>} key can be used to switch on a continuous query mode, where the database is automatically queried after each move. When the continuous query mode is on, an evaluation bar will be shown on the left indicating the outcome percentages for the current position. This bar can be toggled on and off with the \verb{<V>} key.
+
+   \if{html}{\figure{libar.png}{options: width=900}}
+   \if{latex}{\figure{libar.png}{options: width=5.5in}}
 
 }
 \section{Managing and Selecting Sequence Directories}{
@@ -201,25 +240,6 @@
    With \verb{<F2>}, a leaderboard (based on the lowest average score) and player statistics are shown (i.e., the average score, the standard deviation of the scores, the minimum, first quartile, third quartile, and the maximum score, and the total number of rounds played). The statistics are based on the currently selected sequences (or all sequences in the current sequence directory if no selection has been applied). Also, sequences whose score was manually set to 0 are not included in these statistics.
 
    For each player, the trainer also keeps track of each session including the play time. With \verb{<F12>} (or \verb{<Ctrl-h>}), you can obtain a plot of your session history, showing the play time (in minutes) over days (multiple sessions on the same day are collapsed into a single session; sessions shorter than two minutes are not counted). The total play time across all sessions is also shown. With the \verb{<down>/<up>} arrows (or the middle mouse button), you can toggle to a view of the number of sequences played over days. You can zoom into a particular time frame by left-clicking twice (once for the start and once for the end of the interval). This can be repeated to zoom in further. Clicking the right mouse button zooms all the way out. With the \verb{<right>/<left>} arrows, you can toggle to a view of the history over weeks and months (these views are only available if the session history spans multiple weeks/months). Again, you can zoom into particular time frames in these views by clicking the left mouse button twice. Clicking outside of the graph, right-clicking anywhere when zoomed out, or \verb{<escape>} closes the graph.
-
-}
-\section{Position Evaluations via Stockfish}{
-
-   If Stockfish (\verb{https://stockfishchess.org}) is installed (see the \code{\link{install_stockfish}} function), it can be used in the background to automatically obtain position evaluations when adding sequences. For this, open up the settings for Stockfish via \verb{<F7>}, click on \sQuote{Stockfish path}, and enter the path (including the executable) to Stockfish. If this is set correctly, then position evaluations will be automatically computed and added to a sequence. Evaluations are given in centipawns divided by 100, except for forced mates, which are given as \eqn{\pm99.9}. When playing a sequence, these evaluations are then shown as an evaluation bar on the left of the board.
-
-   By default, evaluations are based on a search depth of 12 half-moves (the depth is shown below the evaluation bar). Obtaining such an evaluation for a given position should be relatively quick and not add much lag when creating a sequence. In \emph{add mode}, the \verb{<h>} key shows the best move according to Stockfish in a given position. The \verb{<y>} key can be used to switch on a continuous analysis mode where the best move is automatically shown after each move. The \verb{<right>} key automatically plays the best move in a given position according to the evaluation.
-
-   The \verb{<H>} key will run a deeper analysis (by default based on search depth of 20 half-moves) and show the best move according to Stockfish. Since this may take some time, a progress bar is shown at the top while the analysis is running.
-
-   The \verb{<L>} key does the same thing, but queries Lichess for a cloud evaluation (\verb{https://database.lichess.org/#evals}). These evaluations are often based on a very deep search and can be obtained quickly since they are precalculated. If the current position cannot be found in the database, then Stockfish is used to run a deeper analysis as a fallback option (or if the depth of the cloud evaluation is lower than the search depth of a deep evaluation).
-
-   With \verb{<F7>}, you can adjust the Stockfish settings, including the calculation depths (for fast and deep evaluations and for the \emph{play mode}; see below), the number of principal variations that will be evaluated (for fast and deep evaluations), the (maximum) depth of the line(s) shown at the top of the board when asking for the best move (10 half-moves by default), the number of threads that Stockfish can use during its calculations (the default is 1), and the hash size in MB (the default is 256). If the pause after moving pieces in \emph{add mode} feels too long, lower the search depth for fast evaluations (e.g., to something like 10) for increased responsiveness.
-
-   For a given position, the evaluation obtained is actually cached (also across sessions) and reused if the same position is encountered again. This greatly helps to increase the responsiveness of the trainer, especially when adding opening sequences (where the same positions reoccur frequently). The cached evaluation is always based on the highest search depth that was used to evaluate a given position. Cached evaluations that are older than a certain number of months are automatically removed from the cache.
-
-   In the \verb{<F7>} menu, you can toggle whether the cache is used when pressing the \verb{<H>} or \verb{<L>} key. When the cache is switched off, the evaluation will either be forced to be based on a local evaluation with Stockfish (when pressing \verb{<H>}) or a cloud evaluation (when pressing \verb{<L>}).
-
-   The \verb{<u>} key updates the evaluations for all moves in a sequence by recalculating the evaluations with the current setting for a deeper analysis. Depending on the number of moves in the sequence and the search depth for deep evaluations, this can take a bit of time. With the \verb{<U>} key, all (selected) sequences can be updated in this manner. Note that this can take a very long time.
 
 }
 \section{Play and Analysis Mode}{
@@ -253,13 +273,13 @@
 
    Clicking the right mouse button on a square adds a circle to the square. Dragging the mouse from one square to another while pressing the right mouse button draws an arrow. Clicking with the left mouse button on a square, \verb{<escape>}, or making a move removes these visualizations. When adding a sequence, circles and arrows that are drawn are also saved and will be shown when replaying the sequence in \emph{test mode}. When such annotations are shown as part of a move that is made by the trainer, the sequence will only proceed after a click.
 
-   Similarly, with the \verb{<!>}, \verb{<@>} (or \verb{<">}), \verb{<#>} (or \verb{<§>}), and \verb{<$>} keys, you can add (and remove) annotation glyphs (e.g., exclamation and question marks, respectively) to moves. Such annotations are also shown in \emph{test mode}.
+   Similarly, with the \verb{<!>}, \verb{<@>} (or \verb{<">}), \verb{<#>} (or \verb{<§>}), and \verb{<$>} keys, you can add (and remove) annotation glyphs (e.g., exclamation and question marks) to moves. Such annotations are also shown in \emph{test mode}.
 
    Various other settings can be adjusted while the trainer is running:
 
    \itemize{
    \item With the \verb{<Ctrl-l>} key, the language of the trainer can be toggled between English and German (author note: I wrote this trainer in part for my chess playing kids, which is the reason why a German translation is available).
-   \item When in \emph{test mode}, the \verb{<z>} key toggles on a \sQuote{zen mode} where the information at the bottom is hidden.
+   \item When in \emph{test mode}, the \verb{<z>} key toggles on a \emph{zen mode} where the information at the bottom is hidden.
    \item With the \verb{<v>} key, the evaluation bar can be toggled on/off. This is mode specific (i.e., you can switch off the evaluation bar when in \emph{test mode}, but still keep it on when in \emph{add mode}). If evaluations are not available, the bar is not shown irrespective of whether it is toggled on or off. If the evaluation bar is turned off in \emph{test mode}, it is still shown at the end of each sequence.
    \item There is a 0.5 second delay between moves played by the trainer. This can be decreased/increased with the \verb{<->} and \verb{<=>} keys.
    \item The trainer waits for a mouse click at the end of a sequence before starting a new sequence. You can toggle this on/off with the \verb{<W>} key.
