@@ -158,7 +158,7 @@
 
 }
 
-.mainsettings <- function(devhold, lang, piecesymbols, showcoords, showmatdiff, san, timed, zenmode, wait, repmistake, showgraph, compseq, showtransp, mar, volume) {
+.mainsettings <- function(devhold, lang, piecesymbols, showcoords, showmatdiff, san, timed, zenmode, wait, repmistake, showgraph, compseq, showtransp, mar, volume, delay, sleepadj) {
 
    col.help  <- .get("col.help")
    font.mono <- .get("font.mono")
@@ -175,7 +175,7 @@
    cex.mult <- 0.8
 
    title.xpos <- 1.5
-   title.ypos <- c(8.2, 7.6, 7.0 - 0.3 * c(0:9), 3.5, 3.1)
+   title.ypos <- c(8.2, 7.6, 7.0 - 0.3 * c(0:9), 3.6 - 1.12 * c(0:2))
 
    box.xpos <- 1.7
    boxtext.xpos <- 2.0
@@ -196,6 +196,8 @@
 
    text(title.xpos, title.ypos[13], .text("mar"),             pos=4, cex=cex, family=font.mono, col=col.help, font=2)
    text(5.2,        title.ypos[13], .text("volume"),          pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(title.xpos, title.ypos[14], .text("delay"),           pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(5.2,        title.ypos[14], .text("sleepadj"),        pos=4, cex=cex, family=font.mono, col=col.help, font=2)
 
    lang.opts <- c("en", "de")
    lang.xpos <- 3.6 + 1.0 * (seq_along(lang.opts) - 1)
@@ -258,16 +260,24 @@
    showtransp.box <- .drawcheckbox(showtransp.xpos, showtransp.ypos, on=showtransp, cex=cex)
 
    mar.xpos <- c(1.7,4.5)
-   mar.ypos <- title.ypos[14]
+   mar.ypos <- title.ypos[13] - 0.4 * (title.ypos[13]-title.ypos[14])
    mar.box  <- .drawslider(x=mar.xpos, mar.ypos, xlab=c(1,10), cex=cex*cex.mult)
    .updateslider(NULL, mar.ypos, oldval=mar[1], xlim=mar.xpos, range=c(1,10), round=0.5, cex=cex*cex.mult)
 
    volume.xpos <- c(5.4,8)
-   volume.ypos <- title.ypos[14]
+   volume.ypos <- title.ypos[13] - 0.4 * (title.ypos[13]-title.ypos[14])
    volume.box  <- .drawslider(x=volume.xpos, volume.ypos, xlab=c(0,100), cex=cex*cex.mult)
    .updateslider(NULL, volume.ypos, oldval=volume, xlim=volume.xpos, range=c(0,100), round=TRUE, cex=cex*cex.mult)
 
-   # !!!
+   delay.xpos <- c(1.7,4.5)
+   delay.ypos <- title.ypos[14] - 0.4 * (title.ypos[14]-title.ypos[15])
+   delay.box  <- .drawslider(x=delay.xpos, delay.ypos, xlab=c(0,2), cex=cex*cex.mult)
+   .updateslider(NULL, delay.ypos, oldval=delay, xlim=delay.xpos, range=c(0,2), round=0.05, cex=cex*cex.mult)
+
+   sleepadj.xpos <- c(5.4,8)
+   sleepadj.ypos <- title.ypos[14] - 0.4 * (title.ypos[14]-title.ypos[15])
+   sleepadj.box  <- .drawslider(x=sleepadj.xpos, sleepadj.ypos, xlab=c(0,2), cex=cex*cex.mult)
+   .updateslider(NULL, sleepadj.ypos, oldval=sleepadj, xlim=sleepadj.xpos, range=c(0,2), round=0.1, cex=cex*cex.mult)
 
    dev.flush()
 
@@ -421,6 +431,18 @@
             next
          }
 
+         hit <- xy1[1] >= delay.box[1] & xy1[2] >= delay.box[2] & xy1[1] <= delay.box[3] & xy1[2] <= delay.box[4]
+         if (hit) {
+            delay <- .updateslider(xy2[1], delay.ypos, oldval=delay, xlim=delay.xpos, range=c(0,2), round=0.05, cex=cex*cex.mult)
+            next
+         }
+
+         hit <- xy1[1] >= sleepadj.box[1] & xy1[2] >= sleepadj.box[2] & xy1[1] <= sleepadj.box[3] & xy1[2] <= sleepadj.box[4]
+         if (hit) {
+            sleepadj <- .updateslider(xy2[1], sleepadj.ypos, oldval=sleepadj, xlim=sleepadj.xpos, range=c(0,2), round=0.05, cex=cex*cex.mult)
+            next
+         }
+
       }
 
       if (identical(resp, "F5") || identical(resp, "\r") || identical(resp, "ctrl-J") || identical(resp, "q") || identical(resp, "\033") || identical(resp, "ctrl-[") || identical(resp, " "))
@@ -428,7 +450,8 @@
 
    }
 
-   out <- list(lang=lang, piecesymbols=piecesymbols, showcoords=showcoords, showmatdiff=showmatdiff, san=san, timed=timed, zenmode=zenmode, wait=wait, repmistake=repmistake, showgraph=showgraph, compseq=compseq, showtransp=showtransp, mar=mar, volume=volume, restart=restart)
+   out <- list(lang=lang, piecesymbols=piecesymbols, showcoords=showcoords, showmatdiff=showmatdiff, san=san, timed=timed, zenmode=zenmode, wait=wait, repmistake=repmistake,
+               showgraph=showgraph, compseq=compseq, showtransp=showtransp, mar=mar, volume=volume, delay=delay, sleepadj=sleepadj, restart=restart)
 
    #.erase(1, 1, 9, 9)
 
@@ -436,7 +459,7 @@
 
 }
 
-.miscsettings <- function(multiplier, adjustwrong, adjusthint, timepermove, movestoshow, idletime, mintime, evalsteps, delay, target, sleepadj) {
+.miscsettings <- function(multiplier, adjustwrong, adjusthint, timepermove, movestoshow, idletime, mintime, evalsteps, target) {
 
    col.help  <- .get("col.help")
    font.mono <- .get("font.mono")
@@ -450,7 +473,7 @@
    cex.mult <- 0.8
 
    title.xpos <- 1.5
-   title.ypos <- c(8.2 - 1.02 * c(0:7))
+   title.ypos <- c(8.2 - 1.12 * c(0:7))
 
    text(title.xpos, title.ypos[1], .text("multiplier"),  pos=4, cex=cex, family=font.mono, col=col.help, font=2)
    text(title.xpos, title.ypos[2], .text("adjustwrong"), pos=4, cex=cex, family=font.mono, col=col.help, font=2)
@@ -460,9 +483,7 @@
    text(title.xpos, title.ypos[4], .text("idletime"),    pos=4, cex=cex, family=font.mono, col=col.help, font=2)
    text(title.xpos, title.ypos[5], .text("mintime"),     pos=4, cex=cex, family=font.mono, col=col.help, font=2)
    text(title.xpos, title.ypos[6], .text("evalsteps"),   pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(5.2,        title.ypos[6], .text("delay"),       pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(title.xpos, title.ypos[7], .text("target"),      pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(5.2,        title.ypos[7], .text("sleepadj"),    pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(5.2,        title.ypos[6], .text("target"),      pos=4, cex=cex, family=font.mono, col=col.help, font=2)
 
    multiplier.xpos <- c(1.7,8)
    multiplier.ypos <- title.ypos[1] - 0.4 * (title.ypos[1]-title.ypos[2])
@@ -504,20 +525,10 @@
    evalsteps.box  <- .drawslider(x=evalsteps.xpos, evalsteps.ypos, xlab=c(2,20), cex=cex*cex.mult)
    .updateslider(NULL, evalsteps.ypos, oldval=evalsteps, xlim=evalsteps.xpos, range=c(2,20), round=TRUE, cex=cex*cex.mult)
 
-   delay.xpos <- c(5.4,8)
-   delay.ypos <- title.ypos[6] - 0.4 * (title.ypos[6]-title.ypos[7])
-   delay.box  <- .drawslider(x=delay.xpos, delay.ypos, xlab=c(0,2), cex=cex*cex.mult)
-   .updateslider(NULL, delay.ypos, oldval=delay, xlim=delay.xpos, range=c(0,2), round=0.05, cex=cex*cex.mult)
-
-   target.xpos <- c(1.7,4.5)
-   target.ypos <- title.ypos[7] - 0.4 * (title.ypos[7]-title.ypos[8])
+   target.xpos <- c(5.4,8)
+   target.ypos <- title.ypos[6] - 0.4 * (title.ypos[6]-title.ypos[7])
    target.box  <- .drawslider(x=target.xpos, target.ypos, xlab=c(0,100), cex=cex*cex.mult)
    .updateslider(NULL, target.ypos, oldval=target, xlim=target.xpos, range=c(0,100), round=TRUE, cex=cex*cex.mult)
-
-   sleepadj.xpos <- c(5.4,8)
-   sleepadj.ypos <- title.ypos[7] - 0.4 * (title.ypos[7]-title.ypos[8])
-   sleepadj.box  <- .drawslider(x=sleepadj.xpos, sleepadj.ypos, xlab=c(0,2), cex=cex*cex.mult)
-   .updateslider(NULL, sleepadj.ypos, oldval=sleepadj, xlim=sleepadj.xpos, range=c(0,2), round=0.1, cex=cex*cex.mult)
 
    dev.flush()
 
@@ -600,21 +611,9 @@
             next
          }
 
-         hit <- xy1[1] >= delay.box[1] & xy1[2] >= delay.box[2] & xy1[1] <= delay.box[3] & xy1[2] <= delay.box[4]
-         if (hit) {
-            delay <- .updateslider(xy2[1], delay.ypos, oldval=delay, xlim=delay.xpos, range=c(0,2), round=0.05, cex=cex*cex.mult)
-            next
-         }
-
          hit <- xy1[1] >= target.box[1] & xy1[2] >= target.box[2] & xy1[1] <= target.box[3] & xy1[2] <= target.box[4]
          if (hit) {
             target <- .updateslider(xy2[1], target.ypos, oldval=target, xlim=target.xpos, range=c(0,100), round=TRUE, cex=cex*cex.mult)
-            next
-         }
-
-         hit <- xy1[1] >= sleepadj.box[1] & xy1[2] >= sleepadj.box[2] & xy1[1] <= sleepadj.box[3] & xy1[2] <= sleepadj.box[4]
-         if (hit) {
-            sleepadj <- .updateslider(xy2[1], sleepadj.ypos, oldval=sleepadj, xlim=sleepadj.xpos, range=c(0,2), round=0.05, cex=cex*cex.mult)
             next
          }
 
@@ -625,7 +624,7 @@
 
    }
 
-   out <- list(multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, timepermove=timepermove, movestoshow=movestoshow, idletime=idletime, mintime=mintime, evalsteps=evalsteps, delay=delay, target=target, sleepadj=sleepadj)
+   out <- list(multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, timepermove=timepermove, movestoshow=movestoshow, idletime=idletime, mintime=mintime, evalsteps=evalsteps, target=target)
 
    #.erase(1, 1, 9, 9)
 
@@ -1001,7 +1000,8 @@
 
    usesfcache <- usesfcache.on[1]
 
-   out <- list(sfproc=sfproc, sfrun=sfrun, sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, monthssfcache=monthssfcache, usesfcache=usesfcache)
+   out <- list(sfproc=sfproc, sfrun=sfrun, sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2,
+               threads=threads, hash=hash, hintdepth=hintdepth, monthssfcache=monthssfcache, usesfcache=usesfcache)
 
    #.erase(1, 1, 9, 9)
 
@@ -1373,7 +1373,8 @@
 
    uselicache <- uselicache.on[1]
 
-   out <- list(speeds=speeds, ratings=ratings, lichessdb=lichessdb, uselicache=uselicache, liout=liout, lisort=lisort, barlen=barlen, monthslicache=monthslicache, invertbar=invertbar, minfreq=minfreq, minperc=minperc, token=token)
+   out <- list(speeds=speeds, ratings=ratings, lichessdb=lichessdb, uselicache=uselicache, liout=liout, lisort=lisort, barlen=barlen,
+               monthslicache=monthslicache, invertbar=invertbar, minfreq=minfreq, minperc=minperc, token=token)
 
    #.erase(1, 1, 9, 9)
 

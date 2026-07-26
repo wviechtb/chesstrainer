@@ -4086,7 +4086,7 @@ play <- function(lang="en", online, ...) {
             if (identical(click, "F5")) {
                oldtimed <- timed
                oldmar <- mar
-               tmp <- .mainsettings(devhold=TRUE, lang, piecesymbols, showcoords, showmatdiff, san, timed, zenmode, wait, repmistake, showgraph, compseq, showtransp, mar, volume)
+               tmp <- .mainsettings(devhold=TRUE, lang, piecesymbols, showcoords, showmatdiff, san, timed, zenmode, wait, repmistake, showgraph, compseq, showtransp, mar, volume, delay, sleepadj)
                while (tmp$restart) {
                   lang <- tmp$lang
                   mar <- tmp$mar
@@ -4101,9 +4101,9 @@ play <- function(lang="en", online, ...) {
                      .drawevalbar(sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]])
                      .drawlibar(.get("lasttotals"), flip=flip)
                      assign("evalsteps", .get("evalsteps"), envir=.chesstrainer)
-                     tmp <- .mainsettings(devhold=FALSE, lang, piecesymbols, showcoords, showmatdiff, san, timed, zenmode, wait, repmistake, showgraph, compseq, showtransp, mar, volume)
+                     tmp <- .mainsettings(devhold=FALSE, lang, piecesymbols, showcoords, showmatdiff, san, timed, zenmode, wait, repmistake, showgraph, compseq, showtransp, mar, volume, delay, sleepadj)
                   } else {
-                     tmp <- .mainsettings(devhold=TRUE, lang, piecesymbols, showcoords, showmatdiff, san, timed, zenmode, wait, repmistake, showgraph, compseq, showtransp, mar, volume)
+                     tmp <- .mainsettings(devhold=TRUE, lang, piecesymbols, showcoords, showmatdiff, san, timed, zenmode, wait, repmistake, showgraph, compseq, showtransp, mar, volume, delay, sleepadj)
                   }
                }
                piecesymbols <- tmp$piecesymbols
@@ -4119,6 +4119,8 @@ play <- function(lang="en", online, ...) {
                showtransp   <- tmp$showtransp
                mar          <- tmp$mar
                volume       <- tmp$volume
+               delay        <- tmp$delay
+               sleepadj     <- tmp$sleepadj
                assign("piecesymbols", piecesymbols, envir=.chesstrainer)
                assign("showcoords", showcoords, envir=.chesstrainer)
                assign("showmatdiff", showmatdiff, envir=.chesstrainer)
@@ -4127,6 +4129,7 @@ play <- function(lang="en", online, ...) {
                assign("zenmode", zenmode, envir=.chesstrainer)
                assign("mar", mar, envir=.chesstrainer)
                assign("volume", volume, envir=.chesstrainer)
+               assign("sleepadj", sleepadj, envir=.chesstrainer)
                dev.hold()
                .redrawpos(pos, flip=flip)
                .drawannot(circles=circles, arrows=arrows, glyph=glyph)
@@ -4151,6 +4154,8 @@ play <- function(lang="en", online, ...) {
                settings$showtransp   <- showtransp
                settings$mar          <- mar
                settings$volume       <- volume
+               settings$delay       <- delay
+               settings$sleepadj    <- sleepadj
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                if (oldtimed != timed) {
                   if (timed) {
@@ -4166,7 +4171,7 @@ play <- function(lang="en", online, ...) {
             # F6 to adjust the miscellaneous settings
 
             if (identical(click, "F6")) {
-               tmp <- .miscsettings(multiplier, adjustwrong, adjusthint, timepermove, movestoshow, idletime, mintime, evalsteps, delay, target, sleepadj)
+               tmp <- .miscsettings(multiplier, adjustwrong, adjusthint, timepermove, movestoshow, idletime, mintime, evalsteps, target)
                dev.hold()
                .redrawpos(pos, flip=flip)
                .drawannot(circles=circles, arrows=arrows, glyph=glyph)
@@ -4179,11 +4184,8 @@ play <- function(lang="en", online, ...) {
                idletime    <- tmp$idletime
                mintime     <- tmp$mintime
                evalsteps   <- tmp$evalsteps
-               delay       <- tmp$delay
                target      <- tmp$target
-               sleepadj    <- tmp$sleepadj
                assign("evalsteps", evalsteps, envir=.chesstrainer)
-               assign("sleepadj", sleepadj, envir=.chesstrainer)
                settings$multiplier  <- multiplier
                settings$adjustwrong <- adjustwrong
                settings$adjusthint  <- adjusthint
@@ -4192,9 +4194,7 @@ play <- function(lang="en", online, ...) {
                settings$idletime    <- idletime
                settings$mintime     <- mintime
                settings$evalsteps   <- evalsteps
-               settings$delay       <- delay
                settings$target      <- target
-               settings$sleepadj    <- sleepadj
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
