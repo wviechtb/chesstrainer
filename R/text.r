@@ -110,40 +110,10 @@
                          paste0("Deleting the player '", arg, "' ...")
    ))}
 
-   if (x == "san") {
-      return(switch(lang,
-                    de = paste0("Kurze algebraische Notation: ", ifelse(arg, "an", "aus")),
-                         paste0("Short algebraic notation: ", ifelse(arg, "on", "off"))
-   ))}
-
-   if (x == "piecesymbols") {
-      return(switch(lang,
-                    de = paste0("Figurensymbole: ", ifelse(arg == 1, "\U0000265A\U0000265B\U0000265C\U0000265D\U0000265E", ifelse(arg == 2, "KQRBN", "KDTLS"))),
-                         paste0("Piece symbols: ",  ifelse(arg == 1, "\U0000265A\U0000265B\U0000265C\U0000265D\U0000265E", "KQRBN"))
-   ))}
-
-   if (x == "showtransp") {
-      return(switch(lang,
-                    de = paste0("Zugumstellungen anzeigen: ", ifelse(arg, "an", "aus")),
-                         paste0("Show move transpositions: ", ifelse(arg, "on", "off"))
-   ))}
-
-   if (x == "showmatdiff") {
-      return(switch(lang,
-                    de = paste0("Materialunterschied anzeigen: ", ifelse(arg, "an", "aus")),
-                         paste0("Show material difference: ", ifelse(arg, "on", "off"))
-   ))}
-
-   if (x == "wait") {
+   if (x == "waitonoff") {
       return(switch(lang,
                     de = paste0("Warten: ", ifelse(arg, "an", "aus")),
                          paste0("Wait: ", ifelse(arg, "on", "off"))
-   ))}
-
-   if (x == "timed") {
-      return(switch(lang,
-                    de = paste0("Zeitgesteuerter Modus: ", ifelse(arg, "an", "aus")),
-                         paste0("Timed mode: ", ifelse(arg, "on", "off"))
    ))}
 
    if (x == "tooslow") {
@@ -162,18 +132,6 @@
       return(switch(lang,
                     de = paste0("Computer Z\U000000FCge zeigen: ", ifelse(arg, "an", "aus")),
                          paste0("Show computer moves: ", ifelse(arg, "on", "off"))
-   ))}
-
-   if (x == "zenmode") {
-      return(switch(lang,
-                    de = paste0("Zen Modus: ", ifelse(arg, "an", "aus")),
-                         paste0("Zen mode: ", ifelse(arg, "on", "off"))
-   ))}
-
-   if (x == "showgraph") {
-      return(switch(lang,
-                    de = paste0("Fortschrittsdiagramm am Ende von Sequenzen anzeigen: ", ifelse(arg, "an", "aus")),
-                         paste0("Show progress graph at the end of sequences: ", ifelse(arg, "on", "off"))
    ))}
 
    if (x == "saveseq") {
@@ -497,7 +455,7 @@
                          paste0("Time between moves: ", arg)
    ))}
 
-   if (x == "volume") {
+   if (x == "volumeadj") {
       return(switch(lang,
                     de = paste0("Lautst\U000000E4rke: ", arg),
                          paste0("Sound volume: ", arg)
@@ -557,18 +515,6 @@
                          paste0("New exponent value: ")
    ))}
 
-   if (x == "currenttarget") {
-      return(switch(lang,
-                    de = "Aktueller Zielwert: ",
-                         "Current target score: "
-   ))}
-
-   if (x == "newtarget") {
-      return(switch(lang,
-                    de = paste0("Neuer Zielwert: "),
-                         paste0("New target score: ")
-   ))}
-
    if (x == "welldone") {
       return(switch(lang,
                     de = "Gut gemacht! Die n\U000000E4chste Sequenz ...",
@@ -603,12 +549,6 @@
       return(switch(lang,
                     de = paste0("Randbreite: ", paste0(arg, collapse="/")),
                          paste0("Margin Width: ", paste0(arg, collapse="/"))
-   ))}
-
-   if (x == "lwd") {
-      return(switch(lang,
-                    de = paste0("Linienbreite: ", arg),
-                         paste0("Line Width: ", arg)
    ))}
 
    if (x == "whichsetting") {
@@ -897,6 +837,18 @@
       return(switch(lang,
                     de = "Balken Animationsschritte",
                          "Animation steps for the bar"
+   ))}
+
+   if (x == "delay") {
+      return(switch(lang,
+                    de = "Zeit zwischen Z\U000000FCgen (Sekunden)",
+                         "Time between moves (seconds)"
+   ))}
+
+   if (x == "target") {
+      return(switch(lang,
+                    de = "Zielwert f\U000000FCr Punkte",
+                         "Target value for scores"
    ))}
 
    if (x == "sleepadj") {
@@ -1221,12 +1173,6 @@
       return(switch(lang,
                     de = "Wiederhole die letzte Sequenz ...",
                          "Repeating the last sequence ..."
-   ))}
-
-   if (x == "repmistake") {
-      return(switch(lang,
-                    de = paste0("Sequenzen nach Fehler wiederholen: ", ifelse(arg, "an", "aus")),
-                         paste0("Repeat sequences after mistake: ", ifelse(arg, "on", "off"))
    ))}
 
    if (x == "nolastseq") {
@@ -1799,12 +1745,6 @@
                          paste0("Moves from already existing sequences:\n", arg)
    ))}
 
-   if (x == "compseq") {
-      return(switch(lang,
-                    de = paste0("Vergleiche Z\U000000FCge mit den bestehenden Sequenzen: ", ifelse(arg, "an", "aus")),
-                         paste0("Compare moves to the existing sequences: ", ifelse(arg, "on", "off"))
-   ))}
-
    if (x == "upsidedown") {
       return(switch(lang,
                     de = paste0("Schachbrett verkehrt herum anzeigen: ", ifelse(arg, "an", "aus")),
@@ -1845,6 +1785,90 @@
       return(switch(lang,
                     de = paste0("Test am Ende der Sequenz: ", ifelse(arg, "an", "aus")),
                          paste0("Test at the end of the sequence: ", ifelse(arg, "on", "off"))
+   ))}
+
+   if (x == "lang:") {
+      return(switch(lang,
+                    de = "Sprache:",
+                         "Language:"
+   ))}
+
+   if (x == "piecesymbols:") {
+      return(switch(lang,
+                    de = "Figurensymbole:",
+                         "Piece symbols:"
+   ))}
+
+   if (x == "showcoords") {
+      return(switch(lang,
+                    de = "Brettkoordinaten anzeigen",
+                         "Show board coordinates"
+   ))}
+
+   if (x == "showmatdiff") {
+      return(switch(lang,
+                    de = "Materialunterschied anzeigen",
+                         "Show material difference"
+   ))}
+
+   if (x == "san") {
+      return(switch(lang,
+                    de = "Kurze algebraische Notation",
+                         "Short algebraic notation"
+   ))}
+
+   if (x == "timed") {
+      return(switch(lang,
+                    de = "Zeitgesteuerter Modus",
+                         "Timed mode"
+   ))}
+
+   if (x == "zenmode") {
+      return(switch(lang,
+                    de = "Zen Modus",
+                         "Zen mode"
+   ))}
+
+   if (x == "wait") {
+      return(switch(lang,
+                    de = "Warten nach abgeschlossenen Sequenzen",
+                         "Wait after completed sequences"
+   ))}
+
+   if (x == "repmistake") {
+      return(switch(lang,
+                    de = "Sequenzen nach einem Fehler wiederholen",
+                         "Repeat sequences after a mistake"
+   ))}
+
+   if (x == "showgraph") {
+      return(switch(lang,
+                    de = "Fortschrittsdiagramm am Ende von Sequenzen anzeigen",
+                         "Show progress graph at the end of sequences"
+   ))}
+
+   if (x == "compseq") {
+      return(switch(lang,
+                    de = "Vergleiche Z\U000000FCge mit den bestehenden Sequenzen",
+                         "Compare moves to the existing sequences"
+   ))}
+
+   if (x == "showtransp") {
+      return(switch(lang,
+                    de = "Zugumstellungen anzeigen",
+                         "Show move transpositions"
+   ))}
+
+   if (x == "mar") {
+      return(switch(lang,
+                    de = "Randbreite",
+                         "Margin Width"
+   ))}
+
+   if (x == "volume") {
+      return(switch(lang,
+                    de = "Lautst\U000000E4rke",
+                         "Sound volume"
    ))}
 
 }

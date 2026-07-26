@@ -1960,8 +1960,38 @@
    x2 <- x + width  / 1.6
    y2 <- y + height / 0.8
 
+   dev.hold()
+   on.exit(dev.flush())
+
    rect(x1, y1, x2, y2, col=col.box, border=col.border, lwd=2)
    text(x, y, text, family=font.mono, cex=cex, col=col.text, adj=c(0.5,0.5))
+
+   return(c(x1,y1,x2,y2))
+
+}
+
+.drawcheckbox <- function(x, y, cex, on) {
+
+   font.mono  <- .get("font.mono")
+   col.bg     <- .get("col.bg")
+   col.text   <- .get("col.square.l")
+   col.border <- .get("col.top")
+
+   height <- strheight("X", family=font.mono, cex=cex)
+   width  <- strwidth("X", family=font.mono, cex=cex)
+
+   x1 <- x - width
+   y1 <- y - height
+   x2 <- x + width
+   y2 <- y + height
+
+   dev.hold()
+   on.exit(dev.flush())
+
+   rect(x1, y1, x2, y2, col=col.bg, border=col.border, lwd=2)
+
+   if (on)
+      text(x, y, "X", family=font.mono, cex=cex, col=col.text, adj=c(0.5,0.5))
 
    return(c(x1,y1,x2,y2))
 
@@ -1999,6 +2029,9 @@
 
    xold <- xlim[1] + (oldval - range[1]) / (range[2] - range[1]) * (xlim[n] - xlim[1])
 
+   dev.hold()
+   on.exit(dev.flush())
+
    if (is.null(x)) {
       rect(xold-0.03, y-0.08, xold+0.03, y+0.08, col=col.slider, border=col.slider)
       if (text)
@@ -2015,6 +2048,8 @@
       rect(xold-0.2, y-0.12, xold+0.2, y+0.12, col=col.bg, border=col.bg)
       if (text) {
          rect(max(1.25, xold-0.4), y+0.05, min(8.75,xold+0.4), y + 3.0*height, col=col.bg, border=col.bg)
+         segments(xlim[1], y-0.06, xlim[1], y+0.06, col=col.bg, lend=2, lwd=2)
+         segments(xlim[n], y-0.06, xlim[n], y+0.06, col=col.bg, lend=2, lwd=2)
          segments(max(xlim[1], xold-0.2), y, min(xlim[n], xold+0.2), y, col=col.line, lend=2)
          segments(xlim[1], y-0.06, xlim[1], y+0.06, col=col.line, lend=2)
          segments(xlim[n], y-0.06, xlim[n], y+0.06, col=col.line, lend=2)

@@ -592,14 +592,14 @@ play <- function(lang="en", online, ...) {
 
    # define keys
 
-   keys <- c("q", "\033", " ", "m", "d", "\\", "\U000000E4", "n", "N", "B", "p", "P",
-             "g", "h", "H", "y", "Y", "Left", "Right", "Up", "Down", "t", "T", "0", "1", "2", "3", "4", "5", "9",
+   keys <- c("q", "\033", " ", "m", "d", "\\", "\U000000E4", "n", "N", "B", "p",
+             "g", "h", "H", "y", "Y", "Left", "Right", "Up", "Down", "t", "0", "1", "2", "3", "4", "5", "9",
              "r", "o", "u", "U", "M", "j", "%",
-             "a", "A", "f", "z", "Z", "c", "!", "@", "\"", "#", "$", "\U000000A7", "e", "E", "s", "b", "K", "C", "S", "F",
-             "^", "6", "R", "G", "W", "-", "=", "_", "+", "[", "]", "{", "}", "(", ")", "i", "x", "v", "V",
+             "a", "A", "f", "z", "Z", "c", "!", "@", "\"", "#", "$", "\U000000A7", "e", "E", "s", "b", "F",
+             "^", "6", "R", "W", "-", "=", "_", "+", "[", "]", "i", "v", "V",
              "l", "L", "<", ">", "/", ",", ".", "|", "*", "8", "?", "'", ";", ":",
-             "F1", "F2", "F3", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12",
-             "ctrl-A", "ctrl-F", "ctrl-C", "ctrl-D", "ctrl-R", "ctrl-[", "ctrl-Q", "ctrl-U", "ctrl-H", "ctrl-O", "ctrl-L", "ctrl-S", "ctrl-I", "ctrl-G", "ctrl-E", "ctrl-V", "ctrl-P", "ctrl-)", "ctrl-T")
+             "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12",
+             "ctrl-F", "ctrl-C", "ctrl-D", "ctrl-R", "ctrl-[", "ctrl-Q", "ctrl-U", "ctrl-H", "ctrl-O", "ctrl-L", "ctrl-S", "ctrl-I", "ctrl-G", "ctrl-E", "ctrl-V", "ctrl-P", "ctrl-(", "ctrl-)", "ctrl-T", "ctrl-+", "ctrl-_")
 
    run.all <- TRUE
 
@@ -1326,9 +1326,9 @@ play <- function(lang="en", online, ...) {
                next
             }
 
-            # ctrl-a to toggle advanced mode on/off
+            # ctrl-) to toggle advanced mode on/off
 
-            if (identical(click, "ctrl-A")) {
+            if (identical(click, "ctrl-)")) {
                advanced <- !advanced
                .texttop(.text("advanced", advanced), sleep=0.75)
                settings$advanced <- advanced
@@ -1369,9 +1369,9 @@ play <- function(lang="en", online, ...) {
                dev.hold()
                .redrawall(pos, flip, show, showcomp, player, seqdir, seqdirpos, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
                .drawglyph(glyph)
-               dev.flush()
                .drawevalbar(sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]])
                .drawlibar(.get("lasttotals"), flip=flip)
+               dev.flush()
                circles <- matrix(nrow=0, ncol=2)
                arrows  <- matrix(nrow=0, ncol=4)
                harrows <- matrix(nrow=0, ncol=4)
@@ -2346,34 +2346,6 @@ play <- function(lang="en", online, ...) {
                next
             }
 
-            # z to toggle zenmode (only in test mode) (in add mode, toggles show on/off)
-
-            if (mode == "test" && identical(click, "z")) {
-               zenmode <- !zenmode
-               assign("zenmode", zenmode, envir=.chesstrainer)
-               .texttop(.text("zenmode", zenmode), sleep=0.75)
-               .textbot(show, showcomp, player, seqdir, seqdirpos, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
-               settings$zenmode <- zenmode
-               saveRDS(settings, file=file.path(configdir, "settings.rds"))
-               next
-            }
-
-            # s to set a target for points (in test mode)
-
-            if (mode == "test" && identical(click, "s")) {
-               targetold <- target
-               target <- .settarget(target)
-               dev.hold()
-               .redrawpos(pos, flip=flip)
-               .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
-               dev.flush()
-               if (targetold != target) {
-                  settings$target <- target
-                  saveRDS(settings, file=file.path(configdir, "settings.rds"))
-               }
-               next
-            }
-
             # M to trigger a mistake (only in test mode)
 
             if (mode == "test" && identical(click, "M")) {
@@ -3151,80 +3123,11 @@ play <- function(lang="en", online, ...) {
                next
             }
 
-            # R to toggle repeating a sequence if a mistake was made
-
-            if (identical(click, "R")) {
-               repmistake <- !repmistake
-               .texttop(.text("repmistake", repmistake), sleep=1)
-               settings$repmistake <- repmistake
-               saveRDS(settings, file=file.path(configdir, "settings.rds"))
-               next
-            }
-
-            # G to toggle showing the progress graph after each completed sequence
-
-            if (identical(click, "G")) {
-               showgraph <- !showgraph
-               .texttop(.text("showgraph", showgraph), sleep=1.5)
-               settings$showgraph <- showgraph
-               saveRDS(settings, file=file.path(configdir, "settings.rds"))
-               next
-            }
-
-            # T to toggle showing move transpositions on/off
-
-            if (identical(click, "T")) {
-               showtransp <- !showtransp
-               .texttop(.text("showtransp", showtransp), sleep=1)
-               settings$showtransp <- showtransp
-               saveRDS(settings, file=file.path(configdir, "settings.rds"))
-               next
-            }
-
-            # C to toggle compseq on/off
-
-            if (identical(click, "C")) {
-               compseq <- !compseq
-               .texttop(.text("compseq", compseq), sleep=2)
-               settings$compseq <- compseq
-               saveRDS(settings, file=file.path(configdir, "settings.rds"))
-               next
-            }
-
-            # S to toggle san on/off
-
-            if (identical(click, "S")) {
-               san <- !san
-               assign("san", san, envir=.chesstrainer)
-               .texttop(.text("san", san), sleep=1)
-               settings$san <- san
-               saveRDS(settings, file=file.path(configdir, "settings.rds"))
-               next
-            }
-
-            # P to toggle piece symbols
-
-            if (identical(click, "P")) {
-               piecesymbols <- piecesymbols + 1
-               if (lang=="en") {
-                  if (piecesymbols > 2)
-                     piecesymbols <- 1
-               } else {
-                  if (piecesymbols > 3)
-                     piecesymbols <- 1
-               }
-               assign("piecesymbols", piecesymbols, envir=.chesstrainer)
-               .texttop(.text("piecesymbols", piecesymbols), sleep=1.25)
-               settings$piecesymbols <- piecesymbols
-               saveRDS(settings, file=file.path(configdir, "settings.rds"))
-               next
-            }
-
             # W to switch wait on/off
 
             if (identical(click, "W")) {
                wait <- !wait
-               .texttop(.text("wait", wait), sleep=0.75)
+               .texttop(.text("waitonoff", wait), sleep=0.75)
                settings$wait <- wait
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
@@ -3254,28 +3157,30 @@ play <- function(lang="en", online, ...) {
                }
                assign("volume", volume, envir=.chesstrainer)
                playsound(system.file("sounds", "move.ogg", package="chesstrainer"))
-               .texttop(paste0(.text("volume", volume), "%"), sleep=0.5)
+               .texttop(paste0(.text("volumeadj", volume), "%"), sleep=0.5)
                settings$volume <- volume
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
 
-            # {/} to decrease/increase the margin width
+            # ctrl--/ctrl-= to decrease/increase the margin width
 
-            if (identical(click, "{") || identical(click, "}")) {
-               if (identical(click, "{")) {
+            if (identical(click, "ctrl-+") || identical(click, "ctrl-_")) {
+               if (identical(click, "ctrl-_")) {
                   mar <- pmax(1, mar - 0.5)
                } else {
                   mar <- mar + 0.5
                }
                assign("mar", mar, envir=.chesstrainer)
-               dev.hold()
                .texttop(.text("maradj", mar), sleep=0.75)
+               dev.hold()
                .redrawall(pos, flip, show, showcomp, player, seqdir, seqdirpos, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
                .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
-               dev.flush()
+               assign("evalsteps", 2, envir=.chesstrainer)
                .drawevalbar(sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]])
                .drawlibar(.get("lasttotals"), flip=flip)
+               assign("evalsteps", .get("evalsteps"), envir=.chesstrainer)
+               dev.flush()
                settings$mar <- mar
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
@@ -3294,23 +3199,6 @@ play <- function(lang="en", online, ...) {
                .texttop(.text("lang"), sleep=0.75)
                settings$lang <- lang
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
-               next
-            }
-
-            # x to switch the timed mode on/off (only in add or test mode)
-
-            if (mode %in% c("add","test") && identical(click, "x")) {
-               timed <- !timed
-               assign("timed", timed, envir=.chesstrainer)
-               .texttop(.text("timed", timed), sleep=0.75)
-               settings$timed <- timed
-               saveRDS(settings, file=file.path(configdir, "settings.rds"))
-               if (timed) {
-                  .newround()
-               } else {
-                  .drawtimer(clear=TRUE)
-                  sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
-               }
                next
             }
 
@@ -3342,22 +3230,6 @@ play <- function(lang="en", online, ...) {
                   .drawlibar(clear=TRUE)
                }
                settings$showlibar <- showlibar
-               saveRDS(settings, file=file.path(configdir, "settings.rds"))
-               next
-            }
-
-            # K to toggle show material difference on/off
-
-            if (identical(click, "K")) {
-               showmatdiff <- !showmatdiff
-               assign("showmatdiff", showmatdiff, envir=.chesstrainer)
-               if (showmatdiff) {
-                  .drawmatdiff(pos, flip, force=TRUE)
-               } else {
-                  .clearmatdiff()
-               }
-               .texttop(.text("showmatdiff", showmatdiff), sleep=0.75)
-               settings$showmatdiff <- showmatdiff
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
             }
@@ -4174,9 +4046,9 @@ play <- function(lang="en", online, ...) {
                next
             }
 
-            # F5 to adjust the colors and sizes
+            # F4 to adjust the colors and sizes
 
-            if (identical(click, "F5")) {
+            if (identical(click, "F4")) {
                eval(expr=switch1)
                .vizsettings(cols.all, flip, show, showcomp, player, seqdir, seqdirpos, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove, liout)
                eval(expr=switch2)
@@ -4197,7 +4069,6 @@ play <- function(lang="en", online, ...) {
                cex.plots   <- .get("cex.plots")
                cex.glyphs  <- .get("cex.glyphs")
                cex.lichess <- .get("cex.lichess")
-               showcoords  <- .get("showcoords")
                settings$cex.top     <- cex.top
                settings$cex.bot     <- cex.bot
                settings$cex.eval    <- cex.eval
@@ -4206,15 +4077,96 @@ play <- function(lang="en", online, ...) {
                settings$cex.plots   <- cex.plots
                settings$cex.glyphs  <- cex.glyphs
                settings$cex.lichess <- cex.lichess
-               settings$showcoords  <- showcoords
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
+               next
+            }
+
+            # F5 to adjust the main settings
+
+            if (identical(click, "F5")) {
+               oldtimed <- timed
+               oldmar <- mar
+               tmp <- .mainsettings(devhold=TRUE, lang, piecesymbols, showcoords, showmatdiff, san, timed, zenmode, wait, repmistake, showgraph, compseq, showtransp, mar, volume)
+               while (tmp$restart) {
+                  lang <- tmp$lang
+                  mar <- tmp$mar
+                  assign("lang", lang, envir=.chesstrainer)
+                  assign("mar", mar, envir=.chesstrainer)
+                  if (!identical(oldmar, mar)) {
+                     oldmar <- mar
+                     dev.hold()
+                     .redrawall(pos, flip, show, showcomp, player, seqdir, seqdirpos, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
+                     .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
+                     assign("evalsteps", 2, envir=.chesstrainer)
+                     .drawevalbar(sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]])
+                     .drawlibar(.get("lasttotals"), flip=flip)
+                     assign("evalsteps", .get("evalsteps"), envir=.chesstrainer)
+                     tmp <- .mainsettings(devhold=FALSE, lang, piecesymbols, showcoords, showmatdiff, san, timed, zenmode, wait, repmistake, showgraph, compseq, showtransp, mar, volume)
+                  } else {
+                     tmp <- .mainsettings(devhold=TRUE, lang, piecesymbols, showcoords, showmatdiff, san, timed, zenmode, wait, repmistake, showgraph, compseq, showtransp, mar, volume)
+                  }
+               }
+               piecesymbols <- tmp$piecesymbols
+               showcoords   <- tmp$showcoords
+               showmatdiff  <- tmp$showmatdiff
+               san          <- tmp$san
+               timed        <- tmp$timed
+               zenmode      <- tmp$zenmode
+               wait         <- tmp$wait
+               repmistake   <- tmp$repmistake
+               showgraph    <- tmp$showgraph
+               compseq      <- tmp$compseq
+               showtransp   <- tmp$showtransp
+               mar          <- tmp$mar
+               volume       <- tmp$volume
+               assign("piecesymbols", piecesymbols, envir=.chesstrainer)
+               assign("showcoords", showcoords, envir=.chesstrainer)
+               assign("showmatdiff", showmatdiff, envir=.chesstrainer)
+               assign("san", san, envir=.chesstrainer)
+               assign("timed", timed, envir=.chesstrainer)
+               assign("zenmode", zenmode, envir=.chesstrainer)
+               assign("mar", mar, envir=.chesstrainer)
+               assign("volume", volume, envir=.chesstrainer)
+               dev.hold()
+               .redrawpos(pos, flip=flip)
+               .drawannot(circles=circles, arrows=arrows, glyph=glyph)
+               .textbot(show, showcomp, player, seqdir, seqdirpos, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
+               if (showmatdiff) {
+                  .drawmatdiff(pos, flip, force=TRUE)
+               } else {
+                  .clearmatdiff()
+               }
+               dev.flush()
+               settings$lang         <- lang
+               settings$piecesymbols <- piecesymbols
+               settings$showcoords   <- showcoords
+               settings$showmatdiff  <- showmatdiff
+               settings$san          <- san
+               settings$timed        <- timed
+               settings$zenmode      <- zenmode
+               settings$wait         <- wait
+               settings$repmistake   <- repmistake
+               settings$showgraph    <- showgraph
+               settings$compseq      <- compseq
+               settings$showtransp   <- showtransp
+               settings$mar          <- mar
+               settings$volume       <- volume
+               saveRDS(settings, file=file.path(configdir, "settings.rds"))
+               if (oldtimed != timed) {
+                  if (timed) {
+                     .newround()
+                  } else {
+                     .drawtimer(clear=TRUE)
+                     sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
+                  }
+               }
                next
             }
 
             # F6 to adjust the miscellaneous settings
 
             if (identical(click, "F6")) {
-               tmp <- .miscsettings(multiplier, adjustwrong, adjusthint, timepermove, movestoshow, idletime, mintime, evalsteps, sleepadj)
+               tmp <- .miscsettings(multiplier, adjustwrong, adjusthint, timepermove, movestoshow, idletime, mintime, evalsteps, delay, target, sleepadj)
                dev.hold()
                .redrawpos(pos, flip=flip)
                .drawannot(circles=circles, arrows=arrows, glyph=glyph)
@@ -4227,6 +4179,8 @@ play <- function(lang="en", online, ...) {
                idletime    <- tmp$idletime
                mintime     <- tmp$mintime
                evalsteps   <- tmp$evalsteps
+               delay       <- tmp$delay
+               target      <- tmp$target
                sleepadj    <- tmp$sleepadj
                assign("evalsteps", evalsteps, envir=.chesstrainer)
                assign("sleepadj", sleepadj, envir=.chesstrainer)
@@ -4238,6 +4192,8 @@ play <- function(lang="en", online, ...) {
                settings$idletime    <- idletime
                settings$mintime     <- mintime
                settings$evalsteps   <- evalsteps
+               settings$delay       <- delay
+               settings$target      <- target
                settings$sleepadj    <- sleepadj
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
@@ -4446,7 +4402,7 @@ play <- function(lang="en", online, ...) {
 
             # ctrl-0 to edit the session history file
 
-            if (advanced && identical(click, "ctrl-)")) {
+            if (advanced && identical(click, "ctrl-(")) {
                player.file <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "sessions", paste0(player, ".rds"))
                if (file.exists(player.file)) {
                   dat.player <- readRDS(player.file)

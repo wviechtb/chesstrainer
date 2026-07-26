@@ -90,8 +90,8 @@
       if (is.numeric(click) && (click[[3]] == 0 || click[[3]] == 2)) # left/right mouse button exits
          break
 
-      if (identical(click, "{") || identical(click, "}")) {
-         if (identical(click, "{")) {
+      if (identical(click, "ctrl-+") || identical(click, "ctrl-_")) {
+         if (identical(click, "ctrl-_")) {
             mar2 <- pmax(1, mar2 - 0.5)
          } else {
             mar2 <- mar2 + 0.5

@@ -12,20 +12,20 @@
 
    To start the trainer, run \code{\link{play}()} from the console. When starting the trainer for the first time, a directory for storing settings, a cache directory, and a directory for storing sequences are created. A few example sequences also come with the package and you will receive a prompt whether to copy these sequences to the sequence directory. To familiarize yourself with the trainer, it would be good to do so. Finally, you will receive a prompt to enter a player name. Choose a name and press enter.
 
-   \if{html}{\figure{console_first_run.png}{options: width=900}}
-   \if{latex}{\figure{console_first_run.png}{options: width=5.5in}}
+   \if{html}{\figure{console-first-run.png}{options: width=900}}
+   \if{latex}{\figure{console-first-run.png}{options: width=5.5in}}
 
    The trainer then starts in \emph{add mode} (see the \sQuote{Note} section at the bottom if you receive an error that the graphics device does not support event handling; for Windows users, see also the \sQuote{Note for Windows Users} section). For now, click on the window showing the chess board and press \verb{<space>} (i.e., the space bar), which will switch to \emph{test mode} (note: in this manual, key presses are indicated as: \verb{<key>}). One of the existing sequences will then be chosen at random. The trainer may immediately prompt you to play a certain opening (via a comment at the top of the window), it may make some moves for you, or it may start at a later position during a game. Either way, you will then have to make the correct move based on the position and instructions. You do this by either left-clicking and dragging the piece to be played from its current position to the desired target square or by left-clicking on the piece to be moved and then left-clicking on the target square.
 
-   \if{html}{\figure{play_sequence.png}{options: width=900}}
-   \if{latex}{\figure{play_sequence.png}{options: width=5.5in}}
+   \if{html}{\figure{play-sequence.png}{options: width=900}}
+   \if{latex}{\figure{play-sequence.png}{options: width=5.5in}}
 
-   Sidenote: If the text on the bottom or other visual elements are cut off, you can use the \verb{<\{>} and \verb{<\}>} keys to decrease/increase the margin width.
+   Sidenote: If the text on the bottom or other visual elements are cut off, you can use the \verb{<ctrl-->} and \verb{<ctrl-=>} keys to decrease/increase the margin width. This is also possible by opening up the settings menu via \verb{<F5>}.
 
    The trainer will then make the next move, after which you will then again have to make the correct move. This will continue until the end of the sequence. If you do not know what the correct move is, the \verb{<h>} key will provide a hint showing which piece to move. Pressing \verb{<h>} for a second time will show the target square. Once the sequence has ended, left-clicking starts a new sequence.
 
-   \if{html}{\figure{get_hint.png}{options: width=900}}
-   \if{latex}{\figure{get_hint.png}{options: width=5.5in}}
+   \if{html}{\figure{get-hint.png}{options: width=900}}
+   \if{latex}{\figure{get-hint.png}{options: width=5.5in}}
 
    In \emph{test mode}, information is shown at the bottom about the current mode, the name of the current sequence, the player name, the current move number and the total number of moves of the sequence, the number of rounds (how many times the sequence has been played so far), the age of the sequence (how many days ago the sequence was last played), the estimated difficulty of the sequence (see below), and the sequence score (also see below).
 
@@ -46,13 +46,13 @@
 
    \if{html}{Below you can see examples of progress graphs for two sequences, one which was easy to learn and memorize, while the other one is more difficult.}
 
-   \if{html}{\figure{progress_graph.png}{options: width=900}}
+   \if{html}{\figure{progress-graph.png}{options: width=900}}
 
    \if{latex}{Below you can see examples of progress graphs for two sequences, one which was easy to learn and memorize, while the other one is more difficult.}
 
-   \if{latex}{\figure{progress_graph.png}{options: width=5.5in}}
+   \if{latex}{\figure{progress-graph.png}{options: width=5.5in}}
 
-   Using the \verb{<G>} key, you can toggle whether the progress graph will be automatically shown at the end of each completed sequence.
+   Under the \verb{<F5>} menu, you can toggle whether the progress graph will be automatically shown at the end of each completed sequence.
 
    With \verb{<F11>} (or \verb{<Ctrl-i>}), you can obtain a plot of the average score of all sequences as a function of each completed sequence during the current session. The horizontal dotted line corresponds to the average score at the beginning of the session. This is useful to check whether progress is being made in learning all of the sequences.
 
@@ -101,26 +101,28 @@
 
    You can also choose to play sequences sequentially, either ordered alphabetically, ordered by their length (which is given by the number of moves that have to be made by the player), or ordered by their moves. The latter is especially useful when practicing a particular opening and you wants to go through a set of corresponding sequences in the order of the variations.
 
-   For the sequential selection modes and for selection mode 6 (i.e., where the oldest sequence is always played next), a message is shown after completing one round of all (selected) sequences (as long as more than one sequence is selected). For the sequential selection modes, one can use the \verb{<j>} key to jump to a particular sequence number. For selection modes 1 and 2, you can also set a \sQuote{target score} with the \verb{<s>} key. Once all (selected) sequences have a score below this target score, a message will be shown.
+   For the sequential selection modes and for selection mode 6 (i.e., where the oldest sequence is always played next), a message is shown after completing one round of all (selected) sequences (as long as more than one sequence is selected). For the sequential selection modes, you can use the \verb{<j>} key to jump to a particular sequence number. For selection modes 1 and 2, you can also set a \sQuote{target value} in the \verb{<F6>} menu. Once all (selected) sequences have a score below this target value, a message will be shown.
 
-   In \emph{test mode}, the \verb{<r>} key repeats the last played sequence. At the end of a sequence, you can also use the middle mouse button to repeat the sequence (before a new sequence is started). With \verb{<R>}, you can toggle whether a sequence will be automatically repeated if a mistake was made while playing the sequence.
+   In \emph{test mode}, the \verb{<r>} key repeats the last played sequence. At the end of a sequence, you can also use the middle mouse button to repeat the sequence (before a new sequence is started). Under the \verb{<F5>} menu, you can toggle whether a sequence will be automatically repeated if a mistake was made while playing the sequence.
 
 }
-\section{Timed Mode}{
+\section{Timed and Zen Mode}{
 
-   With the \verb{<x>} key, you can switch into a \emph{timed mode}. In this mode, all moves played during a sequence must be completed in a certain amount of time, which is given by the total number of moves that must be played in the sequence times the current setting for \sQuote{time per move} (which is 5 seconds by default). For example, if 8 moves must be played, then you have \eqn{8 \times 5 = 40} seconds in total to complete all moves in the sequence (the time taken by the trainer for playing moves is not counted). Not completing the moves within this amount of time is treated like a mistake (i.e., the score is increased by 40 points).
+   Under the \verb{<F5>} menu, you can switch into a \emph{timed mode}. In this mode, all moves played during a sequence must be completed in a certain amount of time, which is given by the total number of moves that must be played in the sequence times the current setting for \sQuote{time per move} (which is 5 seconds by default). For example, if 8 moves must be played, then you have \eqn{8 \times 5 = 40} seconds in total to complete all moves in the sequence (the time taken by the trainer for playing moves is not counted). Not completing the moves within this amount of time is treated like a mistake (i.e., the score is increased by 40 points).
 
    When playing a sequence in this mode, the bar to the right of the board indicates whether the current playing time is above (in green) or below (in red) the amount of time you should have spent on the moves so far (i.e., if every move took exactly the amount of time allowed by the \sQuote{time per move} setting).
 
    \if{html}{In the screenshots below, the first move was made quickly and the bar stays green. The second move was made slowly and the time is now below the amount of time that should have been spent on the moves so far. Therefore, the bar turns red.}
 
-   \if{html}{\figure{timed_mode.png}{options: width=900}}
+   \if{html}{\figure{timed-mode.png}{options: width=900}}
 
    \if{latex}{In the screenshots below, the first move was made quickly and the bar stays green. The second move was made slowly and the time is now below the amount of time that should have been spent on the moves so far. Therefore, the bar turns red.}
 
-   \if{latex}{\figure{timed_mode.png}{options: width=5.5in}}
+   \if{latex}{\figure{timed-mode.png}{options: width=5.5in}}
 
-   The \sQuote{time per move} value can be adjusted via \verb{<F6>}.
+   The \sQuote{time per move} value can be adjusted via the \verb{<F6>} menu.
+
+   In the \verb{<F5>} menu, one can switch on a \emph{zen mode}. In this mode, all information at the bottom is hidden during \emph{test mode} to minimize distractions.
 
 }
 \section{Sequence Difficulty}{
@@ -155,6 +157,13 @@
 
    The \verb{<e>} key can be used to edit the comments for a particular sequence. This way, you can also add a \sQuote{start comment} and/or an \sQuote{end comment} to a particular sequence (the former will be shown in an overlay box before the sequence starts, the latter at the top after the last move). The \verb{<E>} key opens up the \code{\link[=edit]{data editor}} on the data frame that contains the moves for the current sequence. This can also be used to add, edit, and remove comments in the \verb{comment} column or make adjustments to the other columns (but this should only be done if their meaning is clear).
 
+   Clicking the right mouse button on a square adds a circle to the square. Dragging the mouse from one square to another while pressing the right mouse button draws an arrow. Clicking with the left mouse button on a square, \verb{<escape>}, or making a move removes these visualizations. When adding a sequence, circles and arrows that are drawn are also saved and will be shown when replaying the sequence in \emph{test mode}. When such annotations are shown as part of a move that is made by the trainer, the sequence will only proceed after a click.
+
+   Similarly, with the \verb{<!>}, \verb{<@>} (or \verb{<">}), \verb{<#>} (or \verb{<§>}), and \verb{<$>} keys, you can add (and remove) annotation glyphs (e.g., exclamation and question marks) to moves. Such annotations are also shown in \emph{test mode}.
+
+   \if{html}{\figure{annotations.png}{options: width=900}}
+   \if{latex}{\figure{annotations.png}{options: width=5.5in}}
+
    Once a number of moves have been made for the sequence, the \verb{<left>} and \verb{<right>} arrow keys can be used to go back or forward one move. With the \verb{<1>} or \verb{<up>} arrow keys, you can jump to the first move that needs to be made by the player (i.e., the first move where \sQuote{Show} is set to \sQuote{No}) or to the very beginning of the sequence if one is already at or before this position in the sequence. The \verb{<2>} or \verb{<down>} arrow keys jump to the very end of the sequence. The \verb{<3>}, \verb{<4>}, and \verb{<5>} keys jump to the first quarter, middle, and third quarter of the sequence (when the sequence consists of very few moves, these different positions may not be differentiable). Note that when making a move when not looking at the very end of the sequence, then this deletes all subsequent moves that were already part of the sequence.
 
    With the \verb{<?>} key, you can search for sequences that start with the same moves that have been entered/played so far (this also works in \emph{test mode}). If any matching sequences are found, they will be shown in the console (followed by the next moves that are part of these sequences). A prompt will ask if they should be selected. This is useful for checking what sequences are already available based on some initial moves (and then practicing these sequences) or finding other sequences similar to the one currently being played. Alternatively, with the \verb{<'>} key, you can search for sequences that include the current position anywhere in the sequence (irrespective of the particular moves that led to the position). The \verb{<]>} key does the same thing, but only shows the sequences (without selecting them). The \verb{<[>} key does the same thing, but only shows a frequency table of the next moves in the sequences found. With the \verb{<;>} key, you can search for sequences that end on the current position. With the \verb{<:>} key, you can search for sequences where the last-moved piece is on its current square. Note that all of these searches account for whether the board is flipped or not (i.e., only sequences are shown where the player is either moving the white or black pieces).
@@ -165,9 +174,9 @@
 
    When creating new opening sequences, the trainer tries to recognize the opening played and indicates the ECO code and opening name at the bottom left.
 
-   Also, the trainer automatically recognizes move transpositions (i.e., if there are sequences with the same position that were obtained via a different move order or via different moves). If such sequences are found, their names are printed to the console. This check can be toggled on/off with the \verb{<T>} key.
+   Also, the trainer automatically recognizes move transpositions (i.e., if there are sequences with the same position that were obtained via a different move order or via different moves). If such sequences are found, their names are printed to the console. This check can be toggled on/off under the \verb{<F5>} menu.
 
-   Also, any moves made are compared against the existing sequences. If there are sequences with the same current position and the move made is not one of the moves that are part of these sequences, then this will be noted at the top. You can toggle this on/off with the \verb{<C>} key.
+   Also, any moves made are compared against the existing sequences. If there are sequences with the same current position and the move made is not one of the moves that are part of these sequences, then this will be noted at the top. You can toggle this on/off under the \verb{<F5>} menu.
 
    Note that sequences are quite personalized, since they involve going into a particular line that one deems most appropriate (and hence wants to remember). Others may disagree and prefer a different line. Therefore, you should create sequences that you want to train yourself on, so you will be able to play them quickly from memory in actual games.
 
@@ -176,13 +185,13 @@
 
    If Stockfish (\verb{https://stockfishchess.org}) is installed (see the \code{\link{install_stockfish}} function), it can be used in the background to automatically obtain position evaluations when adding sequences. For this, open up the settings for Stockfish via \verb{<F7>}, click on \sQuote{Stockfish path}, and enter the path (including the executable) to Stockfish. If this is set correctly, then position evaluations will be automatically computed and added to a sequence. Evaluations are given in centipawns divided by 100, except for forced mates, which are given as \eqn{\pm99.9}. When playing a sequence, these evaluations are then shown as an evaluation bar on the left of the board.
 
-   \if{html}{\figure{eval_bar.png}{options: width=900}}
-   \if{latex}{\figure{eval_bar.png}{options: width=5.5in}}
+   \if{html}{\figure{eval-bar.png}{options: width=900}}
+   \if{latex}{\figure{eval-bar.png}{options: width=5.5in}}
 
    By default, evaluations are based on a search depth of 12 half-moves (the depth is shown below the evaluation bar). Obtaining such an evaluation for a given position should be relatively quick and not add much lag when creating a sequence. In \emph{add mode}, the \verb{<h>} key shows the best move according to Stockfish in a given position. The \verb{<y>} key can be used to switch on a continuous analysis mode where the best move is automatically shown after each move. The \verb{<right>} key automatically plays the best move in a given position according to the evaluation.
 
-   \if{html}{\figure{get_best_move.png}{options: width=900}}
-   \if{latex}{\figure{get_best_move.png}{options: width=5.5in}}
+   \if{html}{\figure{get-best-move.png}{options: width=900}}
+   \if{latex}{\figure{get-best-move.png}{options: width=5.5in}}
 
    The \verb{<H>} key will run a deeper analysis (by default based on search depth of 20 half-moves) and show the best move according to Stockfish. Since this may take some time, a progress bar is shown at the top while the analysis is running.
 
@@ -195,6 +204,8 @@
    In the \verb{<F7>} menu, you can toggle whether the cache is used when pressing the \verb{<H>} or \verb{<L>} key. When the cache is switched off, the evaluation will either be forced to be based on a local evaluation with Stockfish (when pressing \verb{<H>}) or a cloud evaluation (when pressing \verb{<L>}).
 
    The \verb{<u>} key updates the evaluations for all moves in a sequence by recalculating the evaluations with the current setting for a deeper analysis. Depending on the number of moves in the sequence and the search depth for deep evaluations, this can take a bit of time. With the \verb{<U>} key, all (selected) sequences can be updated in this manner. Note that this can take a very long time.
+
+   With the \verb{<v>} key, the evaluation bar can be toggled on/off. This is mode specific (i.e., you can switch off the evaluation bar when in \emph{test mode}, but still keep it on when in \emph{add mode}). If evaluations are not available, the bar is not shown irrespective of whether it is toggled on or off. If the evaluation bar is turned off in \emph{test mode}, it is still shown at the end of each sequence.
 
 }
 \section{Querying the Lichess Database}{
@@ -250,7 +261,7 @@
 
    Using \verb{<t>}, you can take back the last move (i.e., the move played by the computer and your own move), so that it is again your move to play.
 
-   As when adding sequences, the moves made are compared against the existing sequences. If there are sequences with the same current position and the move made is not one of the moves that are part of these sequences, then this will be noted at the top. You can toggle this on/off with the \verb{<C>} key.
+   As when adding sequences, the moves made are compared against the existing sequences. If there are sequences with the same current position and the move made is not one of the moves that are part of these sequences, then this will be noted at the top. You can toggle this on/off under the \verb{<F5>} menu.
 
    The \verb{<left>}, \verb{<right>}, \verb{<up>}, and \verb{<down>} arrows and the \verb{<1>}, \verb{<2>}, \verb{<3>}, \verb{<4>}, and \verb{<5>} keys work the same as described earlier (except that \verb{<1>} always jumps to the start of the game). This automatically takes you into the \emph{analysis mode}, where you can try out variations and/or force the computer to make a different move from a given position. Before doing so, you can store the current game (i.e., sequence of moves and current position) as the main variation with the \verb{<0>} key. Using the \verb{<9>} key, you can jump back to the end of this main variation.
 
@@ -269,42 +280,22 @@
 }
 \section{Other Settings, Options, and Shortcuts}{
 
-   When playing a sequence, the graphical elements shown on the playing board are created by repeatedly drawing on top of the board. Therefore, when resizing the board, all elements are redrawn, which takes a few moments. With \verb{<escape>}, the board can be redrawn in its current state, after which it can be resized without having to wait for all previous graphical elements to be redrawn.
+   With \verb{<F4>}, you can adjust the display settings (i.e., colors and text sizes).
 
-   Clicking the right mouse button on a square adds a circle to the square. Dragging the mouse from one square to another while pressing the right mouse button draws an arrow. Clicking with the left mouse button on a square, \verb{<escape>}, or making a move removes these visualizations. When adding a sequence, circles and arrows that are drawn are also saved and will be shown when replaying the sequence in \emph{test mode}. When such annotations are shown as part of a move that is made by the trainer, the sequence will only proceed after a click.
+   With \verb{<F5>}, various settings of the trainer can be adjusted (most of these were already explained above).
 
-   Similarly, with the \verb{<!>}, \verb{<@>} (or \verb{<">}), \verb{<#>} (or \verb{<§>}), and \verb{<$>} keys, you can add (and remove) annotation glyphs (e.g., exclamation and question marks) to moves. Such annotations are also shown in \emph{test mode}.
-
-   \if{html}{\figure{annotations.png}{options: width=900}}
-   \if{latex}{\figure{annotations.png}{options: width=5.5in}}
-
-   Various other settings can be adjusted while the trainer is running:
-
-   \itemize{
-   \item With the \verb{<Ctrl-l>} key, the language of the trainer can be toggled between English and German (author note: I wrote this trainer in part for my chess playing kids, which is the reason why a German translation is available).
-   \item When in \emph{test mode}, the \verb{<z>} key toggles on a \emph{zen mode} where the information at the bottom is hidden.
-   \item With the \verb{<v>} key, the evaluation bar can be toggled on/off. This is mode specific (i.e., you can switch off the evaluation bar when in \emph{test mode}, but still keep it on when in \emph{add mode}). If evaluations are not available, the bar is not shown irrespective of whether it is toggled on or off. If the evaluation bar is turned off in \emph{test mode}, it is still shown at the end of each sequence.
-   \item There is a 0.5 second delay between moves played by the trainer. This can be decreased/increased with the \verb{<->} and \verb{<=>} keys.
-   \item The trainer waits for a mouse click at the end of a sequence before starting a new sequence. You can toggle this on/off with the \verb{<W>} key.
-   \item With the \verb{<K>} key, you can toggle whether the material difference is shown or not.
-   \item Moves shown (e.g., by Stockfish or when querying the Lichess database) are given in short algebraic notation. With the \verb{<S>} key, you can toggle between short and long algebraic notation.
-   \item Pieces in moves are shown as symbols. With the \verb{<P>} key, you can toggle between different piece symbols (i.e., to letters; if the language is not English, then one can also toggle between the English letters for the pieces or the German ones).
-   }
-
-   The settings are stored across sessions and can be shown with \verb{<F3>}.
-
-   With \verb{<F5>}, you can adjust the display settings (e.g., colors, text sizes, whether to show board coordinates). With \verb{<F6>}, you can adjust some miscellaneous settings, namely the score multiplier for completed sequences without mistakes (0.8 by default), the score penalty when making a wrong move (40 by default), the score penalty per hint (20 by default), the time per move for the \emph{timed mode} (5 seconds by default), the number of next moves to show after searches (5 by default), the idle time (120 seconds by default; time without any inputs longer than this value is not counted towards the play time for the session history), the minimum session time (60 seconds by default; sessions shorter than this are not actually saved in the session history), the number of animation steps for the evaluation bar (5 by default), and a pause adjustment (in case that text shown at the top of the screen disappears too quickly; this seems to be an issue especially under Windows, in which case setting this to something like 0.3 should fix the issue).
+   With \verb{<F6>}, you can adjust some miscellaneous settings, namely the score multiplier for completed sequences without mistakes (0.8 by default), the score penalty when making a wrong move (40 by default), the score penalty per hint (20 by default), the time per move for the \emph{timed mode} (5 seconds by default), the number of next moves to show after searches (5 by default), the idle time (120 seconds by default; time without any inputs longer than this value is not counted towards the play time for the session history), the minimum session time (60 seconds by default; sessions shorter than this are not actually saved in the session history), the number of animation steps for the evaluation bar (5 by default), the delay between moves played by the trainer (this can also be adjusted outside of the \verb{<F6>} menu with the \verb{<->} and \verb{<=>} keys), the target value for the scores, and a pause adjustment (in case that text shown at the top of the screen disappears too quickly; this seems to be an issue especially under Windows, in which case setting this to something like 0.3 should fix the issue).
 
    With the \verb{<o>} key, the FEN of the current position is printed to the console and the position is opened on the Lichess website (\verb{https://lichess.org}) for analysis. With \verb{<Ctrl-f>}, the FEN is printed to the console and copied to the clipboard (this makes use of the \code{\link[clipr]{write_clip}} function from the \pkg{clipr} package). With \verb{<Ctrl-c>}, the current sequence name is printed and copied to the clipboard in \emph{test mode}.
 
-   With \verb{<F10>} (or \verb{<Ctrl-s>}), you can obtain histograms of the scores of the (selected) sequences, how many times they have been played so far (the number of rounds), how long ago they were played, their difficulty, and a scatterplot of the number of times they have been played versus their scores. In the scatterplot, the downward sloping dashed line indicates the best possible performance (i.e., never making a mistake when playing the sequence over and over) and the solid line the actual performance (as estimated based on a regression model; only shown when there are 5 or more points). If a target score value has been set (see above), this value is indicated as horizontal dotted line (and also as a vertical dotted line in the histogram of the scores).
+   With \verb{<F10>} (or \verb{<Ctrl-s>}), you can obtain histograms of the scores of the (selected) sequences, how many times they have been played so far (the number of rounds), how long ago they were played, their difficulty, and a scatterplot of the number of times they have been played versus their scores. In the scatterplot, the downward sloping dashed line indicates the best possible performance (i.e., never making a mistake when playing the sequence over and over) and the solid line the actual performance (as estimated based on a regression model; only shown when there are 5 or more points). If a target value for the scores has been set (see above), this value is indicated as horizontal dotted line (and also as a vertical dotted line in the histogram of the scores).
 
 }
 \section{Playing Sounds}{
 
    The trainer plays various sounds (e.g., when playing moves, when capturing pieces, when making a wrong move, when completing a sequence). This may or may not work depending on your operating system and configuration. See the \code{\link{playsound}} function for further details.
 
-   The sound volume can be decreased/increased with the \verb{<_>} and \verb{<+>} keys (note that this does not work with the mpg123 player under Windows; see \code{\link{playsound}}). Setting the volume to 0 disables the sound. This can also be useful if playing sounds adds too much lag.
+   The sound volume can be decreased/increased in the \verb{<F5>} menu or with the \verb{<_>} and \verb{<+>} keys (note that this does not work with the mpg123 player under Windows; see \code{\link{playsound}}). Setting the volume to 0 disables the sound. This can also be useful if playing sounds adds too much lag.
 
 }
 \section{Notes for Windows Users}{

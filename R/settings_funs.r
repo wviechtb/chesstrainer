@@ -1,7 +1,6 @@
 .vizsettings <- function(cols.all, flip=FALSE, show=TRUE, showcomp, player, seqdir, seqdirpos, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove, liout) {
 
    mode       <- .get("mode")
-   showcoords <- .get("showcoords")
    timed      <- .get("timed")
    zenmode    <- .get("zenmode")
    x2y2       <- .get("x2y2")
@@ -32,15 +31,11 @@
    tab <- rbind(tab, c("scheme.gray",  "", .text("scheme_gray")))
    tab <- rbind(tab, c("scheme.light", "", .text("scheme_light")))
 
-   tab3 <- data.frame(x = "showcoords", val=ifelse(showcoords, .text("yes"), .text("no")), explanation=.text("showcoordsexpl"))
-   tab <- rbind(tab, c("", "", ""), tab3)
-
    names(tab) <- c("", "", "")
 
    numbers.col    <- which(startsWith(tab[,1], "col."))
    numbers.cex    <- which(startsWith(tab[,1], "cex."))
    numbers.scheme <- which(startsWith(tab[,1], "scheme."))
-   number.coords  <- which(tab[,1] == "showcoords")
 
    dev.hold()
 
@@ -124,11 +119,6 @@
                tab[number,2] <- cex
             }
          }
-         if (number == number.coords) {
-            showcoords <- !showcoords
-            assign("showcoords", showcoords, envir=.chesstrainer)
-            tab[number.coords,2] <- ifelse(showcoords, .text("yes"), .text("no"))
-         }
          dev.hold()
          .redrawall(pos, flip, show, showcomp, player, seqdir, seqdirpos, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
          .addrect(4, 2, col=.get("col.wrong"))
@@ -168,7 +158,285 @@
 
 }
 
-.miscsettings <- function(multiplier, adjustwrong, adjusthint, timepermove, movestoshow, idletime, mintime, evalsteps, sleepadj) {
+.mainsettings <- function(devhold, lang, piecesymbols, showcoords, showmatdiff, san, timed, zenmode, wait, repmistake, showgraph, compseq, showtransp, mar, volume) {
+
+   col.help  <- .get("col.help")
+   font.mono <- .get("font.mono")
+   col.text  <- .get("col.square.d")
+
+   restart <- FALSE
+
+   if (devhold)
+      dev.hold()
+
+   .drawbox()
+
+   cex <- 0.9
+   cex.mult <- 0.8
+
+   title.xpos <- 1.5
+   title.ypos <- c(8.2, 7.6, 7.0 - 0.3 * c(0:9), 3.5, 3.1)
+
+   box.xpos <- 1.7
+   boxtext.xpos <- 2.0
+
+   text(title.xpos, title.ypos[1],  .text("lang:"),         pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(title.xpos, title.ypos[2],  .text("piecesymbols:"), pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+
+   text(boxtext.xpos, title.ypos[3],  .text("showcoords"),    pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(boxtext.xpos, title.ypos[4],  .text("showmatdiff"),   pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(boxtext.xpos, title.ypos[5],  .text("san"),           pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(boxtext.xpos, title.ypos[6],  .text("timed"),         pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(boxtext.xpos, title.ypos[7],  .text("zenmode"),       pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(boxtext.xpos, title.ypos[8],  .text("wait"),          pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(boxtext.xpos, title.ypos[9],  .text("repmistake"),    pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(boxtext.xpos, title.ypos[10], .text("showgraph"),     pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(boxtext.xpos, title.ypos[11], .text("compseq"),       pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(boxtext.xpos, title.ypos[12], .text("showtransp"),    pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+
+   text(title.xpos, title.ypos[13], .text("mar"),             pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(5.2,        title.ypos[13], .text("volume"),          pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+
+   lang.opts <- c("en", "de")
+   lang.xpos <- 3.6 + 1.0 * (seq_along(lang.opts) - 1)
+   lang.ypos <- title.ypos[1]
+   lang.txt  <- c("English", "Deutsch")
+   lang.on   <- lang.opts == lang
+   lang.box  <- list()
+   for (i in seq_along(lang.txt)) {
+      lang.box[[i]] <- .drawbutton(lang.xpos[i], lang.ypos, text=lang.txt[i], len=max(nchar(lang.txt)), on=lang.on[i], cex=cex)
+   }
+
+   piecesymbols.opts <- 1:3
+   piecesymbols.xpos <- 3.5 + 0.8 * (seq_along(piecesymbols.opts) - 1)
+   piecesymbols.ypos <- title.ypos[2]
+   piecesymbols.txt  <- c("\U0000265A\U0000265B\U0000265C\U0000265D\U0000265E", "KQRBN", "KDTLS")
+   piecesymbols.on   <- piecesymbols.opts == piecesymbols
+   piecesymbols.box  <- list()
+   for (i in seq_along(piecesymbols.txt)) {
+      piecesymbols.box[[i]] <- .drawbutton(piecesymbols.xpos[i], piecesymbols.ypos, text=piecesymbols.txt[i], len=max(nchar(piecesymbols.txt)), on=piecesymbols.on[i], cex=cex)
+   }
+
+   showcoords.xpos <- box.xpos
+   showcoords.ypos <- title.ypos[3]
+   showcoords.box <- .drawcheckbox(showcoords.xpos, showcoords.ypos, on=showcoords, cex=cex)
+
+   showmatdiff.xpos <- box.xpos
+   showmatdiff.ypos <- title.ypos[4]
+   showmatdiff.box <- .drawcheckbox(showmatdiff.xpos, showmatdiff.ypos, on=showmatdiff, cex=cex)
+
+   san.xpos <- box.xpos
+   san.ypos <- title.ypos[5]
+   san.box <- .drawcheckbox(san.xpos, san.ypos, on=san, cex=cex)
+
+   timed.xpos <- box.xpos
+   timed.ypos <- title.ypos[6]
+   timed.box <- .drawcheckbox(timed.xpos, timed.ypos, on=timed, cex=cex)
+
+   zenmode.xpos <- box.xpos
+   zenmode.ypos <- title.ypos[7]
+   zenmode.box <- .drawcheckbox(zenmode.xpos, zenmode.ypos, on=zenmode, cex=cex)
+
+   wait.xpos <- box.xpos
+   wait.ypos <- title.ypos[8]
+   wait.box <- .drawcheckbox(wait.xpos, wait.ypos, on=wait, cex=cex)
+
+   repmistake.xpos <- box.xpos
+   repmistake.ypos <- title.ypos[9]
+   repmistake.box <- .drawcheckbox(repmistake.xpos, repmistake.ypos, on=repmistake, cex=cex)
+
+   showgraph.xpos <- box.xpos
+   showgraph.ypos <- title.ypos[10]
+   showgraph.box <- .drawcheckbox(showgraph.xpos, showgraph.ypos, on=showgraph, cex=cex)
+
+   compseq.xpos <- box.xpos
+   compseq.ypos <- title.ypos[11]
+   compseq.box <- .drawcheckbox(compseq.xpos, compseq.ypos, on=compseq, cex=cex)
+
+   showtransp.xpos <- box.xpos
+   showtransp.ypos <- title.ypos[12]
+   showtransp.box <- .drawcheckbox(showtransp.xpos, showtransp.ypos, on=showtransp, cex=cex)
+
+   mar.xpos <- c(1.7,4.5)
+   mar.ypos <- title.ypos[14]
+   mar.box  <- .drawslider(x=mar.xpos, mar.ypos, xlab=c(1,10), cex=cex*cex.mult)
+   .updateslider(NULL, mar.ypos, oldval=mar[1], xlim=mar.xpos, range=c(1,10), round=0.5, cex=cex*cex.mult)
+
+   volume.xpos <- c(5.4,8)
+   volume.ypos <- title.ypos[14]
+   volume.box  <- .drawslider(x=volume.xpos, volume.ypos, xlab=c(0,100), cex=cex*cex.mult)
+   .updateslider(NULL, volume.ypos, oldval=volume, xlim=volume.xpos, range=c(0,100), round=TRUE, cex=cex*cex.mult)
+
+   # !!!
+
+   dev.flush()
+
+   .mousedownfun <- function(button,x,y) {
+      if (length(button) == 0L)
+         button <- 3
+      button <<- button
+      xy1 <<- .calcxy(x, y, plt)
+      return(NULL)
+   }
+
+   .mouseupfun <- function(button,x,y) {
+      xy2 <<- .calcxy(x, y, plt)
+      return(1)
+   }
+
+   while (TRUE) {
+
+      plt <- par("plt")
+
+      button <- NULL
+      xy1 <- NULL
+      xy2 <- NULL
+
+      resp <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.mousedownfun, onMouseUp=.mouseupfun, onKeybd=.keyfun)
+
+      if (is.numeric(resp)) {
+
+         if (button == 2)
+            break
+
+         if (button != 0)
+            next
+
+         hit <- sapply(lang.box, function(coords) xy1[1] >= coords[1] & xy1[2] >= coords[2] & xy1[1] <= coords[3] & xy1[2] <= coords[4])
+         if (any(hit)) {
+            i <- which(hit)
+            if (lang.on[i])
+               next
+            lang.on <- !lang.on
+            for (i in seq_along(lang.txt)) {
+               .drawbutton(lang.xpos[i], lang.ypos, text=lang.txt[i], len=max(nchar(lang.txt)), on=lang.on[i], cex=cex)
+            }
+            lang <- lang.opts[lang.on]
+            restart <- TRUE
+            break
+         }
+
+         hit <- sapply(piecesymbols.box, function(coords) xy1[1] >= coords[1] & xy1[2] >= coords[2] & xy1[1] <= coords[3] & xy1[2] <= coords[4])
+         if (any(hit)) {
+            i <- which(hit)
+            if (piecesymbols.on[i])
+               next
+            piecesymbols.on <- rep(FALSE, length(piecesymbols.on))
+            piecesymbols.on[i] <- TRUE
+            for (i in seq_along(piecesymbols.txt)) {
+               .drawbutton(piecesymbols.xpos[i], piecesymbols.ypos, text=piecesymbols.txt[i], len=max(nchar(piecesymbols.txt)), on=piecesymbols.on[i], cex=cex)
+            }
+            piecesymbols <- piecesymbols.opts[piecesymbols.on]
+            next
+         }
+
+         hit <- xy1[1] >= showcoords.box[1] & xy1[2] >= showcoords.box[2] & xy1[1] <= showcoords.box[3] & xy1[2] <= showcoords.box[4]
+         if (hit) {
+            showcoords <- !showcoords
+            .drawcheckbox(showcoords.xpos, showcoords.ypos, on=showcoords, cex=cex)
+            next
+         }
+
+         hit <- xy1[1] >= showmatdiff.box[1] & xy1[2] >= showmatdiff.box[2] & xy1[1] <= showmatdiff.box[3] & xy1[2] <= showmatdiff.box[4]
+         if (hit) {
+            showmatdiff <- !showmatdiff
+            .drawcheckbox(showmatdiff.xpos, showmatdiff.ypos, on=showmatdiff, cex=cex)
+            next
+         }
+
+         hit <- xy1[1] >= san.box[1] & xy1[2] >= san.box[2] & xy1[1] <= san.box[3] & xy1[2] <= san.box[4]
+         if (hit) {
+            san <- !san
+            .drawcheckbox(san.xpos, san.ypos, on=san, cex=cex)
+            next
+         }
+
+         hit <- xy1[1] >= timed.box[1] & xy1[2] >= timed.box[2] & xy1[1] <= timed.box[3] & xy1[2] <= timed.box[4]
+         if (hit) {
+            timed <- !timed
+            .drawcheckbox(timed.xpos, timed.ypos, on=timed, cex=cex)
+            next
+         }
+
+         hit <- xy1[1] >= zenmode.box[1] & xy1[2] >= zenmode.box[2] & xy1[1] <= zenmode.box[3] & xy1[2] <= zenmode.box[4]
+         if (hit) {
+            zenmode <- !zenmode
+            .drawcheckbox(zenmode.xpos, zenmode.ypos, on=zenmode, cex=cex)
+            next
+         }
+
+         hit <- xy1[1] >= wait.box[1] & xy1[2] >= wait.box[2] & xy1[1] <= wait.box[3] & xy1[2] <= wait.box[4]
+         if (hit) {
+            wait <- !wait
+            .drawcheckbox(wait.xpos, wait.ypos, on=wait, cex=cex)
+            next
+         }
+
+         hit <- xy1[1] >= repmistake.box[1] & xy1[2] >= repmistake.box[2] & xy1[1] <= repmistake.box[3] & xy1[2] <= repmistake.box[4]
+         if (hit) {
+            repmistake <- !repmistake
+            .drawcheckbox(repmistake.xpos, repmistake.ypos, on=repmistake, cex=cex)
+            next
+         }
+
+         hit <- xy1[1] >= showgraph.box[1] & xy1[2] >= showgraph.box[2] & xy1[1] <= showgraph.box[3] & xy1[2] <= showgraph.box[4]
+         if (hit) {
+            showgraph <- !showgraph
+            .drawcheckbox(showgraph.xpos, showgraph.ypos, on=showgraph, cex=cex)
+            next
+         }
+
+         hit <- xy1[1] >= compseq.box[1] & xy1[2] >= compseq.box[2] & xy1[1] <= compseq.box[3] & xy1[2] <= compseq.box[4]
+         if (hit) {
+            compseq <- !compseq
+            .drawcheckbox(compseq.xpos, compseq.ypos, on=compseq, cex=cex)
+            next
+         }
+
+         hit <- xy1[1] >= showtransp.box[1] & xy1[2] >= showtransp.box[2] & xy1[1] <= showtransp.box[3] & xy1[2] <= showtransp.box[4]
+         if (hit) {
+            showtransp <- !showtransp
+            .drawcheckbox(showtransp.xpos, showtransp.ypos, on=showtransp, cex=cex)
+            next
+         }
+
+         hit <- xy1[1] >= mar.box[1] & xy1[2] >= mar.box[2] & xy1[1] <= mar.box[3] & xy1[2] <= mar.box[4]
+         if (hit) {
+            oldmar <- mar
+            mar <- .updateslider(xy2[1], mar.ypos, oldval=mar[1], xlim=mar.xpos, range=c(1,10), round=0.5, cex=cex*cex.mult)
+            mar <- rep(mar, 4)
+            if (!identical(oldmar, mar)) {
+               assign("mar", mar, envir=.chesstrainer)
+               restart <- TRUE
+               break
+            }
+            next
+         }
+
+         hit <- xy1[1] >= volume.box[1] & xy1[2] >= volume.box[2] & xy1[1] <= volume.box[3] & xy1[2] <= volume.box[4]
+         if (hit) {
+            volume <- .updateslider(xy2[1], volume.ypos, oldval=volume, xlim=volume.xpos, range=c(0,100), round=TRUE, cex=cex*cex.mult)
+            assign("volume", volume, envir=.chesstrainer)
+            playsound(system.file("sounds", "move.ogg", package="chesstrainer"))
+            next
+         }
+
+      }
+
+      if (identical(resp, "F5") || identical(resp, "\r") || identical(resp, "ctrl-J") || identical(resp, "q") || identical(resp, "\033") || identical(resp, "ctrl-[") || identical(resp, " "))
+         break
+
+   }
+
+   out <- list(lang=lang, piecesymbols=piecesymbols, showcoords=showcoords, showmatdiff=showmatdiff, san=san, timed=timed, zenmode=zenmode, wait=wait, repmistake=repmistake, showgraph=showgraph, compseq=compseq, showtransp=showtransp, mar=mar, volume=volume, restart=restart)
+
+   #.erase(1, 1, 9, 9)
+
+   return(out)
+
+}
+
+.miscsettings <- function(multiplier, adjustwrong, adjusthint, timepermove, movestoshow, idletime, mintime, evalsteps, delay, target, sleepadj) {
 
    col.help  <- .get("col.help")
    font.mono <- .get("font.mono")
@@ -182,7 +450,7 @@
    cex.mult <- 0.8
 
    title.xpos <- 1.5
-   title.ypos <- c(8.2 - 1.16 * c(0:6))
+   title.ypos <- c(8.2 - 1.02 * c(0:7))
 
    text(title.xpos, title.ypos[1], .text("multiplier"),  pos=4, cex=cex, family=font.mono, col=col.help, font=2)
    text(title.xpos, title.ypos[2], .text("adjustwrong"), pos=4, cex=cex, family=font.mono, col=col.help, font=2)
@@ -192,7 +460,9 @@
    text(title.xpos, title.ypos[4], .text("idletime"),    pos=4, cex=cex, family=font.mono, col=col.help, font=2)
    text(title.xpos, title.ypos[5], .text("mintime"),     pos=4, cex=cex, family=font.mono, col=col.help, font=2)
    text(title.xpos, title.ypos[6], .text("evalsteps"),   pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(5.2,        title.ypos[6], .text("sleepadj"),    pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(5.2,        title.ypos[6], .text("delay"),       pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(title.xpos, title.ypos[7], .text("target"),      pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(5.2,        title.ypos[7], .text("sleepadj"),    pos=4, cex=cex, family=font.mono, col=col.help, font=2)
 
    multiplier.xpos <- c(1.7,8)
    multiplier.ypos <- title.ypos[1] - 0.4 * (title.ypos[1]-title.ypos[2])
@@ -234,8 +504,18 @@
    evalsteps.box  <- .drawslider(x=evalsteps.xpos, evalsteps.ypos, xlab=c(2,20), cex=cex*cex.mult)
    .updateslider(NULL, evalsteps.ypos, oldval=evalsteps, xlim=evalsteps.xpos, range=c(2,20), round=TRUE, cex=cex*cex.mult)
 
+   delay.xpos <- c(5.4,8)
+   delay.ypos <- title.ypos[6] - 0.4 * (title.ypos[6]-title.ypos[7])
+   delay.box  <- .drawslider(x=delay.xpos, delay.ypos, xlab=c(0,2), cex=cex*cex.mult)
+   .updateslider(NULL, delay.ypos, oldval=delay, xlim=delay.xpos, range=c(0,2), round=0.05, cex=cex*cex.mult)
+
+   target.xpos <- c(1.7,4.5)
+   target.ypos <- title.ypos[7] - 0.4 * (title.ypos[7]-title.ypos[8])
+   target.box  <- .drawslider(x=target.xpos, target.ypos, xlab=c(0,100), cex=cex*cex.mult)
+   .updateslider(NULL, target.ypos, oldval=target, xlim=target.xpos, range=c(0,100), round=TRUE, cex=cex*cex.mult)
+
    sleepadj.xpos <- c(5.4,8)
-   sleepadj.ypos <- title.ypos[6] - 0.4 * (title.ypos[6]-title.ypos[7])
+   sleepadj.ypos <- title.ypos[7] - 0.4 * (title.ypos[7]-title.ypos[8])
    sleepadj.box  <- .drawslider(x=sleepadj.xpos, sleepadj.ypos, xlab=c(0,2), cex=cex*cex.mult)
    .updateslider(NULL, sleepadj.ypos, oldval=sleepadj, xlim=sleepadj.xpos, range=c(0,2), round=0.1, cex=cex*cex.mult)
 
@@ -320,9 +600,21 @@
             next
          }
 
+         hit <- xy1[1] >= delay.box[1] & xy1[2] >= delay.box[2] & xy1[1] <= delay.box[3] & xy1[2] <= delay.box[4]
+         if (hit) {
+            delay <- .updateslider(xy2[1], delay.ypos, oldval=delay, xlim=delay.xpos, range=c(0,2), round=0.05, cex=cex*cex.mult)
+            next
+         }
+
+         hit <- xy1[1] >= target.box[1] & xy1[2] >= target.box[2] & xy1[1] <= target.box[3] & xy1[2] <= target.box[4]
+         if (hit) {
+            target <- .updateslider(xy2[1], target.ypos, oldval=target, xlim=target.xpos, range=c(0,100), round=TRUE, cex=cex*cex.mult)
+            next
+         }
+
          hit <- xy1[1] >= sleepadj.box[1] & xy1[2] >= sleepadj.box[2] & xy1[1] <= sleepadj.box[3] & xy1[2] <= sleepadj.box[4]
          if (hit) {
-            sleepadj <- .updateslider(xy2[1], sleepadj.ypos, oldval=sleepadj, xlim=sleepadj.xpos, range=c(0,2), round=0.1, cex=cex*cex.mult)
+            sleepadj <- .updateslider(xy2[1], sleepadj.ypos, oldval=sleepadj, xlim=sleepadj.xpos, range=c(0,2), round=0.05, cex=cex*cex.mult)
             next
          }
 
@@ -333,7 +625,7 @@
 
    }
 
-   out <- list(multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, timepermove=timepermove, movestoshow=movestoshow, idletime=idletime, mintime=mintime, evalsteps=evalsteps, sleepadj=sleepadj)
+   out <- list(multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, timepermove=timepermove, movestoshow=movestoshow, idletime=idletime, mintime=mintime, evalsteps=evalsteps, delay=delay, target=target, sleepadj=sleepadj)
 
    #.erase(1, 1, 9, 9)
 
@@ -361,8 +653,9 @@
 
    title.xpos <- 1.5
    title.ypos <- c(8.2, 7.8, 7.2 - 1.02 * c(0:6))
-   sfpath <- sub(path.expand("~"), "~", sfpath)
+   #sfpath <- sub(path.expand("~"), "~", sfpath)
    sfpath2 <- sfpath
+   sfpath2 <- sub(path.expand("~"), "~", sfpath2)
    pathlen <- nchar(sfpath2)
    maxlen <- 55
    if (pathlen >= maxlen)
@@ -542,6 +835,7 @@
                # (re)start stockfish if the path is new
                rect(title.xpos-0.1, title.ypos[1]-(title.ypos[2]-title.ypos[1])/2, 8.7, title.ypos[1]+(title.ypos[2]-title.ypos[1])/2, col=col.bg, border=col.bg)
                sfpath2 <- sfpath
+               sfpath2 <- sub(path.expand("~"), "~", sfpath2)
                pathlen <- nchar(sfpath2)
                if (pathlen >= maxlen)
                   sfpath2 <- paste0("...", substr(sfpath2, max(1,nchar(sfpath2)-maxlen), nchar(sfpath2)))
