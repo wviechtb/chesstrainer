@@ -1,7 +1,12 @@
 .progressgraph <- function(dat) {
 
-   if (dat$round[1] == 1)
-      dat <- rbind(data.frame(date=dat$date[1]-max(60,min(diff(dat$date))), round=0, score=100), dat)
+   if (dat$round[1] == 1) {
+      if (nrow(dat) == 1L) {
+         dat <- rbind(data.frame(date=dat$date[1]-60, round=0, score=100), dat)
+      } else {
+         dat <- rbind(data.frame(date=dat$date[1]-max(60,min(diff(dat$date))), round=0, score=100), dat)
+      }
+   }
 
    xvals <- dat$round
 

@@ -82,6 +82,25 @@
          sub$commentstart <- startcom
       }
 
+      # f = to flip show values
+
+      if (grepl("^[Ff]$", resp)) {
+         whichflip <- readline(prompt=.text("flipshow"))
+         if (grepl("^[EeGg]$", whichflip)) { # EeGg for even rows
+            whichflip <- 2L * seq_len(nrow(sub$moves) %/% 2L)
+            sub$moves$show[whichflip] <- !sub$moves$show[whichflip]
+            next
+         }
+         if (grepl("^[OoUu]$", whichflip)) { # OoUu for odd rows
+            whichflip <- 2L * seq_len((nrow(sub$moves) + 1L) %/% 2L) - 1L
+            sub$moves$show[whichflip] <- !sub$moves$show[whichflip]
+            next
+         }
+         whichflip <- .parserows(whichflip, n=nrow(sub$moves))
+         sub$moves$show[whichflip] <- !sub$moves$show[whichflip]
+         next
+      }
+
    }
 
    return(sub)

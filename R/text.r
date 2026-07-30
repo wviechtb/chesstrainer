@@ -1037,6 +1037,12 @@
                          "Deleted start comment.\n"
    ))}
 
+   if (x == "flipshow") {
+      return(switch(lang,
+                    de = "Die 'show'-Werte f\U000000FCr diese Zeilen umkehren (<Nummer>, <Nummer1-Nummer2>, 'g' = gerade Zeilen, 'u' = ungerade Zeilen: ",
+                         "Flip 'show' values for these rows (<number>, <number1-number2>, 'e' = even rows, 'o' = odd rows): "
+   ))}
+
    if (x == "copyfen") {
       return(switch(lang,
                     de = "FEN in die Zwischenablage kopiert.",

@@ -1025,7 +1025,7 @@ play <- function(lang="en", online, ...) {
 
       while (run.rnd) {
 
-         .newround <- function(seqno1=FALSE) {
+         .newround <- function(seqno1=FALSE) { # calling this below jumps back to [a]
             bestmove <<- list("")
             run.rnd <<- FALSE
             input <<- FALSE
@@ -1803,8 +1803,10 @@ play <- function(lang="en", online, ...) {
                dev.flush()
                playsound(system.file("sounds", "move.ogg", package="chesstrainer"))
                .drawevalbar(neweval, i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]])
-               if (mode == "add" && identical(click, "t")) # t in add mode removes all further moves
-                  sub$moves <- sub$moves[seq_len(i-1),,drop=FALSE]
+               if (mode == "add" && identical(click, "t")) {
+                  sub$moves <- sub$moves[seq_len(i-1),,drop=FALSE] # t in add mode removes all further moves
+                  sub$endmoves <- NULL # and remove endmoves
+               }
                if (mode %in% c("add","play","analysis")) {
                   fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                   res.sf <- .sf.eval(sfproc=sfproc, sfrun=sfrun, depth=depth1, fen=fen)
@@ -2694,6 +2696,8 @@ play <- function(lang="en", online, ...) {
                .drawglyph(glyph)
                dev.flush()
                sub$moves$glyph[i-1] <- glyph
+               if (!is.null(sub$endmoves))
+                  sub$endmoves$glyph[nrow(sub$endmoves)] <- glyph
                next
             }
 
@@ -4627,7 +4631,7 @@ play <- function(lang="en", online, ...) {
                next
             } else {
                dev.hold()
-               .drawarrow(click1.x, click1.y, click2.x, click2.y, col=.get("col.annot"))
+               .drawarrow(click1.x, click1.y, click2.x, click2.y)
                arrows <- rbind(arrows, c(click1.x, click1.y, click2.x, click2.y))
                .drawglyph(glyph) # redraw the glyph so it is always on top
                dev.flush()
@@ -4965,7 +4969,7 @@ play <- function(lang="en", online, ...) {
                               arrows <- arrows[!tmp,,drop=FALSE]
                               .drawannot(circles=circles, arrows=arrows, glyph=glyph)
                            } else {
-                              .drawarrow(click1.x, click1.y, click2.x, click2.y, col=.get("col.annot"))
+                              .drawarrow(click1.x, click1.y, click2.x, click2.y)
                               arrows <- rbind(arrows, c(click1.x, click1.y, click2.x, click2.y))
                               .drawglyph(glyph) # redraw the glyph so it is always on top
                            }
@@ -5010,6 +5014,14 @@ play <- function(lang="en", online, ...) {
                   if (playendsound)
                      playsound(system.file("sounds", "complete.ogg", package="chesstrainer"))
 
+                  # if sub$endmoves is not NULL, show alternative endmoves via arrows
+
+                  if (!is.null(sub$endmoves)) {
+                     tmp <- sub$endmoves
+                     harrows <- .parseannot(paste0(apply(tmp, 1, function(x) paste0("(",x[1],",",x[2],",",x[3],",",x[4],")")), collapse=";"), cols=4)
+                     .drawarrows(arrows=harrows, hint=TRUE, evalvals=tmp$eval, sidetoplay=ifelse(sidetoplay == "w", "b", "w"), allarrows=TRUE)
+                  }
+
                   # show symbolend if it is not NULL
 
                   if (!is.null(sub$symbolend)) {
@@ -5021,7 +5033,7 @@ play <- function(lang="en", online, ...) {
                   .drawglyph(glyph)
 
                   #if (!dowait && (!is.null(sub$commentend) || !is.null(sub$symbolend) || .isglyph(glyph) || (sidetoplay == "w" && !flip) || (sidetoplay == "s" && flip))) # to also wait if not ending on a player move
-                  if (!dowait && (!is.null(sub$commentend) || !is.null(sub$symbolend) || .isglyph(glyph)))
+                  if (!dowait && (!is.null(sub$commentend) || !is.null(sub$symbolend) || !is.null(sub$endmoves) || .isglyph(glyph)))
                      .waitforclick()
 
                   rounds <- rounds + 1
@@ -5210,7 +5222,7 @@ play <- function(lang="en", online, ...) {
                         dev.hold()
                         .redrawpos(pos, flip=flip)
                         .textbot(score=score, onlyscore=TRUE)
-                        .drawannot(circles=circles, arrows=arrows, glyph=glyph)
+                        .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph)
                         dev.flush()
                         sub$player[[player]]$score[length(sub$player[[player]]$score)] <- score
                         next
@@ -5282,6 +5294,8 @@ play <- function(lang="en", online, ...) {
                      }
 
                      if (identical(click, "g")) {
+                        if (is.null(sub$player[[player]]$score))
+                           next
                         tmp <- .progressgraph(sub$player[[player]])
                         if (!identical(mar2, tmp$mar2)) {
                            mar2 <- tmp$mar2
@@ -5290,7 +5304,7 @@ play <- function(lang="en", online, ...) {
                         }
                         dev.hold()
                         .redrawpos(pos, flip=flip)
-                        .drawannot(circles=circles, arrows=arrows, glyph=glyph)
+                        .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph)
                         dev.flush()
                         next
                      }

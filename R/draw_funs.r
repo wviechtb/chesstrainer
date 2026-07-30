@@ -944,7 +944,7 @@
 
 }
 
-.drawarrows <- function(arrows, hint=FALSE, evalvals, sidetoplay) {
+.drawarrows <- function(arrows, hint=FALSE, evalvals, sidetoplay, allarrows=FALSE) {
 
    if (nrow(arrows) == 0L)
       return()
@@ -961,6 +961,8 @@
          winchances <- 2 / (1 + exp(-0.00368208 * evalvals*100)) - 1
          shift <- (max(winchances) - winchances) / 2
          widths <- ifelse(shift >= 0 & shift < 0.2, round(12 - 50 * shift), 0) / 12
+         if (allarrows)
+            widths[widths==0] <- min(widths[widths>0], 0.005)
          widths <- widths / max(widths)
          cols <- c(col.best1, rep(col.best2, n-1))[order(winchances, decreasing=TRUE)]
          for (j in 1:nrow(arrows)) {
@@ -1138,10 +1140,10 @@
 
    xleft   <- 0 + xadj
    xright  <- 10 + xadj
-   ybottom <- 9.5 + yadj
-   ytop    <- grconvertY(dev.size()[2], from="inches", to="user") - 0.1
+   ybottom <- 9.6 + yadj
+   ytop    <- grconvertY(dev.size()[2], from="inches", to="user") - 0.2
    xcenter <- (xleft + xright) / 2
-   ymargin <- 0.1
+   ymargin <- 0.2
 
    col.bg <- .get("col.bg")
 
@@ -1155,7 +1157,7 @@
       total_text_height <- length(txt) * max_line_height
       cex <- min(.get("cex.top"), (xright-xleft) / max_line_width, (ytop-ybottom) / total_text_height)
       maxwidth <- max(strwidth(txt, cex=cex))
-      if (maxwidth > 9.5)
+      if (maxwidth > 9.5 || length(txt) == 5L)
          cex <- cex * 0.95
       ypos <- seq(from = min(ytop,    (ytop - ybottom) / 2 + ybottom + (length(txt) - 1) * 1 * max_line_height * cex),
                   to   = max(ybottom, (ytop - ybottom) / 2 + ybottom - (length(txt) - 1) * 1 * max_line_height * cex),

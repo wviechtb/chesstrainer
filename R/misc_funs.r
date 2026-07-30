@@ -77,6 +77,21 @@
 
 }
 
+#.findcex <- function(txt, font, x1, x2, y1, y2, mincex=1, pad=0.98) {
+#
+#   w <- max(strwidth(txt, family=font, font=2, cex=1))
+#   h <- sum(strheight(txt, family=font, font=2, cex=1))
+#   #lh <- par("lheight")
+#   #h1 <- max(strheight("Mg", family=font, font=2, cex=1))
+#   #h  <- h1 * (1 + (length(txt)-1) * lh)
+#   W <- abs(x2 - x1)
+#   H <- abs(y2 - y1)
+#   cex <- pad * min(W / w, H / h)
+#   cex <- min(cex, 1)
+#   return(cex)
+#
+#}
+
 .mistakediff <- function(x, dbl100pen=20) {
    x <- c(na.omit(x))
    n <- length(x)
@@ -1616,6 +1631,34 @@
    }
 
    return()
+
+}
+
+.parserows <- function(x, n) {
+
+   x <- gsub("\\s+", "", x)
+
+   if (!nzchar(x))
+      return(integer(0))
+
+   parts <- strsplit(x, ",", fixed=TRUE)[[1L]]
+
+   parsepart <- function(part) {
+      if (grepl("^[0-9]+$", part))
+         return(as.integer(part))
+      m <- regexec("^([0-9]+)[:-]([0-9]+)$", part)
+      z <- regmatches(part, m)[[1L]]
+      if (!length(z))
+         return(integer(0))
+      seq.int(as.integer(z[2L]), as.integer(z[3L]))
+   }
+
+   rows <- unlist(lapply(parts, parsepart), use.names=FALSE)
+
+   rows <- rows[rows >= 1]
+   rows <- rows[rows <= n]
+
+   return(sort(unique(rows)))
 
 }
 
