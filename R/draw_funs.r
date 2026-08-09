@@ -46,17 +46,18 @@
    col.fg <- .get("col.fg")
    col.square.l <- .get("col.square.l")
    col.square.d <- .get("col.square.d")
+   cex <- .get("cex")
    mar <- .get("mar")
 
    if (dev.cur() == 1L) {
-      dev.new(bg=col.bg, title="Chesstrainer")
+      dev.new(bg=col.bg, cex=cex, title="Chesstrainer")
       if (.get("inhibit")) {
          Sys.sleep(0.2)
          dev.control(displaylist="inhibit")
       }
    }
 
-   par(xpd=NA, pty="s", mar=mar, fg=col.fg, bg=col.bg)
+   par(xpd=NA, pty="s", cex=cex, mar=mar, fg=col.fg, bg=col.bg)
 
    mat <- outer(1:8, 1:8, function(x,y) .is.even(x+y))
 
@@ -187,10 +188,11 @@
    col.square.l <- .get("col.square.l")
    col.square.d <- .get("col.square.d")
    col.square.be <- .get("col.square.be")
+   cex <- .get("cex")
 
    dev.hold()
 
-   par(xpd=NA, pty="s", mar=rep(2.2,4), fg=col.fg, bg=col.bg)
+   par(xpd=NA, pty="s", cex=cex, mar=rep(2.2,4), fg=col.fg, bg=col.bg)
 
    mat <- matrix(1, nrow=10, ncol=10)
    mat[2:9,2:9] <- outer(1:8, 1:8, function(x,y) ifelse(.is.even(x+y), 2, 3))
@@ -1918,12 +1920,70 @@
 
 }
 
-.clearmatdiff <- function() {
+.drawmatdiffsettings <- function() {
+
+   col         <- .get("col.bot")
+   cex.matdiff <- .get("cex.matdiff")
+
+   p.p <- 8 - 7
+   p.n <- 2 - 1
+   p.b <- 2 - 1
+   p.r <- 0 - 2
+   p.q <- 0 - 1
+
+   mdiff <- c(p=p.p, n=p.n, b=p.b, r=p.r, q=p.q)
+
+   pieces <- c("\U0000265F", "\U0000265E", "\U0000265D", "\U0000265C", "\U0000265B")
+   value  <- c(1, 3, 3, 5, 9)
+   score  <- sum(mdiff * value)
+
+   .clearmatdiff(assign=FALSE)
+
+   xpos1 <- 9
+   xpos2 <- 9
+   shift <- 0.10
+   space <- 0.20
+   ypos  <- 0.82
+
+   txt <- paste0("+", abs(score), collapse="")
+
+   if (score > 0) {
+      text(xpos1, ypos, txt, pos=2, cex=cex.matdiff*0.9, col=col, offset=0)
+      xpos1 <- xpos1 - strwidth(txt, cex=cex.matdiff) - shift
+   } else {
+      text(xpos2, 10-ypos, txt, pos=2, cex=cex.matdiff*0.9, col=col, offset=0)
+      xpos2 <- xpos2 - strwidth(txt, cex=cex.matdiff) - shift
+   }
+
+   for (i in 1:5) {
+
+      if (mdiff[i] > 0) {
+         n <- mdiff[i]
+         xpos1 <- xpos1 - (0:(n-1)) * shift
+         text(xpos1, rep(ypos, n) , pieces[i], pos=2, offset=0, cex=cex.matdiff*1.1, col=col)
+         xpos1 <- min(xpos1) - space
+      }
+
+      if (mdiff[i] < 0) {
+         n <- -mdiff[i]
+         xpos2 <- xpos2 - (0:(n-1)) * shift
+         text(xpos2, rep(10-ypos, n) , pieces[i], pos=2, offset=0, cex=cex.matdiff*1.1, col=col)
+         xpos2 <- min(xpos2) - space
+      }
+
+   }
+
+   return()
+
+}
+
+.clearmatdiff <- function(assign=TRUE) {
 
    col.bg <- .get("col.bg")
    rect(5, 0.70, 9, 0.98, col=col.bg, border=NA)
    rect(5, 9.02, 9, 9.30, col=col.bg, border=NA)
-   assign("matdiff", NULL, envir=.chesstrainer)
+   if (assign)
+      assign("matdiff", NULL, envir=.chesstrainer)
    return()
 
 }

@@ -31,7 +31,7 @@ play <- function(lang="en", online, ...) {
                     expval=2, target=0, multiplier=0.8, adjustwrong=40, adjusthint=20, showeval=TRUE, evalsteps=5, movestoshow=5,
                     showcoords=TRUE, showtransp=TRUE, showmatdiff=TRUE, san=TRUE, piecesymbols=1, wait=TRUE, delay=0.5, idletime=120, mintime=60, sleepadj=0, volume=50,
                     showgraph=FALSE, repmistake=FALSE, zenmode=FALSE, compseq=TRUE,
-                    cex.top=1.4, cex.bot=0.7, cex.eval=0.5, cex.coords=0.85, cex.matdiff=1.1, cex.plots=1.0, cex.glyphs=1.6, cex.lichess=0.8,
+                    cex=1, cex.top=1.4, cex.bot=0.7, cex.eval=0.5, cex.coords=0.85, cex.matdiff=1.1, cex.plots=1.0, cex.glyphs=1.6, cex.lichess=0.8,
                     sfpath="", depth1=12, depth2=20, depth3=8, sflim=NA, multipv1=1, multipv2=1, threads=1, hash=256, hintdepth=10, monthssfcache=12, usesfcache=TRUE,
                     difffun=1, difflen=15, diffmin=5,
                     mar=c(5.5, 5.5, 5.5, 5.5), mar2=c(11, 11, 9, 9),
@@ -80,6 +80,7 @@ play <- function(lang="en", online, ...) {
    sleepadj <- max(0, sleepadj)
    volume <- min(100, max(0, volume))
    volume <- round(volume)
+   cex <- max(0.1, cex)
    cex.top <- max(0.1, cex.top)
    cex.bot <- max(0.1, cex.bot)
    cex.eval <- max(0.1, cex.eval)
@@ -150,7 +151,7 @@ play <- function(lang="en", online, ...) {
                        expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, showeval=showeval, evalsteps=evalsteps, movestoshow=movestoshow,
                        showcoords=showcoords, showtransp=showtransp, showmatdiff=showmatdiff, san=san, piecesymbols=piecesymbols, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, volume=volume,
                        showgraph=showgraph, repmistake=repmistake, zenmode=zenmode, compseq=compseq,
-                       cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs, cex.lichess=cex.lichess,
+                       cex=cex, cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs, cex.lichess=cex.lichess,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, monthssfcache=monthssfcache, usesfcache=usesfcache,
                        difffun=difffun, difflen=difflen, diffmin=diffmin,
                        mar=mar, mar2=mar2,
@@ -182,7 +183,7 @@ play <- function(lang="en", online, ...) {
                        expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, showeval=showeval, evalsteps=evalsteps, movestoshow=movestoshow,
                        showcoords=showcoords, showtransp=showtransp, showmatdiff=showmatdiff, san=san, piecesymbols=piecesymbols, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, volume=volume,
                        showgraph=showgraph, repmistake=repmistake, zenmode=zenmode, compseq=compseq,
-                       cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs, cex.lichess=cex.lichess,
+                       cex=cex, cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs, cex.lichess=cex.lichess,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, monthssfcache=monthssfcache, usesfcache=usesfcache,
                        difffun=difffun, difflen=difflen, diffmin=diffmin,
                        mar=mar, mar2=mar2,
@@ -216,6 +217,7 @@ play <- function(lang="en", online, ...) {
 
    assign("lang", lang, envir=.chesstrainer)
    assign("mode", mode, envir=.chesstrainer)
+   assign("cex", cex, envir=.chesstrainer)
    assign("cex.top", cex.top, envir=.chesstrainer)
    assign("cex.bot", cex.bot, envir=.chesstrainer)
    assign("cex.eval", cex.eval, envir=.chesstrainer)
@@ -4038,7 +4040,7 @@ play <- function(lang="en", online, ...) {
                            multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, showeval=showeval, evalsteps=evalsteps, movestoshow=movestoshow,
                            showcoords=showcoords, showtransp=showtransp, showmatdiff=showmatdiff, san=san, piecesymbols=piecesymbols, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, mar=mar, mar2=mar2,
                            volume=volume, showgraph=showgraph, repmistake=repmistake, target=target,
-                           # cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs, cex.lichess=cex.lichess,
+                           # cex=cex, cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs, cex.lichess=cex.lichess,
                            difffun=difffun, difflen=difflen, diffmin=diffmin,
                            sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, monthssfcache=monthssfcache, contanalysis=contanalysis, usesfcache=usesfcache)
                            #lichessdb=lichessdb, speeds=speeds, ratings=ratings, liout=liout, lisort=lisort, barlen=barlen, invertbar=invertbar, token=paste0(rep("*", nchar(token), collapse=""), uselicache=uselicache, showlibar=showlibar, monthslicache=monthslicache, minfreq=minfreq, minperc=minperc)

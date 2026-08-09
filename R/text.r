@@ -583,8 +583,8 @@
 
    if (x == "cexsetexpl") {
       return(switch(lang,
-                    de = c("Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Gr\U000000F6\U000000DFe f\U000000FCr die Brettkoordinaten", "Gr\U000000F6\U000000DFe f\U000000FCr den Materialunterschied", "Gr\U000000F6\U000000DFe f\U000000FCr Diagramme", "Gr\U000000F6\U000000DFe f\U000000FCr Text in Glyphen", "Gr\U000000F6\U000000DFe f\U000000FCr Text im Lichess Fenster"),
-                         c("Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Size of the board coordinates", "Size of the material difference", "Size of plots", "Size of text in glyphs", "Size of text in Lichess window")
+                    de = c("Allgemeine Gr\U000000F6\U000000DFeneinstellung", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am oberen Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text am unteren Rand", "Gr\U000000F6\U000000DFe f\U000000FCr den Text in der Bewertungsleiste", "Gr\U000000F6\U000000DFe f\U000000FCr die Brettkoordinaten", "Gr\U000000F6\U000000DFe f\U000000FCr den Materialunterschied", "Gr\U000000F6\U000000DFe f\U000000FCr Diagramme", "Gr\U000000F6\U000000DFe f\U000000FCr Text in Glyphen", "Gr\U000000F6\U000000DFe f\U000000FCr Text im Lichess Fenster"),
+                         c("General size setting", "Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Size of the board coordinates", "Size of the material difference", "Size of plots", "Size of text in glyphs", "Size of text in Lichess window")
    ))}
 
    if (x == "miscsetexpl") {

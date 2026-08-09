@@ -18,8 +18,8 @@
    tab1 <- data.frame(x=cols.all, val=sapply(cols.all, function(x) .get(x), USE.NAMES=FALSE))
    tab1$explanation <- .text("colsetexpl")
 
-   tab2 <- data.frame(x = c("cex.top", "cex.bot", "cex.eval", "cex.coords", "cex.matdiff", "cex.plots", "cex.glyphs", "cex.lichess"),
-                      val = c(.get("cex.top"), .get("cex.bot"), .get("cex.eval"), .get("cex.coords"), .get("cex.matdiff"), .get("cex.plots"), .get("cex.glyphs"), .get("cex.lichess")))
+   tab2 <- data.frame(x = c("cex", "cex.top", "cex.bot", "cex.eval", "cex.coords", "cex.matdiff", "cex.plots", "cex.glyphs", "cex.lichess"),
+                      val = c(.get("cex"), .get("cex.top"), .get("cex.bot"), .get("cex.eval"), .get("cex.coords"), .get("cex.matdiff"), .get("cex.plots"), .get("cex.glyphs"), .get("cex.lichess")))
    tab2$explanation <- .text("cexsetexpl")
 
    tab <- rbind(tab1, c("", "", ""), tab2)
@@ -34,7 +34,7 @@
    names(tab) <- c("", "", "")
 
    numbers.col    <- which(startsWith(tab[,1], "col."))
-   numbers.cex    <- which(startsWith(tab[,1], "cex."))
+   numbers.cex    <- which(startsWith(tab[,1], "cex"))
    numbers.scheme <- which(startsWith(tab[,1], "scheme."))
 
    dev.hold()
@@ -59,6 +59,7 @@
    .drawtimer(settings=TRUE)
    .drawglyph("!!")
    .drawbox(1.18, 1.18, 3.82, 3.82)
+   .drawmatdiffsettings()
 
    dev.flush()
 
@@ -140,6 +141,7 @@
          .drawtimer(settings=TRUE)
          .drawglyph("!!")
          .drawbox(1.18, 1.18, 3.82, 3.82)
+         .drawmatdiffsettings()
          dev.flush()
          if (liout == 2)
             .updateliwin(out)
@@ -1386,8 +1388,6 @@
 
    #.clearsideindicator()
    #.drawtimer(clear=TRUE)
-
-   lwd <- tab$lwd
 
    lang <- .get("lang")
    tab$lang <- switch(lang, de = "Deutsch", en = "English")
