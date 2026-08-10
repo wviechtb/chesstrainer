@@ -15,9 +15,9 @@
 
    sw.string <- max(strwidth(string.cur, family=font.mono, cex=cex), strwidth(string.new, family=font.mono, cex=cex))
 
-   text(1.5,           7.5, string.cur, pos=4, cex=cex, family=font.mono, col=col.help)
-   text(1.5+sw.string, 7.5, score,      pos=4, cex=cex, family=font.mono, col=col.help)
-   text(1.5,           6.5, string.new, pos=4, cex=cex, family=font.mono, col=col.help)
+   text(1.8,           7.5, string.cur, pos=4, cex=cex, family=font.mono, col=col.help)
+   text(1.8+sw.string, 7.5, score,      pos=4, cex=cex, family=font.mono, col=col.help)
+   text(1.8,           6.5, string.new, pos=4, cex=cex, family=font.mono, col=col.help)
 
    val <- ""
    sw.val <- 0
@@ -37,7 +37,7 @@
             next
          num <- resp
          val <- paste0(val, resp, collapse="")
-         text(1.5+sw.string+sw.val, 6.5, num, pos=4, cex=cex, family=font.mono, col=col.help)
+         text(1.8+sw.string+sw.val, 6.5, num, pos=4, cex=cex, family=font.mono, col=col.help)
          sw.val <- strwidth(val, family=font.mono, cex=cex)
       }
 
@@ -57,17 +57,17 @@
          } else {
             val <- ""
          }
-         rect(1.5+sw.string, 6, 8.5, 7, col=col.bg, border=NA)
-         text(1.5+sw.string, 6.5, val, pos=4, cex=cex, family=font.mono, col=col.help)
+         rect(1.8+sw.string, 6, 8.5, 7, col=col.bg, border=NA)
+         text(1.8+sw.string, 6.5, val, pos=4, cex=cex, family=font.mono, col=col.help)
          sw.val <- strwidth(val, family=font.mono, cex=cex)
       }
 
    }
 
    if (scoreold != score) {
-      rect(1.5, 6, 8.5, 8, col=col.bg, border=NA)
-      text(1.5,           7.5, string.cur, pos=4, cex=cex, family=font.mono, col=col.help)
-      text(1.5+sw.string, 7.5, score,      pos=4, cex=cex, family=font.mono, col=col.help)
+      rect(1.8, 6, 8.5, 8, col=col.bg, border=NA)
+      text(1.8,           7.5, string.cur, pos=4, cex=cex, family=font.mono, col=col.help)
+      text(1.8+sw.string, 7.5, score,      pos=4, cex=cex, family=font.mono, col=col.help)
       Sys.sleep(1)
    }
 
@@ -94,9 +94,9 @@
 
    sw.string <- max(strwidth(string.cur, family=font.mono, cex=cex), strwidth(string.new, family=font.mono, cex=cex))
 
-   text(1.5,           7.5, string.cur, pos=4, cex=cex, family=font.mono, col=col.help)
-   text(1.5+sw.string, 7.5, expval,     pos=4, cex=cex, family=font.mono, col=col.help)
-   text(1.5,           6.5, string.new, pos=4, cex=cex, family=font.mono, col=col.help)
+   text(1.8,           7.5, string.cur, pos=4, cex=cex, family=font.mono, col=col.help)
+   text(1.8+sw.string, 7.5, expval,     pos=4, cex=cex, family=font.mono, col=col.help)
+   text(1.8,           6.5, string.new, pos=4, cex=cex, family=font.mono, col=col.help)
 
    val <- ""
    sw.val <- 0
@@ -116,7 +116,7 @@
             next
          num <- resp
          val <- paste0(val, resp, collapse="")
-         text(1.5+sw.string+sw.val, 6.5, num, pos=4, cex=cex, family=font.mono, col=col.help)
+         text(1.8+sw.string+sw.val, 6.5, num, pos=4, cex=cex, family=font.mono, col=col.help)
          sw.val <- strwidth(val, family=font.mono, cex=cex)
       }
 
@@ -135,17 +135,17 @@
          } else {
             val <- ""
          }
-         rect(1.5+sw.string, 6, 8.5, 7, col=col.bg, border=NA)
-         text(1.5+sw.string, 6.5, val, pos=4, cex=cex, family=font.mono, col=col.help)
+         rect(1.8+sw.string, 6, 8.5, 7, col=col.bg, border=NA)
+         text(1.8+sw.string, 6.5, val, pos=4, cex=cex, family=font.mono, col=col.help)
          sw.val <- strwidth(val, family=font.mono, cex=cex)
       }
 
    }
 
    if (expvalold != expval) {
-      rect(1.5, 6, 8.5, 8, col=col.bg, border=NA)
-      text(1.5,           7.5, string.cur, pos=4, cex=cex, family=font.mono, col=col.help)
-      text(1.5+sw.string, 7.5, expval,     pos=4, cex=cex, family=font.mono, col=col.help)
+      rect(1.8, 6, 8.5, 8, col=col.bg, border=NA)
+      text(1.8,           7.5, string.cur, pos=4, cex=cex, family=font.mono, col=col.help)
+      text(1.8+sw.string, 7.5, expval,     pos=4, cex=cex, family=font.mono, col=col.help)
       Sys.sleep(1)
    }
 
@@ -172,9 +172,9 @@
 
    sw.string <- max(strwidth(string.cur, family=font.mono, cex=cex), strwidth(string.new, family=font.mono, cex=cex))
 
-   text(1.5,           7.5, string.cur, pos=4, cex=cex, family=font.mono, col=col.help)
-   text(1.5+sw.string, 7.5, seqno,      pos=4, cex=cex, family=font.mono, col=col.help)
-   text(1.5,           6.5, string.new, pos=4, cex=cex, family=font.mono, col=col.help)
+   text(1.8,           7.5, string.cur, pos=4, cex=cex, family=font.mono, col=col.help)
+   text(1.8+sw.string, 7.5, seqno,      pos=4, cex=cex, family=font.mono, col=col.help)
+   text(1.8,           6.5, string.new, pos=4, cex=cex, family=font.mono, col=col.help)
 
    val <- ""
    sw.val <- 0
@@ -194,7 +194,7 @@
             next
          num <- resp
          val <- paste0(val, resp, collapse="")
-         text(1.5+sw.string+sw.val, 6.5, num, pos=4, cex=cex, family=font.mono, col=col.help)
+         text(1.8+sw.string+sw.val, 6.5, num, pos=4, cex=cex, family=font.mono, col=col.help)
          sw.val <- strwidth(val, family=font.mono, cex=cex)
       }
 
@@ -205,7 +205,7 @@
          if (val < 1 || val > k) {
             val <- ""
             sw.val <- 0
-            rect(1.5+sw.string, 6, 8.5, 7, col=col.bg, border=NA)
+            rect(1.8+sw.string, 6, 8.5, 7, col=col.bg, border=NA)
             next
          } else {
             seqno <- val
@@ -219,17 +219,17 @@
          } else {
             val <- ""
          }
-         rect(1.5+sw.string, 6, 8.5, 7, col=col.bg, border=NA)
-         text(1.5+sw.string, 6.5, val, pos=4, cex=cex, family=font.mono, col=col.help)
+         rect(1.8+sw.string, 6, 8.5, 7, col=col.bg, border=NA)
+         text(1.8+sw.string, 6.5, val, pos=4, cex=cex, family=font.mono, col=col.help)
          sw.val <- strwidth(val, family=font.mono, cex=cex)
       }
 
    }
 
    if (seqnoold != seqno) {
-      rect(1.5, 6, 8.5, 8, col=col.bg, border=NA)
-      text(1.5,           7.5, string.cur, pos=4, cex=cex, family=font.mono, col=col.help)
-      text(1.5+sw.string, 7.5, seqno,      pos=4, cex=cex, family=font.mono, col=col.help)
+      rect(1.8, 6, 8.5, 8, col=col.bg, border=NA)
+      text(1.8,           7.5, string.cur, pos=4, cex=cex, family=font.mono, col=col.help)
+      text(1.8+sw.string, 7.5, seqno,      pos=4, cex=cex, family=font.mono, col=col.help)
       Sys.sleep(1)
    }
 

@@ -16,6 +16,7 @@
    cex <- tmp$cex
    ypos <- tmp$ypos
    dist <- tmp$dist
+   segpos <- tmp$segpos
 
    while (TRUE) {
 
@@ -38,7 +39,7 @@
       if (is.numeric(key)) {
          x <- grconvertX(key[[1]], from="ndc", to="user")
          y <- grconvertY(key[[2]], from="ndc", to="user")
-         if (x >= 1.5 && x <= 8) {
+         if (x >= 1.8 && x <= 8 && y <= segpos[1] && y >= segpos[2]) {
             click <- which(y < ypos + dist & y > ypos - dist)
             if (length(click) == 1L) {
                if (keymode=="s") {
@@ -54,6 +55,7 @@
                   cex <- tmp$cex
                   ypos <- tmp$ypos
                   dist <- tmp$dist
+                  segpos <- tmp$segpos
                   num <- 0
                   whichnum <- 1
                   keymode <- "s"
@@ -78,8 +80,10 @@
                   }
                }
             }
+            next
+         } else {
+            break
          }
-         next
       }
 
       # Escape or q to exit
@@ -144,6 +148,7 @@
             cex <- tmp$cex
             ypos <- tmp$ypos
             dist <- tmp$dist
+            segpos <- tmp$segpos
             next
          }
          if (keymode=="p") {
@@ -210,6 +215,7 @@
          cex <- tmp$cex
          ypos <- tmp$ypos
          dist <- tmp$dist
+         segpos <- tmp$segpos
          keymode <- "s"
          num <- 0
          whichnum <- 1
@@ -268,10 +274,11 @@
    ypos2 <- max(2.5, 8-0.75*length(seqdir2))
    ypos <- seq(ypos1, ypos2, length.out=length(txt))
 
-   cex <- .findcex(txt, font=font.mono, x1=1.8, x2=8, y1=ypos1, y2=ypos2, mincex=1.1)
+   cex <- .findcex(txt, font=font.mono, x1=1.8, x2=8.2, y1=ypos1, y2=ypos2, mincex=1.1)
 
-   segments(1.8, ypos[2], 8, ypos[2], col=col.help)
-   segments(1.8, ypos[length(ypos)], 8, ypos[length(ypos)], col=col.help)
+   segpos <- c(ypos[2], ypos[length(ypos)])
+   segments(1.8, segpos[1], 8.2, segpos[1], col=col.help)
+   segments(1.8, segpos[2], 8.2, segpos[2], col=col.help)
 
    bold <- c(2, rep(1,length(txt)-1))
    bold[seqdirpos+2] <- 2
@@ -282,7 +289,7 @@
 
    dev.flush()
 
-   return(list(cex=cex, ypos=ypos, dist=dist))
+   return(list(cex=cex, ypos=ypos, dist=dist, segpos=segpos))
 
 }
 

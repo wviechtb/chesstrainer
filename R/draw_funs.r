@@ -1272,8 +1272,8 @@
 
       if (mode == "test") {
          if (onlyi) {
-            text(xleft, 0.00, paste0("        ", paste0(rep("\U00002588",9), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
-            text(xleft, 0.00, paste0("        ", i-1, " / ", totalmoves), pos=4, cex=cex, family=font, col=col)
+            text(xleft, -0.15, paste0("           ", paste0(rep("\U00002588",9), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
+            text(xleft, -0.15, paste0("           ", i-1, " / ", totalmoves), pos=4, cex=cex, family=font, col=col)
          }
          if (onlyscore) {
             text(xright, 0.00, paste0("        ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
@@ -1281,10 +1281,11 @@
          }
          if (redraw) {
             seqname <- substr(seqname, 1, nchar(seqname)-4)
-            text(xleft, 0.45, paste0("Mode:   ", "Test (selection: ", selmode, ")"), pos=4, cex=cex, family=font, col=col)
-            text(xleft, 0.30, paste0("Name:   ", "(", seqnum, ") ", seqname), pos=4, cex=cex, family=font, col=col)
-            text(xleft, 0.15, paste0("Player: ", player), pos=4, cex=cex, family=font, col=col)
-            text(xleft, 0.00, paste0("Move:   ", i-1, " / ", totalmoves), pos=4, cex=cex, family=font, col=col)
+            text(xleft,  0.45, paste0("Mode:      Test"), pos=4, cex=cex, family=font, col=col)
+            text(xleft,  0.30, paste0("Selection: ", selmode), pos=4, cex=cex, family=font, col=col)
+            text(xleft,  0.15, paste0("Name:      ", "(", seqnum, ") ", seqname), pos=4, cex=cex, family=font, col=col)
+            text(xleft,  0.00, paste0("Player:    ", player), pos=4, cex=cex, family=font, col=col)
+            text(xleft, -0.15, paste0("Move:      ", i-1, " / ", totalmoves), pos=4, cex=cex, family=font, col=col)
             text(xright, 0.45, paste0("Rounds: ", rounds), pos=4, cex=cex, family=font, col=col)
             text(xright, 0.30, paste0("Age:    ", age), pos=4, cex=cex, family=font, col=col)
             text(xright, 0.15, paste0("Diff:   ", difficulty), pos=4, cex=cex, family=font, col=col)
@@ -1349,8 +1350,8 @@
 
       if (mode == "test") {
          if (onlyi) {
-            text(xleft, 0.00, paste0("         ", paste0(rep("\U00002588",9), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
-            text(xleft, 0.00, paste0("         ", i-1, " / ", totalmoves), pos=4, cex=cex, family=font, col=col)
+            text(xleft, -0.15, paste0("           ", paste0(rep("\U00002588",9), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
+            text(xleft, -0.15, paste0("           ", i-1, " / ", totalmoves), pos=4, cex=cex, family=font, col=col)
          }
          if (onlyscore) {
             text(xright, 0.00, paste0("          ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
@@ -1358,10 +1359,11 @@
          }
          if (redraw) {
             seqname <- substr(seqname, 1, nchar(seqname)-4)
-            text(xleft, 0.45, paste0("Modus:   ", "Test (Selektion: ", selmode, ")"), pos=4, cex=cex, family=font, col=col)
-            text(xleft, 0.30, paste0("Name:    ", "(", seqnum, ") ", seqname), pos=4, cex=cex, family=font, col=col)
-            text(xleft, 0.15, paste0("Spieler: ", player), pos=4, cex=cex, family=font, col=col)
-            text(xleft, 0.00, paste0("Zug:     ", i-1, " / ", totalmoves), pos=4, cex=cex, family=font, col=col)
+            text(xleft,  0.45, paste0("Modus:     Test"), pos=4, cex=cex, family=font, col=col)
+            text(xleft,  0.30, paste0("Selektion: ", selmode), pos=4, cex=cex, family=font, col=col)
+            text(xleft,  0.15, paste0("Name:      ", "(", seqnum, ") ", seqname), pos=4, cex=cex, family=font, col=col)
+            text(xleft,  0.00, paste0("Spieler:   ", player), pos=4, cex=cex, family=font, col=col)
+            text(xleft, -0.15, paste0("Zug:       ", i-1, " / ", totalmoves), pos=4, cex=cex, family=font, col=col)
             text(xright, 0.45, paste0("Runden:   ", rounds), pos=4, cex=cex, family=font, col=col)
             text(xright, 0.30, paste0("Alter:    ", age), pos=4, cex=cex, family=font, col=col)
             text(xright, 0.15, paste0("Schwier:  ", difficulty), pos=4, cex=cex, family=font, col=col)

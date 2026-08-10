@@ -328,6 +328,9 @@
          if (button != 0)
             next
 
+         if (xy1[1] <= 1 || xy1[1] >= 9 || xy1[2] <= 1 || xy1[2] >= 9)
+            break
+
          hit <- sapply(lang.box, function(coords) xy1[1] >= coords[1] & xy1[2] >= coords[2] & xy1[1] <= coords[3] & xy1[2] <= coords[4])
          if (any(hit)) {
             i <- which(hit)
@@ -589,6 +592,9 @@
          if (button != 0)
             next
 
+         if (xy1[1] <= 1 || xy1[1] >= 9 || xy1[2] <= 1 || xy1[2] >= 9)
+            break
+
          hit <- xy1[1] >= multiplier.box[1] & xy1[2] >= multiplier.box[2] & xy1[1] <= multiplier.box[3] & xy1[2] <= multiplier.box[4]
          if (hit) {
             multiplier <- .updateslider(xy2[1], multiplier.ypos, oldval=multiplier, xlim=multiplier.xpos, range=c(0,1), round=0.01, cex=cex*cex.mult)
@@ -832,6 +838,9 @@
 
          if (button != 0)
             next
+
+         if (xy1[1] <= 1 || xy1[1] >= 9 || xy1[2] <= 1 || xy1[2] >= 9)
+            break
 
          hit <- xy1[1] >= 1.5 & xy1[2] >= title.ypos[1]-(title.ypos[1]-title.ypos[2])/2 & xy1[1] <= 8.5 & xy1[2] <= 8.7
          if (hit) {
@@ -1215,6 +1224,9 @@
 
          if (button != 0)
             next
+
+         if (xy1[1] <= 1 || xy1[1] >= 9 || xy1[2] <= 1 || xy1[2] >= 9)
+            break
 
          hit <- sapply(speeds.box, function(coords) xy1[1] >= coords[1] & xy1[2] >= coords[2] & xy1[1] <= coords[3] & xy1[2] <= coords[4])
          if (any(hit)) {

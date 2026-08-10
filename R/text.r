@@ -1193,12 +1193,6 @@
                          "Switching to the sequential selection mode ..."
    ))}
 
-   if (x == "selmodeinfo") {
-      return(switch(lang,
-                    de = "W\U000000E4hle mit den Zifferntasten 1-9, F1-F11, oder per Mausklick aus.",
-                         "Select via the number keys 1-9, F1-F11, or via mouse click."
-   ))}
-
    if (x == "mate") {
       return(switch(lang,
                     de = "Matt!",

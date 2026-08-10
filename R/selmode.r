@@ -21,7 +21,9 @@
       "8 - based on the difficulty, highest value",
       "9 - sequentially, ordered alphabetical",
       "10 - sequentially, ordered by length",
-      "11 - sequentially, ordered by moves")
+      "11 - sequentially, ordered by moves",
+      "",
+      "Select via the number keys 1-9, F1-F11, or via mouse click.")
 
    }
 
@@ -40,28 +42,29 @@
       "8 - basierend auf der Schwierigkeit, h\U000000F6chster Wert",
       "9 - sequenziell, alphabetisch sortiert",
       "10 - sequenziell, nach L\U000000E4nge sortiert",
-      "11 - sequenziell, nach Z\U000000FCgen sortiert")
+      "11 - sequenziell, nach Z\U000000FCgen sortiert",
+      "",
+      "W\U000000E4hle mit den Zifferntasten 1-9, F1-F11, oder per Mausklick aus.")
 
    }
 
    .drawbox()
 
-   cex <- .findcex(c(txt,.text("selmodeinfo")), font=font.mono, x1=1.5, x2=8.2, y1=3.5, y2=7.5)
+   cex <- .findcex(txt, font=font.mono, x1=1.8, x2=8.2, y1=2.0, y2=8.0)
 
    selmodes <- c("score_random", "score_highest", "rounds_random", "rounds_lowest", "age_random", "age_oldest", "diff_random", "diff_highest", "sequential", "sequential_len", "sequential_mov")
 
    oldmode <- which(selmode == selmodes)
 
-   ypos <- seq(7.5, 3.0, length.out=length(txt))
+   ypos <- seq(8.0, 2.0, length.out=length(txt))
 
-   text(1.5, ypos, txt, pos=4, offset=0, cex=cex, family=font.mono, font=ifelse(c("","",selmodes)==selmode, 2, 1), col=col.help)
+   text(1.8, ypos, txt, pos=4, offset=0, cex=cex, family=font.mono, font=ifelse(c("","",selmodes,"","")==selmode, 2, 1), col=col.help)
 
-   segments(1.5, ypos[1] - (ypos[1]-ypos[2]), 8, ypos[1] - (ypos[1]-ypos[2]), col=col.help)
-   segments(1.5, ypos[length(txt)] - (ypos[1]-ypos[2]), 8, ypos[length(txt)] - (ypos[1]-ypos[2]), col=col.help)
+   segpos <- ypos[c(2,14)]
+   segments(1.8, segpos[1], 8.2, segpos[1], col=col.help)
+   segments(1.8, segpos[2], 8.2, segpos[2], col=col.help)
 
-   text(1.5, ypos[length(txt)] - 2*(ypos[1]-ypos[2]), .text("selmodeinfo"), pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
-
-   ypos <- ypos[-c(1:2)]
+   ypos <- ypos[-c(1:2,14:15)]
    dist <- (ypos[1] - ypos[2]) / 2
 
    while (TRUE) {
@@ -73,12 +76,14 @@
          x <- grconvertX(click[[1]], from="ndc", to="user")
          y <- grconvertY(click[[2]], from="ndc", to="user")
 
-         if (x >= 1.5 && x <= 8) {
+         if (x >= 1.5 && x <= 8.5 && y <= segpos[1] && y >= segpos[2]) {
             click <- which(y < ypos + dist & y > ypos - dist)
             if (length(click) == 1L) {
                selmode <- selmodes[click]
                break
             }
+         } else {
+            break
          }
 
       } else {
@@ -112,8 +117,8 @@
 
    if (selmodes[oldmode] != selmode) {
       rect(1.5, ypos[oldmode]-dist, 8.5, ypos[oldmode]+dist, col=col.bg, border=NA)
-      text(1.5, ypos[oldmode], txt[oldmode+2], pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
-      text(1.5, ypos[click], txt[click+2], pos=4, offset=0, cex=cex, family=font.mono, font=2, col=col.help)
+      text(1.8, ypos[oldmode], txt[oldmode+2], pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+      text(1.8, ypos[click], txt[click+2], pos=4, offset=0, cex=cex, family=font.mono, font=2, col=col.help)
       Sys.sleep(1)
    }
 

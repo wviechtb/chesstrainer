@@ -20,7 +20,8 @@
       "7 - root mean square successive differences",
       "8 - decay parameter from an exponential regression model",
       "n - number of the most recent scores used in the calculation",
-      "m - minimum number of scores needed for the calculation")
+      "m - minimum number of scores needed for the calculation",
+      "")
 
    }
 
@@ -38,27 +39,29 @@
       "7 - Wurzel des Mittelwertes der Quadrate der aufeinanderfolgenden Differenzen",
       "8 - Verfallsparameter aus einem exponentiellen Regressionsmodell",
       "n - Anzahl der letzten Werte, die f\U000000FCr die Berechnung verwendet werden",
-      "m - Mindestanzahl der Werte, die f\U000000FCr die Berechnung ben\U000000F6tigt werden")
+      "m - Mindestanzahl der Werte, die f\U000000FCr die Berechnung ben\U000000F6tigt werden",
+      "")
 
    }
 
    .drawbox()
 
-   cex <- .findcex(txt, font=font.mono, x1=1.5, x2=8.2, y1=3.5, y2=7.5)
+   cex <- .findcex(txt, font=font.mono, x1=1.8, x2=8.2, y1=2.0, y2=8.0)
 
-   opts <- c(1:9, "n", "m")
+   opts <- c(1:8, "n", "m")
    difffunold <- difffun
    difflenold <- difflen
    diffminold <- diffmin
 
-   ypos <- seq(7.5, 3.5, length.out=length(txt))
+   ypos <- seq(8.0, 3.0, length.out=length(txt))
 
-   text(1.5, ypos, txt, pos=4, offset=0, cex=cex, family=font.mono, font=ifelse(c("","",opts)==difffun, 2, 1), col=col.help)
+   text(1.8, ypos, txt, pos=4, offset=0, cex=cex, family=font.mono, font=ifelse(c("","",opts,"")==difffun, 2, 1), col=col.help)
 
-   segments(1.5, ypos[1] - (ypos[1]-ypos[2]), 8, ypos[1] - (ypos[1]-ypos[2]), col=col.help)
-   segments(1.5, ypos[length(txt)] - (ypos[1]-ypos[2]), 8, ypos[length(txt)] - (ypos[1]-ypos[2]), col=col.help)
+   segpos <- ypos[c(2,13)]
+   segments(1.8, segpos[1], 8.2, segpos[1], col=col.help)
+   segments(1.8, segpos[2], 8.2, segpos[2], col=col.help)
 
-   ypos <- ypos[-c(1:2)]
+   ypos <- ypos[-c(1:2,13)]
    dist <- (ypos[1] - ypos[2]) / 2
 
    setlen <- FALSE
@@ -71,26 +74,29 @@
 
    sw.string <- max(strwidth(string.len.cur, family=font.mono, cex=cex), strwidth(string.min.cur, family=font.mono, cex=cex))
 
-   text(1.5,           tail(ypos, 1) - 4*dist, string.len.cur, pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
-   text(1.5+sw.string, tail(ypos, 1) - 4*dist, difflen,        pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
-   text(1.5,           tail(ypos, 1) - 6*dist, string.min.cur, pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
-   text(1.5+sw.string, tail(ypos, 1) - 6*dist, diffmin,        pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+   text(1.8,           tail(ypos, 1) - 4*dist, string.len.cur, pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+   text(1.8+sw.string, tail(ypos, 1) - 4*dist, difflen,        pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+   text(1.8,           tail(ypos, 1) - 6*dist, string.min.cur, pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+   text(1.8+sw.string, tail(ypos, 1) - 6*dist, diffmin,        pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
 
    while (TRUE) {
 
       if (setlen || setmin) {
          val <- ""
          sw.val <- 0
-         text(1.5, tail(ypos, 1) - 8*dist, ifelse(setlen, string.len.new, string.min.new), pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+         text(1.8, tail(ypos, 1) - 8*dist, ifelse(setlen, string.len.new, string.min.new), pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
       }
 
       while (setlen || setmin) {
 
          resp <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.mousedownfun, onKeybd=.keyfun)
 
+         if (is.numeric(resp))
+            next
+
          if (identical(resp, "\033") || identical(resp, "ctrl-[")) {
             setlen <- setmin <- FALSE
-            rect(1.3, tail(ypos, 1) - 7*dist, 8.4, tail(ypos, 1) - 9*dist, col=col.bg, border=NA)
+            rect(1.5, tail(ypos, 1) - 7*dist, 8.4, tail(ypos, 1) - 9*dist, col=col.bg, border=NA)
             break
          }
 
@@ -98,7 +104,7 @@
             val <- as.numeric(paste0(val, collapse=""))
             if (is.na(val)) {
                setlen <- setmin <- FALSE
-               rect(1.3, tail(ypos, 1) - 7*dist, 8.4, tail(ypos, 1) - 9*dist, col=col.bg, border=NA)
+               rect(1.5, tail(ypos, 1) - 7*dist, 8.4, tail(ypos, 1) - 9*dist, col=col.bg, border=NA)
                break
             }
             val[val < 2] <- 2
@@ -107,11 +113,11 @@
             if (setmin)
                diffmin <- val
             setlen <- setmin <- FALSE
-            rect(1.3, tail(ypos, 1) - 3*dist, 8.4, tail(ypos, 1) - 9*dist, col=col.bg, border=NA)
-            text(1.5,           tail(ypos, 1) - 4*dist, string.len.cur, pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
-            text(1.5+sw.string, tail(ypos, 1) - 4*dist, difflen,        pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
-            text(1.5,           tail(ypos, 1) - 6*dist, string.min.cur, pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
-            text(1.5+sw.string, tail(ypos, 1) - 6*dist, diffmin,        pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+            rect(1.5, tail(ypos, 1) - 3*dist, 8.4, tail(ypos, 1) - 9*dist, col=col.bg, border=NA)
+            text(1.8,           tail(ypos, 1) - 4*dist, string.len.cur, pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+            text(1.8+sw.string, tail(ypos, 1) - 4*dist, difflen,        pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+            text(1.8,           tail(ypos, 1) - 6*dist, string.min.cur, pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+            text(1.8+sw.string, tail(ypos, 1) - 6*dist, diffmin,        pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
             break
          }
 
@@ -121,11 +127,11 @@
                   next
                difflen <- Inf
                setlen <- FALSE
-               rect(1.3, tail(ypos, 1) - 3*dist, 8.4, tail(ypos, 1) - 9*dist, col=col.bg, border=NA)
-               text(1.5,           tail(ypos, 1) - 4*dist, string.len.cur, pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
-               text(1.5+sw.string, tail(ypos, 1) - 4*dist, difflen,        pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
-               text(1.5,           tail(ypos, 1) - 6*dist, string.min.cur, pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
-               text(1.5+sw.string, tail(ypos, 1) - 6*dist, diffmin,        pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+               rect(1.5, tail(ypos, 1) - 3*dist, 8.4, tail(ypos, 1) - 9*dist, col=col.bg, border=NA)
+               text(1.8,           tail(ypos, 1) - 4*dist, string.len.cur, pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+               text(1.8+sw.string, tail(ypos, 1) - 4*dist, difflen,        pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+               text(1.8,           tail(ypos, 1) - 6*dist, string.min.cur, pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+               text(1.8+sw.string, tail(ypos, 1) - 6*dist, diffmin,        pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
                break
             }
             if (nchar(val) > 10)
@@ -156,7 +162,7 @@
          x <- grconvertX(click[[1]], from="ndc", to="user")
          y <- grconvertY(click[[2]], from="ndc", to="user")
 
-         if (x >= 1.5 && x <= 8) {
+         if (x >= 1.8 && x <= 8.2 && y <= segpos[1] && y >= segpos[2]) {
             click <- which(y < ypos + dist & y > ypos - dist)
             if (length(click) == 1L) {
                sel <- opts[click]
@@ -171,6 +177,8 @@
                   break
                }
             }
+         } else {
+            break
          }
 
       } else {
@@ -196,8 +204,8 @@
 
    if (opts[difffunold] != difffun) {
       rect(1.5, ypos[difffunold]-dist, 8.5, ypos[difffunold]+dist, col=col.bg, border=NA)
-      text(1.5, ypos[difffunold], txt[difffunold+2], pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
-      text(1.5, ypos[click], txt[click+2], pos=4, offset=0, cex=cex, family=font.mono, font=2, col=col.help)
+      text(1.8, ypos[difffunold], txt[difffunold+2], pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+      text(1.8, ypos[click], txt[click+2], pos=4, offset=0, cex=cex, family=font.mono, font=2, col=col.help)
       Sys.sleep(1)
    }
 

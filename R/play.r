@@ -431,6 +431,21 @@ play <- function(lang="en", online, ...) {
    # create the getGraphicsEvent() functions
 
    mousedown <- function(buttons, x, y) {
+      xuser <- grconvertX(x, from="ndc", to="user")
+      yuser <- grconvertY(y, from="ndc", to="user")
+      #cat("x =", xuser, " y =", yuser, "\n")
+      if (xuser >= 0 && xuser <= 3 && yuser >= 0.40 && yuser <= 0.50)
+         return(" ")
+      if (mode == "add" && xuser >= 0 && xuser <= 2 && yuser >= 0.25 && yuser <= 0.35)
+         return("z")
+      if (mode == "add" && length(seqdir) > 1L && xuser >= 0 && xuser <= 3 && yuser >= -0.20 && yuser <= -0.10)
+         return("F9")
+      if (mode == "test" && xuser >= 0 && xuser <= 3 && yuser >= 0.25 && yuser <= 0.35)
+         return("m")
+      if (mode == "test" && xuser >= 0 && xuser <= 3 && yuser >= -0.05 && yuser <= 0.05)
+         return("p")
+      if (mode == "test" && xuser >= 9 && xuser <= 10 && yuser >= -0.05 && yuser <= 0.05)
+         return("%")
       squares <- .calcsquare(x, y, plt)
       pos.x <- squares[1]
       pos.y <- squares[2]
@@ -5533,6 +5548,7 @@ play <- function(lang="en", online, ...) {
                # in test mode, let the trainer play the next move and increase i
 
                .textbot(i=i, totalmoves=totalmoves, onlyi=TRUE)
+               #.waitforclick()
                if (timed) {
                   .drawtimer(movestoplay, movesplayed, timetotal, timepermove)
                } else {

@@ -54,10 +54,11 @@
       ypos2 <- max(1.5, 5-nplayers*0.35)
       ypos <- seq(ypos1, ypos2, length.out=length(txt))
 
-      segments(1.8, ypos[2], 8, ypos[2], col=col.help)
-      segments(1.8, ypos[length(ypos)], 8, ypos[length(ypos)], col=col.help)
+      segpos <- ypos[c(2,length(ypos))]
+      segments(1.8, segpos[1], 8.2, segpos[1], col=col.help)
+      segments(1.8, segpos[2], 8.2, segpos[2], col=col.help)
 
-      cex <- .findcex(txt, font=font.mono, x1=1.8, x2=8, y1=ypos1, y2=ypos2, mincex=1.2)
+      cex <- .findcex(txt, font=font.mono, x1=1.8, x2=8.2, y1=ypos1, y2=ypos2, mincex=1.1)
 
       text(1.8, ypos, txt, pos=4, offset=0, cex=cex, family=font.mono, font=c(2,rep(1, length(txt)-1)), col=col.help)
 

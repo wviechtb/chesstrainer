@@ -24,7 +24,7 @@
       ypos.string.bot <- 7
       ypos.string.top <- 8
 
-      cex <- .findcex(paste0(string, paste0(rep("A",15), collapse="")), font=font.mono, x1=1.8, x2=8, y1=7, y2=8)
+      cex <- .findcex(paste0(string, paste0(rep("A",15), collapse="")), font=font.mono, x1=1.8, x2=8.2, y1=7, y2=8)
 
    } else {
 
@@ -58,21 +58,22 @@
       names(tab) <- c(.text("player"), .text("rounds"), .text("lastsession"), .text("daysago"))
       tab[[2]] <- as.character(tab[[2]])
       tab[[4]] <- trimws(as.character(tab[[4]]))
-      txt <- capture.output(print(tab, right=FALSE, print.gap=3))
+      txt <- capture.output(print(tab, right=FALSE, print.gap=4))
       txt <- c(txt[1], "", txt[-1], "")
       txt[1] <- sub("^ ", "#", txt[1])
 
       ypos1 <- 8
       ypos2 <- max(2.5, 8-0.5*length(players))
 
-      cex <- .findcex(paste0(rep("A",62), collapse=""), font=font.mono, x1=1.5, x2=8, y1=ypos1, y2=ypos2)
+      cex <- .findcex(paste0(rep("A",62), collapse=""), font=font.mono, x1=1.8, x2=8.2, y1=ypos1, y2=ypos2)
 
       ypos <- seq(ypos1, ypos2, length.out=length(txt))
       ypos.players <- ypos[-c(1:2,length(ypos))]
       txt.players <- txt[-c(1:2,length(ypos))]
 
-      segments(1.8, ypos[2], 8, ypos[2], col=col.help)
-      segments(1.8, ypos[length(ypos)], 8, ypos[length(ypos)], col=col.help)
+      segpos <- ypos[c(2,length(ypos))]
+      segments(1.8, segpos[1], 8.2, segpos[1], col=col.help)
+      segments(1.8, segpos[2], 8.2, segpos[2], col=col.help)
 
       font <- c(2,rep(1, length(txt)-1))
       font[which(current == players)+2] <- 2 # highlight the current player
@@ -99,7 +100,7 @@
       if (nplayers > 0L && is.numeric(resp)) {
          x <- grconvertX(resp[[1]], from="ndc", to="user")
          y <- grconvertY(resp[[2]], from="ndc", to="user")
-         if (x >= 1.5 && x <= 8) {
+         if (x >= 1.5 && x <= 8 && y <= segpos[1] && y >= segpos[2]) {
             click <- which(y < ypos.players + dist & y > ypos.players - dist)
             if (length(click) == 1L) {
                player <- players[click]
@@ -112,8 +113,10 @@
                Sys.sleep(1)
                break
             }
+            next
+         } else {
+            break
          }
-         next
       }
 
       if (identical(resp, "\033") || identical(resp, "ctrl-[")) {

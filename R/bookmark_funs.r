@@ -44,6 +44,7 @@
    cex <- tmp$cex
    ypos <- tmp$ypos
    dist <- tmp$dist
+   segpos <- tmp$segpos
 
    while (TRUE) {
 
@@ -69,11 +70,12 @@
       if (is.numeric(key)) {
          x <- grconvertX(key[[1]], from="ndc", to="user")
          y <- grconvertY(key[[2]], from="ndc", to="user")
-         if (x >= 1.5 && x <= 8) {
+         if (x >= 1.5 && x <= 8.2 & y <= segpos[1] & y >= segpos[2]) {
             click <- which(y < ypos + dist & y > ypos - dist)
             if (length(click) == 1L) {
                if (keymode=="s") {
                   bookmark <- bookmarks[click]
+                  .drawbookmarks(bookmarks, sel=click)
                   break
                }
                if (keymode=="r") {
@@ -85,6 +87,7 @@
                   cex <- tmp$cex
                   ypos <- tmp$ypos
                   dist <- tmp$dist
+                  segpos <- tmp$segpos
                }
                if (keymode=="p") {
                   if (whichnum==1) {
@@ -106,13 +109,15 @@
                   }
                }
             }
+            next
+         } else {
+            break
          }
-         next
       }
 
       # Escape or q to exit
 
-      if (identical(key, "\033") || identical(key, "ctrl-[") || identical(key, "q"))
+      if (identical(key, "\033") || identical(key, "ctrl-[") || identical(key, "q") || identical(key, ">"))
          break
 
       # F1 to show the help
@@ -149,6 +154,7 @@
          }
          if (keymode=="s") {
             bookmark <- bookmarks[num]
+            .drawbookmarks(bookmarks, sel=num)
             break
          }
          if (keymode=="r") {
@@ -238,7 +244,7 @@
 
 }
 
-.drawbookmarks <- function(bookmarks) {
+.drawbookmarks <- function(bookmarks, sel=NULL) {
 
    col.help  <- .get("col.help")
    font.mono <- .get("font.mono")
@@ -261,19 +267,23 @@
    ypos2 <- max(2.5, 8-0.75*length(bookmarks2))
    ypos <- seq(ypos1, ypos2, length.out=length(txt))
 
-   cex <- .findcex(txt, font=font.mono, x1=1.8, x2=8, y1=ypos1, y2=ypos2, mincex=1.1)
+   cex <- .findcex(txt, font=font.mono, x1=1.8, x2=8.2, y1=ypos1, y2=ypos2, mincex=1.1)
 
-   segments(1.8, ypos[2], 8, ypos[2], col=col.help)
-   segments(1.8, ypos[length(ypos)], 8, ypos[length(ypos)], col=col.help)
+   segpos <- c(ypos[2], ypos[length(ypos)])
+   segments(1.8, segpos[1], 8.2, segpos[1], col=col.help)
+   segments(1.8, segpos[2], 8.2, segpos[2], col=col.help)
 
-   text(1.8, ypos, txt, pos=4, offset=0, cex=cex, family=font.mono, font=c(2,rep(1, length(txt)-1)), col=col.help)
+   bold <- c(2,rep(1,length(txt)-1))
+   if (!is.null(sel))
+      bold[sel+2] <- 2
+   text(1.8, ypos, txt, pos=4, offset=0, cex=cex, family=font.mono, font=bold, col=col.help)
 
    dist <- (ypos[1] - ypos[2]) / 2
    ypos <- ypos[3:(length(ypos)-1)]
 
    dev.flush()
 
-   return(list(cex=cex, ypos=ypos, dist=dist))
+   return(list(cex=cex, ypos=ypos, dist=dist, segpos=segpos))
 
 }
 
