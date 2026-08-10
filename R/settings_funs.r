@@ -43,7 +43,7 @@
    .addrect(4, 2, col=.get("col.wrong"))
    .addrect(4, 3, col=.get("col.rect"))
    .addrect(4, 4, col=.get("col.hint"))
-   .drawmatdiff(pos, flip=FALSE, force=TRUE)
+   .drawmatdiffsettings()
    .drawsquare(0, 4, flip, col=.get("col.square.be"))
    .drawsquare(0, 5, flip, col=.get("col.square.be"))
    .addrect(0, 4, .get("col.bg"))
@@ -59,7 +59,6 @@
    .drawtimer(settings=TRUE)
    .drawglyph("!!")
    .drawbox(1.18, 1.18, 3.82, 3.82)
-   .drawmatdiffsettings()
 
    dev.flush()
 
@@ -125,7 +124,7 @@
          .addrect(4, 2, col=.get("col.wrong"))
          .addrect(4, 3, col=.get("col.rect"))
          .addrect(4, 4, col=.get("col.hint"))
-         .drawmatdiff(pos, flip=FALSE, force=TRUE)
+         .drawmatdiffsettings()
          .drawsquare(0, 4, flip, col=.get("col.square.be"))
          .drawsquare(0, 5, flip, col=.get("col.square.be"))
          .addrect(0, 4, .get("col.bg"))
@@ -141,7 +140,6 @@
          .drawtimer(settings=TRUE)
          .drawglyph("!!")
          .drawbox(1.18, 1.18, 3.82, 3.82)
-         .drawmatdiffsettings()
          dev.flush()
          if (liout == 2)
             .updateliwin(out)

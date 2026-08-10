@@ -1234,14 +1234,17 @@
       if (mode == "add") {
          if (onlyshow) {
             text(xleft,  0.30, paste0("           ", paste0(rep("\U00002588",8), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
+            text(xleft,  0.32, paste0("           ", paste0(rep("\U00002588",8), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
             text(xleft,  0.30, paste0("Show:      ", ifelse(show, "Yes", "No"), ifelse(showcomp, "", " / No")), pos=4, cex=cex, family=font, col=col)
          }
          if (onlyi) {
             text(xleft,  0.15, paste0("           ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
+            text(xleft,  0.17, paste0("           ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
             text(xleft,  0.15, paste0("           ", i), pos=4, cex=cex, family=font, col=col)
          }
          if (onlyeco) {
             text(xleft,  0.00, paste0("           ", paste0(rep("\U00002588",140), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
+            text(xleft,  0.02, paste0("           ", paste0(rep("\U00002588",140), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
             text(xleft,  0.00, paste0("           ", opening), pos=4, cex=cex, family=font, col=col)
          }
          if (redraw) {
@@ -1273,10 +1276,12 @@
       if (mode == "test") {
          if (onlyi) {
             text(xleft, -0.15, paste0("           ", paste0(rep("\U00002588",9), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
+            text(xleft, -0.13, paste0("           ", paste0(rep("\U00002588",9), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
             text(xleft, -0.15, paste0("           ", i-1, " / ", totalmoves), pos=4, cex=cex, family=font, col=col)
          }
          if (onlyscore) {
             text(xright, 0.00, paste0("        ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
+            text(xright, 0.02, paste0("        ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
             text(xright, 0.00, paste0("Score:  ", score), pos=4, cex=cex, family=font, col=col)
          }
          if (redraw) {
@@ -1296,6 +1301,7 @@
       if (mode %in% c("play","analysis")) {
          if (onlyi) {
             text(xleft, 0.15, paste0("        ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
+            text(xleft, 0.17, paste0("        ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
             text(xleft, 0.15, paste0("        ", i), pos=4, cex=cex, family=font, col=col)
          }
          if (redraw) {
@@ -1312,14 +1318,17 @@
       if (mode == "add") {
          if (onlyshow) {
             text(xleft,  0.30, paste0("             ", paste0(rep("\U00002588",11), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
+            text(xleft,  0.32, paste0("             ", paste0(rep("\U00002588",11), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
             text(xleft,  0.30, paste0("             ", ifelse(show, "Ja", "Nein"), ifelse(showcomp, "", " / Nein")), pos=4, cex=cex, family=font, col=col)
          }
          if (onlyi) {
             text(xleft,  0.15, paste0("             ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
+            text(xleft,  0.17, paste0("             ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
             text(xleft,  0.15, paste0("             ", i), pos=4, cex=cex, family=font, col=col)
          }
          if (onlyeco) {
             text(xleft,  0.00, paste0("             ", paste0(rep("\U00002588",140), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
+            text(xleft,  0.02, paste0("             ", paste0(rep("\U00002588",140), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
             text(xleft,  0.00, paste0("             ", opening), pos=4, cex=cex, family=font, col=col)
          }
          if (redraw) {
@@ -1351,10 +1360,12 @@
       if (mode == "test") {
          if (onlyi) {
             text(xleft, -0.15, paste0("           ", paste0(rep("\U00002588",9), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
+            text(xleft, -0.13, paste0("           ", paste0(rep("\U00002588",9), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
             text(xleft, -0.15, paste0("           ", i-1, " / ", totalmoves), pos=4, cex=cex, family=font, col=col)
          }
          if (onlyscore) {
             text(xright, 0.00, paste0("          ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
+            text(xright, 0.02, paste0("          ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
             text(xright, 0.00, paste0("          ", score), pos=4, cex=cex, family=font, col=col)
          }
          if (redraw) {
@@ -1374,6 +1385,7 @@
       if (mode %in% c("play","analysis")) {
          if (onlyi) {
             text(xleft, 0.15, paste0("         ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
+            text(xleft, 0.17, paste0("         ", paste0(rep("\U00002588",3), collapse="")), pos=4, cex=cex, family=font, col=col.bg, font=2)
             text(xleft, 0.15, paste0("         ", i), pos=4, cex=cex, family=font, col=col)
          }
          if (redraw) {

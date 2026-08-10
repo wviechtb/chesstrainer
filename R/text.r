@@ -313,14 +313,14 @@
 
    if (x == "selseq12") {
       return(switch(lang,
-                    de = paste0("Selektiere Sequenzen ", arg[1], " bis ", arg[2], ".\n"),
-                         paste0("Selecting sequences ", arg[1], " to ", arg[2], ".\n")
+                    de = paste0("Selektiere Sequenzen ", arg[1], " bis ", arg[2], ".\n\n"),
+                         paste0("Selecting sequences ", arg[1], " to ", arg[2], ".\n\n")
    ))}
 
    if (x == "selseq") {
       return(switch(lang,
-                    de = paste0("Selektiere Sequenz ", arg, ".\n"),
-                         paste0("Selecting sequence ", arg, ".\n")
+                    de = paste0("Selektiere Sequenz ", arg, ".\n\n"),
+                         paste0("Selecting sequence ", arg, ".\n\n")
    ))}
 
    if (x == "strcapmistake") {
@@ -349,8 +349,8 @@
 
    if (x == "numseqfound") {
       return(switch(lang,
-                    de = paste0(arg, " passende ", ifelse(arg==1, "Sequenz", "Sequenzen"), " gefunden.\n"),
-                         paste0(arg, " matching ", ifelse(arg==1, "sequence", "sequences"), " found.\n")
+                    de = paste0(arg, " passende ", ifelse(arg==1, "Sequenz", "Sequenzen"), " gefunden.\n\n"),
+                         paste0(arg, " matching ", ifelse(arg==1, "sequence", "sequences"), " found.\n\n")
    ))}
 
    if (x == "strcaprounds") {
@@ -973,8 +973,8 @@
 
    if (x == "commentedit") {
       return(switch(lang,
-                    de = "Kommentar bearbeiten (<Nummer>, 's' (Startkommentar) 'e' (Endkommentar), 'l' (l\U000000F6schen), oder <Enter> zum Verlassen): ",
-                         "Edit a comment (<number>, 's' (start comment), 'e' (end comment), 'd' (delete), or <enter> to quit): "
+                    de = "Kommentar bearbeiten (<Nummer>, 's' (Startkommentar) 'e' (Endkommentar), 'l' (l\U000000F6schen), <Enter> zum Verlassen): ",
+                         "Edit a comment (<number>, 's' (start comment), 'e' (end comment), 'd' (delete), <enter> to quit): "
    ))}
 
    if (x == "commentnew") {

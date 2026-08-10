@@ -1245,6 +1245,7 @@
    if (any(notnull)) {
       .texttop(.text("transpositions", length(seqident) == 1L), sleep=2)
       #eval(expr=.get("switch1"))
+      .flush()
       cat(.text("transposseqs", length(seqident) == 1L))
       tab <- data.frame(files[notnull])
       colnames(tab) <- .text("sequence")

@@ -4,11 +4,14 @@
 
    while (TRUE) {
 
+      .flush()
+
       if (!is.null(sub$commentstart)) {
          cat(.text("commentstart", sub$commentstart))
          cat("\n")
       }
-      print(sub$moves[5:9])
+      if (nrow(sub$moves) > 0L)
+         print(sub$moves[5:9])
       if (!is.null(sub$commentend))
          cat(.text("commentend", sub$commentend))
       cat("\n")

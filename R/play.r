@@ -2892,9 +2892,12 @@ play <- function(lang="en", online, ...) {
             if (advanced && mode == "add" && identical(click, "ctrl-E")) {
                if (i == 1 || flip && sidetoplay == "b" || !flip && sidetoplay == "w")
                   next
-               .texttop(.text("addnewendmove"), sleep=0.75)
-               if (is.null(sub$endmoves))
+               if (is.null(sub$endmoves)) {
+                  .texttop(.text("addnewendmove"), sleep=0.75)
                   sub$endmoves <- sub$moves[i-1,] # if not null, then the move is added at [e]
+               } else {
+                  .texttop(.text("addnewendmove"), sleep=0.25)
+               }
                dev.hold()
                .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), glyph=glyph, flip=flip, hold=FALSE)
                circles <- matrix(nrow=0, ncol=2)
@@ -3291,6 +3294,7 @@ play <- function(lang="en", online, ...) {
 
             if (identical(click, "l")) {
                eval(expr=switch1)
+               .flush()
                .listseqs(k, files, files.all, selected, scores.selected, age.selected, rounds.selected, difficulty.selected, probvals.selected)
                eval(expr=switch2)
                next
@@ -3465,6 +3469,7 @@ play <- function(lang="en", online, ...) {
                   notnull <- !sapply(seqident, is.null)
                   seqident <- seqident[notnull]
                   if (any(notnull)) {
+                     .flush()
                      cat(.text("seqsmatchfen"))
                      tab <- data.frame(files.all[notnull])
                      if (movestoshow > 0) {
@@ -3775,6 +3780,7 @@ play <- function(lang="en", online, ...) {
                seqident <- seqident[notnull]
                if (any(notnull)) {
                   #eval(expr=switch1)
+                  .flush()
                   cat(.text("seqsmatchstart"))
                   tab <- data.frame(files.all[notnull])
                   if (movestoshow > 0) {
@@ -3826,6 +3832,7 @@ play <- function(lang="en", online, ...) {
                seqident <- seqident[notnull]
                if (any(notnull)) {
                   #eval(expr=switch1)
+                  .flush()
                   cat(.text("seqsinclpos"))
                   tab <- data.frame(files.all[notnull])
                   if (movestoshow > 0) {
@@ -3886,6 +3893,7 @@ play <- function(lang="en", online, ...) {
                   } else {
                      tab <- as.data.frame(table(nextmoves))
                      #eval(expr=switch1)
+                     .flush()
                      tab <- tab[order(tab$Freq, decreasing=TRUE),,drop=FALSE]
                      rownames(tab) <- NULL
                      tab$perc <- .percent(tab$Freq)
@@ -3910,6 +3918,7 @@ play <- function(lang="en", online, ...) {
                seqident <- sapply(dat.all, function(x) grepl(searchterm, tail(x$moves$fen, 1), fixed=TRUE) && identical(flip, x$flip))
                if (any(seqident)) {
                   #eval(expr=switch1)
+                  .flush()
                   cat(.text("seqsendpos"))
                   tab <- data.frame(files.all[seqident])
                   colnames(tab) <- .text("sequence")
@@ -3990,6 +3999,7 @@ play <- function(lang="en", online, ...) {
                })
                if (any(seqident)) {
                   #eval(expr=switch1)
+                  .flush()
                   cat(.text("seqsmatchpossquare"))
                   tab <- data.frame(files.all[seqident])
                   colnames(tab) <- .text("sequence")
@@ -4111,6 +4121,7 @@ play <- function(lang="en", online, ...) {
             if (identical(click, "F5")) {
                oldtimed <- timed
                oldmar <- mar
+               oldshoweval <- showeval
                tmp <- .mainsettings(devhold=TRUE, lang, piecesymbols, paste0(showeval, collapse=","), showcoords, showmatdiff, san, timed, zenmode, wait, repmistake, showgraph, compseq, showtransp, mar, volume, delay, sleepadj)
                while (tmp$restart) {
                   lang <- tmp$lang
@@ -4190,6 +4201,13 @@ play <- function(lang="en", online, ...) {
                   } else {
                      .drawtimer(clear=TRUE)
                      sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
+                  }
+               }
+               if (!identical(oldshoweval, showeval)) {
+                  if (showeval[[mode]]) {
+                     .drawevalbar(sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]])
+                  } else {
+                     .drawevalbar(clear=TRUE)
                   }
                }
                next

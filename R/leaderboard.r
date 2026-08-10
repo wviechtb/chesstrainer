@@ -45,7 +45,7 @@
       tmp <- tmp[order(tmp[[2]]),]
       rownames(tmp) <- NULL
 
-      txt <- capture.output(print(tmp, print.gap=3))
+      txt <- capture.output(print(tmp, print.gap=2))
       txt <- c(txt[1], "", txt[2:length(txt)], "")
 
       .drawbox()
