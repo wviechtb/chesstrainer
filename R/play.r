@@ -446,6 +446,10 @@ play <- function(lang="en", online, ...) {
          return("p")
       if (mode == "test" && xuser >= 9 && xuser <= 10 && yuser >= -0.05 && yuser <= 0.05)
          return("%")
+      if (mode == "test" && xuser >= 9 && xuser <= 10 && yuser >= 0.40 && yuser <= 0.50)
+         return("g")
+      if (mode == "test" && xuser >= 9 && xuser <= 10 && yuser >= 0.10 && yuser <= 0.20)
+         return("d")
       squares <- .calcsquare(x, y, plt)
       pos.x <- squares[1]
       pos.y <- squares[2]
