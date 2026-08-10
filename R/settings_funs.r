@@ -160,7 +160,7 @@
 
 }
 
-.mainsettings <- function(devhold, lang, piecesymbols, showcoords, showmatdiff, san, timed, zenmode, wait, repmistake, showgraph, compseq, showtransp, mar, volume, delay, sleepadj) {
+.mainsettings <- function(devhold, lang, piecesymbols, showeval, showcoords, showmatdiff, san, timed, zenmode, wait, repmistake, showgraph, compseq, showtransp, mar, volume, delay, sleepadj) {
 
    col.help  <- .get("col.help")
    font.mono <- .get("font.mono")
@@ -177,107 +177,121 @@
    cex.mult <- 0.8
 
    title.xpos <- 1.5
-   title.ypos <- c(8.2, 7.6, 7.0 - 0.3 * c(0:9), 3.6 - 1.12 * c(0:2))
+   title.ypos <- c(8.2 - 0.5 * c(0:2), 6.7 - 0.3 * c(0:9), 3.5 - 1.14 * c(0:2))
 
    box.xpos <- 1.7
    boxtext.xpos <- 2.0
 
-   text(title.xpos, title.ypos[1],  .text("lang:"),         pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(title.xpos, title.ypos[2],  .text("piecesymbols:"), pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(title.xpos, title.ypos[1],  .text("lang:"),           pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(title.xpos, title.ypos[2],  .text("piecesymbols:"),   pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(title.xpos, title.ypos[3],  .text("evalbar:"),        pos=4, cex=cex, family=font.mono, col=col.help, font=2)
 
-   text(boxtext.xpos, title.ypos[3],  .text("showcoords"),    pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(boxtext.xpos, title.ypos[4],  .text("showmatdiff"),   pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(boxtext.xpos, title.ypos[5],  .text("san"),           pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(boxtext.xpos, title.ypos[6],  .text("timed"),         pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(boxtext.xpos, title.ypos[7],  .text("zenmode"),       pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(boxtext.xpos, title.ypos[8],  .text("wait"),          pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(boxtext.xpos, title.ypos[9],  .text("repmistake"),    pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(boxtext.xpos, title.ypos[10], .text("showgraph"),     pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(boxtext.xpos, title.ypos[11], .text("compseq"),       pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(boxtext.xpos, title.ypos[12], .text("showtransp"),    pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(boxtext.xpos, title.ypos[4],  .text("showcoords"),    pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(boxtext.xpos, title.ypos[5],  .text("showmatdiff"),   pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(boxtext.xpos, title.ypos[6],  .text("san"),           pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(boxtext.xpos, title.ypos[7],  .text("timed"),         pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(boxtext.xpos, title.ypos[8],  .text("zenmode"),       pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(boxtext.xpos, title.ypos[9],  .text("wait"),          pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(boxtext.xpos, title.ypos[10], .text("repmistake"),    pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(boxtext.xpos, title.ypos[11], .text("showgraph"),     pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(boxtext.xpos, title.ypos[12], .text("compseq"),       pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(boxtext.xpos, title.ypos[13], .text("showtransp"),    pos=4, cex=cex, family=font.mono, col=col.help, font=2)
 
-   text(title.xpos, title.ypos[13], .text("mar"),             pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(5.2,        title.ypos[13], .text("volume"),          pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(title.xpos, title.ypos[14], .text("delay"),           pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(5.2,        title.ypos[14], .text("sleepadj"),        pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(title.xpos, title.ypos[14], .text("mar"),             pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(5.2,        title.ypos[14], .text("volume"),          pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(title.xpos, title.ypos[15], .text("delay"),           pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(5.2,        title.ypos[15], .text("sleepadj"),        pos=4, cex=cex, family=font.mono, col=col.help, font=2)
 
    lang.opts <- c("en", "de")
-   lang.xpos <- 3.6 + 1.0 * (seq_along(lang.opts) - 1)
+   lang.xpos <- 3.5
    lang.ypos <- title.ypos[1]
    lang.txt  <- c("English", "Deutsch")
    lang.on   <- lang.opts == lang
    lang.box  <- list()
    for (i in seq_along(lang.txt)) {
       lang.box[[i]] <- .drawbutton(lang.xpos[i], lang.ypos, text=lang.txt[i], len=max(nchar(lang.txt)), on=lang.on[i], cex=cex)
+      lang.xpos <- c(lang.xpos, lang.box[[i]][3] + 0.2)
    }
 
    piecesymbols.opts <- 1:3
-   piecesymbols.xpos <- 3.5 + 0.8 * (seq_along(piecesymbols.opts) - 1)
+   piecesymbols.xpos <- 3.5
    piecesymbols.ypos <- title.ypos[2]
    piecesymbols.txt  <- c("\U0000265A\U0000265B\U0000265C\U0000265D\U0000265E", "KQRBN", "KDTLS")
    piecesymbols.on   <- piecesymbols.opts == piecesymbols
    piecesymbols.box  <- list()
    for (i in seq_along(piecesymbols.txt)) {
       piecesymbols.box[[i]] <- .drawbutton(piecesymbols.xpos[i], piecesymbols.ypos, text=piecesymbols.txt[i], len=max(nchar(piecesymbols.txt)), on=piecesymbols.on[i], cex=cex)
+      piecesymbols.xpos <- c(piecesymbols.xpos, piecesymbols.box[[i]][3] + 0.2)
+   }
+
+   showeval.opts <- rep(TRUE, 4L)
+   showeval.xpos <- 3.5
+   showeval.ypos <- title.ypos[3]
+   showeval.txt  <- c(.text("addmode"), .text("testmode"), .text("playmode"), .text("analysismode"))
+   showeval.on   <- showeval.opts == strsplit(showeval, ",", fixed=TRUE)[[1]]
+   showeval.box  <- list()
+   for (i in seq_along(showeval.txt)) {
+      showeval.box[[i]] <- .drawbutton(showeval.xpos[i], showeval.ypos, text=showeval.txt[i], len=max(nchar(showeval.txt)), on=showeval.on[i], cex=cex)
+      showeval.xpos <- c(showeval.xpos, showeval.box[[i]][3] + 0.2)
    }
 
    showcoords.xpos <- box.xpos
-   showcoords.ypos <- title.ypos[3]
+   showcoords.ypos <- title.ypos[4]
    showcoords.box <- .drawcheckbox(showcoords.xpos, showcoords.ypos, on=showcoords, cex=cex)
 
    showmatdiff.xpos <- box.xpos
-   showmatdiff.ypos <- title.ypos[4]
+   showmatdiff.ypos <- title.ypos[5]
    showmatdiff.box <- .drawcheckbox(showmatdiff.xpos, showmatdiff.ypos, on=showmatdiff, cex=cex)
 
    san.xpos <- box.xpos
-   san.ypos <- title.ypos[5]
+   san.ypos <- title.ypos[6]
    san.box <- .drawcheckbox(san.xpos, san.ypos, on=san, cex=cex)
 
    timed.xpos <- box.xpos
-   timed.ypos <- title.ypos[6]
+   timed.ypos <- title.ypos[7]
    timed.box <- .drawcheckbox(timed.xpos, timed.ypos, on=timed, cex=cex)
 
    zenmode.xpos <- box.xpos
-   zenmode.ypos <- title.ypos[7]
+   zenmode.ypos <- title.ypos[8]
    zenmode.box <- .drawcheckbox(zenmode.xpos, zenmode.ypos, on=zenmode, cex=cex)
 
    wait.xpos <- box.xpos
-   wait.ypos <- title.ypos[8]
+   wait.ypos <- title.ypos[9]
    wait.box <- .drawcheckbox(wait.xpos, wait.ypos, on=wait, cex=cex)
 
    repmistake.xpos <- box.xpos
-   repmistake.ypos <- title.ypos[9]
+   repmistake.ypos <- title.ypos[10]
    repmistake.box <- .drawcheckbox(repmistake.xpos, repmistake.ypos, on=repmistake, cex=cex)
 
    showgraph.xpos <- box.xpos
-   showgraph.ypos <- title.ypos[10]
+   showgraph.ypos <- title.ypos[11]
    showgraph.box <- .drawcheckbox(showgraph.xpos, showgraph.ypos, on=showgraph, cex=cex)
 
    compseq.xpos <- box.xpos
-   compseq.ypos <- title.ypos[11]
+   compseq.ypos <- title.ypos[12]
    compseq.box <- .drawcheckbox(compseq.xpos, compseq.ypos, on=compseq, cex=cex)
 
    showtransp.xpos <- box.xpos
-   showtransp.ypos <- title.ypos[12]
+   showtransp.ypos <- title.ypos[13]
    showtransp.box <- .drawcheckbox(showtransp.xpos, showtransp.ypos, on=showtransp, cex=cex)
 
    mar.xpos <- c(1.7,4.5)
-   mar.ypos <- title.ypos[13] - 0.4 * (title.ypos[13]-title.ypos[14])
+   mar.ypos <- title.ypos[14] - 0.4 * (title.ypos[14]-title.ypos[15])
    mar.box  <- .drawslider(x=mar.xpos, mar.ypos, xlab=c(1,10), cex=cex*cex.mult)
    .updateslider(NULL, mar.ypos, oldval=mar[1], xlim=mar.xpos, range=c(1,10), round=0.5, cex=cex*cex.mult)
 
    volume.xpos <- c(5.4,8)
-   volume.ypos <- title.ypos[13] - 0.4 * (title.ypos[13]-title.ypos[14])
+   volume.ypos <- title.ypos[14] - 0.4 * (title.ypos[14]-title.ypos[15])
    volume.box  <- .drawslider(x=volume.xpos, volume.ypos, xlab=c(0,100), cex=cex*cex.mult)
    .updateslider(NULL, volume.ypos, oldval=volume, xlim=volume.xpos, range=c(0,100), round=TRUE, cex=cex*cex.mult)
 
    delay.xpos <- c(1.7,4.5)
-   delay.ypos <- title.ypos[14] - 0.4 * (title.ypos[14]-title.ypos[15])
+   delay.ypos <- title.ypos[15] - 0.4 * (title.ypos[15]-title.ypos[16])
    delay.box  <- .drawslider(x=delay.xpos, delay.ypos, xlab=c(0,2), cex=cex*cex.mult)
    .updateslider(NULL, delay.ypos, oldval=delay, xlim=delay.xpos, range=c(0,2), round=0.05, cex=cex*cex.mult)
 
    sleepadj.xpos <- c(5.4,8)
-   sleepadj.ypos <- title.ypos[14] - 0.4 * (title.ypos[14]-title.ypos[15])
+   sleepadj.ypos <- title.ypos[15] - 0.4 * (title.ypos[15]-title.ypos[16])
    sleepadj.box  <- .drawslider(x=sleepadj.xpos, sleepadj.ypos, xlab=c(0,2), cex=cex*cex.mult)
    .updateslider(NULL, sleepadj.ypos, oldval=sleepadj, xlim=sleepadj.xpos, range=c(0,2), round=0.1, cex=cex*cex.mult)
 
@@ -339,6 +353,14 @@
                .drawbutton(piecesymbols.xpos[i], piecesymbols.ypos, text=piecesymbols.txt[i], len=max(nchar(piecesymbols.txt)), on=piecesymbols.on[i], cex=cex)
             }
             piecesymbols <- piecesymbols.opts[piecesymbols.on]
+            next
+         }
+
+         hit <- sapply(showeval.box, function(coords) xy1[1] >= coords[1] & xy1[2] >= coords[2] & xy1[1] <= coords[3] & xy1[2] <= coords[4])
+         if (any(hit)) {
+            i <- which(hit)
+            showeval.on[i] <- !showeval.on[i]
+            .drawbutton(showeval.xpos[i], showeval.ypos, text=showeval.txt[i], len=max(nchar(showeval.txt)), on=showeval.on[i], cex=cex)
             next
          }
 
@@ -452,7 +474,9 @@
 
    }
 
-   out <- list(lang=lang, piecesymbols=piecesymbols, showcoords=showcoords, showmatdiff=showmatdiff, san=san, timed=timed, zenmode=zenmode, wait=wait, repmistake=repmistake,
+   showeval <- setNames(showeval.on, c("add", "test", "play", "analysis"))
+
+   out <- list(lang=lang, piecesymbols=piecesymbols, showeval=showeval, showcoords=showcoords, showmatdiff=showmatdiff, san=san, timed=timed, zenmode=zenmode, wait=wait, repmistake=repmistake,
                showgraph=showgraph, compseq=compseq, showtransp=showtransp, mar=mar, volume=volume, delay=delay, sleepadj=sleepadj, restart=restart)
 
    #.erase(1, 1, 9, 9)
@@ -475,7 +499,7 @@
    cex.mult <- 0.8
 
    title.xpos <- 1.5
-   title.ypos <- c(8.2 - 1.12 * c(0:7))
+   title.ypos <- c(8.2 - 1.15 * c(0:7))
 
    text(title.xpos, title.ypos[1], .text("multiplier"),  pos=4, cex=cex, family=font.mono, col=col.help, font=2)
    text(title.xpos, title.ypos[2], .text("adjustwrong"), pos=4, cex=cex, family=font.mono, col=col.help, font=2)
@@ -678,25 +702,24 @@
    text(title.xpos, title.ypos[8], .text("monthscache"),     pos=4, cex=cex, family=font.mono, col=col.help, font=2)
 
    sfrun.on   <- c(sfrun, !sfrun)
-   sfrun.xpos <- 3.7 + 0.6 * (seq_along(sfrun.on) - 1)
+   sfrun.xpos <- title.xpos + strwidth(.text("sfrunning"), family=font.mono, font=2, cex=cex) + 0.2
    sfrun.ypos <- title.ypos[2]
    sfrun.txt  <- c(.text("on"), .text("off"))
    sfrun.box  <- list()
    for (i in seq_along(sfrun.txt)) {
       sfrun.box[[i]] <- .drawbutton(sfrun.xpos[i], sfrun.ypos, text=sfrun.txt[i], len=max(nchar(sfrun.txt)), on=sfrun.on[i], cex=cex)
+      sfrun.xpos <- c(sfrun.xpos, sfrun.box[[i]][3] + 0.2)
    }
 
    usesfcache.opts <- c(TRUE, TRUE)
-   if (lang == "en")
-      usesfcache.xpos <- 6.8 + 0.6 * (seq_along(usesfcache.opts) - 1)
-   if (lang == "de")
-      usesfcache.xpos <- 7.1 + 0.7 * (seq_along(usesfcache.opts) - 1)
+   usesfcache.xpos <- 5.2 + strwidth(.text("usecacheshort:"), family=font.mono, font=2, cex=cex) + 0.2
    usesfcache.ypos <- title.ypos[2]
    usesfcache.txt  <- c(.text("yes"), .text("no"))
    usesfcache.on   <- c(usesfcache, !usesfcache)
    usesfcache.box  <- list()
    for (i in seq_along(usesfcache.txt)) {
       usesfcache.box[[i]] <- .drawbutton(usesfcache.xpos[i], usesfcache.ypos, text=usesfcache.txt[i], len=max(nchar(usesfcache.txt)), on=usesfcache.on[i], cex=cex)
+      usesfcache.xpos <- c(usesfcache.xpos, usesfcache.box[[i]][3] + 0.2)
    }
 
    depth1.xpos <- c(1.7,4.5)
@@ -770,7 +793,7 @@
    monthssfcache.box  <- .drawslider(x=monthssfcache.xpos, monthssfcache.ypos, xlab=c(1,60), cex=cex*cex.mult)
    .updateslider(NULL, monthssfcache.ypos, oldval=monthssfcache, xlim=monthssfcache.xpos, range=c(1,60), round=TRUE, cex=cex*cex.mult)
 
-   delcache.xpos <- 7.4
+   delcache.xpos <- 6.8
    delcache.ypos <- title.ypos[8] - 0.4 * (title.ypos[8]-title.ypos[9])
    delcache.txt  <- .text("delcache")
    delcache.on   <- FALSE
@@ -1047,53 +1070,58 @@
    text(6.9,        title.ypos[7], .text("entertoken"),    pos=4, cex=cex, family=font.mono, col=col.help, font=2)
 
    speeds.opts <- c("ultraBullet", "bullet", "blitz", "rapid", "classical", "correspondence")
-   speeds.xpos <- 2.2 + 1.1 * (seq_along(speeds.opts) - 1)
+   speeds.xpos <- title.xpos + 0.2
    speeds.ypos <- title.ypos[1] - 0.4 * (title.ypos[1]-title.ypos[2])
    speeds.txt  <- c("ultra", "bullet", "blitz", "rapid", "classic", "corresp")
    speeds.on   <- speeds.opts %in% strsplit(speeds, ",", fixed=TRUE)[[1]]
    speeds.box  <- list()
    for (i in seq_along(speeds.txt)) {
       speeds.box[[i]] <- .drawbutton(speeds.xpos[i], speeds.ypos, text=speeds.txt[i], len=max(nchar(speeds.txt)), on=speeds.on[i], cex=cex)
+      speeds.xpos <- c(speeds.xpos, speeds.box[[i]][3] + 0.2)
    }
 
    ratings.opts <- c(0, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2500)
-   ratings.xpos <- 2 + 0.74 * (seq_along(ratings.opts) - 1)
+   ratings.xpos <- title.xpos + 0.2
    ratings.ypos <- title.ypos[2] - 0.4 * (title.ypos[1]-title.ypos[2])
    ratings.txt  <- c(400, 1000, 1200, 1400, 1600, 1800, 2000, 2200, 2500)
    ratings.on   <- ratings.opts %in% strsplit(ratings, ",", fixed=TRUE)[[1]]
    ratings.box  <- list()
    for (i in seq_along(ratings.txt)) {
       ratings.box[[i]] <- .drawbutton(ratings.xpos[i], ratings.ypos, text=ratings.txt[i], len=max(nchar(ratings.txt)), on=ratings.on[i], cex=cex)
+      ratings.xpos <- c(ratings.xpos, ratings.box[[i]][3] + 0.2)
    }
 
    lichessdb.opts <- c("lichess", "masters")
-   lichessdb.xpos <- 2.2 + 1.1 * (seq_along(lichessdb.opts) - 1)
+   lichessdb.xpos <- title.xpos + 0.2
    lichessdb.ypos <- title.ypos[3] - 0.4 * (title.ypos[1]-title.ypos[2])
    lichessdb.txt  <- c("players", "masters")
    lichessdb.on   <- lichessdb.opts == lichessdb
    lichessdb.box  <- list()
    for (i in seq_along(lichessdb.txt)) {
       lichessdb.box[[i]] <- .drawbutton(lichessdb.xpos[i], lichessdb.ypos, text=lichessdb.txt[i], len=max(nchar(lichessdb.txt)), on=lichessdb.on[i], cex=cex)
+      lichessdb.xpos <- c(lichessdb.xpos, lichessdb.box[[i]][3] + 0.2)
    }
 
    uselicache.opts <- c(TRUE, TRUE)
-   uselicache.xpos <- 4.7 + 0.7 * (seq_along(uselicache.opts) - 1)
+   uselicache.xpos <- 4.2 + 0.2
    uselicache.ypos <- title.ypos[3] - 0.4 * (title.ypos[1]-title.ypos[2])
    uselicache.txt  <- c(.text("yes"), .text("no"))
    uselicache.on   <- c(uselicache, !uselicache)
    uselicache.box  <- list()
    for (i in seq_along(uselicache.txt)) {
       uselicache.box[[i]] <- .drawbutton(uselicache.xpos[i], uselicache.ypos, text=uselicache.txt[i], len=max(nchar(uselicache.txt)), on=uselicache.on[i], cex=cex)
+      uselicache.xpos <- c(uselicache.xpos, uselicache.box[[i]][3] + 0.2)
    }
 
    delcache.opts <- c("players", "masters")
-   delcache.xpos <- 6.7 + 1.1 * (seq_along(delcache.opts) - 1)
+   delcache.xpos <- 6.0 + 0.2
    delcache.ypos <- title.ypos[3] - 0.4 * (title.ypos[1]-title.ypos[2])
    delcache.txt  <- delcache.opts
    delcache.on   <- c(FALSE, FALSE)
    delcache.box  <- list()
    for (i in seq_along(delcache.txt)) {
       delcache.box[[i]] <- .drawbutton(delcache.xpos[i], delcache.ypos, text=delcache.txt[i], len=max(nchar(delcache.txt)), on=delcache.on[i], cex=cex)
+      delcache.xpos <- c(delcache.xpos, delcache.box[[i]][3] + 0.2)
    }
 
    monthslicache.xpos <- c(1.7,8)
@@ -1121,33 +1149,36 @@
    .updateslider(NULL, barlen.ypos, oldval=barlen, xlim=barlen.xpos, range=c(10,100), round=TRUE, cex=cex*cex.mult)
 
    invertbar.opts <- c("No", "Yes")
-   invertbar.xpos <- 6.8 + 0.7 * (seq_along(invertbar.opts) - 1)
+   invertbar.xpos <- 6.3 + 0.2
    invertbar.ypos <- title.ypos[6] - 0.4 * (title.ypos[1]-title.ypos[2])
    invertbar.txt  <- c(.text("no"), .text("yes"))
    invertbar.on   <- c(!invertbar, invertbar)
    invertbar.box  <- list()
    for (i in seq_along(invertbar.txt)) {
       invertbar.box[[i]] <- .drawbutton(invertbar.xpos[i], invertbar.ypos, text=invertbar.txt[i], len=max(nchar(invertbar.txt)), on=invertbar.on[i], cex=cex)
+      invertbar.xpos <- c(invertbar.xpos, invertbar.box[[i]][3] + 0.2)
    }
 
    lisort.opts <- 1:2
-   lisort.xpos <- 2.3 + 1.2 * (seq_along(lisort.opts) - 1)
+   lisort.xpos <- title.xpos + 0.2
    lisort.ypos <- title.ypos[7] - 0.4 * (title.ypos[1]-title.ypos[2])
    lisort.txt  <- c(.text("lisortfreq"), .text("lisortwinperc"))
    lisort.on   <- lisort.opts == lisort
    lisort.box  <- list()
    for (i in seq_along(lisort.txt)) {
       lisort.box[[i]] <- .drawbutton(lisort.xpos[i], lisort.ypos, text=lisort.txt[i], len=max(nchar(lisort.txt)), on=lisort.on[i], cex=cex)
+      lisort.xpos <- c(lisort.xpos, lisort.box[[i]][3] + 0.2)
    }
 
    liout.opts <- 1:2
-   liout.xpos <- 5.05 + 0.86 * (seq_along(liout.opts) - 1)
+   liout.xpos <- 4.4 + 0.2
    liout.ypos <- title.ypos[7] - 0.4 * (title.ypos[1]-title.ypos[2])
    liout.txt  <- c(.text("lioutconsole"), .text("lioutwindow"))
    liout.on   <- liout.opts == liout
    liout.box  <- list()
    for (i in seq_along(liout.txt)) {
       liout.box[[i]] <- .drawbutton(liout.xpos[i], liout.ypos, text=liout.txt[i], len=max(nchar(liout.txt)), on=liout.on[i], cex=cex)
+      liout.xpos <- c(liout.xpos, liout.box[[i]][3] + 0.2)
    }
 
    text(6.9, liout.ypos, paste0(rep("*", min(10,nchar(token))), collapse=""), pos=4, cex=cex, family=font.mono, col=col.text, font=2)

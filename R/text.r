@@ -1532,7 +1532,7 @@
    if (x == "usecacheshort:") {
       return(switch(lang,
                     de = "Cache nutzen: ",
-                         "Use cache:    "
+                         "Use cache: "
    ))}
 
    if (x == "yes") {
@@ -1803,6 +1803,36 @@
       return(switch(lang,
                     de = "Figurensymbole:",
                          "Piece symbols:"
+   ))}
+
+   if (x == "evalbar:") {
+      return(switch(lang,
+                    de = "Bewertungsbalken:",
+                         "Evaluation bar:"
+   ))}
+
+   if (x == "addmode") {
+      return(switch(lang,
+                    de = "Hinzuf\U000000FCgen",
+                         "add"
+   ))}
+
+   if (x == "testmode") {
+      return(switch(lang,
+                    de = "Test",
+                         "test"
+   ))}
+
+   if (x == "playmode") {
+      return(switch(lang,
+                    de = "Spielen",
+                         "play"
+   ))}
+
+   if (x == "analysismode") {
+      return(switch(lang,
+                    de = "Analyse",
+                         "analysis"
    ))}
 
    if (x == "showcoords") {

@@ -2017,15 +2017,16 @@
    height <- strheight("A", family=font.mono, cex=cex)
    width  <- strwidth(paste0(rep("A",len), collapse=""), family=font.mono, cex=cex)
 
-   x1 <- x - width  / 1.6
+   x1 <- x
    y1 <- y - height / 0.8
-   x2 <- x + width  / 1.6
+   x2 <- x + width * 1.2
    y2 <- y + height / 0.8
 
    dev.hold()
    on.exit(dev.flush())
 
    rect(x1, y1, x2, y2, col=col.box, border=col.border, lwd=2)
+   x <- (x1 + x2) / 2
    text(x, y, text, family=font.mono, cex=cex, col=col.text, adj=c(0.5,0.5))
 
    return(c(x1,y1,x2,y2))
@@ -2069,12 +2070,13 @@
    segments(x[1], y, x[2], y, col=col.line, lend=2)
 
    pos <- seq(x[1], x[2], length.out=length(xlab))
+
    for (i in 1:length(xlab)) {
       segments(pos[i], y-0.06, pos[i], y+0.06, col=col.line, lend=2)
-      text(pos[i], y - 2.0 * height, xlab[i], family=font.mono, cex=cex, col=col.line, adj=c(0.5,0.5))
+      text(pos[i], y-0.14, xlab[i], family=font.mono, cex=cex, col=col.line, adj=c(0.5,1))
    }
 
-   return(c(x[1], y-height, x[2], y+height))
+   return(c(x[1], y-0.14-height*1.1, x[2], y+0.14+height*1.20))
 
 }
 
@@ -2097,7 +2099,7 @@
    if (is.null(x)) {
       rect(xold-0.03, y-0.08, xold+0.03, y+0.08, col=col.slider, border=col.slider)
       if (text)
-         text(xold, y + 2.0*height, oldval, family=font.mono, cex=cex, col=col.slider, adj=c(0.5,0.5))
+         text(xold, y+0.14, oldval, family=font.mono, cex=cex, col=col.slider, adj=c(0.5,0))
       return()
    } else {
       x[x < xlim[1]] <- xlim[1]
@@ -2107,26 +2109,26 @@
          newval <- round(newval/round) * round
       if (oldval == newval)
          return(newval)
-      rect(xold-0.2, y-0.12, xold+0.2, y+0.12, col=col.bg, border=col.bg)
+      rect(xold-0.10, y-0.12, xold+0.10, y+0.12, col=col.bg, border=col.bg) # delete old slider rectangle
       if (text) {
-         rect(max(1.25, xold-0.4), y+0.05, min(8.75,xold+0.4), y + 3.0*height, col=col.bg, border=col.bg)
+         rect(max(1.25, xold-0.4), y+0.10, min(8.75,xold+0.4), y+0.14+height*1.10, col=col.bg, border=col.bg) # delete old text
          segments(xlim[1], y-0.06, xlim[1], y+0.06, col=col.bg, lend=2, lwd=2)
          segments(xlim[n], y-0.06, xlim[n], y+0.06, col=col.bg, lend=2, lwd=2)
-         segments(max(xlim[1], xold-0.2), y, min(xlim[n], xold+0.2), y, col=col.line, lend=2)
+         segments(max(xlim[1], xold-0.10), y, min(xlim[n], xold+0.10), y, col=col.line, lend=2)
          segments(xlim[1], y-0.06, xlim[1], y+0.06, col=col.line, lend=2)
          segments(xlim[n], y-0.06, xlim[n], y+0.06, col=col.line, lend=2)
       } else {
          segments(xold, y-0.06, xold, y+0.06, col=col.line, lend=2)
-         segments(max(xlim[1], xold-0.2), y, min(xlim[n], xold+0.2), y, col=col.line, lend=2)
+         segments(max(xlim[1], xold-0.10), y, min(xlim[n], xold+0.10), y, col=col.line, lend=2)
       }
    }
 
    xnew <- (newval - range[1]) * (xlim[n] - xlim[1]) / (range[2] - range[1]) + xlim[1]
 
-   rect(xnew-0.03, y-0.08, xnew+0.03, y+0.08, col=col.slider, border=col.slider)
+   rect(xnew-0.03, y-0.08, xnew+0.03, y+0.08, col=col.slider, border=col.slider) # draw new slider rectangle
 
    if (text)
-      text(xnew, y + 2.0*height, newval, family=font.mono, cex=cex, col=col.slider, adj=c(0.5,0.5))
+      text(xnew, y+0.14, newval, family=font.mono, cex=cex, col=col.slider, adj=c(0.5,0)) # add new text
 
    return(newval)
 

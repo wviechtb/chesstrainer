@@ -4092,7 +4092,7 @@ play <- function(lang="en", online, ...) {
             if (identical(click, "F5")) {
                oldtimed <- timed
                oldmar <- mar
-               tmp <- .mainsettings(devhold=TRUE, lang, piecesymbols, showcoords, showmatdiff, san, timed, zenmode, wait, repmistake, showgraph, compseq, showtransp, mar, volume, delay, sleepadj)
+               tmp <- .mainsettings(devhold=TRUE, lang, piecesymbols, paste0(showeval, collapse=","), showcoords, showmatdiff, san, timed, zenmode, wait, repmistake, showgraph, compseq, showtransp, mar, volume, delay, sleepadj)
                while (tmp$restart) {
                   lang <- tmp$lang
                   mar <- tmp$mar
@@ -4107,12 +4107,13 @@ play <- function(lang="en", online, ...) {
                      .drawevalbar(sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]])
                      .drawlibar(.get("lasttotals"), flip=flip)
                      assign("evalsteps", .get("evalsteps"), envir=.chesstrainer)
-                     tmp <- .mainsettings(devhold=FALSE, lang, piecesymbols, showcoords, showmatdiff, san, timed, zenmode, wait, repmistake, showgraph, compseq, showtransp, mar, volume, delay, sleepadj)
+                     tmp <- .mainsettings(devhold=FALSE, lang, piecesymbols, paste0(showeval, collapse=","), showcoords, showmatdiff, san, timed, zenmode, wait, repmistake, showgraph, compseq, showtransp, mar, volume, delay, sleepadj)
                   } else {
-                     tmp <- .mainsettings(devhold=TRUE, lang, piecesymbols, showcoords, showmatdiff, san, timed, zenmode, wait, repmistake, showgraph, compseq, showtransp, mar, volume, delay, sleepadj)
+                     tmp <- .mainsettings(devhold=TRUE, lang, piecesymbols, paste0(showeval, collapse=","), showcoords, showmatdiff, san, timed, zenmode, wait, repmistake, showgraph, compseq, showtransp, mar, volume, delay, sleepadj)
                   }
                }
                piecesymbols <- tmp$piecesymbols
+               showeval     <- tmp$showeval
                showcoords   <- tmp$showcoords
                showmatdiff  <- tmp$showmatdiff
                san          <- tmp$san
@@ -4148,6 +4149,7 @@ play <- function(lang="en", online, ...) {
                dev.flush()
                settings$lang         <- lang
                settings$piecesymbols <- piecesymbols
+               settings$showeval     <- showeval
                settings$showcoords   <- showcoords
                settings$showmatdiff  <- showmatdiff
                settings$san          <- san
@@ -4160,8 +4162,8 @@ play <- function(lang="en", online, ...) {
                settings$showtransp   <- showtransp
                settings$mar          <- mar
                settings$volume       <- volume
-               settings$delay       <- delay
-               settings$sleepadj    <- sleepadj
+               settings$delay        <- delay
+               settings$sleepadj     <- sleepadj
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                if (oldtimed != timed) {
                   if (timed) {
