@@ -3278,13 +3278,13 @@ play <- function(lang="en", online, ...) {
 
             # F to toggle flush on/off
 
-            #if (identical(click, "F")) {
-            #   flush <- .get("flush")
-            #   flush <- !flush
-            #   .texttop(.text("flush", flush), sleep=0.75)
-            #   assign("flush", flush, envir=.chesstrainer)
-            #   next
-            #}
+            if (advanced && identical(click, "F")) {
+               flush <- .get("flush")
+               flush <- !flush
+               .texttop(.text("flush", flush), sleep=0.75)
+               assign("flush", flush, envir=.chesstrainer)
+               next
+            }
 
             ################################################################
 
@@ -4096,6 +4096,7 @@ play <- function(lang="en", online, ...) {
                .clearliwin(dev.after=2L)
                cols <- sapply(cols.all, function(x) .get(x))
                saveRDS(cols, file=file.path(configdir, "colors.rds"))
+               cex         <- .get("cex")
                cex.top     <- .get("cex.top")
                cex.bot     <- .get("cex.bot")
                cex.eval    <- .get("cex.eval")
@@ -4104,6 +4105,7 @@ play <- function(lang="en", online, ...) {
                cex.plots   <- .get("cex.plots")
                cex.glyphs  <- .get("cex.glyphs")
                cex.lichess <- .get("cex.lichess")
+               settings$cex         <- cex
                settings$cex.top     <- cex.top
                settings$cex.bot     <- cex.bot
                settings$cex.eval    <- cex.eval

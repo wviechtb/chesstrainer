@@ -240,8 +240,12 @@
 
       click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.mousedownfun, onKeybd=.keyfun)
 
-      if (is.numeric(click))
-         break
+      if (is.numeric(click)) {
+         x <- grconvertX(click[[1]], from="ndc", to="user")
+         y <- grconvertY(click[[2]], from="ndc", to="user")
+         if (x <= 1.2 || x >= 8.8 || y <= 1.2 || y >= 8.8)
+            break
+      }
 
       if (identical(click, "F1") || identical(click, "\r") || identical(click, "ctrl-J") || identical(click, "q") || identical(click, "\033") || identical(click, "ctrl-[") || identical(click, " "))
          break

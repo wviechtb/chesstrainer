@@ -9,7 +9,6 @@
    }
 
    xvals <- dat$round
-
    x <- dat
 
    col.top      <- .get("col.top")
@@ -52,7 +51,7 @@
       dev.flush()
    }
 
-   zoom <- 1
+   zoom <- FALSE
 
    while (TRUE) {
 
@@ -76,11 +75,11 @@
 
       if (is.numeric(click) && click[[3]] %in% c(0,2)) {
          if (click[[3]] == 2) { # right mouse button resets zoom or exits if zoomed out
-            if (zoom == 1) {
+            if (!zoom) {
                break
             } else {
                x <- dat
-               zoom <- 1
+               zoom <- FALSE
             }
          }
          if (click[[3]] == 0) { # left mouse button to set first and second zoom point
@@ -116,8 +115,9 @@
             sel <- xvals >= min(x1,x2) & xvals <= max(x1,x2)
             if (sum(sel) == 0L)
                next
-            zoom <- zoom + 1
-            x <- dat[sel,]
+            zoom <- TRUE
+            x <- x[sel,]
+            next
          }
       }
 

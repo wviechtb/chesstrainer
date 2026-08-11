@@ -15,7 +15,7 @@
    \if{html}{\figure{console-first-run.png}{options: width=900}}
    \if{latex}{\figure{console-first-run.png}{options: width=5.5in}}
 
-   The trainer then starts in \emph{add mode} (see the \sQuote{Note} section at the bottom if you receive an error that the graphics device does not support event handling; for Windows users, see also the \sQuote{Note for Windows Users} section). For now, click on the window showing the chess board and press \verb{<space>} (i.e., the space bar), which will switch to \emph{test mode} (note: in this manual, key presses are indicated as: \verb{<key>}). One of the existing sequences will then be chosen at random. The trainer may immediately prompt you to play a certain opening (via a comment at the top of the window), it may make some moves for you, or it may start at a later position during a game. Either way, you will then have to make the correct move based on the position and instructions. You do this by either left-clicking and dragging the piece to be played from its current position to the desired target square or by left-clicking on the piece to be moved and then left-clicking on the target square.
+   The trainer then starts in \emph{add mode} (see the \sQuote{Note} section at the bottom if you receive an error that the graphics device does not support event handling; for Windows users, see also the \sQuote{Note for Windows Users} section below). For now, click on the window showing the chess board and press \verb{<space>} (i.e., the space bar), which will switch to \emph{test mode} (note: in this manual, key presses are indicated as: \verb{<key>}). One of the existing sequences will then be chosen at random. The trainer may immediately prompt you to play a certain opening (via a comment at the top of the window), it may make some moves for you, or it may start at a later position during a game. Either way, you will then have to make the correct move based on the position and instructions. You do this by either left-clicking and dragging the piece to be played from its current position to the desired target square or by left-clicking on the piece to be moved and then left-clicking on the target square.
 
    \if{html}{\figure{play-sequence.png}{options: width=900}}
    \if{latex}{\figure{play-sequence.png}{options: width=5.5in}}
@@ -27,7 +27,7 @@
    \if{html}{\figure{get-hint.png}{options: width=900}}
    \if{latex}{\figure{get-hint.png}{options: width=5.5in}}
 
-   In \emph{test mode}, information is shown at the bottom about the current mode, the name of the current sequence, the player name, the current move number and the total number of moves of the sequence, the number of rounds (how many times the sequence has been played so far), the age of the sequence (how many days ago the sequence was last played), the estimated difficulty of the sequence (see below), and the sequence score (also see below).
+   In \emph{test mode}, information is shown at the bottom about the current mode, the name of the current sequence, the player name, the current move number and the total number of moves of the sequence, the number of rounds (how many times the sequence has been played so far), the age of the sequence (how many days ago the sequence was last played), the estimated difficulty of the sequence (see below), and the sequence score (also see below). Some elements at the bottom are clickable (e.g., clicking on \sQuote{Mode} toggles between the \emph{test mode} and the \emph{add mode}).
 
    With \verb{<F1>}, you can obtain an overview of all keyboard shortcuts. The \verb{<left>} and \verb{<right>} arrow keys toggle between the two help pages. The \verb{<t>} key prints this manual in text format to the console. The \verb{<m>} key opens up the manual online. The \verb{<F1>} or \verb{<escape>} keys close the help overlay.
 
@@ -331,7 +331,7 @@
 
 }
 \note{
-   The trainer makes extensive use of \code{\link{getGraphicsEvent}} to capture mouse movements and keyboard inputs. Only some graphics devices support this. If you receive the error message \sQuote{The graphics device does not support event handling} when starting the trainer, then the current graphics device does not support this kind of interactivity. For example, this will be the case for the \code{RStudioGD} graphics device that is used by RStudio. You can then try running \code{x11()} before starting the trainer with \code{play()}.
+   The trainer makes extensive use of \code{\link{getGraphicsEvent}} to capture mouse movements and keyboard inputs. Only some graphics devices support this. If you receive the error message \sQuote{The graphics device does not support event handling} when starting the trainer, then the current graphics device does not support this kind of interactivity. For example, this will be the case for the \code{RStudioGD} graphics device that is used by RStudio. You can try running \code{x11()} before starting the trainer with \code{play()}.
 }
 \author{
    Wolfgang Viechtbauer (\email{wvb@wvbauer.com})
