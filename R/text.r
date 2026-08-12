@@ -637,14 +637,14 @@
 
    if (x == "usesfcache") {
       return(switch(lang,
-                    de = paste0("Positionsbewertungen aus dem Cache abrufen: ", ifelse(arg, "An", "Aus")),
-                         paste0("Get position evaluations from the cache: ", ifelse(arg, "On", "Off"))
+                    de = paste0("Stockfish Positionsbewertungen aus dem Cache abrufen: ", ifelse(arg, "An", "Aus")),
+                         paste0("Get Stockfish position evaluations from the cache: ", ifelse(arg, "On", "Off"))
    ))}
 
    if (x == "uselicache") {
       return(switch(lang,
-                    de = paste0("Positionsdaten aus dem Cache abrufen: ", ifelse(arg, "An", "Aus")),
-                         paste0("Get position information from the cache: ", ifelse(arg, "On", "Off"))
+                    de = paste0("Lichess Positionsdaten aus dem Cache abrufen: ", ifelse(arg, "An", "Aus")),
+                         paste0("Get Lichess position information from the cache: ", ifelse(arg, "On", "Off"))
    ))}
 
    if (x == "contliquery") {

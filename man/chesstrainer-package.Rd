@@ -54,12 +54,15 @@
 
    Under the \verb{<F5>} menu, you can toggle whether the progress graph will be automatically shown at the end of each completed sequence.
 
-   With \verb{<F11>} (or \verb{<Ctrl-i>}), you can obtain a plot of the average score of all sequences as a function of each completed sequence during the current session. The horizontal dotted line corresponds to the average score at the beginning of the session. This is useful to check whether progress is being made in learning all of the sequences.
+   With \verb{<F11>} (or \verb{<Ctrl-2>}), you can obtain a plot of the average score of all sequences as a function of each completed sequence during the current session. The horizontal dotted line corresponds to the average score at the beginning of the session. This is useful to check whether progress is being made in learning all of the sequences.
 
 }
 \section{Managing and Selecting Sequences}{
 
-   Using the \verb{<l>} key, you can obtain a list of all sequences, together with their current score, the number of rounds (how times they have been played so far), their age (in days; \code{NA} if a sequence has not been played before), the estimated difficulty of the sequence (\code{NA} if this cannot be computed yet), and the current play probability (with 0 to 5 asterisks next to it based on the probability). Note that this is shown in the console, so ideally you should place the window with the chess board and the console window next to each other.
+   Using the \verb{<l>} key, you can obtain a list of all sequences, together with their current score, the number of rounds (how times they have been played so far), their age (in days; \code{NA} if a sequence has not been played before), the estimated difficulty of the sequence (\code{NA} if this cannot be computed yet), and the current play probability (with 0 to 5 asterisks next to it based on the probability). Note that this is shown in the console, so ideally you should place the window with the chess board and the console window next to each other. \if{html}{A possible arrangement is shown below.} \if{latex}{A possible arrangement is shown below.}
+
+   \if{html}{\figure{arrangement1.png}{options: width=900}}
+   \if{latex}{\figure{arrangement1.png}{options: width=5.5in}}
 
    In \emph{test mode}, you can use \verb{<Ctrl-d>} to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.
 
@@ -183,7 +186,7 @@
 }
 \section{Position Evaluations via Stockfish}{
 
-   If Stockfish (\verb{https://stockfishchess.org}) is installed (see the \code{\link{install_stockfish}} function), it can be used in the background to automatically obtain position evaluations when adding sequences. For this, open up the settings for Stockfish via \verb{<F7>}, click on \sQuote{Stockfish path}, and enter the path (including the executable) to Stockfish. If this is set correctly, then position evaluations will be automatically computed and added to a sequence. Evaluations are given in centipawns divided by 100, except for forced mates, which are given as \eqn{\pm99.9}. When playing a sequence, these evaluations are then shown as an evaluation bar on the left of the board.
+   If Stockfish (\url{https://stockfishchess.org}) is installed (see the \code{\link{install_stockfish}} function), it can be used in the background to automatically obtain position evaluations when adding sequences. For this, open up the settings for Stockfish via \verb{<F7>}, click on \sQuote{Stockfish path}, and enter the path (including the executable) to Stockfish. If this is set correctly, then position evaluations will be automatically computed and added to a sequence. Evaluations are given in centipawns divided by 100, except for forced mates, which are given as \eqn{\pm99.9}. When playing a sequence, these evaluations are then shown as an evaluation bar on the left of the board.
 
    \if{html}{\figure{eval-bar.png}{options: width=900}}
    \if{latex}{\figure{eval-bar.png}{options: width=5.5in}}
@@ -195,36 +198,36 @@
 
    The \verb{<H>} key will run a deeper analysis (by default based on search depth of 20 half-moves) and show the best move according to Stockfish. Since this may take some time, a progress bar is shown at the top while the analysis is running.
 
-   The \verb{<L>} key does the same thing, but queries Lichess for a cloud evaluation (\verb{https://database.lichess.org/#evals}). These evaluations are often based on a very deep search and can be obtained quickly since they are precalculated. If the current position cannot be found in the database, then Stockfish is used to run a deeper analysis as a fallback option (or if the depth of the cloud evaluation is lower than the search depth of a deep evaluation).
+   The \verb{<L>} key does the same thing, but queries Lichess for a cloud evaluation (\url{https://database.lichess.org/#evals}). These evaluations are often based on a very deep search and can be obtained quickly since they are precalculated. If the current position cannot be found in the database, then Stockfish is used to run a deeper analysis as a fallback option (or if the depth of the cloud evaluation is lower than the search depth for a deep evaluation with Stockfish).
 
    With \verb{<F7>}, you can adjust the Stockfish settings, including the calculation depths (for fast and deep evaluations and for the \emph{play mode}; see below), the number of principal variations that will be evaluated (for fast and deep evaluations), the (maximum) depth of the line(s) shown at the top of the board when asking for the best move (10 half-moves by default), the number of threads that Stockfish can use during its calculations (the default is 1), and the hash size in MB (the default is 256). If the pause after moving pieces in \emph{add mode} feels too long, lower the search depth for fast evaluations (e.g., to something like 10) for increased responsiveness.
 
    For a given position, the evaluation obtained is actually cached (also across sessions) and reused if the same position is encountered again. This greatly helps to increase the responsiveness of the trainer, especially when adding opening sequences (where the same positions reoccur frequently). The cached evaluation is always based on the highest search depth that was used to evaluate a given position. Cached evaluations that are older than a certain number of months are automatically removed from the cache.
 
-   In the \verb{<F7>} menu, you can toggle whether the cache is used when pressing the \verb{<H>} or \verb{<L>} key. When the cache is switched off, the evaluation will either be forced to be based on a local evaluation with Stockfish (when pressing \verb{<H>}) or a cloud evaluation (when pressing \verb{<L>}).
+   In the \verb{<F7>} menu, you can toggle whether the cache is used when pressing the \verb{<H>} or \verb{<L>} key (this can also be toggled with \verb{<ctrl-h>}). When the cache is switched off, the evaluation will either be forced to be based on a local evaluation with Stockfish (when pressing \verb{<H>}) or a cloud evaluation (when pressing \verb{<L>}). The evaluation is then still cached. Switching off the cache simply means that pressing the \verb{<H>} or \verb{<L>} key forces a reevaluation of the position instead of retrieving the evaluation from the cache.
 
    The \verb{<u>} key updates the evaluations for all moves in a sequence by recalculating the evaluations with the current setting for a deeper analysis. Depending on the number of moves in the sequence and the search depth for deep evaluations, this can take a bit of time. With the \verb{<U>} key, all (selected) sequences can be updated in this manner. Note that this can take a very long time.
 
-   With the \verb{<v>} key, the evaluation bar can be toggled on/off. This is mode specific (i.e., you can switch off the evaluation bar when in \emph{test mode}, but still keep it on when in \emph{add mode}). If evaluations are not available, the bar is not shown irrespective of whether it is toggled on or off. If the evaluation bar is turned off in \emph{test mode}, it is still shown at the end of each sequence.
+   With the \verb{<v>} key (or in the \verb{<F5>} menu), the evaluation bar can be toggled on/off. This is mode specific (i.e., you can switch off the evaluation bar when in \emph{test mode}, but still keep it on when in \emph{add mode}). If evaluations are not available, the bar is not shown irrespective of whether it is toggled on or off. If the evaluation bar is turned off in \emph{test mode}, it is still shown at the end of each sequence.
 
 }
 \section{Querying the Lichess Database}{
 
-   When pressing the \verb{<i>} key, the trainer queries the Lichess games database (\verb{https://database.lichess.org}) for the current position. If the position is found, the most frequently played moves are shown in the console, including the percentage of games won by white, the percentage of games drawn, and the percentage of games won by black.
+   When pressing the \verb{<i>} key, the trainer queries the Lichess games database (\url{https://database.lichess.org}) for the current position. If the position is found, the most frequently played moves are shown in the console, including the percentage of games won by white, the percentage of games drawn, and the percentage of games won by black.
 
    With \verb{<F8>}, you can adjust some related settings, namely which time controls and which player ratings should be included in the query, whether to query the regular player database or the masters database (for the latter, the time control and rating settings are not relevant), the minimum frequency of moves, the minimum play percentage of the moves, the length of the bars indicating the outcome percentages, how to sort the moves (either by their frequency or by their win percentage), whether to invert the bar (in case you use white text on a dark background in the console), and where to display the moves (either in the console or in a separate plotting window).
 
    \if{html}{When using a separate plotting window, one should arrange the various windows so that the board, console, and window for the Lichess moves are placed side-by-side. A possible arrangement is shown below.}
 
-   \if{html}{\figure{arrangement.png}{options: width=900}}
+   \if{html}{\figure{arrangement2.png}{options: width=900}}
 
    \if{latex}{When using a separate plotting window, one should arrange the various windows so that the board, console, and window for the Lichess moves are placed side-by-side. A possible arrangement is shown below.}
 
-   \if{latex}{\figure{arrangement.png}{options: width=5.5in}}
+   \if{latex}{\figure{arrangement2.png}{options: width=5.5in}}
 
-   In order to access the Lichess database via its API, you must set an API access token, which requires a Lichess account (on the Lichess website at \verb{https://lichess.org}, go to Preferences, API access tokens, and then generate a token leaving all toggles off; then enter this token under the \verb{<F8>} menu by clicking on \sQuote{API Token}).
+   In order to access the Lichess database via its API, you must set an API access token, which requires a Lichess account (on the Lichess website, go to Preferences, API access tokens, and then generate a token leaving all toggles off; then enter this token under the \verb{<F8>} menu by clicking on \sQuote{API Token}).
 
-   Also, to reduce the number of times that the Lichess database is queried, the information returned is cached locally (also across sessions) and reused if the database was queried for the same position before. The cache can be cleared via the \verb{<F8>} menu. Also, cached entries that are older than a certain number of months are automatically removed from the cache. You can also switch off that information about the current position is obtained from the cache, but this implies that the Lichess database is queried even for positions seen before. Note that the API has rate limits, which might be triggered when making too many queries within a short amount of time. If this happens, please wait a minute or so before querying the database again.
+   Also, to reduce the number of times that the Lichess database is queried, the information returned is cached locally (also across sessions) and reused if the database was queried for the same position before. The cache can be cleared via the \verb{<F8>} menu. Also, cached entries that are older than a certain number of months are automatically removed from the cache. You can also switch off that information about the current position is obtained from the cache (this can also be toggled with \verb{<ctrl-i>}), but this implies that the Lichess database is queried even for positions seen before. Note that the API has rate limits, which might be triggered when making too many queries within a short amount of time. If this happens, please wait a minute or so before querying the database again.
 
    The \verb{<Y>} key can be used to switch on a continuous query mode, where the database is automatically queried after each move. When the continuous query mode is on, an evaluation bar will be shown on the left indicating the outcome percentages for the current position. This bar can be toggled on and off with the \verb{<V>} key.
 
@@ -250,7 +253,7 @@
 
    With \verb{<F2>}, a leaderboard (based on the lowest average score) and player statistics are shown (i.e., the average score, the standard deviation of the scores, the minimum, first quartile, third quartile, and the maximum score, and the total number of rounds played). The statistics are based on the currently selected sequences (or all sequences in the current sequence directory if no selection has been applied). Also, sequences whose score was manually set to 0 are not included in these statistics.
 
-   For each player, the trainer also keeps track of each session including the play time. With \verb{<F12>} (or \verb{<Ctrl-h>}), you can obtain a plot of your session history, showing the play time (in minutes) over days (multiple sessions on the same day are collapsed into a single session; sessions shorter than two minutes are not counted). The total play time across all sessions is also shown. With the \verb{<down>/<up>} arrows (or the middle mouse button), you can toggle to a view of the number of sequences played over days. You can zoom into a particular time frame by left-clicking twice (once for the start and once for the end of the interval). This can be repeated to zoom in further. Clicking the right mouse button zooms all the way out. With the \verb{<right>/<left>} arrows, you can toggle to a view of the history over weeks and months (these views are only available if the session history spans multiple weeks/months). Again, you can zoom into particular time frames in these views by clicking the left mouse button twice. Clicking outside of the graph, right-clicking anywhere when zoomed out, or \verb{<escape>} closes the graph.
+   For each player, the trainer also keeps track of each session including the play time. With \verb{<F12>} (or \verb{<Ctrl-3>}), you can obtain a plot of your session history, showing the play time (in minutes) over days (multiple sessions on the same day are collapsed into a single session; sessions shorter than two minutes are not counted). The total play time across all sessions is also shown. With the \verb{<down>/<up>} arrows (or the middle mouse button), you can toggle to a view of the number of sequences played over days. You can zoom into a particular time frame by left-clicking twice (once for the start and once for the end of the interval). This can be repeated to zoom in further. Clicking the right mouse button zooms all the way out. With the \verb{<right>/<left>} arrows, you can toggle to a view of the history over weeks and months (these views are only available if the session history spans multiple weeks/months). Again, you can zoom into particular time frames in these views by clicking the left mouse button twice. Clicking outside of the graph, right-clicking anywhere when zoomed out, or \verb{<escape>} closes the graph.
 
 }
 \section{Play and Analysis Mode}{
@@ -272,7 +275,7 @@
 
    Recall that the \verb{<Y>} key can be used to switch on a continuous query mode, where the Lichess games database is automatically queried after each move. When this mode is on and one switches to \emph{play mode}, then the moves played by the computer do not come from Stockfish, but are chosen based on the moves found in the Lichess database (with more frequently played moves having a higher chance of being played by the computer). This way, you can practice openings against what actual players tend to play in a given position. The position evaluations from Stockfish are still available in this mode (assuming Stockfish is running), which provides immediate feedback whether your moves are advantageous or not. In addition, the Lichess evaluation bar is also shown, giving additional feedback.
 
-   In this mode, you will often eventually run into a position that cannot be found in the Lichess database. In this case, you can start over by pressing the \verb{<n>} key.
+   In this mode, you will often run into a position that cannot be found in the Lichess database. In this case, you can start over by pressing the \verb{<n>} key.
 
    To practice particular openings, you can also make a certain number of moves in \emph{add mode}, then press the \verb{<0>} key to make the current position the starting position, and then switch into \emph{play mode}. In this case, pressing the \verb{<n>} key restarts the game in the chosen starting position. Pressing the \verb{<N>} key restarts the game in the
    starting position of a chess game.
@@ -280,15 +283,15 @@
 }
 \section{Other Settings, Options, and Shortcuts}{
 
-   With \verb{<F4>}, you can adjust the display settings (i.e., colors and text sizes).
+   With \verb{<F4>}, you can adjust the display settings (i.e., colors and text sizes). Depending on your screen resolution and size of the plotting window (where the board is shown), it may require some fiddling with the size settings to find a comfortable arrangement.
 
    With \verb{<F5>}, various settings of the trainer can be adjusted. Most of these were already explained above or are self-explanatory. However, a few require explanation. The time between moves setting controls the delay for moves played by the trainer (this can also be adjusted outside of the \verb{<F5>} menu with the \verb{<->} and \verb{<=>} keys). The pause adjustment can be used in case that text shown at the top of the screen disappears too quickly (this seems to be an issue especially under Windows, in which case setting this to something like 0.3 should fix the issue).
 
    With \verb{<F6>}, you can adjust some miscellaneous settings, namely the score multiplier for completed sequences without mistakes (0.8 by default), the score penalty when making a wrong move (40 by default), the score penalty per hint (20 by default), the time per move for the \emph{timed mode} (5 seconds by default), the number of next moves to show after searches (5 by default), the idle time (120 seconds by default; time without any inputs longer than this value is not counted towards the play time for the session history), the minimum session time (60 seconds by default; sessions shorter than this are not actually saved in the session history), the number of animation steps for the evaluation bar (5 by default), and the target value for the scores.
 
-   With the \verb{<o>} key, the FEN of the current position is printed to the console and the position is opened on the Lichess website (\verb{https://lichess.org}) for analysis. With \verb{<Ctrl-f>}, the FEN is printed to the console and copied to the clipboard (this makes use of the \code{\link[clipr]{write_clip}} function from the \pkg{clipr} package). With \verb{<Ctrl-c>}, the current sequence name is printed and copied to the clipboard in \emph{test mode}.
+   With the \verb{<o>} key, the FEN of the current position is printed to the console and the position is opened on the Lichess website for analysis. With \verb{<Ctrl-f>}, the FEN is printed to the console and copied to the clipboard (this makes use of the \code{\link[clipr]{write_clip}} function from the \pkg{clipr} package). With \verb{<Ctrl-c>}, the current sequence name is printed and copied to the clipboard in \emph{test mode}.
 
-   With \verb{<F10>} (or \verb{<Ctrl-s>}), you can obtain histograms of the scores of the (selected) sequences, how many times they have been played so far (the number of rounds), how long ago they were played, their difficulty, and a scatterplot of the number of times they have been played versus their scores. In the scatterplot, the downward sloping dashed line indicates the best possible performance (i.e., never making a mistake when playing the sequence over and over) and the solid line the actual performance (as estimated based on a regression model; only shown when there are 5 or more points). If a target value for the scores has been set (see above), this value is indicated as horizontal dotted line (and also as a vertical dotted line in the histogram of the scores).
+   With \verb{<F10>} (or \verb{<Ctrl-1>}), you can obtain histograms of the scores of the (selected) sequences, how many times they have been played so far (the number of rounds), how long ago they were played, their difficulty, and a scatterplot of the number of times they have been played versus their scores. In the scatterplot, the downward sloping dashed line indicates the best possible performance (i.e., never making a mistake when playing the sequence over and over) and the solid line indicates the actual performance (as estimated based on a regression model; only shown when there are 5 or more points). If a target value for the scores has been set (see above), this value is indicated as horizontal dotted line (and also as a vertical dotted line in the histogram of the scores).
 
 }
 \section{Playing Sounds}{
@@ -298,13 +301,12 @@
    The sound volume can be decreased/increased in the \verb{<F5>} menu or with the \verb{<_>} and \verb{<+>} keys (note that this does not work with the mpg123 player under Windows; see \code{\link{playsound}}). Setting the volume to 0 disables the sound. This can also be useful if playing sounds adds too much lag.
 
 }
-\section{Notes for Windows Users}{
-
-   The trainer also runs under Windows, but the \code{RStudioGD} graphics device that is used by RStudio does not support event handling (see the \sQuote{Note} section below). Running \code{windows()} before starting the trainer with \code{play()} should work. Alternatively, just run R via RGui, which uses the windows plotting device by default (this is actually the recommended way to run the trainer under Windows).
+\section{Notes for RStudio / Windows Users}{
+   The \code{RStudioGD} graphics device that is used by RStudio does not support event handling (see the \sQuote{Note} section below). Running \code{windows()} (under Windows) or \code{x11()} (under macOS or Linux) before starting the trainer with \code{play()} should work. Under Windows, you could also run R via RGui, which uses the windows plotting device by default (this is actually the recommended way to run the trainer under Windows). Under macOS or Linux, you can just run R from the command line.
 
    If the graphics look fuzzy under RGui, then this might be related to high DPI scaling (under high resolutions, it is common to scale apps by 150\% or 200\% so that text and graphical elements are not tiny; see the display settings under Windows). To avoid this issue, go the the properties of RGui, select Compatibility, Change high DPI settings, High DPI scaling override, and select \sQuote{Application}. After restarting RGui, the graphics should look sharper.
 
-   The \verb{<F10>} function key is registered under Windows, but is also the operating system key for activating the menu bar, which is annoying. You can use the \verb{<Ctrl-s>} keyboard shortcut instead. For some reason, the \verb{<F11>} and \verb{<F12>} function keys are not registered at all. You can use \verb{<Ctrl-i>} and \verb{<Ctrl-h>} respectively instead.
+   The \verb{<F10>} function key is registered under Windows, but is also the operating system key for activating the menu bar, which is annoying. You can use the \verb{<Ctrl-1>} keyboard shortcut instead. For some reason, the \verb{<F11>} and \verb{<F12>} function keys are not registered at all. You can use \verb{<Ctrl-2>} and \verb{<Ctrl-3>} respectively instead.
 
    Occasionally, the graphics window flickers under Windows, especially when making rapid updates to the graphics being shown. The exact cause of this is unknown.
 

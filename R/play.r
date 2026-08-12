@@ -613,14 +613,19 @@ play <- function(lang="en", online, ...) {
 
    # define keys
 
-   keys <- c("q", "\033", " ", "m", "d", "\\", "\U000000E4", "n", "N", "B", "p",
+   keys <- c("q", "ctrl-Q", # to quit
+             "\033", "ctrl-[", # escape
+             " ", "m", "d", "\\", "\U000000E4", "n", "N", "B", "p",
              "g", "h", "H", "y", "Y", "Left", "Right", "Up", "Down", "t", "0", "1", "2", "3", "4", "5", "9",
              "r", "o", "u", "U", "M", "j", "%",
              "a", "A", "f", "z", "Z", "c", "!", "@", "\"", "#", "$", "\U000000A7", "e", "E", "s", "b", "F",
              "^", "6", "R", "W", "-", "=", "_", "+", "[", "]", "i", "v", "V",
              "l", "L", "<", ">", "/", ",", ".", "|", "*", "8", "?", "'", ";", ":",
              "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12",
-             "ctrl-F", "ctrl-C", "ctrl-D", "ctrl-R", "ctrl-[", "ctrl-Q", "ctrl-U", "ctrl-H", "ctrl-O", "ctrl-L", "ctrl-S", "ctrl-I", "ctrl-G", "ctrl-E", "ctrl-V", "ctrl-P", "ctrl-(", "ctrl-)", "ctrl-T", "ctrl-+", "ctrl-_")
+             "ctrl-F", "ctrl-C", "ctrl-D", "ctrl-R", "ctrl-U", "ctrl-O", "ctrl-L", "ctrl-G", "ctrl-E", "ctrl-V", "ctrl-P", "ctrl-T", "ctrl-H", "ctrl-I",
+             "ctrl-!", "ctrl-@", "ctrl-\"", "ctrl-#", "ctrl-\U000000A7", # ctrl-1, ctrl-2, ctrl-3
+             "ctrl-_", "ctrl-+", # to adjust margin width
+             "ctrl-(", "ctrl-)") # ctrl-9 and ctrl-0 to toggle advanced mode on/off and to edit the session history file
 
    run.all <- TRUE
 
@@ -1347,9 +1352,9 @@ play <- function(lang="en", online, ...) {
                next
             }
 
-            # ctrl-) to toggle advanced mode on/off
+            # ctrl-( to toggle advanced mode on/off
 
-            if (identical(click, "ctrl-)")) {
+            if (identical(click, "ctrl-(")) {
                advanced <- !advanced
                .texttop(.text("advanced", advanced), sleep=0.75)
                settings$advanced <- advanced
@@ -3130,6 +3135,28 @@ play <- function(lang="en", online, ...) {
                next
             }
 
+            # ctrl-h to toggle usesfcache
+
+            if (identical(click, "ctrl-H")) {
+               usesfcache <- !usesfcache
+               .texttop(.text("usesfcache", usesfcache), sleep=1.5)
+               assign("usesfcache", usesfcache, envir=.chesstrainer)
+               settings$usesfcache <- usesfcache
+               saveRDS(settings, file=file.path(configdir, "settings.rds"))
+               next
+            }
+
+            # ctrl-i to toggle uselicache
+
+            if (identical(click, "ctrl-I")) {
+               uselicache <- !uselicache
+               .texttop(.text("uselicache", uselicache), sleep=1.5)
+               assign("uselicache", uselicache, envir=.chesstrainer)
+               settings$uselicache <- uselicache
+               saveRDS(settings, file=file.path(configdir, "settings.rds"))
+               next
+            }
+
             ################################################################
 
             ### toggles and keys related to adjusting settings
@@ -3193,7 +3220,7 @@ play <- function(lang="en", online, ...) {
 
             # ctrl--/ctrl-= to decrease/increase the margin width
 
-            if (identical(click, "ctrl-+") || identical(click, "ctrl-_")) {
+            if (identical(click, "ctrl-_") || identical(click, "ctrl-+")) {
                if (identical(click, "ctrl-_")) {
                   mar <- pmax(1, mar - 0.5)
                } else {
@@ -4376,9 +4403,9 @@ play <- function(lang="en", online, ...) {
                next
             }
 
-            # F10 (or ctrl-s) to show the histograms / scatterplot
+            # F10 (or ctrl-1) to show the histograms / scatterplot
 
-            if (identical(click, "F10") || identical(click, "ctrl-S")) {
+            if (identical(click, "F10") || identical(click, "ctrl-!")) {
                if (k <= 1L) {
                   .texttop(.text("toofewscores"), sleep=1.5)
                   next
@@ -4397,9 +4424,9 @@ play <- function(lang="en", online, ...) {
                next
             }
 
-            # F11 (or ctrl-i) to show the session info
+            # F11 (or ctrl-2) to show the session info
 
-            if (identical(click, "F11") || identical(click, "ctrl-I")) {
+            if (identical(click, "F11") || identical(click, "ctrl-@") || identical(click, "ctrl-\"")) {
                if (sum(session.seqsplayed) <= 1) {
                   .texttop(.text("toofewseqsplayed"), sleep=1.5)
                   next
@@ -4421,9 +4448,9 @@ play <- function(lang="en", online, ...) {
                next
             }
 
-            # F12 (or ctrl-h) to show the session history graph
+            # F12 (or ctrl-3) to show the session history graph
 
-            if (identical(click, "F12") || identical(click, "ctrl-H")) {
+            if (identical(click, "F12") || identical(click, "ctrl-#") || identical(click, "ctrl-\U000000A7")) {
                player.file <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "sessions", paste0(player, ".rds"))
                if (file.exists(player.file)) {
                   session.playtime <- round(proc.time()[[3]] - session.time.start)
@@ -4449,7 +4476,7 @@ play <- function(lang="en", online, ...) {
 
             # ctrl-0 to edit the session history file
 
-            if (advanced && identical(click, "ctrl-(")) {
+            if (advanced && identical(click, "ctrl-)")) {
                player.file <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "sessions", paste0(player, ".rds"))
                if (file.exists(player.file)) {
                   dat.player <- readRDS(player.file)

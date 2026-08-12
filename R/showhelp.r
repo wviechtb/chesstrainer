@@ -1,4 +1,4 @@
-.showhelp <- function(page=1) {
+   .showhelp <- function(page=1) {
 
    #.clearsideindicator()
    #.drawtimer(clear=TRUE)
@@ -37,6 +37,8 @@
       "_+       - decrease/increase the sound volume",
       "v        - Stockfish evaluation bar on/off",
       "V        - Lichess evaluation bar on/off",
+      "Ctrl-h   - get Stockfish position evaluations from the cache on/off",
+      "Ctrl-i   - get Lichess position evaluations from the cache on/off",
       "Ctrl-f   - copy the FEN of the current position to the clipboard",
       "<escape> - redraw the board / exit a menu",
       "o        - open the current position on lichess.org",
@@ -132,6 +134,8 @@
       "_+       - Lautst\U000000E4rke verringern/erh\U000000F6hen",
       "v        - Stockfish Bewertungsbalken an/aus",
       "V        - Lichess Bewertungsbalken an/aus",
+      "Strg-h   - Stockfish Positionsbewertungen aus dem Cache abrufen an/aus",
+      "Strg-i   - Lichess Positionsdaten aus dem Cache abrufen an/aus",
       "Strg-f   - FEN der aktuellen Stellung in die Zwischenablage kopieren",
       "<escape> - Brett neu zeichnen / ein Men\U000000FC verlassen",
       "o        - die aktuelle Stellung auf lichess.org \U000000F6ffnen",

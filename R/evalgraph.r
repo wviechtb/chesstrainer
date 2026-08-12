@@ -39,14 +39,14 @@
       ys <- x$eval
       if (yvalue == "cp") {
          ylim <- c(-9, 9)
-         yat <- seq(-8, 8, by=2)
+         yat <- seq(-9, 9, by=1)
          evanval <- 0
          ylab <- .text("evaluation")
          invert <- FALSE
       }
       if (yvalue == "wp") {
          ylim <- c(0, 100)
-         yat <- seq(0, 90, by=10)
+         yat <- seq(0, 100, by=10)
          evanval <- 50
          ylab <- .text("winperc")
          if (flip) {
