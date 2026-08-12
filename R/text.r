@@ -325,8 +325,8 @@
 
    if (x == "strcapmistake") {
       return(switch(lang,
-                    de = "^[F|f|M|m](ehler)?\\s*(>|<|>=|<=)\\s*(\\d+\\.?\\d*)$",
-                         "^[F|f|M|m](istake)?\\s*(>|<|>=|<=)\\s*(\\d+\\.?\\d*)$"
+                    de = "^[Ff](ehler)?\\s*(>|<|>=|<=|=|==)\\s*(\\d+\\.?\\d*)$",
+                         "^[Mm](istake)?\\s*(>|<|>=|<=|=|==)\\s*(\\d+\\.?\\d*)$"
    ))}
 
    if (x == "selseqmistake") {
@@ -337,8 +337,8 @@
 
    if (x == "strcapscore") {
       return(switch(lang,
-                    de = "^[P|p](unkte)?\\s*(>|<|>=|<=)\\s*([[:digit:]]+)$",
-                         "^[S|s](core)?\\s*(>|<|>=|<=)\\s*([[:digit:]]+)$"
+                    de = "^[Pp](unkte)?\\s*(>|<|>=|<=|=|==)\\s*([[:digit:]]+)$",
+                         "^[Ss](core)?\\s*(>|<|>=|<=|=|==)\\s*([[:digit:]]+)$"
    ))}
 
    if (x == "selseqscore") {
@@ -355,8 +355,8 @@
 
    if (x == "strcaprounds") {
       return(switch(lang,
-                    de = "^[R|r](unden)?\\s*(>|<|>=|<=)\\s*([[:digit:]]+)$",
-                         "^[R|r](rounds)?\\s*(>|<|>=|<=)\\s*([[:digit:]]+)$"
+                    de = "^[Rr](unden)?\\s*(>|<|>=|<=|=|==)\\s*([[:digit:]]+)$",
+                         "^[Rr](ounds)?\\s*(>|<|>=|<=|=|==)\\s*([[:digit:]]+)$"
    ))}
 
    if (x == "selseqrounds") {
@@ -367,8 +367,8 @@
 
    if (x == "strcapage") {
       return(switch(lang,
-                    de = "^[A|a](lter)?\\s*(>|<|>=|<=)\\s*(\\d+\\.?\\d*)$",
-                         "^[A|a](ge)?\\s*(>|<|>=|<=)\\s*(\\d+\\.?\\d*)$"
+                    de = "^[Aa](lter)?\\s*(>|<|>=|<=|=|==)\\s*(\\d+\\.?\\d*)$",
+                         "^[Aa](ge)?\\s*(>|<|>=|<=|=|==)\\s*(\\d+\\.?\\d*)$"
    ))}
 
    if (x == "selseqage") {
@@ -379,8 +379,8 @@
 
    if (x == "strcapdiff") {
       return(switch(lang,
-                    de = "^[S|s](chwierigkeit)?\\s*(>|<|>=|<=)\\s*(\\d+\\.?\\d*)$",
-                         "^[D|d](ifficulty)?\\s*(>|<|>=|<=)\\s*(\\d+\\.?\\d*)$"
+                    de = "^[Ss](chwierigkeit)?\\s*(>|<|>=|<=|=|==)\\s*(\\d+\\.?\\d*)$",
+                         "^[Dd](ifficulty)?\\s*(>|<|>=|<=|=|==)\\s*(\\d+\\.?\\d*)$"
    ))}
 
    if (x == "selseqdiff") {

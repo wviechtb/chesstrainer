@@ -3559,6 +3559,8 @@ play <- function(lang="en", online, ...) {
 
                if (!is.na(tmp$days)) {
                   cat(.text("selseqmistake", list(tmp$sign, tmp$days)))
+                  if (identical(tmp$sign, "="))
+                      tmp$sign <- "=="
                   selected <- sapply(dat.all, function(x) {
                      x <- x$player[[player]]
                      if (is.null(x))
@@ -3635,6 +3637,8 @@ play <- function(lang="en", online, ...) {
 
                if (!is.na(tmp$cutoff)) {
                   cat(.text("selseqscore", list(tmp$sign, tmp$cutoff)))
+                  if (identical(tmp$sign, "="))
+                      tmp$sign <- "=="
                   selected <- eval(parse(text = paste("scores.all", tmp$sign, tmp$cutoff)))
                   selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected]
                   if (length(selected) == 0L) {
@@ -3657,6 +3661,8 @@ play <- function(lang="en", online, ...) {
 
                if (!is.na(tmp$cutoff)) {
                   cat(.text("selseqrounds", list(tmp$sign, tmp$cutoff)))
+                  if (identical(tmp$sign, "="))
+                      tmp$sign <- "=="
                   selected <- eval(parse(text = paste("rounds.all", tmp$sign, tmp$cutoff)))
                   selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected]
                   if (length(selected) == 0L) {
@@ -3679,6 +3685,8 @@ play <- function(lang="en", online, ...) {
 
                if (!is.na(tmp$cutoff)) {
                   cat(.text("selseqage", list(tmp$sign, tmp$cutoff)))
+                  if (identical(tmp$sign, "="))
+                      tmp$sign <- "=="
                   selected <- eval(parse(text = paste("age.all", tmp$sign, tmp$cutoff)))
                   selected[is.na(selected)] <- FALSE
                   selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected]
@@ -3702,6 +3710,8 @@ play <- function(lang="en", online, ...) {
 
                if (!is.na(tmp$cutoff)) {
                   cat(.text("selseqdiff", list(tmp$sign, tmp$cutoff)))
+                  if (identical(tmp$sign, "="))
+                      tmp$sign <- "=="
                   selected <- eval(parse(text = paste("difficulty.all", tmp$sign, tmp$cutoff)))
                   selected[is.na(selected)] <- FALSE
                   selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected]
