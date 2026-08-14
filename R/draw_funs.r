@@ -891,7 +891,7 @@
 
 }
 
-.drawarrow <- function(y1, x1, y2, x2, col=.get("col.annot"), width=0.75) {
+.drawarrow <- function(y1, x1, y2, x2, col=.get("col.annot"), width=0.75, number=NULL) {
 
    x1 <- x1 + 0.5
    y1 <- y1 + 0.5
@@ -942,11 +942,21 @@
                  ycap),
            col=col, border=NA)
 
+   if (!is.null(number)) {
+      xcenter <- x2 - head.length * ux / 1.7
+      ycenter <- y2 - head.length * uy / 1.7
+      cex.number <- max(0.6, width)  * 1.1
+      shift <- 0.01 * cex.number
+      text(xcenter+c(-1,1)*shift, ycenter, number, col="black", cex=cex.number)
+      text(xcenter, ycenter+c(-1,1)*shift, number, col="black", cex=cex.number)
+      text(xcenter, ycenter, number, col="white", cex=cex.number)
+   }
+
    return()
 
 }
 
-.drawarrows <- function(arrows, hint=FALSE, evalvals, sidetoplay, allarrows=FALSE) {
+.drawarrows <- function(arrows, hint=FALSE, evalvals, sidetoplay, allarrows=FALSE, addnumbers=FALSE) {
 
    if (nrow(arrows) == 0L)
       return()
@@ -968,7 +978,11 @@
          widths <- widths / max(widths)
          cols <- c(col.best1, rep(col.best2, n-1))[order(winchances, decreasing=TRUE)]
          for (j in 1:nrow(arrows)) {
-            .drawarrow(arrows[j,1], arrows[j,2], arrows[j,3], arrows[j,4], col=cols[j], width=widths[j])
+            if (addnumbers) {
+               .drawarrow(arrows[j,1], arrows[j,2], arrows[j,3], arrows[j,4], col=cols[j], width=widths[j], number=j)
+            } else {
+               .drawarrow(arrows[j,1], arrows[j,2], arrows[j,3], arrows[j,4], col=cols[j], width=widths[j])
+            }
          }
       }
    } else {
@@ -1503,19 +1517,39 @@
    col.bot  <- .get("col.bot")
    cex.bot  <- .get("cex.bot")
    depth    <- .get("depth")
+   iscloud  <- .get("iscloud")
 
    if (clear || !showeval) {
-      rect(xpos-0.2, 0.7, xpos+indsize+0.4, 0.98, border=NA, col=col.bg)
+      rect(xpos-0.2, 0.60, xpos+indsize+0.4, 0.98, border=NA, col=col.bg)
       return()
    }
 
-   rect(xpos-0.2, 0.7, xpos+indsize+0.4, 0.98, border=NA, col=col.bg)
+   dev.hold()
 
-   if (mode != "test" && !is.null(depth))
+   rect(xpos-0.2, 0.60, xpos+indsize+0.4, 0.98, border=NA, col=col.bg)
+
+   if (mode != "test" && !is.null(depth)) {
       text(xpos + indsize/2, 0.85, paste0("(d=", depth, ")"), cex=cex.bot, col=col.bot)
+      if (isTRUE(iscloud)) {
+         rasterImage(.recolor(.chesstrainer$cloud, col.bot), xpos+indsize/2-0.07, 0.70-0.07, xpos+indsize/2+0.07, 0.70+0.07)
+         #text(xpos + indsize/2, 0.72, "\u2601\u2193", cex=cex.bot, col=col.bot)
+      }
+   }
+
+   dev.flush()
 
    return()
 
+}
+
+.recolor <- function(img, col) {
+   rgba <- col2rgb(col, alpha=TRUE) / 255
+   out <- array(0, dim=c(dim(img)[1:2], 4))
+   out[,,1] <- rgba[1]
+   out[,,2] <- rgba[2]
+   out[,,3] <- rgba[3]
+   out[,,4] <- img[,,2] * rgba[4]
+   return(out)
 }
 
 .drawevalbar <- function(eval=NA_real_, i=1, starteval=NA_real_, flip=FALSE, clear=FALSE, showeval=TRUE) {
@@ -1576,51 +1610,55 @@
    lasteval <- min(max(lasteval, -maxeval), maxeval)
    lasteval <- (lasteval + maxeval) / (2*maxeval) * 8 + 1
 
-   props <- seq(0, 1, length.out=evalsteps)^(1/5)
+   if (!identical(eval, lasteval)) {
 
-   doanim <- !is.na(lasteval) && evalsteps >= 3
+      props <- seq(0, 1, length.out=evalsteps)^(1/5)
 
-   if (flip) {
-      if (doanim) {
-         rect(xpos, 10-lasteval, xpos+indsize, 9, border=NA, col=col.side.w)
-         rect(xpos, 1, xpos+indsize, 10-lasteval, border=NA, col=col.side.b)
-         evals <- lasteval + (eval - lasteval) * props
-         col.side.bar <- ifelse(eval > lasteval, col.side.w, col.side.b)
-         for (i in 2:evalsteps) {
-            rect(xpos, 10-evals[i-1], xpos+indsize, 10-evals[i], border=NA, col=col.side.bar)
+      doanim <- !is.na(lasteval) && evalsteps >= 3
+
+      if (flip) {
+         if (doanim) {
+            rect(xpos, 10-lasteval, xpos+indsize, 9, border=NA, col=col.side.w)
+            rect(xpos, 1, xpos+indsize, 10-lasteval, border=NA, col=col.side.b)
+            evals <- lasteval + (eval - lasteval) * props
+            col.side.bar <- ifelse(eval > lasteval, col.side.w, col.side.b)
+            for (i in 2:evalsteps) {
+               rect(xpos, 10-evals[i-1], xpos+indsize, 10-evals[i], border=NA, col=col.side.bar)
+            }
+         } else {
+            rect(xpos, 10-eval, xpos+indsize, 9, border=NA, col=col.side.w)
+            rect(xpos, 1, xpos+indsize, 10-eval, border=NA, col=col.side.b)
+         }
+         if (eval > 5) {
+            text(xpos + indsize/2, 8.9, evaltxt, cex=cex.eval, col=col.side.b)
+         } else {
+            text(xpos + indsize/2, 1.1, evaltxt, cex=cex.eval, col=col.side.w)
          }
       } else {
-         rect(xpos, 10-eval, xpos+indsize, 9, border=NA, col=col.side.w)
-         rect(xpos, 1, xpos+indsize, 10-eval, border=NA, col=col.side.b)
-      }
-      if (eval > 5) {
-         text(xpos + indsize/2, 8.9, evaltxt, cex=cex.eval, col=col.side.b)
-      } else {
-         text(xpos + indsize/2, 1.1, evaltxt, cex=cex.eval, col=col.side.w)
-      }
-   } else {
-      if (doanim) {
-         rect(xpos, lasteval, xpos+indsize, 9, border=NA, col=col.side.b)
-         rect(xpos, 1, xpos+indsize, lasteval, border=NA, col=col.side.w)
-         evals <- lasteval + (eval - lasteval) * props
-         col.side.bar <- ifelse(eval > lasteval, col.side.w, col.side.b)
-         for (i in 2:evalsteps) {
-            rect(xpos, evals[i-1], xpos+indsize, evals[i], border=NA, col=col.side.bar)
+         if (doanim) {
+            rect(xpos, lasteval, xpos+indsize, 9, border=NA, col=col.side.b)
+            rect(xpos, 1, xpos+indsize, lasteval, border=NA, col=col.side.w)
+            evals <- lasteval + (eval - lasteval) * props
+            col.side.bar <- ifelse(eval > lasteval, col.side.w, col.side.b)
+            for (i in 2:evalsteps) {
+               rect(xpos, evals[i-1], xpos+indsize, evals[i], border=NA, col=col.side.bar)
+            }
+         } else {
+            rect(xpos, eval, xpos+indsize, 9, border=NA, col=col.side.b)
+            rect(xpos, 1, xpos+indsize, eval, border=NA, col=col.side.w)
          }
-      } else {
-         rect(xpos, eval, xpos+indsize, 9, border=NA, col=col.side.b)
-         rect(xpos, 1, xpos+indsize, eval, border=NA, col=col.side.w)
+         if (eval > 5) {
+            text(xpos + indsize/2, 1.1, evaltxt, cex=cex.eval, col=col.side.b)
+         } else {
+            text(xpos + indsize/2, 8.9, evaltxt, cex=cex.eval, col=col.side.w)
+         }
       }
-      if (eval > 5) {
-         text(xpos + indsize/2, 1.1, evaltxt, cex=cex.eval, col=col.side.b)
-      } else {
-         text(xpos + indsize/2, 8.9, evaltxt, cex=cex.eval, col=col.side.w)
-      }
+
+      segments(xpos+0.005, 5, xpos+indsize-0.005, col=col.fg)
+
    }
 
    .drawdepth(showeval=showeval)
-
-   segments(xpos+0.005, 5, xpos+indsize-0.005, col=col.fg)
 
    return()
 
@@ -1801,9 +1839,11 @@
 
 }
 
-.showbestmove <- function(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth, multipv, sflim) {
+.showbestmove <- function(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth, multipv) {
 
    evalvals <- NULL
+
+   dev.hold()
 
    if (nrow(circles) >= 1L || nrow(arrows) >= 1L || nrow(harrows) >= 1L) {
       .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), flip=flip)
@@ -1846,17 +1886,21 @@
       }
       evalvals <- evalvals[!is.na(evalvals)]
       bestmovetxt <- bestmovetxt[!is.na(bestmovetxt)]
-      .drawarrows(harrows, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
+      .drawarrows(harrows, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay, addnumbers=.get("showbestnumber"))
       .texttop(paste0(bestmovetxt, collapse="\n"), left=TRUE)
    } else {
+      dev.flush()
       if (sfrun) {
          .texttop(.text("nobestmove"), sleep=1.5)
       } else {
          .texttop(.text("nomovewoutsf"), sleep=1.5)
       }
+      dev.hold()
    }
 
    .drawglyph(glyph)
+
+   dev.flush()
 
    return(list(harrows=harrows, evalvals=evalvals))
 
@@ -1896,17 +1940,17 @@
    xpos2 <- 9
    shift <- 0.10
    space <- 0.20
-   ypos  <- 0.82
+   ypos  <- 0.90
 
    if (score != 0) {
 
       txt <- paste0("+", abs(score), collapse="")
 
       if (score > 0) {
-         text(xpos1, ifelse(flip, 10-ypos, ypos), txt, pos=2, cex=cex.matdiff*0.9, col=col, offset=0)
+         text(xpos1, ifelse(flip, 10-ypos, ypos), txt, cex=cex.matdiff, col=col, adj=c(1,ifelse(flip,0,1)))
          xpos1 <- xpos1 - strwidth(txt, cex=cex.matdiff) - shift
       } else {
-         text(xpos2, ifelse(flip, ypos, 10-ypos), txt, pos=2, cex=cex.matdiff*0.9, col=col, offset=0)
+         text(xpos2, ifelse(flip, ypos, 10-ypos), txt, cex=cex.matdiff, col=col, adj=c(1,ifelse(flip,1,0)))
          xpos2 <- xpos2 - strwidth(txt, cex=cex.matdiff) - shift
       }
 
@@ -1917,14 +1961,14 @@
       if (mdiff[i] > 0) {
          n <- mdiff[i]
          xpos1 <- xpos1 - (0:(n-1)) * shift
-         text(xpos1, rep(ifelse(flip, 10-ypos, ypos), n) , pieces[i], pos=2, offset=0, cex=cex.matdiff*1.1, col=col)
+         text(xpos1, rep(ifelse(flip, 10-ypos, ypos), n) , pieces[i], cex=cex.matdiff, col=col, adj=c(1,ifelse(flip,0,1)))
          xpos1 <- min(xpos1) - space
       }
 
       if (mdiff[i] < 0) {
          n <- -mdiff[i]
          xpos2 <- xpos2 - (0:(n-1)) * shift
-         text(xpos2, rep(ifelse(flip, ypos, 10-ypos), n) , pieces[i], pos=2, offset=0, cex=cex.matdiff*1.1, col=col)
+         text(xpos2, rep(ifelse(flip, ypos, 10-ypos), n) , pieces[i], cex=cex.matdiff, col=col, adj=c(1,ifelse(flip,1,0)))
          xpos2 <- min(xpos2) - space
       }
 
@@ -1957,15 +2001,15 @@
    xpos2 <- 9
    shift <- 0.10
    space <- 0.20
-   ypos  <- 0.82
+   ypos  <- 0.90
 
    txt <- paste0("+", abs(score), collapse="")
 
    if (score > 0) {
-      text(xpos1, ypos, txt, pos=2, cex=cex.matdiff*0.9, col=col, offset=0)
+      text(xpos1, ypos, txt, cex=cex.matdiff, col=col, adj=c(1,1))
       xpos1 <- xpos1 - strwidth(txt, cex=cex.matdiff) - shift
    } else {
-      text(xpos2, 10-ypos, txt, pos=2, cex=cex.matdiff*0.9, col=col, offset=0)
+      text(xpos2, 10-ypos, txt, cex=cex.matdiff, col=col, adj=c(1,0))
       xpos2 <- xpos2 - strwidth(txt, cex=cex.matdiff) - shift
    }
 
@@ -1974,14 +2018,14 @@
       if (mdiff[i] > 0) {
          n <- mdiff[i]
          xpos1 <- xpos1 - (0:(n-1)) * shift
-         text(xpos1, rep(ypos, n) , pieces[i], pos=2, offset=0, cex=cex.matdiff*1.1, col=col)
+         text(xpos1, rep(ypos, n), pieces[i], cex=cex.matdiff, col=col, adj=c(1,1))
          xpos1 <- min(xpos1) - space
       }
 
       if (mdiff[i] < 0) {
          n <- -mdiff[i]
          xpos2 <- xpos2 - (0:(n-1)) * shift
-         text(xpos2, rep(10-ypos, n) , pieces[i], pos=2, offset=0, cex=cex.matdiff*1.1, col=col)
+         text(xpos2, rep(10-ypos, n), pieces[i], cex=cex.matdiff, col=col, adj=c(1,0))
          xpos2 <- min(xpos2) - space
       }
 
@@ -1994,10 +2038,14 @@
 .clearmatdiff <- function(assign=TRUE) {
 
    col.bg <- .get("col.bg")
-   rect(5, 0.70, 9, 0.98, col=col.bg, border=NA)
-   rect(5, 9.02, 9, 9.30, col=col.bg, border=NA)
+   cex.matdiff <- .get("cex.matdiff")
+
+   rect(5, 0.9 - 1.1*strheight("M", cex=cex.matdiff), 9, 0.98, col=col.bg, border=NA)
+   rect(5, 9.02, 9, 9.1 + 1.1*strheight("M", cex=cex.matdiff), col=col.bg, border=NA)
+
    if (assign)
       assign("matdiff", NULL, envir=.chesstrainer)
+
    return()
 
 }

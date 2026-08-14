@@ -29,7 +29,7 @@ play <- function(lang="en", online, ...) {
 
    defaults <- list(player="", seqdir="", seqdirpos=1, mode="add", advanced=FALSE, selmode="score_random", timed=FALSE, timepermove=5,
                     expval=2, target=0, multiplier=0.8, adjustwrong=40, adjusthint=20, showeval=TRUE, evalsteps=5, movestoshow=5,
-                    showcoords=TRUE, showtransp=TRUE, showmatdiff=TRUE, san=TRUE, piecesymbols=1, wait=TRUE, delay=0.5, idletime=120, mintime=60, sleepadj=0, volume=50,
+                    showcoords=TRUE, showtransp=TRUE, showmatdiff=TRUE, showbestnumber=FALSE, san=TRUE, piecesymbols=1, wait=TRUE, delay=0.5, idletime=120, mintime=60, sleepadj=0, volume=50,
                     showgraph=FALSE, repmistake=FALSE, zenmode=FALSE, compseq=TRUE,
                     cex=1, cex.top=1.4, cex.bot=0.7, cex.eval=0.5, cex.coords=0.85, cex.matdiff=1.1, cex.plots=1.0, cex.glyphs=1.6, cex.lichess=0.8,
                     sfpath="", depth1=12, depth2=20, depth3=8, sflim=NA, multipv1=1, multipv2=1, threads=1, hash=256, hintdepth=10, monthssfcache=12, usesfcache=TRUE,
@@ -149,7 +149,7 @@ play <- function(lang="en", online, ...) {
          stop(.text("dircreateerror"), call.=FALSE)
       settings <- list(lang=lang, player=player, seqdir=seqdir, seqdirpos=seqdirpos, advanced=advanced, selmode=selmode, timed=timed, timepermove=timepermove,
                        expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, showeval=showeval, evalsteps=evalsteps, movestoshow=movestoshow,
-                       showcoords=showcoords, showtransp=showtransp, showmatdiff=showmatdiff, san=san, piecesymbols=piecesymbols, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, volume=volume,
+                       showcoords=showcoords, showtransp=showtransp, showmatdiff=showmatdiff, showbestnumber=showbestnumber, san=san, piecesymbols=piecesymbols, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, volume=volume,
                        showgraph=showgraph, repmistake=repmistake, zenmode=zenmode, compseq=compseq,
                        cex=cex, cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs, cex.lichess=cex.lichess,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, monthssfcache=monthssfcache, usesfcache=usesfcache,
@@ -181,7 +181,7 @@ play <- function(lang="en", online, ...) {
       sfpath <- suppressWarnings(normalizePath(sfpath))
       settings <- list(lang=lang, player=player, seqdir=seqdir, seqdirpos=seqdirpos, advanced=advanced, selmode=selmode, timed=timed, timepermove=timepermove,
                        expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, showeval=showeval, evalsteps=evalsteps, movestoshow=movestoshow,
-                       showcoords=showcoords, showtransp=showtransp, showmatdiff=showmatdiff, san=san, piecesymbols=piecesymbols, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, volume=volume,
+                       showcoords=showcoords, showtransp=showtransp, showmatdiff=showmatdiff, showbestnumber=TRUE, san=san, piecesymbols=piecesymbols, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, volume=volume,
                        showgraph=showgraph, repmistake=repmistake, zenmode=zenmode, compseq=compseq,
                        cex=cex, cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs, cex.lichess=cex.lichess,
                        sfpath=sfpath, depth1=depth1, depth2=depth2, depth3=depth3, sflim=sflim, multipv1=multipv1, multipv2=multipv2, threads=threads, hash=hash, hintdepth=hintdepth, monthssfcache=monthssfcache, usesfcache=usesfcache,
@@ -231,6 +231,7 @@ play <- function(lang="en", online, ...) {
    assign("mar2", mar2, envir=.chesstrainer)
    assign("showcoords", showcoords, envir=.chesstrainer)
    assign("showmatdiff", showmatdiff, envir=.chesstrainer)
+   assign("showbestnumber", showbestnumber, envir=.chesstrainer)
    assign("san", san, envir=.chesstrainer)
    assign("piecesymbols", piecesymbols, envir=.chesstrainer)
    assign("timed", timed, envir=.chesstrainer)
@@ -679,6 +680,7 @@ play <- function(lang="en", online, ...) {
       assign("mattdiff", 0, envir=.chesstrainer)
       assign("x2y2", c(NA,NA), envir=.chesstrainer)
       assign("depth", NULL, envir=.chesstrainer)
+      assign("iscloud", FALSE, envir=.chesstrainer)
       assign("texttop", "", envir=.chesstrainer)
 
       circles <- matrix(nrow=0, ncol=2) # to store circles
@@ -1146,7 +1148,7 @@ play <- function(lang="en", online, ...) {
          }
 
          if (mode %in% c("add","analysis") && contanalysis && drawarrows && identical(matetype, "none")) {
-            tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
+            tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1)
             harrows  <- tmp$harrows
             evalvals <- tmp$evalvals
          }
@@ -1493,10 +1495,8 @@ play <- function(lang="en", online, ...) {
                mode <- "play"
                assign("mode", mode, envir=.chesstrainer)
                .flush()
-               if (timed) {
+               if (timed)
                   .drawtimer(clear=TRUE)
-                  timed <- FALSE
-               }
                show <- FALSE
                fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                compmove <- (flip && sidetoplay == "w") || (!flip && sidetoplay == "b")
@@ -1734,7 +1734,7 @@ play <- function(lang="en", online, ...) {
                   sfproc   <- res.sf$sfproc
                   sfrun    <- res.sf$sfrun
                   if (contanalysis && identical(matetype, "none")) {
-                     tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
+                     tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1)
                      harrows  <- tmp$harrows
                      evalvals <- tmp$evalvals
                   }
@@ -1843,7 +1843,7 @@ play <- function(lang="en", online, ...) {
                   sfproc   <- res.sf$sfproc
                   sfrun    <- res.sf$sfrun
                   if (mode %in% c("add","analysis") && contanalysis && identical(matetype, "none")) {
-                     tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
+                     tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1)
                      harrows  <- tmp$harrows
                      evalvals <- tmp$evalvals
                   }
@@ -1950,7 +1950,7 @@ play <- function(lang="en", online, ...) {
                   }
                   .drawevalbar(evalval[1], i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]])
                   if (contanalysis && identical(matetype, "none")) {
-                     tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
+                     tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1)
                      harrows  <- tmp$harrows
                      evalvals <- tmp$evalvals
                   }
@@ -1998,7 +1998,7 @@ play <- function(lang="en", online, ...) {
                   sfproc   <- res.sf$sfproc
                   sfrun    <- res.sf$sfrun
                   if (contanalysis && identical(matetype, "none")) {
-                     tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
+                     tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1)
                      harrows  <- tmp$harrows
                      evalvals <- tmp$evalvals
                   }
@@ -2098,7 +2098,7 @@ play <- function(lang="en", online, ...) {
                   sfproc   <- res.sf$sfproc
                   sfrun    <- res.sf$sfrun
                   if (contanalysis && identical(matetype, "none")) {
-                     tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
+                     tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1)
                      harrows  <- tmp$harrows
                      evalvals <- tmp$evalvals
                   }
@@ -2162,7 +2162,7 @@ play <- function(lang="en", online, ...) {
                sfproc   <- res.sf$sfproc
                sfrun    <- res.sf$sfrun
                if (mode %in% c("add","analysis") && contanalysis && identical(matetype, "none")) {
-                  tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
+                  tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1)
                   harrows  <- tmp$harrows
                   evalvals <- tmp$evalvals
                }
@@ -2578,6 +2578,8 @@ play <- function(lang="en", online, ...) {
                .drawglyph(glyph)
                .textbot(show=show, showcomp=showcomp, i=i, totalmoves=totalmoves, onlyshow=TRUE, onlyi=TRUE)
                #opening <- .findopening(sub$moves[seq_len(i-1),1:4], pos=pos, flip=flip, sidetoplay=sidetoplay, sidetoplaystart=sidetoplaystart, i=i, opening="", openings=openings, posnull=is.null(sub$pos))
+               if (timed)
+                  .drawtimer(clear=TRUE)
                sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
                fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                res.sf <- .sf.eval(sfproc=sfproc, sfrun=sfrun, depth=depth1, fen=fen)
@@ -2588,7 +2590,7 @@ play <- function(lang="en", online, ...) {
                sfproc   <- res.sf$sfproc
                sfrun    <- res.sf$sfrun
                if (contanalysis && identical(matetype, "none")) {
-                  tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
+                  tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1)
                   harrows  <- tmp$harrows
                   evalvals <- tmp$evalvals
                }
@@ -2880,7 +2882,7 @@ play <- function(lang="en", online, ...) {
                   attr(sub$pos, "starteval") <- starteval
                .drawevalbar(starteval, i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]])
                if (mode %in% c("add","analysis") && contanalysis && identical(matetype, "none")) {
-                  tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
+                  tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1)
                   harrows  <- tmp$harrows
                   evalvals <- tmp$evalvals
                }
@@ -2955,7 +2957,7 @@ play <- function(lang="en", online, ...) {
                sfproc   <- res.sf$sfproc
                sfrun    <- res.sf$sfrun
                if (contanalysis && identical(matetype, "none")) {
-                  tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
+                  tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1)
                   harrows  <- tmp$harrows
                   evalvals <- tmp$evalvals
                }
@@ -2994,13 +2996,18 @@ play <- function(lang="en", online, ...) {
                   next
                }
                fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
-               res.sf <- .sf.eval(sfproc=sfproc, sfrun=sfrun, depth=depth2, fen=fen, progbar=TRUE, playsound=TRUE, isdeep=TRUE)
+               res.sf <- .sf.eval(sfproc=sfproc, sfrun=sfrun, depth=depth2, fen=fen, progbar=TRUE, playsound=TRUE, isdeep=TRUE, usecloud=FALSE,
+                                  objfordeep=list(pos=pos, flip=flip, sidetoplay=sidetoplay, sidetoplaystart=sidetoplaystart, i=i,
+                                                  circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hintdepth=hintdepth, multipv2=multipv2,
+                                                  starteval=starteval, showeval=showeval[[mode]]))
                evalval  <- res.sf$eval[1:multipv2]
                bestmove <- res.sf$bestmove[1:multipv2]
                #bestmove[.is.null(bestmove)] <- ""
                matetype <- res.sf$matetype
                sfproc   <- res.sf$sfproc
                sfrun    <- res.sf$sfrun
+               if (!is.null(res.sf$harrows))
+                  harrows  <- res.sf$harrows
                if (i > 1) {
                   sub$moves$eval[i-1] <- evalval[1]
                } else {
@@ -3021,13 +3028,18 @@ play <- function(lang="en", online, ...) {
                   next
                }
                fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
-               res.sf <- .sf.eval(sfproc=sfproc, sfrun=sfrun, depth=depth2, fen=fen, progbar=TRUE, playsound=TRUE, isdeep=TRUE, usecloud=TRUE)
+               res.sf <- .sf.eval(sfproc=sfproc, sfrun=sfrun, depth=depth2, fen=fen, progbar=TRUE, playsound=TRUE, isdeep=TRUE, usecloud=TRUE,
+                                  objfordeep=list(pos=pos, flip=flip, sidetoplay=sidetoplay, sidetoplaystart=sidetoplaystart, i=i,
+                                                  circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hintdepth=hintdepth, multipv2=multipv2,
+                                                  starteval=starteval, showeval=showeval[[mode]]))
                evalval  <- res.sf$eval[1:multipv2]
                bestmove <- res.sf$bestmove[1:multipv2]
                bestmove[.is.null(bestmove)] <- "" # just in case there are fewer variations than multipv2
                matetype <- res.sf$matetype
                sfproc   <- res.sf$sfproc
                sfrun    <- res.sf$sfrun
+               if (!is.null(res.sf$harrows))
+                  harrows  <- res.sf$harrows
                if (i > 1) {
                   sub$moves$eval[i-1] <- evalval[1]
                } else {
@@ -3062,7 +3074,7 @@ play <- function(lang="en", online, ...) {
                   }
                   .textbot(score=score, onlyscore=TRUE)
                } else {
-                  tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
+                  tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1)
                   harrows  <- tmp$harrows
                   evalvals <- tmp$evalvals
                   .drawdepth(showeval[[mode]])
@@ -3090,7 +3102,7 @@ play <- function(lang="en", online, ...) {
                .texttop(.text("contanalysis", contanalysis), sleep=1, showlast=FALSE)
                dev.hold()
                if (contanalysis) {
-                  tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
+                  tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1)
                   harrows  <- tmp$harrows
                   evalvals <- tmp$evalvals
                   .drawdepth(showeval[[mode]])
@@ -4104,7 +4116,7 @@ play <- function(lang="en", online, ...) {
             if (identical(click, "F3")) {
                tab <- list(lang=lang, player=player, mode=mode, seqdir=seqdir[seqdirpos], selmode=selmode, zenmode=zenmode, timed=timed, timepermove=timepermove, expval=expval,
                            multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, showeval=showeval, evalsteps=evalsteps, movestoshow=movestoshow,
-                           showcoords=showcoords, showtransp=showtransp, showmatdiff=showmatdiff, san=san, piecesymbols=piecesymbols, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, mar=mar, mar2=mar2,
+                           showcoords=showcoords, showtransp=showtransp, showmatdiff=showmatdiff, showbestnumber=showbestnumber, san=san, piecesymbols=piecesymbols, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, mar=mar, mar2=mar2,
                            volume=volume, showgraph=showgraph, repmistake=repmistake, target=target,
                            # cex=cex, cex.top=cex.top, cex.bot=cex.bot, cex.eval=cex.eval, cex.coords=cex.coords, cex.matdiff=cex.matdiff, cex.plots=cex.plots, cex.glyphs=cex.glyphs, cex.lichess=cex.lichess,
                            difffun=difffun, difflen=difflen, diffmin=diffmin,
@@ -4161,7 +4173,7 @@ play <- function(lang="en", online, ...) {
                oldtimed <- timed
                oldmar <- mar
                oldshoweval <- showeval
-               tmp <- .mainsettings(devhold=TRUE, lang, piecesymbols, paste0(showeval, collapse=","), showcoords, showmatdiff, san, timed, zenmode, wait, repmistake, showgraph, compseq, showtransp, mar, volume, delay, sleepadj)
+               tmp <- .mainsettings(devhold=TRUE, lang, piecesymbols, paste0(showeval, collapse=","), showcoords, showmatdiff, showbestnumber, san, timed, zenmode, wait, repmistake, showgraph, compseq, showtransp, mar, volume, delay, sleepadj)
                while (tmp$restart) {
                   lang <- tmp$lang
                   mar <- tmp$mar
@@ -4176,30 +4188,32 @@ play <- function(lang="en", online, ...) {
                      .drawevalbar(sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]])
                      .drawlibar(.get("lasttotals"), flip=flip)
                      assign("evalsteps", .get("evalsteps"), envir=.chesstrainer)
-                     tmp <- .mainsettings(devhold=FALSE, lang, piecesymbols, paste0(showeval, collapse=","), showcoords, showmatdiff, san, timed, zenmode, wait, repmistake, showgraph, compseq, showtransp, mar, volume, delay, sleepadj)
+                     tmp <- .mainsettings(devhold=FALSE, lang, piecesymbols, paste0(showeval, collapse=","), showcoords, showmatdiff, showbestnumber, san, timed, zenmode, wait, repmistake, showgraph, compseq, showtransp, mar, volume, delay, sleepadj)
                   } else {
-                     tmp <- .mainsettings(devhold=TRUE, lang, piecesymbols, paste0(showeval, collapse=","), showcoords, showmatdiff, san, timed, zenmode, wait, repmistake, showgraph, compseq, showtransp, mar, volume, delay, sleepadj)
+                     tmp <- .mainsettings(devhold=TRUE, lang, piecesymbols, paste0(showeval, collapse=","), showcoords, showmatdiff, showbestnumber, san, timed, zenmode, wait, repmistake, showgraph, compseq, showtransp, mar, volume, delay, sleepadj)
                   }
                }
-               piecesymbols <- tmp$piecesymbols
-               showeval     <- tmp$showeval
-               showcoords   <- tmp$showcoords
-               showmatdiff  <- tmp$showmatdiff
-               san          <- tmp$san
-               timed        <- tmp$timed
-               zenmode      <- tmp$zenmode
-               wait         <- tmp$wait
-               repmistake   <- tmp$repmistake
-               showgraph    <- tmp$showgraph
-               compseq      <- tmp$compseq
-               showtransp   <- tmp$showtransp
-               mar          <- tmp$mar
-               volume       <- tmp$volume
-               delay        <- tmp$delay
-               sleepadj     <- tmp$sleepadj
+               piecesymbols   <- tmp$piecesymbols
+               showeval       <- tmp$showeval
+               showcoords     <- tmp$showcoords
+               showmatdiff    <- tmp$showmatdiff
+               showbestnumber <- tmp$showbestnumber
+               san            <- tmp$san
+               timed          <- tmp$timed
+               zenmode        <- tmp$zenmode
+               wait           <- tmp$wait
+               repmistake     <- tmp$repmistake
+               showgraph      <- tmp$showgraph
+               compseq        <- tmp$compseq
+               showtransp     <- tmp$showtransp
+               mar            <- tmp$mar
+               volume         <- tmp$volume
+               delay          <- tmp$delay
+               sleepadj       <- tmp$sleepadj
                assign("piecesymbols", piecesymbols, envir=.chesstrainer)
                assign("showcoords", showcoords, envir=.chesstrainer)
                assign("showmatdiff", showmatdiff, envir=.chesstrainer)
+               assign("showbestnumber", showbestnumber, envir=.chesstrainer)
                assign("san", san, envir=.chesstrainer)
                assign("timed", timed, envir=.chesstrainer)
                assign("zenmode", zenmode, envir=.chesstrainer)
@@ -4216,23 +4230,24 @@ play <- function(lang="en", online, ...) {
                   .clearmatdiff()
                }
                dev.flush()
-               settings$lang         <- lang
-               settings$piecesymbols <- piecesymbols
-               settings$showeval     <- showeval
-               settings$showcoords   <- showcoords
-               settings$showmatdiff  <- showmatdiff
-               settings$san          <- san
-               settings$timed        <- timed
-               settings$zenmode      <- zenmode
-               settings$wait         <- wait
-               settings$repmistake   <- repmistake
-               settings$showgraph    <- showgraph
-               settings$compseq      <- compseq
-               settings$showtransp   <- showtransp
-               settings$mar          <- mar
-               settings$volume       <- volume
-               settings$delay        <- delay
-               settings$sleepadj     <- sleepadj
+               settings$lang           <- lang
+               settings$piecesymbols   <- piecesymbols
+               settings$showeval       <- showeval
+               settings$showcoords     <- showcoords
+               settings$showmatdiff    <- showmatdiff
+               settings$showbestnumber <- showbestnumber
+               settings$san            <- san
+               settings$timed          <- timed
+               settings$zenmode        <- zenmode
+               settings$wait           <- wait
+               settings$repmistake     <- repmistake
+               settings$showgraph      <- showgraph
+               settings$compseq        <- compseq
+               settings$showtransp     <- showtransp
+               settings$mar            <- mar
+               settings$volume         <- volume
+               settings$delay          <- delay
+               settings$sleepadj       <- sleepadj
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                if (oldtimed != timed) {
                   if (timed) {
@@ -5225,7 +5240,7 @@ play <- function(lang="en", online, ...) {
                         sfproc   <- res.sf$sfproc
                         sfrun    <- res.sf$sfrun
                         if (contanalysis && identical(matetype, "none")) {
-                           tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1, sflim)
+                           tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1)
                            harrows  <- tmp$harrows
                            evalvals <- tmp$evalvals
                         }
@@ -5262,7 +5277,8 @@ play <- function(lang="en", online, ...) {
                         sub$testend    <- NULL
                         show <- FALSE
                         showcomp <- TRUE
-                        timed <- FALSE
+                        if (timed)
+                           .drawtimer(clear=TRUE)
                         .texttop("")
                         .drawevalbar(sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]])
                         sideindicator <- .drawsideindicator(sidetoplay, flip=flip)

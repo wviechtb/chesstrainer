@@ -80,11 +80,13 @@
 
 }
 
-.sf.eval <- function(sfproc, sfrun, depth, multipv=5, sflim=NA, fen, progbar=FALSE, playsound=FALSE, isdeep=FALSE, compmove=FALSE, usecloud=FALSE, retry=4) {
+.sf.eval <- function(sfproc, sfrun, depth, multipv=5, sflim=NA, fen, progbar=FALSE, playsound=FALSE, isdeep=FALSE, compmove=FALSE, usecloud=FALSE, retry=4, objfordeep=NULL) {
 
    getcloudeval <- FALSE
    usesfcache <- .get("usesfcache")
    files.to.remove <- NULL
+
+   sidetoplay <- strsplit(fen, " ", fixed=TRUE)[[1]][2]
 
    if (!compmove) {
 
@@ -126,10 +128,7 @@
          # determine if the cached file is a cloud evaluation
          iscloud <- isTRUE(out$cloud)
 
-         if (!usecloud)
-            iscloud <- TRUE
-
-         if (iscloud && maxdepth >= depth) { # if maxdepth >= depth, use the cached file
+         if (!usecloud && maxdepth >= depth) { # if maxdepth >= depth, use the cached file
 
             # touch the file if its modification time was more than 1/2 day ago
             if (difftime(Sys.time(), file.mtime(file), units="days") > 0.5)
@@ -139,6 +138,7 @@
             out$sfproc <- sfproc
             out$sfrun  <- sfrun
             assign("depth", maxdepth, envir=.chesstrainer)
+            assign("iscloud", iscloud, envir=.chesstrainer)
             return(out)
 
          } else { # if maxdepth is < depth, need to either use Stockfish or get the cloud evaluation
@@ -212,9 +212,7 @@
 
          eval     <- NULL
          bestmove <- list()
-
-         sidetoplay <- strsplit(fen, " ", fixed=TRUE)[[1]][2]
-         multipv <- length(content(out)$pvs)
+         multipv  <- length(content(out)$pvs)
 
          for (i in 1:multipv) {
             bestmove[[i]] <- strsplit(content(out)$pvs[[i]]$moves, " ", fixed=TRUE)[[1]]
@@ -243,6 +241,7 @@
          out$sfproc <- sfproc
          out$sfrun  <- sfrun
          assign("depth", maxdepth, envir=.chesstrainer)
+         assign("iscloud", TRUE, envir=.chesstrainer)
 
          return(out)
 
@@ -254,8 +253,10 @@
    eval     <- rep(NA_real_, multipv)
    bestmove <- as.list(rep("", multipv))
    alive    <- TRUE
+   harrows  <- matrix(nrow=0, ncol=4)
 
    assign("depth", depth, envir=.chesstrainer)
+   assign("iscloud", FALSE, envir=.chesstrainer)
 
    if (!sfrun)
       return(list(eval=eval, bestmove=bestmove, matetype="none", sfproc=sfproc, sfrun=sfrun))
@@ -266,12 +267,17 @@
 
    prevdepth <- 0
 
-   if (isdeep)
+   if (isdeep && is.null(objfordeep))
       .texttop(.text("sfdeepeval"), assign=FALSE)
 
+   progbarx1 <- 1
+   progbarx2 <- 5
+   progbary1 <- 9.2
+   progbary2 <- 9.3
+
    if (progbar) {
-      rect(1, 9.6, 9, 9.7, col=NA, border=col.top)
-      segments(seq(1,9,length.out=depth+1), 9.6, seq(1,9,length.out=depth+1), 9.7, col=adjustcolor(col.top, alpha.f=0.4))
+      rect(progbarx1, progbary1, progbarx2, progbary2, col=NA, border=col.top)
+      segments(seq(progbarx1,progbarx2,length.out=depth+1), progbary1, seq(progbarx1,progbarx2,length.out=depth+1), progbary2, col=adjustcolor(col.top, alpha.f=0.4))
    }
 
    start.time <- proc.time()
@@ -298,7 +304,7 @@
          repeat {
             alive <- sfproc$is_alive()
             if (!alive) {
-               cat(.text("sfsegfault", sfrun))
+               cat(.text("sfsegfault"))
                break
             }
             sfoutnew <- sfproc$read_output_lines()
@@ -314,8 +320,15 @@
                   curdepth <- strsplit(sfout[curdepth], " ", fixed=TRUE)[[1]][3] # get <number> from 'info depth <number> ...'
                   curdepth <- as.numeric(curdepth) - 1
                   if (curdepth > prevdepth) {
-                     rect(1, 9.6, 1+curdepth/depth*8, 9.7, col=col.top, border=NA)
+                     rect(progbarx1, progbary1, progbarx1+curdepth/depth*(progbarx2-progbarx1), progbary2, col=col.top, border=NA)
                      prevdepth <- curdepth
+                     if (!is.null(objfordeep)) {
+                        tmp <- .showbestmoveprog(curdepth, sfout, sfproc, sfrun, objfordeep)
+                        if (!is.null(tmp)) {
+                           harrows <- tmp$harrows
+                           objfordeep$harrows <- harrows
+                        }
+                     }
                   }
                }
             }
@@ -329,8 +342,13 @@
 
    end.time <- proc.time()
 
-   if (progbar)
+   assign("depth", depth, envir=.chesstrainer)
+   assign("iscloud", FALSE, envir=.chesstrainer)
+
+   if (progbar) {
       .texttop("")
+      rect(progbarx1-0.02, progbary1-0.02, progbarx2+0.02, progbary2+0.02, col=col.bg, border=NA)
+   }
 
    if (playsound)
       playsound(system.file("sounds", "complete.ogg", package="chesstrainer"))
@@ -348,8 +366,6 @@
 
    if (is.null(sfout) || !sfrun)
       return(list(eval=eval, bestmove=bestmove, matetype="none", sfproc=sfproc, sfrun=sfrun))
-
-   sidetoplay <- strsplit(fen, " ", fixed=TRUE)[[1]][2]
 
    # check for mate
    if (any(grepl("info depth 0 score mate 0", sfout, fixed=TRUE)))
@@ -421,6 +437,77 @@
 
    out$sfproc <- sfproc
    out$sfrun  <- sfrun
+
+   if (!is.null(objfordeep))
+      out$harrows <- harrows
+
    return(out)
+
+}
+
+.showbestmoveprog <- function(curdepth, sfout, sfproc, sfrun, objfordeep) {
+
+   # if it is mate, don't draw the arrows
+   if (any(grepl("info depth 0 score mate 0", sfout, fixed=TRUE)))
+      return(NULL)
+
+   # if it is stalemate, don't draw the arrows
+   if (any(grepl("info depth 0 score cp 0", sfout, fixed=TRUE)) && any(grepl("bestmove (none)", sfout, fixed=TRUE)))
+      return(NULL)
+
+   # find positions in output of 'info depth <curdepth>' (there should be between 1 and 'multipv' such lines)
+   infodepthpos <- grep(paste0("info depth ", curdepth), sfout, fixed=TRUE)
+
+   if (length(infodepthpos) == 0L) # just in case
+      return(NULL)
+
+   # restrict sfout to those elements
+   sfout <- sfout[infodepthpos]
+   #sapply(sfout, function(x) cat(x, "\n"))
+
+   multipv <- 5
+   eval     <- rep(NA_real_, multipv)
+   bestmove <- as.list(rep("", multipv))
+
+   for (i in 1:multipv) {
+      # find the position of 'multipv <i> score'
+      pos <- grep(paste0(" multipv ", i, " score "), sfout, fixed=TRUE)
+      if (length(pos) == 0L)
+         next
+      if (length(pos) > 1L) # there really should only be one, but just in case
+         pos <- max(pos)
+      sfoutpos <- sfout[pos]
+      # check if there is a mate in x moves
+      mateinx <- grepl(" score mate ", sfoutpos, fixed=TRUE)
+      # get the best move for the variation
+      tmp <- strsplit(sfoutpos, " pv ", fixed=TRUE)[[1]][2]
+      bestmove[[i]] <- strsplit(tmp, " ", fixed=TRUE)[[1]]
+      if (mateinx) {
+         tmp <- strsplit(sfoutpos, " score mate ", fixed=TRUE)[[1]][2]
+         matemoves <- as.numeric(strsplit(tmp, " ", fixed=TRUE)[[1]][1])
+         eval[i] <- sign(matemoves) * 99.9
+      } else {
+         tmp <- strsplit(sfoutpos, " score cp ", fixed=TRUE)[[1]][2]
+         cpval <- as.numeric(strsplit(tmp, " ", fixed=TRUE)[[1]][1])
+         eval[i] <- cpval / 100
+      }
+   }
+
+   if (objfordeep$sidetoplay == "b")
+      eval <- -eval
+
+   multipv2 <- objfordeep$multipv2
+   evalval  <- eval[1:multipv2]
+   bestmove <- bestmove[1:multipv2]
+
+   tmp <- .showbestmove(objfordeep$pos, objfordeep$flip, objfordeep$sidetoplay, objfordeep$sidetoplaystart, objfordeep$i, objfordeep$circles, objfordeep$arrows, objfordeep$harrows, objfordeep$glyph,
+                        bestmove, evalval, objfordeep$hintdepth, sfproc=sfproc, sfrun=sfrun, depth=12, multipv=5)
+
+   if (objfordeep$showeval) {
+      assign("depth", curdepth, envir=.chesstrainer)
+      .drawevalbar(evalval[[1]], i=objfordeep$i, starteval=objfordeep$starteval, flip=objfordeep$flip, showeval=TRUE)
+   }
+
+   return(tmp)
 
 }

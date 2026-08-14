@@ -17,6 +17,9 @@
    assign("img.BQ", png::readPNG(system.file("figures", "chess_qdt45.png", package="chesstrainer"), native=TRUE), envir=.chesstrainer)
    assign("img.BR", png::readPNG(system.file("figures", "chess_rdt45.png", package="chesstrainer"), native=TRUE), envir=.chesstrainer)
 
+   #assign("lichess", png::readPNG(system.file("misc", "lichess.png", package="chesstrainer"), native=FALSE), envir=.chesstrainer)
+   assign("cloud", png::readPNG(system.file("misc", "cloud.png", package="chesstrainer"), native=FALSE), envir=.chesstrainer)
+
    # set default colors
 
    assign("col.bg",        "#211b12",       envir=.chesstrainer)

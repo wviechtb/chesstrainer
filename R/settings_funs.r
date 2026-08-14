@@ -158,7 +158,7 @@
 
 }
 
-.mainsettings <- function(devhold, lang, piecesymbols, showeval, showcoords, showmatdiff, san, timed, zenmode, wait, repmistake, showgraph, compseq, showtransp, mar, volume, delay, sleepadj) {
+.mainsettings <- function(devhold, lang, piecesymbols, showeval, showcoords, showmatdiff, showbestnumber, san, timed, zenmode, wait, repmistake, showgraph, compseq, showtransp, mar, volume, delay, sleepadj) {
 
    col.help  <- .get("col.help")
    font.mono <- .get("font.mono")
@@ -175,30 +175,31 @@
    cex.mult <- 0.8
 
    title.xpos <- 1.5
-   title.ypos <- c(8.2 - 0.5 * c(0:2), 6.7 - 0.3 * c(0:9), 3.5 - 1.14 * c(0:2))
+   title.ypos <- c(8.2 - 0.5 * c(0:2), 6.7 - 0.3 * c(0:10), 3.2 - 1.02 * c(0:2))
 
    box.xpos <- 1.7
    boxtext.xpos <- 2.0
 
-   text(title.xpos, title.ypos[1],  .text("lang:"),           pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(title.xpos, title.ypos[2],  .text("piecesymbols:"),   pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(title.xpos, title.ypos[3],  .text("evalbar:"),        pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(title.xpos, title.ypos[1],  .text("lang:"),            pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(title.xpos, title.ypos[2],  .text("piecesymbols:"),    pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(title.xpos, title.ypos[3],  .text("evalbar:"),         pos=4, cex=cex, family=font.mono, col=col.help, font=2)
 
-   text(boxtext.xpos, title.ypos[4],  .text("showcoords"),    pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(boxtext.xpos, title.ypos[5],  .text("showmatdiff"),   pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(boxtext.xpos, title.ypos[6],  .text("san"),           pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(boxtext.xpos, title.ypos[7],  .text("timed"),         pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(boxtext.xpos, title.ypos[8],  .text("zenmode"),       pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(boxtext.xpos, title.ypos[9],  .text("wait"),          pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(boxtext.xpos, title.ypos[10], .text("repmistake"),    pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(boxtext.xpos, title.ypos[11], .text("showgraph"),     pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(boxtext.xpos, title.ypos[12], .text("compseq"),       pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(boxtext.xpos, title.ypos[13], .text("showtransp"),    pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(boxtext.xpos, title.ypos[4],  .text("showcoords"),     pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(boxtext.xpos, title.ypos[5],  .text("showmatdiff"),    pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(boxtext.xpos, title.ypos[6],  .text("showbestnumber"), pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(boxtext.xpos, title.ypos[7],  .text("san"),            pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(boxtext.xpos, title.ypos[8],  .text("timed"),          pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(boxtext.xpos, title.ypos[9],  .text("zenmode"),        pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(boxtext.xpos, title.ypos[10], .text("wait"),           pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(boxtext.xpos, title.ypos[11], .text("repmistake"),     pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(boxtext.xpos, title.ypos[12], .text("showgraph"),      pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(boxtext.xpos, title.ypos[13], .text("compseq"),        pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(boxtext.xpos, title.ypos[14], .text("showtransp"),     pos=4, cex=cex, family=font.mono, col=col.help, font=2)
 
-   text(title.xpos, title.ypos[14], .text("mar"),             pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(5.2,        title.ypos[14], .text("volume"),          pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(title.xpos, title.ypos[15], .text("delay"),           pos=4, cex=cex, family=font.mono, col=col.help, font=2)
-   text(5.2,        title.ypos[15], .text("sleepadj"),        pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(title.xpos, title.ypos[15], .text("mar"),              pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(5.2,        title.ypos[15], .text("volume"),           pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(title.xpos, title.ypos[16], .text("delay"),            pos=4, cex=cex, family=font.mono, col=col.help, font=2)
+   text(5.2,        title.ypos[16], .text("sleepadj"),         pos=4, cex=cex, family=font.mono, col=col.help, font=2)
 
    lang.opts <- c("en", "de")
    lang.xpos <- 3.5
@@ -241,55 +242,59 @@
    showmatdiff.ypos <- title.ypos[5]
    showmatdiff.box <- .drawcheckbox(showmatdiff.xpos, showmatdiff.ypos, on=showmatdiff, cex=cex)
 
+   showbestnumber.xpos <- box.xpos
+   showbestnumber.ypos <- title.ypos[6]
+   showbestnumber.box <- .drawcheckbox(showbestnumber.xpos, showbestnumber.ypos, on=showbestnumber, cex=cex)
+
    san.xpos <- box.xpos
-   san.ypos <- title.ypos[6]
+   san.ypos <- title.ypos[7]
    san.box <- .drawcheckbox(san.xpos, san.ypos, on=san, cex=cex)
 
    timed.xpos <- box.xpos
-   timed.ypos <- title.ypos[7]
+   timed.ypos <- title.ypos[8]
    timed.box <- .drawcheckbox(timed.xpos, timed.ypos, on=timed, cex=cex)
 
    zenmode.xpos <- box.xpos
-   zenmode.ypos <- title.ypos[8]
+   zenmode.ypos <- title.ypos[9]
    zenmode.box <- .drawcheckbox(zenmode.xpos, zenmode.ypos, on=zenmode, cex=cex)
 
    wait.xpos <- box.xpos
-   wait.ypos <- title.ypos[9]
+   wait.ypos <- title.ypos[10]
    wait.box <- .drawcheckbox(wait.xpos, wait.ypos, on=wait, cex=cex)
 
    repmistake.xpos <- box.xpos
-   repmistake.ypos <- title.ypos[10]
+   repmistake.ypos <- title.ypos[11]
    repmistake.box <- .drawcheckbox(repmistake.xpos, repmistake.ypos, on=repmistake, cex=cex)
 
    showgraph.xpos <- box.xpos
-   showgraph.ypos <- title.ypos[11]
+   showgraph.ypos <- title.ypos[12]
    showgraph.box <- .drawcheckbox(showgraph.xpos, showgraph.ypos, on=showgraph, cex=cex)
 
    compseq.xpos <- box.xpos
-   compseq.ypos <- title.ypos[12]
+   compseq.ypos <- title.ypos[13]
    compseq.box <- .drawcheckbox(compseq.xpos, compseq.ypos, on=compseq, cex=cex)
 
    showtransp.xpos <- box.xpos
-   showtransp.ypos <- title.ypos[13]
+   showtransp.ypos <- title.ypos[14]
    showtransp.box <- .drawcheckbox(showtransp.xpos, showtransp.ypos, on=showtransp, cex=cex)
 
    mar.xpos <- c(1.7,4.5)
-   mar.ypos <- title.ypos[14] - 0.4 * (title.ypos[14]-title.ypos[15])
+   mar.ypos <- title.ypos[15] - 0.4 * (title.ypos[15]-title.ypos[16])
    mar.box  <- .drawslider(x=mar.xpos, mar.ypos, xlab=c(1,10), cex=cex*cex.mult)
    .updateslider(NULL, mar.ypos, oldval=mar[1], xlim=mar.xpos, range=c(1,10), round=0.5, cex=cex*cex.mult)
 
    volume.xpos <- c(5.4,8)
-   volume.ypos <- title.ypos[14] - 0.4 * (title.ypos[14]-title.ypos[15])
+   volume.ypos <- title.ypos[15] - 0.4 * (title.ypos[15]-title.ypos[16])
    volume.box  <- .drawslider(x=volume.xpos, volume.ypos, xlab=c(0,100), cex=cex*cex.mult)
    .updateslider(NULL, volume.ypos, oldval=volume, xlim=volume.xpos, range=c(0,100), round=TRUE, cex=cex*cex.mult)
 
    delay.xpos <- c(1.7,4.5)
-   delay.ypos <- title.ypos[15] - 0.4 * (title.ypos[15]-title.ypos[16])
+   delay.ypos <- title.ypos[16] - 0.4 * (title.ypos[15]-title.ypos[16])
    delay.box  <- .drawslider(x=delay.xpos, delay.ypos, xlab=c(0,2), cex=cex*cex.mult)
    .updateslider(NULL, delay.ypos, oldval=delay, xlim=delay.xpos, range=c(0,2), round=0.05, cex=cex*cex.mult)
 
    sleepadj.xpos <- c(5.4,8)
-   sleepadj.ypos <- title.ypos[15] - 0.4 * (title.ypos[15]-title.ypos[16])
+   sleepadj.ypos <- title.ypos[16] - 0.4 * (title.ypos[15]-title.ypos[16])
    sleepadj.box  <- .drawslider(x=sleepadj.xpos, sleepadj.ypos, xlab=c(0,2), cex=cex*cex.mult)
    .updateslider(NULL, sleepadj.ypos, oldval=sleepadj, xlim=sleepadj.xpos, range=c(0,2), round=0.1, cex=cex*cex.mult)
 
@@ -376,6 +381,13 @@
          if (hit) {
             showmatdiff <- !showmatdiff
             .drawcheckbox(showmatdiff.xpos, showmatdiff.ypos, on=showmatdiff, cex=cex)
+            next
+         }
+
+         hit <- xy1[1] >= showbestnumber.box[1] & xy1[2] >= showbestnumber.box[2] & xy1[1] <= showbestnumber.box[3] & xy1[2] <= showbestnumber.box[4]
+         if (hit) {
+            showbestnumber <- !showbestnumber
+            .drawcheckbox(showbestnumber.xpos, showbestnumber.ypos, on=showbestnumber, cex=cex)
             next
          }
 
@@ -477,7 +489,7 @@
 
    showeval <- setNames(showeval.on, c("add", "test", "play", "analysis"))
 
-   out <- list(lang=lang, piecesymbols=piecesymbols, showeval=showeval, showcoords=showcoords, showmatdiff=showmatdiff, san=san, timed=timed, zenmode=zenmode, wait=wait, repmistake=repmistake,
+   out <- list(lang=lang, piecesymbols=piecesymbols, showeval=showeval, showcoords=showcoords, showmatdiff=showmatdiff, showbestnumber=showbestnumber, san=san, timed=timed, zenmode=zenmode, wait=wait, repmistake=repmistake,
                showgraph=showgraph, compseq=compseq, showtransp=showtransp, mar=mar, volume=volume, delay=delay, sleepadj=sleepadj, restart=restart)
 
    #.erase(1, 1, 9, 9)
