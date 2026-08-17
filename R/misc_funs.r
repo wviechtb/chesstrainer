@@ -1244,7 +1244,6 @@
    seqident <- seqident[notnull]
    if (any(notnull)) {
       .texttop(.text("transpositions", length(seqident) == 1L), sleep=2)
-      #eval(expr=.get("switch1"))
       .flush()
       cat(.text("transposseqs", length(seqident) == 1L))
       tab <- data.frame(files[notnull])
@@ -1258,7 +1257,6 @@
       .printdf(tab, align=c("l",rep("r",movestoshow)))
       if (contanalysis)
          .waitforclick()
-      #eval(expr=.get("switch2"))
    }
 
 }
@@ -1661,6 +1659,14 @@
 
    return(sort(unique(rows)))
 
+}
+
+.collapse <- function(x) {
+   if (is.null(x)) {
+      return(NULL)
+   } else {
+      return(paste0(x, collapse="/"))
+   }
 }
 
 .genlines <- function(pos, sub, nmoves, genminperc, genminfreq, movedb, basename, level, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc, sfproc, sfrun, depth, seqdir)

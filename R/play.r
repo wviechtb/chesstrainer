@@ -712,13 +712,18 @@ play <- function(lang="en", online, ...) {
 
       # copy of dat.all with short FENs
 
-      dat.all.short <- lapply(dat.all, function(x) list(moves    = x$moves[1:4],
-                                                        flip     = x$flip,
-                                                        fen      = x$moves$fen,
-                                                        fenshort = if (nrow(x$moves) == 0L) character(0) else sapply(c(x$startfen, x$moves$fen), .fenpart, USE.NAMES=FALSE),
-                                                        move     = x$moves$move,
-                                                        san      = x$moves$san,
-                                                        pos      = x$pos))
+      dat.all.short <- lapply(dat.all, function(x) list(moves       = x$moves[1:4],
+                                                        endmoves    = x$endmoves[1:4],
+                                                        flip        = x$flip,
+                                                        fen         = x$moves$fen,
+                                                        fenshort    = if (nrow(x$moves) == 0L) character(0) else sapply(c(x$startfen, x$moves$fen), .fenpart, USE.NAMES=FALSE),
+                                                        fenshortall = if (nrow(x$moves) == 0L) character(0) else sapply(c(x$startfen, x$moves$fen, x$endmoves$fen), .fenpart, USE.NAMES=FALSE),
+                                                        fenshortend = if (nrow(x$moves) == 0L || is.null(x$endmoves)) character(0) else sapply(x$endmoves$fen, .fenpart, USE.NAMES=FALSE),
+                                                        move        = x$moves$move,
+                                                        san         = x$moves$san,
+                                                        moveall     = if (is.null(x$endmoves)) x$moves$move else c(x$moves$move[-length(x$moves$move)], .collapse(x$endmoves$move)),
+                                                        sanall      = if (is.null(x$endmoves)) x$moves$san else c(x$moves$san[-length(x$moves$san)], .collapse(x$endmoves$san)),
+                                                        pos         = x$pos))
 
       k.all <- length(files.all)
 
@@ -3492,12 +3497,16 @@ play <- function(lang="en", online, ...) {
                if (grepl("^([rnbqkpRNBQKP1-8]+/){7}[rnbqkpRNBQKP1-8]+ [wb] (-|[KQkq]{1,4}) (-|[a-h][36]) \\d+ \\d+$", searchterm)) {
                   searchterm <- .fenpart(searchterm)
                   seqident <- lapply(dat.all.short, function(x) {
-                     if (any(searchterm == x$fenshort) && identical(flip, x$flip)) {
-                        pos <- min(which(searchterm == x$fenshort))
-                        if (san) {
-                           nextmoves <- x$san[pos-1+c(1:max(1,movestoshow))]
+                     if (any(searchterm == x$fenshortall)) {
+                        if (searchterm %in% x$fenshortend) {
+                           return(rep("",movestoshow))
                         } else {
-                           nextmoves <- x$move[pos-1+c(1:max(1,movestoshow))]
+                           pos <- min(which(searchterm == x$fenshort))
+                        }
+                        if (san) {
+                           nextmoves <- x$sanall[pos-1+c(1:max(1,movestoshow))]
+                        } else {
+                           nextmoves <- x$moveall[pos-1+c(1:max(1,movestoshow))]
                         }
                         nextmoves[is.na(nextmoves)] <- ""
                         return(nextmoves)
@@ -3627,7 +3636,7 @@ play <- function(lang="en", online, ...) {
 
                # 'number' entered
 
-               if (grepl("^[0-9]+$", searchterm)) {
+               if (grepl("^[1-9][0-9]+$", searchterm)) {
                   tmp <- as.numeric(searchterm)
                   if (tmp < 1 || tmp > k.all) {
                      cat(.text("noseqfound"))
@@ -3813,11 +3822,17 @@ play <- function(lang="en", online, ...) {
                if (i == 1)
                   next
                seqident <- lapply(dat.all.short, function(x) {
-                  if (identical(sub$moves[seq_len(i-1),1:4], x$moves[seq_len(i-1),1:4]) && identical(flip, x$flip) && identical(sub$pos, x$pos)) {
+                  if (!is.null(x$endmoves)) {
+                     tmp <- apply(x$endmoves, 1, function(endmove) rbind(x$moves[-nrow(x$moves),], endmove))
+                     tmp <- any(sapply(tmp, function(endseq) identical(sub$moves[seq_len(i-1),1:4], endseq[seq_len(i-1),1:4])))
+                  } else {
+                     tmp <- identical(sub$moves[seq_len(i-1),1:4], x$moves[seq_len(i-1),1:4])
+                  }
+                  if (tmp && identical(flip, x$flip) && identical(sub$pos, x$pos)) {
                      if (san) {
-                        nextmoves <- x$san[i+c(0:(max(1,movestoshow)-1))]
+                        nextmoves <- x$sanall[i+c(0:(max(1,movestoshow)-1))]
                      } else {
-                        nextmoves <- x$move[i+c(0:(max(1,movestoshow)-1))]
+                        nextmoves <- x$moveall[i+c(0:(max(1,movestoshow)-1))]
                      }
                      nextmoves[is.na(nextmoves)] <- ""
                      return(nextmoves)
@@ -3828,7 +3843,6 @@ play <- function(lang="en", online, ...) {
                notnull <- !sapply(seqident, is.null)
                seqident <- seqident[notnull]
                if (any(notnull)) {
-                  #eval(expr=switch1)
                   .flush()
                   cat(.text("seqsmatchstart"))
                   tab <- data.frame(files.all[notnull])
@@ -3842,7 +3856,6 @@ play <- function(lang="en", online, ...) {
                   }
                   rownames(tab) <- which(notnull)
                   .printdf(tab, align=c("l",rep("r",movestoshow)))
-                  #eval(expr=switch2)
                   .texttop(.text("selmatchestop"), assign=FALSE)
                   selmatches <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=.keyfun)
                   if (identical(selmatches, "\r") || identical(selmatches, "ctrl-J") || .confirm(selmatches)) {
@@ -3864,12 +3877,16 @@ play <- function(lang="en", online, ...) {
                searchterm <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                searchterm <- .fenpart(searchterm)
                seqident <- lapply(dat.all.short, function(x) {
-                  if (any(searchterm == x$fenshort) && identical(flip, x$flip)) {
-                     pos <- min(which(searchterm == x$fenshort))
-                     if (san) {
-                        nextmoves <- x$san[pos-1+c(1:max(1,movestoshow))]
+                  if (any(searchterm == x$fenshortall) && identical(flip, x$flip)) {
+                     if (searchterm %in% x$fenshortend) {
+                        return(rep("",movestoshow))
                      } else {
-                        nextmoves <- x$move[pos-1+c(1:max(1,movestoshow))]
+                        pos <- min(which(searchterm == x$fenshort))
+                     }
+                     if (san) {
+                        nextmoves <- x$sanall[pos-1+c(1:max(1,movestoshow))]
+                     } else {
+                        nextmoves <- x$moveall[pos-1+c(1:max(1,movestoshow))]
                      }
                      nextmoves[is.na(nextmoves)] <- ""
                      return(nextmoves)
@@ -3880,7 +3897,6 @@ play <- function(lang="en", online, ...) {
                notnull <- !sapply(seqident, is.null)
                seqident <- seqident[notnull]
                if (any(notnull)) {
-                  #eval(expr=switch1)
                   .flush()
                   cat(.text("seqsinclpos"))
                   tab <- data.frame(files.all[notnull])
@@ -3905,7 +3921,6 @@ play <- function(lang="en", online, ...) {
                         .texttop(onlylast=TRUE)
                      }
                   }
-                  #eval(expr=switch2)
                } else {
                   .texttop(.text("noseqsfound"), sleep=1.5)
                }
@@ -3918,12 +3933,16 @@ play <- function(lang="en", online, ...) {
                searchterm <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                searchterm <- .fenpart(searchterm)
                seqident <- lapply(dat.all.short, function(x) {
-                  if (any(searchterm == x$fenshort) && identical(flip, x$flip)) {
-                     pos <- min(which(searchterm == x$fenshort))
-                     if (san) {
-                        nextmoves <- x$san[pos]
+                  if (any(searchterm == x$fenshortall) && identical(flip, x$flip)) {
+                     if (searchterm %in% x$fenshortend) {
+                        return("")
                      } else {
-                        nextmoves <- x$move[pos]
+                        pos <- min(which(searchterm == x$fenshort))
+                     }
+                     if (san) {
+                        nextmoves <- x$sanall[pos]
+                     } else {
+                        nextmoves <- x$moveall[pos]
                      }
                      nextmoves[is.na(nextmoves)] <- ""
                      return(nextmoves)
@@ -3941,14 +3960,12 @@ play <- function(lang="en", online, ...) {
                      .texttop(.text("noseqsfurthermoves"), sleep=1.5)
                   } else {
                      tab <- as.data.frame(table(nextmoves))
-                     #eval(expr=switch1)
                      .flush()
                      tab <- tab[order(tab$Freq, decreasing=TRUE),,drop=FALSE]
                      rownames(tab) <- NULL
                      tab$perc <- .percent(tab$Freq)
                      colnames(tab) <- c(.text("move"),"n","%")
                      print(tab, print.gap=2)
-                     #eval(expr=switch2)
                   }
                   next
                } else {
@@ -4839,9 +4856,13 @@ play <- function(lang="en", online, ...) {
                searchterm <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                searchterm <- .fenpart(searchterm)
                nextmoves <- lapply(dat.all.short, function(x) {
-                  if (any(searchterm == x$fenshort) && identical(flip, x$flip)) {
-                     pos <- min(which(searchterm == x$fenshort))
-                        nextmoves <- x$move[pos]
+                  if (any(searchterm == x$fenshortall) && identical(flip, x$flip)) {
+                     if (searchterm %in% x$fenshortend) {
+                        return("")
+                     } else {
+                        pos <- min(which(searchterm == x$fenshort))
+                     }
+                     nextmoves <- x$moveall[pos]
                      if (is.na(nextmoves))
                         return()
                      return(nextmoves)
@@ -4852,7 +4873,9 @@ play <- function(lang="en", online, ...) {
                notnull <- !sapply(nextmoves, is.null)
                nextmoves <- nextmoves[notnull]
                if (any(notnull)) {
-                  nextmoves <- unique(unlist(nextmoves))
+                  nextmoves <- unlist(nextmoves)
+                  nextmoves <- unlist(strsplit(nextmoves, "/", fixed=TRUE))
+                  nextmoves <- unique(nextmoves)
                   nextmoves <- nextmoves[nextmoves!=""]
                }
             }
@@ -5542,7 +5565,7 @@ play <- function(lang="en", online, ...) {
             # in add mode, check if there are sequences with the current position that occurred via a move transposition
 
             if (mode == "add" && showtransp)
-               .findmovetransp(fen=fen, flip=flip, i=i, sub=sub, dat=dat.all.short, files=files.all, pos=sub$pos, contanalysis=contanalysis, movestoshow=movestoshow)
+               .findmovetransp(fen=fen, flip=flip, i=i, sub=sub, dat=dat.all.short, files=files.all, pos=sub$pos, contanalysis=contanalysis, movestoshow=movestoshow) # TODO: does this require updating to allow for multiple endmoves?
 
             # use the correct symbol if it is mate
 

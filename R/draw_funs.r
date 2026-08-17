@@ -942,7 +942,7 @@
                  ycap),
            col=col, border=NA)
 
-   if (!is.null(number)) {
+   if (!is.null(number) && width > 0) {
       xcenter <- x2 - head.length * ux / 1.7
       ycenter <- y2 - head.length * uy / 1.7
       cex.number <- max(0.6, width)  * 1.1
@@ -978,7 +978,7 @@
          widths <- widths / max(widths)
          cols <- c(col.best1, rep(col.best2, n-1))[order(winchances, decreasing=TRUE)]
          for (j in 1:nrow(arrows)) {
-            if (addnumbers) {
+            if (addnumbers && sum(widths > 0) > 1L) {
                .drawarrow(arrows[j,1], arrows[j,2], arrows[j,3], arrows[j,4], col=cols[j], width=widths[j], number=j)
             } else {
                .drawarrow(arrows[j,1], arrows[j,2], arrows[j,3], arrows[j,4], col=cols[j], width=widths[j])
@@ -1036,7 +1036,8 @@
 
    #symbols(y+yoff+ysoff, x+xoff+xsoff, circles=radius, inches=FALSE, lwd=1, fg=NA, bg="#666666", add=TRUE)
    symbols(y+yoff, x+xoff, circles=radius, inches=FALSE, lwd=1, fg=NA, bg=col, add=TRUE)
-   text(y+yoff, x+xoff, glyph, font=2, col="white", offset=0, cex=.get("cex.glyphs"))
+   #text(y+yoff, x+xoff, glyph, font=2, col="white", offset=0, cex=.get("cex.glyphs"))
+   text(y+yoff, x+xoff, glyph, font=2, col="white", cex=.get("cex.glyphs"), adj=c(0.5,NA))
 
    return()
 
