@@ -74,17 +74,17 @@
 
    sw.string <- max(strwidth(string.len.cur, family=font.mono, cex=cex), strwidth(string.min.cur, family=font.mono, cex=cex))
 
-   text(1.8,           tail(ypos, 1) - 4*dist, string.len.cur, pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
-   text(1.8+sw.string, tail(ypos, 1) - 4*dist, difflen,        pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
-   text(1.8,           tail(ypos, 1) - 6*dist, string.min.cur, pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
-   text(1.8+sw.string, tail(ypos, 1) - 6*dist, diffmin,        pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+   text(1.8,           .last(ypos) - 4*dist, string.len.cur, pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+   text(1.8+sw.string, .last(ypos) - 4*dist, difflen,        pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+   text(1.8,           .last(ypos) - 6*dist, string.min.cur, pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+   text(1.8+sw.string, .last(ypos) - 6*dist, diffmin,        pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
 
    while (TRUE) {
 
       if (setlen || setmin) {
          val <- ""
          sw.val <- 0
-         text(1.8, tail(ypos, 1) - 8*dist, ifelse(setlen, string.len.new, string.min.new), pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+         text(1.8, .last(ypos) - 8*dist, ifelse(setlen, string.len.new, string.min.new), pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
       }
 
       while (setlen || setmin) {
@@ -96,7 +96,7 @@
 
          if (identical(resp, "\033") || identical(resp, "ctrl-[")) {
             setlen <- setmin <- FALSE
-            rect(1.5, tail(ypos, 1) - 7*dist, 8.4, tail(ypos, 1) - 9*dist, col=col.bg, border=NA)
+            rect(1.5, .last(ypos) - 7*dist, 8.4, .last(ypos) - 9*dist, col=col.bg, border=NA)
             break
          }
 
@@ -104,7 +104,7 @@
             val <- as.numeric(paste0(val, collapse=""))
             if (is.na(val)) {
                setlen <- setmin <- FALSE
-               rect(1.5, tail(ypos, 1) - 7*dist, 8.4, tail(ypos, 1) - 9*dist, col=col.bg, border=NA)
+               rect(1.5, .last(ypos) - 7*dist, 8.4, .last(ypos) - 9*dist, col=col.bg, border=NA)
                break
             }
             val[val < 2] <- 2
@@ -113,11 +113,11 @@
             if (setmin)
                diffmin <- val
             setlen <- setmin <- FALSE
-            rect(1.5, tail(ypos, 1) - 3*dist, 8.4, tail(ypos, 1) - 9*dist, col=col.bg, border=NA)
-            text(1.8,           tail(ypos, 1) - 4*dist, string.len.cur, pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
-            text(1.8+sw.string, tail(ypos, 1) - 4*dist, difflen,        pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
-            text(1.8,           tail(ypos, 1) - 6*dist, string.min.cur, pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
-            text(1.8+sw.string, tail(ypos, 1) - 6*dist, diffmin,        pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+            rect(1.5, .last(ypos) - 3*dist, 8.4, .last(ypos) - 9*dist, col=col.bg, border=NA)
+            text(1.8,           .last(ypos) - 4*dist, string.len.cur, pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+            text(1.8+sw.string, .last(ypos) - 4*dist, difflen,        pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+            text(1.8,           .last(ypos) - 6*dist, string.min.cur, pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+            text(1.8+sw.string, .last(ypos) - 6*dist, diffmin,        pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
             break
          }
 
@@ -127,18 +127,18 @@
                   next
                difflen <- Inf
                setlen <- FALSE
-               rect(1.5, tail(ypos, 1) - 3*dist, 8.4, tail(ypos, 1) - 9*dist, col=col.bg, border=NA)
-               text(1.8,           tail(ypos, 1) - 4*dist, string.len.cur, pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
-               text(1.8+sw.string, tail(ypos, 1) - 4*dist, difflen,        pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
-               text(1.8,           tail(ypos, 1) - 6*dist, string.min.cur, pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
-               text(1.8+sw.string, tail(ypos, 1) - 6*dist, diffmin,        pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+               rect(1.5, .last(ypos) - 3*dist, 8.4, .last(ypos) - 9*dist, col=col.bg, border=NA)
+               text(1.8,           .last(ypos) - 4*dist, string.len.cur, pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+               text(1.8+sw.string, .last(ypos) - 4*dist, difflen,        pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+               text(1.8,           .last(ypos) - 6*dist, string.min.cur, pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+               text(1.8+sw.string, .last(ypos) - 6*dist, diffmin,        pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
                break
             }
             if (nchar(val) > 10)
                next
             num <- resp
             val <- paste0(val, resp, collapse="")
-            text(1.5+sw.string+sw.val, tail(ypos, 1) - 8*dist, num, pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+            text(1.5+sw.string+sw.val, .last(ypos) - 8*dist, num, pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
             sw.val <- strwidth(val, family=font.mono, cex=cex)
          }
 
@@ -148,8 +148,8 @@
             } else {
                val <- ""
             }
-            rect(1.5+sw.string, tail(ypos, 1) - 7*dist, 8.4, tail(ypos, 1) - 9*dist, col=col.bg, border=NA)
-            text(1.5+sw.string, tail(ypos, 1) - 8*dist, val, pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+            rect(1.5+sw.string, .last(ypos) - 7*dist, 8.4, .last(ypos) - 9*dist, col=col.bg, border=NA)
+            text(1.5+sw.string, .last(ypos) - 8*dist, val, pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
             sw.val <- strwidth(val, family=font.mono, cex=cex)
          }
 

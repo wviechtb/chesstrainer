@@ -6,8 +6,8 @@ pre {
 }
 
 pre, code {
-  background-color: #f8f8f8;
-  color: #333;
+  background-color: #1c1c1c;
+  color: #ccc;
 }
 
 pre code {
@@ -21,14 +21,14 @@ pre .img {
 }
 
 pre .img img {
-  background-color: #fff;
+  background-color: #aaa;
   display: block;
   height: auto;
 }
 
 code a, pre a {
   font-family: ui-monospace, SFMono-Regular,Consolas,Liberation Mono,Menlo,monospace;
-  color: #375f84;
+  color: #85AACC;
   text-decoration: underline;
 }
 
@@ -36,12 +36,12 @@ a.sourceLine:hover {
   text-decoration: none;
 }
 
-.fl      {color: #1514b5;}
-.fu      {color: #8c60bf;} /* function */
-.ch,.st  {color: #036a07;} /* string */
-.kw      {color: #264D66;} /* keyword */
-.co      {color: #888888;} /* comment */
-.va      {color: #3032da;} /* values */
+.fl      {color: #ae81ff;}
+.fu      {color: #ade837;} /* function */
+.ch,.st  {color: #e7db74;} /* string */
+.kw      {color: #f92672;} /* keyword */
+.co      {color: #696d70;} /* comment */
+.va      {color: #fd971f;} /* values */
 
 .message { color: black;   font-weight: bolder;}
 .error   { color: orange;  font-weight: bolder;}

@@ -39,7 +39,6 @@
       "V        - Lichess evaluation bar on/off",
       "Ctrl-h   - get Stockfish position evaluations from the cache on/off",
       "Ctrl-i   - get Lichess position evaluations from the cache on/off",
-      "Ctrl-f   - copy the FEN of the current position to the clipboard",
       "<escape> - redraw the board / exit a menu",
       "o        - open the current position on lichess.org",
       "F1       - show this help",
@@ -62,7 +61,8 @@
       "\U00002190 and \U00002192  - go back / forward one move",
       "1 or \U00002191   - jump to the first player move or the beginning of the sequence/game",
       "2 or \U00002193   - jump to the end of the sequence/game",
-      "3, 4, 5  - jump to the 1st quarter, middle, 3rd quarter of the sequence/game")
+      "3, 4, 5  - jump to the 1st quarter, middle, 3rd quarter of the sequence/game",
+      "Ctrl-f   - copy the FEN of the current position to the clipboard")
 
       txt.test <- c(
       "Shortcuts for the test mode:",
@@ -136,7 +136,6 @@
       "V        - Lichess Bewertungsbalken an/aus",
       "Strg-h   - Stockfish Positionsbewertungen aus dem Cache abrufen an/aus",
       "Strg-i   - Lichess Positionsdaten aus dem Cache abrufen an/aus",
-      "Strg-f   - FEN der aktuellen Stellung in die Zwischenablage kopieren",
       "<escape> - Brett neu zeichnen / ein Men\U000000FC verlassen",
       "o        - die aktuelle Stellung auf lichess.org \U000000F6ffnen",
       "F1       - diese Hilfe anzeigen",
@@ -159,7 +158,8 @@
       "\U00002190 und \U00002192  - einen Zug zur\U000000FCck / vorw\U000000E4rts gehen",
       "1 oder \U00002191 - zum ersten Spielerzug oder an den Anfang der Sequenz/Partie springen",
       "2 oder \U00002193 - zum Ende der Sequenz/Partie springen",
-      "3, 4, 5  - zum 1. Viertel, zur Mitte, zum 3. Viertel der Sequenz/Partie springen")
+      "3, 4, 5  - zum 1. Viertel, zur Mitte, zum 3. Viertel der Sequenz/Partie springen",
+      "Strg-f   - FEN der aktuellen Stellung in die Zwischenablage kopieren")
 
       txt.test <- c(
       "Tastenk\U000000FCrzel f\U000000FCr den Test Modus:",

@@ -1,4 +1,4 @@
-.editcomments <- function(sub, seqdir, seqname, key) {
+.editseq <- function(sub, key) {
 
    doreadline <- missing(key)
 
@@ -10,8 +10,13 @@
          cat(.text("commentstart", sub$commentstart))
          cat("\n")
       }
-      if (nrow(sub$moves) > 0L)
-         print(sub$moves[5:9])
+      if (nrow(sub$moves) > 0L) {
+         if (all(sub$moves$nextseq == "")) {
+            print(sub$moves[5:9])
+         } else {
+            print(sub$moves[c(5:9,13)])
+         }
+      }
       if (!is.null(sub$commentend))
          cat(.text("commentend", sub$commentend))
       cat("\n")
@@ -30,59 +35,63 @@
 
       # number = edit the corresponding comment
 
-      if (grepl("^[0-9]+$", resp)) {
-         comnum <- round(as.numeric(resp))
-         if (comnum < 1 || comnum > nrow(sub$moves))
+      if (grepl("^[1-9][0-9]*$", resp)) {
+         comnum <- as.integer(resp)
+         if (comnum < 1L || comnum > nrow(sub$moves))
             next
          newcom <- readline(prompt=.text("commentnew"))
          if (identical(newcom, ""))
             next
-         newcom <- gsub("\\n", "\n", newcom, fixed=TRUE)
+         if (grepl("^(-|NA|na)$", newcom)) {
+            newcom <- ""
+         } else {
+            newcom <- gsub("\\n", "\n", newcom, fixed=TRUE)
+         }
          sub$moves$comment[comnum] <- newcom
-      }
-
-      # d (or D, L, or l) = to delete a comment
-
-      if (grepl("^[DdLl]$", resp)) {
-         comdel <- readline(prompt=.text("commentdelete"))
-         if (identical(comdel, ""))
-            next
-         if (grepl("^[0-9]+$", comdel)) {
-            comdel <- round(as.numeric(comdel))
-            if (comdel < 1 || comdel > nrow(sub$moves))
-               next
-            sub$moves$comment[comdel] <- ""
-         }
-         if (grepl("^[Ee]$", comdel)) {
-            sub$commentend <- NULL
-            cat(.text("commentenddeleted"))
-         }
-         if (grepl("^[Ss]$", comdel)) {
-            sub$commentstart <- NULL
-            cat(.text("commentstartdeleted"))
-         }
+         next
       }
 
       # e or E = to edit the end comment
 
       if (grepl("^[Ee]$", resp)) {
-         if (!is.null(sub$commentend))
-            cat(.text("commentendnow", sub$commentend))
          endcom <- readline(prompt=.text("commentendnew"))
          if (identical(endcom, ""))
             next
-         sub$commentend <- endcom
+         if (grepl("^(-|NA|na)$", endcom)) {
+            sub$commentend <- NULL
+         } else {
+            sub$commentend <- endcom
+         }
+         next
       }
 
       # s or S = to edit the start comment
 
       if (grepl("^[Ss]$", resp)) {
-         if (!is.null(sub$commentstart))
-            cat(.text("commentstartnow", sub$commentstart))
          startcom <- readline(prompt=.text("commentstartnew"))
          if (identical(startcom, ""))
             next
-         sub$commentstart <- startcom
+         if (grepl("^(-|NA|na)$", startcom)) {
+            sub$commentstart <- NULL
+         } else {
+            sub$commentstart <- startcom
+         }
+         next
+      }
+
+      # n or N = to edit nextseq
+
+      if (grepl("^[Nn]$", resp)) {
+         nextseqnum <- nrow(sub$moves)
+         nextseqnew <- readline(prompt=.text("nextseqnew"))
+         if (identical(nextseqnew, ""))
+            next
+         if (grepl("^(-|NA|na)$", nextseqnew)) {
+            sub$moves$nextseq[nextseqnum] <- ""
+         } else {
+            sub$moves$nextseq[nextseqnum] <- nextseqnew
+         }
+         next
       }
 
       # f = to flip show values
@@ -99,7 +108,7 @@
             sub$moves$show[whichflip] <- !sub$moves$show[whichflip]
             next
          }
-         whichflip <- .parserows(whichflip, n=nrow(sub$moves))
+         whichflip <- .parserows(whichflip, n=nrow(sub$moves)) # or a number
          sub$moves$show[whichflip] <- !sub$moves$show[whichflip]
          next
       }
@@ -107,5 +116,74 @@
    }
 
    return(sub)
+
+}
+
+.editendmoves <- function(endmoves) {
+
+   rownamessav <- rownames(endmoves)
+   rownames(endmoves) <- NULL
+
+   while (TRUE) {
+
+      .flush()
+
+      print(endmoves[c(5:9,13)])
+      cat("\n")
+
+      resp <- readline(prompt=.text("endmovesedit"))
+
+      # enter = exit the while loop
+
+      if (identical(resp, ""))
+         break
+
+      # number = edit the corresponding comment
+
+      if (grepl("^[1-9][0-9]*$", resp)) {
+         comnum <- as.integer(resp)
+         if (comnum < 1L || comnum > nrow(endmoves))
+            next
+         newcom <- readline(prompt=.text("commentnew"))
+         if (identical(newcom, ""))
+            next
+         if (grepl("^(-|NA|na)$", newcom)) {
+            newcom <- ""
+         } else {
+            newcom <- gsub("\\n", "\n", newcom, fixed=TRUE)
+         }
+         endmoves$comment[comnum] <- newcom
+         next
+      }
+
+      # n or N = to edit nextseq
+
+      if (grepl("^[Nn]$", resp)) {
+         nextseqnum <- readline(prompt=.text("nextseqwhich"))
+         if (identical(nextseqnum, ""))
+            next
+         if (grepl("^[1-9][0-9]*$", nextseqnum)) {
+            nextseqnum <- as.integer(nextseqnum)
+            if (nextseqnum < 1L || nextseqnum > nrow(endmoves))
+               next
+         } else {
+            next
+         }
+         nextseqnew <- readline(prompt=.text("nextseqnew"))
+         if (identical(nextseqnew, ""))
+            next
+         if (grepl("^(-|NA|na)$", nextseqnew)) {
+            endmoves$nextseq[nextseqnum] <- ""
+         } else {
+            endmoves$nextseq[nextseqnum] <- nextseqnew
+         }
+         next
+      }
+
+   }
+
+   rownames(endmoves) <- rownamessav
+
+   return(endmoves)
 
 }

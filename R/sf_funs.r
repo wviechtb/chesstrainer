@@ -92,7 +92,7 @@
 
       # get the names of all cached files without the leading '<depth>_' part and get the corresponding depths
       cachedir <- .get("cachedir")
-      cachefiles <- list.files(file.path(cachedir, "stockfish"), pattern=".rds$")
+      cachefiles <- list.files(file.path(cachedir, "stockfish"), pattern="\\.rds$")
       filessplit <- strsplit(cachefiles, "_", fixed=TRUE)
       fileswoutdepth <- sapply(filessplit, function(x) x[2], USE.NAMES=FALSE)
       depths <- as.numeric(sapply(filessplit, function(x) x[1]))
@@ -271,7 +271,7 @@
       .texttop(.text("sfdeepeval"), assign=FALSE)
 
    progbarx1 <- 1
-   progbarx2 <- 5
+   progbarx2 <- 4.5
    progbary1 <- 9.2
    progbary2 <- 9.3
 
@@ -505,7 +505,7 @@
 
    if (objfordeep$showeval) {
       assign("depth", curdepth, envir=.chesstrainer)
-      .drawevalbar(evalval[[1]], i=objfordeep$i, starteval=objfordeep$starteval, flip=objfordeep$flip, showeval=TRUE)
+      .drawevalbar(evalval[[1]], i=objfordeep$i, starteval=objfordeep$starteval, flip=objfordeep$flip, showeval=TRUE, onlyifchange=TRUE)
    }
 
    return(tmp)

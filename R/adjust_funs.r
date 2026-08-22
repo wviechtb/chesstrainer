@@ -32,7 +32,7 @@
       if (identical(resp, "q") || identical(resp, "\033") || identical(resp, "ctrl-["))
          break
 
-      if (grepl("^[0-9]+$", resp)) {
+      if (grepl("^[0-9]$", resp)) {
          if (nchar(val) > 3)
             next
          num <- resp
@@ -45,7 +45,7 @@
          val <- as.numeric(paste0(val, collapse=""))
          if (is.na(val))
             break
-         val[val < 0] <- 0
+         val[val < 1] <- 1
          val[val > 100] <- 100
          score <- val
          break
@@ -189,7 +189,7 @@
       if (identical(resp, "q") || identical(resp, "\033") || identical(resp, "ctrl-["))
          break
 
-      if (grepl("^[0-9]+$", resp)) {
+      if (grepl("^[0-9]$", resp)) {
          if (nchar(val)+1 > nchar(k))
             next
          num <- resp
@@ -199,10 +199,10 @@
       }
 
       if (identical(resp, "\r") || identical(resp, "ctrl-J")) {
-         val <- as.numeric(paste0(val, collapse=""))
+         val <- as.integer(paste0(val, collapse=""))
          if (is.na(val))
             break
-         if (val < 1 || val > k) {
+         if (val < 1L || val > k) {
             val <- ""
             sw.val <- 0
             rect(1.8+sw.string, 6, 8.5, 7, col=col.bg, border=NA)
@@ -215,7 +215,7 @@
 
       if (identical(resp, "\b") || identical(resp, "ctrl-H")) {
          if (nchar(val) > 1L) {
-            val <- substr(val, 1, nchar(val)-1)
+            val <- substr(val, 1L, nchar(val)-1L)
          } else {
             val <- ""
          }

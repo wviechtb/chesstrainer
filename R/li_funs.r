@@ -55,7 +55,7 @@
    uselicache <- .get("uselicache")
 
    if (uselicache) {
-      files <- list.files(file.path(cachedir, lichessdb), pattern=".rds$")
+      files <- list.files(file.path(cachedir, lichessdb), pattern="\\.rds$")
    } else {
       files <- ""
    }

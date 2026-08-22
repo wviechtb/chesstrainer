@@ -1,7 +1,7 @@
 Package: chesstrainer
-Version: 0.9-190
-Date: 2026-08-17
-Title: Chess Training Program
+Version: 0.9-191
+Date: 2026-08-22
+Title: Chess Trainer
 Authors@R: person(given = "Wolfgang", family = "Viechtbauer", role = c("aut","cre"), email = "wvb@wvbauer.com", comment = c(ORCID = "0000-0003-3463-4063"))
 Depends: R (>= 4.2.0), processx, httr, cli
 Imports: stats, graphics, grDevices, utils, png, clipr, curl

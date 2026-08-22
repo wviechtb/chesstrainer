@@ -25,7 +25,7 @@
 
    bookmarks <- tmp[[1]]
    bookmarks <- unique(tmp[[1]])
-   bookmarks <- bookmarks[is.element(bookmarks, list.files(seqdir[seqdirpos], pattern=".rds$"))]
+   bookmarks <- bookmarks[is.element(bookmarks, list.files(seqdir[seqdirpos], pattern="\\.rds$"))]
 
    # if there is nothing left, again exit
 

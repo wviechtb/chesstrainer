@@ -5,7 +5,7 @@ template:
   #bootstrap: 5
   params:
     #bootswatch: cosmo
-    toggle: manual
+    #toggle: manual
   opengraph:
     #image:
     #  src: man/figures/card.png

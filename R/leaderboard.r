@@ -4,7 +4,7 @@
    #.drawtimer(clear=TRUE)
 
    tmp <- lapply(file.path(seqdir, files), readRDS)
-   tmp.scores <- lapply(tmp, function(x) sapply(x$player, function(x) tail(x$score,1)))
+   tmp.scores <- lapply(tmp, function(x) sapply(x$player, function(x) .last(x$score)))
    players <- unique(unlist(lapply(tmp.scores, function(x) names(x))))
    nplayers <- length(players)
 
@@ -16,14 +16,13 @@
       font.mono <- .get("font.mono")
 
       tmp.scores <- lapply(players, function(player) {
-         x <- lapply(tmp, function(x) tail(x$player[[player]]$score,1))
+         x <- lapply(tmp, function(x) .last(x$player[[player]]$score))
          x[.is.null(x)] <- 100
          unlist(x)
       })
       tmp.scores <- do.call(cbind, tmp.scores)
       tmp.scores[is.na(tmp.scores)] <- 100
       rownames(tmp.scores) <- files
-      tmp.scores[tmp.scores == 0] <- NA_real_
 
       mean.scores <- round(apply(tmp.scores, 2, mean, na.rm=TRUE), digits=1)
       sd.scores   <- round(apply(tmp.scores, 2, sd, na.rm=TRUE), digits=1)
@@ -33,7 +32,7 @@
       q3.scores   <- apply(tmp.scores, 2, quantile, 0.75, na.rm=TRUE)
 
       tmp.rounds <- lapply(players, function(player) {
-         x <- lapply(tmp, function(x) tail(x$player[[player]]$round,1))
+         x <- lapply(tmp, function(x) .last(x$player[[player]]$round))
          x[.is.null(x)] <- 0
          unlist(x)
       })

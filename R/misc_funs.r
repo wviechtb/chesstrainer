@@ -20,6 +20,8 @@
 
 .is.even <- function(x) x %% 2 == 0
 
+.last <- function(x) tail(x, 1L)
+
 .get <- function(x) {
    if (exists(x,envir=.chesstrainer)) {
       unname(get(x, envir=.chesstrainer))
@@ -858,10 +860,12 @@
 
 }
 
-.printverbose <- function(selected, seqno, filename, lastseq, upsidedown, flip, unflip, replast, oldmode, i,
+.printverbose <- function(selected, seqno, filename, lastseq, upsidedown, flip, unflip, replast, nextseq, oldmode, i,
                           seqname, seqnum, score, rounds, totalmoves, show, showcomp, comment, bestmove, starteval,
                           evalval, scoreadd, sidetoplay, givehint1, givehint2, mistake,
                           timetotal, movesplayed, movestoplay, drawcircles, drawarrows, showstartcom, pos) {
+
+   texttop <- .get("texttop")
 
    cat("\n")
    cat("selected:     ", selected, "\n")
@@ -872,6 +876,7 @@
    cat("flip:         ", flip, "\n")
    cat("unflip:       ", unflip, "\n")
    cat("replast:      ", replast, "\n")
+   cat("nextseq:      ", nextseq, "\n")
    cat("oldmode:      ", oldmode, "\n")
    cat("i:            ", i, "\n")
    cat("seqname:      ", seqname, "\n")
@@ -885,7 +890,7 @@
    cat("bestmove:     ", sapply(bestmove, head, 1), "\n")
    cat("starteval:    ", starteval, "\n")
    cat("evalval:      ", evalval, "\n")
-   cat("texttop:      ", paste0(.get("texttop"), collapse="\n"), "\n")
+   cat("texttop:      "); if (grepl("\n", texttop, fixed=TRUE)) cat("\n") else cat(" "); cat(paste0(.get("texttop"), collapse="\n"), "\n")
    cat("scoreadd:     ", scoreadd, "\n")
    cat("sidetoplay:   ", sidetoplay, "\n")
    cat("givehint1:    ", givehint1, "\n")
@@ -1329,6 +1334,8 @@
    if (length(dat) == 0L)
       return()
 
+   colnamesmoves <- c("x1","y1","x2","y2","show","move","san","eval","comment","circles","arrows","glyph","nextseq","fen")
+
    for (j in 1:length(dat)) {
 
       #print(j)
@@ -1337,7 +1344,7 @@
 
       dosave <- FALSE
 
-      if (ncol(sub$moves) != 13L) {
+      if (!identical(names(sub$moves), colnamesmoves)) {
 
          dosave <- TRUE
 
@@ -1350,6 +1357,8 @@
                sub$moves$arrows <- character(0)
             if (is.null(sub$moves$glyph))
                sub$moves$glyph <- character(0)
+            if (is.null(sub$moves$nextseq))
+               sub$moves$nextseq <- character(0)
             if (is.null(sub$moves$fen))
                sub$moves$fen <- character(0)
          } else {
@@ -1361,9 +1370,23 @@
                sub$moves$arrows <- ""
             if (is.null(sub$moves$glyph))
                sub$moves$glyph <- ""
+            if (is.null(sub$moves$nextseq))
+               sub$moves$nextseq <- ""
             if (is.null(sub$moves$fen))
                sub$moves$fen <- ""
          }
+
+      }
+
+      if (!is.null(sub$endmoves) && !identical(names(sub$endmoves), colnamesmoves)) {
+
+         dosave <- TRUE
+
+         if (is.null(sub$endmoves$nextseq))
+            sub$endmoves$nextseq <- ""
+
+         # ensure the correct order of variables in sub$endmoves
+         sub$endmoves <- sub$endmoves[colnamesmoves]
 
       }
 
@@ -1408,7 +1431,7 @@
 
          if (nrow(sub$moves) == 0L) {
 
-            sub$moves <- data.frame(x1=numeric(), y1=numeric(), x2=numeric(), y2=numeric(), show=logical(), move=character(), san=character(), eval=numeric(), comment=character(), circles=character(), arrows=character(), glyph=character(), fen=character())
+            sub$moves <- data.frame(x1=numeric(), y1=numeric(), x2=numeric(), y2=numeric(), show=logical(), move=character(), san=character(), eval=numeric(), comment=character(), circles=character(), arrows=character(), glyph=character(), nextseq=character(), fen=character())
 
          } else {
 
@@ -1425,15 +1448,18 @@
             # add the move in SAN to the sequence
             sub$moves$san <- tmp
 
-            # ensure correct order of variables in sub$moves
-            sub$moves <- sub$moves[c("x1","y1","x2","y2","show","move","san","eval","comment","circles","arrows","glyph","fen")]
-
          }
 
       }
 
-      if (dosave)
+      if (dosave) {
+
+         # ensure the correct order of variables in sub$moves
+         sub$moves <- sub$moves[colnamesmoves]
+
          saveRDS(sub, file=file.path(seqdir, files[j]))
+
+      }
 
    }
 
@@ -1505,7 +1531,7 @@
 
    # get the names of all cached files without the leading '<depth>_' part and get the corresponding depths
    cachedir <- .get("cachedir")
-   cachefiles <- list.files(file.path(cachedir, "stockfish"), pattern=".rds$")
+   cachefiles <- list.files(file.path(cachedir, "stockfish"), pattern="\\.rds$")
    if (length(cachefiles) == 0L)
       return()
    filessplit <- strsplit(cachefiles, "_", fixed=TRUE)
@@ -1545,7 +1571,7 @@
    return() # not done at the moment, so return right away
 
    cachedir <- .get("cachedir")
-   files <- list.files(file.path(cachedir, lichessdb), pattern=".rds$")
+   files <- list.files(file.path(cachedir, lichessdb), pattern="\\.rds$")
    if (length(files) == 0L)
       return()
 
@@ -1589,15 +1615,15 @@
 
    sub$flip <- flip
    sub$moves[1:4] <- 9-sub$moves[1:4]
-   if (!is.null(sub$movesend))
-      sub$movesend[1:4] <- 9-sub$movesend[1:4]
+   if (!is.null(sub$endmoves))
+      sub$endmoves[1:4] <- 9-sub$endmoves[1:4]
    sub$moves$circles <- .sub9(sub$moves$circles)
    sub$moves$arrows  <- .sub9(sub$moves$arrows)
    attr(pos,"y1") <- 9-attr(pos,"y1")
    assign("x2y2", 9-.get("x2y2"), envir=.chesstrainer)
    if (!is.null(sub$symbolend)) {
-      sub$symbolend$circlesvar <- .sub9(sub$symbolend$circlesvar)
-      sub$symbolend$arrowsvar  <- .sub9(sub$symbolend$arrowsvar)
+      sub$symbolend$circles <- .sub9(sub$symbolend$circles)
+      sub$symbolend$arrows  <- .sub9(sub$symbolend$arrows)
    }
 
    return(list(sub=sub, pos=pos))
@@ -1667,6 +1693,94 @@
    } else {
       return(paste0(x, collapse="/"))
    }
+}
+
+.getbasenames <- function(files) {
+   base <- files
+   if (length(files) <= 1L)
+      return(base)
+   for (i in 2L:length(files)) {
+      if (startsWith(files[i], base[i-1L]))
+         base[i] <- base[i-1L]
+   }
+   return(base)
+}
+
+.getbasename <- function(seqname, files) {
+   base <- .getbasenames(files)
+   basename <- base[match(seqname, files)]
+   return(basename)
+}
+
+.incrseqno <- function(seqno, k, selmode, seqname, lastseq, nextseq, filename, files, replast=FALSE) {
+
+   # seqno    = current sequence number
+   # k        = number of (selected) sequences
+   # selmode  = selection mode
+   # seqname  = name of the current sequence
+   # lastseq  = name of the last sequence played
+   # nextseq  = logical whether the next sequence is the one specified in sub$moves$nextseq
+   # filename = corresponding entry for sub$moves$nextseq
+   # files    = filenames of the (selected) sequences
+
+   seqname  <- sub("\\.rds$", "", seqname)
+   lastseq  <- sub("\\.rds$", "", lastseq)
+   filename <- sub("\\.rds$", "", filename)
+   files    <- gsub("\\.rds$", "", files)
+
+   if (nextseq) { # if the next sequence is fixed to 'filename'
+
+      # set seqno accordingly
+      seqno <- which(files == filename)
+
+   } else { # but if the next sequence is not fixed to 'filename'
+
+      if (selmode == "sequential") { # for the sequential selection mode
+
+         if (replast) {
+            # get the basename for the last sequence
+            basename <- .getbasename(lastseq, files)
+         } else {
+            # get the basename for the current sequence
+            basename <- .getbasename(seqname, files)
+         }
+
+         if (is.na(basename)) # just in case
+            return(1L)
+
+         # find the position of all files with the same basename
+         pos <- which(startsWith(files, basename))
+
+         if (length(pos) == 0L) # just in case
+            return(1L)
+
+         if (replast) {
+            seqno <- min(pos)
+         } else {
+            # set seqno to the next sequence that does not have the same basename
+            seqno <- max(pos) + 1L
+         }
+
+      } else { # for all other selection modes
+
+         if (replast) {
+            seqno <- seqno - 1L
+         } else {
+            seqno <- seqno + 1L
+         }
+
+      }
+
+   }
+
+   if (is.na(seqno)) # just in case
+      seqno <- 1L
+
+   if (seqno > k || seqno < 1L)
+      seqno <- 1L
+
+   return(seqno)
+
 }
 
 .genlines <- function(pos, sub, nmoves, genminperc, genminfreq, movedb, basename, level, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc, sfproc, sfrun, depth, seqdir)

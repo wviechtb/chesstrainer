@@ -314,7 +314,7 @@ play <- function(lang="en", online, ...) {
             stop(.text("dircreateerror"), call.=FALSE)
          copyseqs <- readline(prompt=.text("copyseqs"))
          if (identical(copyseqs, "") || .confirm(copyseqs))
-            file.copy(list.files(system.file("sequences", package="chesstrainer"), full.names=TRUE, pattern=".rds$"), seqdir)
+            file.copy(list.files(system.file("sequences", package="chesstrainer"), full.names=TRUE, pattern="\\.rds$"), seqdir)
       }
       seqdirpos <- 1
       settings$seqdir <- seqdir
@@ -393,11 +393,12 @@ play <- function(lang="en", online, ...) {
    # some defaults
 
    selected <- NULL
-   seqno    <- 1
+   seqno    <- 1L
    filename <- ""
    lastseq  <- ""
    bestmove <- list("")
    replast  <- FALSE
+   nextseq  <- FALSE
    oldmode  <- ifelse(mode == "play", "add", mode)
    .difffun <- eval(parse(text=paste0(".difffun", difffun)))
    contanalysis <- FALSE
@@ -623,7 +624,7 @@ play <- function(lang="en", online, ...) {
              "^", "6", "R", "W", "-", "=", "_", "+", "[", "]", "i", "v", "V",
              "l", "L", "<", ">", "/", ",", ".", "|", "*", "8", "?", "'", ";", ":",
              "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12",
-             "ctrl-F", "ctrl-C", "ctrl-D", "ctrl-R", "ctrl-U", "ctrl-O", "ctrl-L", "ctrl-G", "ctrl-E", "ctrl-V", "ctrl-P", "ctrl-T", "ctrl-H", "ctrl-I",
+             "ctrl-F", "ctrl-C", "ctrl-D", "ctrl-R", "ctrl-U", "ctrl-O", "ctrl-L", "ctrl-G", "ctrl-A", "ctrl-E", "ctrl-N", "ctrl-V", "ctrl-P", "ctrl-T", "ctrl-H", "ctrl-I",
              "ctrl-!", "ctrl-@", "ctrl-\"", "ctrl-#", "ctrl-\U000000A7", # ctrl-1, ctrl-2, ctrl-3
              "ctrl-_", "ctrl-+", # to adjust margin width
              "ctrl-(", "ctrl-)") # ctrl-9 and ctrl-0 to toggle advanced mode on/off and to edit the session history file
@@ -703,7 +704,7 @@ play <- function(lang="en", online, ...) {
 
       # load all sequences into 'dat.all'
 
-      files.all <- list.files(seqdir[seqdirpos], pattern=".rds$")
+      files.all <- list.files(seqdir[seqdirpos], pattern="\\.rds$")
       dat.all <- lapply(file.path(seqdir[seqdirpos], files.all), readRDS)
 
       # run integrity check on sequences (check that sub$moves has all columns and add SAN column to any sequences that are missing this)
@@ -733,13 +734,13 @@ play <- function(lang="en", online, ...) {
          assign("mode", mode, envir=.chesstrainer)
       }
 
-      scores.all <- lapply(dat.all, function(x) tail(x$player[[player]]$score, 1))
+      scores.all <- lapply(dat.all, function(x) .last(x$player[[player]]$score))
       scores.all[is.na(scores.all) | .is.null(scores.all)] <- 100
       scores.all <- unlist(scores.all)
-      rounds.all <- lapply(dat.all, function(x) tail(x$player[[player]]$round, 1))
+      rounds.all <- lapply(dat.all, function(x) .last(x$player[[player]]$round))
       rounds.all[is.na(rounds.all) | .is.null(rounds.all)] <- 0
       rounds.all <- unlist(rounds.all)
-      date.all <- lapply(dat.all, function(x) tail(x$player[[player]]$date, 1))
+      date.all <- lapply(dat.all, function(x) .last(x$player[[player]]$date))
       date.all[is.na(date.all) | .is.null(date.all)] <- NA_real_
       date.all <- unlist(date.all)
       age.all <- as.numeric(Sys.time() - as.POSIXct(date.all), units="days")
@@ -779,13 +780,13 @@ play <- function(lang="en", online, ...) {
          next
       }
 
-      scores.selected <- lapply(dat, function(x) tail(x$player[[player]]$score, 1))
+      scores.selected <- lapply(dat, function(x) .last(x$player[[player]]$score))
       scores.selected[is.na(scores.selected) | .is.null(scores.selected)] <- 100
       scores.selected <- unlist(scores.selected)
-      rounds.selected <- lapply(dat, function(x) tail(x$player[[player]]$round, 1))
+      rounds.selected <- lapply(dat, function(x) .last(x$player[[player]]$round))
       rounds.selected[is.na(rounds.selected) | .is.null(rounds.selected)] <- 0
       rounds.selected <- unlist(rounds.selected)
-      date.selected <- lapply(dat, function(x) tail(x$player[[player]]$date, 1))
+      date.selected <- lapply(dat, function(x) .last(x$player[[player]]$date))
       date.selected[is.na(date.selected) | .is.null(date.selected)] <- NA_real_
       date.selected <- unlist(date.selected)
       age.selected <- as.numeric(Sys.time() - as.POSIXct(date.selected), units="days")
@@ -799,12 +800,8 @@ play <- function(lang="en", online, ...) {
       flip.selected <- sapply(dat, function(x) x$flip)
       moves.selected <- paste0(ifelse(flip.selected, "2 ", "1 "), moves.selected) # to also sort below by whether one plays with white/black
 
-      if (all(scores.selected == 0)) # in case all selected sequences have a score of 0
-         scores.selected <- rep(1, k)
-
       if (selmode == "score_random") {
          probvals.selected <- scores.selected^expval
-         probvals.selected[scores.selected == 0] <- 0 # in case of 0^0
          if (any(is.infinite(probvals.selected))) {
             probvals.selected <- rep(0, k)
             probvals.selected[which(is.infinite(probvals.selected))[1]] <- 100
@@ -815,13 +812,12 @@ play <- function(lang="en", online, ...) {
 
       if (selmode == "score_highest") {
          probvals.selected <- rep(0, k)
-         probvals.selected[which(scores.selected == max(scores.selected[scores.selected != 0]))[1]] <- 100
+         probvals.selected[which(scores.selected == max(scores.selected))[1]] <- 100
       }
 
       if (selmode == "rounds_random") {
          probvals.selected <- (max(rounds.selected) + 1 - rounds.selected) / (max(rounds.selected) + 1)
          probvals.selected <- probvals.selected^expval
-         probvals.selected[scores.selected == 0] <- 0 # in case of 0^0
          if (any(is.infinite(probvals.selected))) {
             probvals.selected <- rep(0, k)
             probvals.selected[which(is.infinite(probvals.selected))[1]] <- 100
@@ -832,14 +828,13 @@ play <- function(lang="en", online, ...) {
 
       if (selmode == "rounds_lowest") {
          probvals.selected <- rep(0, k)
-         probvals.selected[which(rounds.selected == min(rounds.selected[scores.selected != 0]))[1]] <- 100
+         probvals.selected[which(rounds.selected == min(rounds.selected))[1]] <- 100
       }
 
       if (selmode == "age_random") {
          probvals.selected <- age.selected / max(age.selected, na.rm=TRUE)
          probvals.selected[is.na(probvals.selected)] <- 1 # if NA, set prob to 1
          probvals.selected <- probvals.selected^expval
-         probvals.selected[scores.selected == 0] <- 0 # in case of 0^0
          if (any(is.infinite(probvals.selected))) {
             probvals.selected <- rep(0, k)
             probvals.selected[which(is.infinite(probvals.selected))[1]] <- 100
@@ -853,7 +848,7 @@ play <- function(lang="en", online, ...) {
          if (anyNA(age.selected)) {
             probvals.selected[which(is.na(age.selected))[1]] <- 100
          } else {
-            probvals.selected[which(age.selected == max(age.selected[scores.selected != 0]))[1]] <- 100
+            probvals.selected[which(age.selected == max(age.selected))[1]] <- 100
          }
       }
 
@@ -861,7 +856,6 @@ play <- function(lang="en", online, ...) {
          probvals.selected <- difficulty.selected / max(difficulty.selected, na.rm=TRUE)
          probvals.selected[is.na(probvals.selected)] <- 0 # if NA, set prob to 0
          probvals.selected <- probvals.selected^expval
-         probvals.selected[scores.selected == 0] <- 0 # in case of 0^0
          if (any(is.infinite(probvals.selected))) {
             probvals.selected <- rep(0, k)
             probvals.selected[which(is.infinite(probvals.selected))[1]] <- 100
@@ -874,22 +868,10 @@ play <- function(lang="en", online, ...) {
          tmp <- difficulty.selected
          tmp[is.na(tmp)] <- 0
          probvals.selected <- rep(0, k)
-         probvals.selected[which(tmp == max(tmp[scores.selected != 0]))[1]] <- 100
+         probvals.selected[which(tmp == max(tmp))[1]] <- 100
       }
 
       if (selmode %in% c("sequential","sequential_len","sequential_mov") && k >= 1L && !replast) {
-         if (seqno > k)
-            seqno <- 1
-         while (scores.selected[seqno] == 0) {
-            seqno <- seqno + 1
-            if (seqno > k) {
-               seqno <- 1
-               if (k > 1L) {
-                  playsound(system.file("sounds", "finished.ogg", package="chesstrainer"))
-                  .texttop(.text("finishedround"), sleep=2, showlast=FALSE)
-               }
-            }
-         }
          probvals.selected <- rep(0, k)
          if (selmode == "sequential")
             probvals.selected[seqno] <- 100
@@ -903,8 +885,8 @@ play <- function(lang="en", online, ...) {
 
          # set up the data frame for a new sequence
 
-         sub <- list(flip = flip, moves = data.frame(x1=numeric(), y1=numeric(), x2=numeric(), y2=numeric(), show=logical(), move=character(), san=character(),
-                                                     eval=numeric(), comment=character(), circles=character(), arrows=character(), glyph=character(), fen=character()))
+         sub <- list(flip = flip, moves = data.frame(x1=numeric(), y1=numeric(), x2=numeric(), y2=numeric(), show=logical(), move=character(), san=character(), eval=numeric(),
+                                                     comment=character(), circles=character(), arrows=character(), glyph=character(), nextseq=character(), fen=character()))
 
          if (mode=="play" && contliquery && !is.null(savpos)) {
             pos <- savpos
@@ -917,10 +899,14 @@ play <- function(lang="en", online, ...) {
 
          # select a sequence
 
-         if (replast && filename != "") {
+         if ((replast || nextseq) && filename != "") {
 
             sel <- grep(filename, files)
-            replast <- FALSE
+
+            if (replast)
+               replast <- FALSE
+            if (nextseq)
+               nextseq <- FALSE
 
          } else {
 
@@ -939,15 +925,15 @@ play <- function(lang="en", online, ...) {
          seqname <- files[sel]
          seqnum  <- which(seqname == files.all)
 
-         score <- tail(sub$player[[player]]$score, 1)
+         score <- .last(sub$player[[player]]$score)
          if (is.null(score) || is.na(score))
             score <- 100
 
-         rounds <- tail(sub$player[[player]]$round, 1)
+         rounds <- .last(sub$player[[player]]$round)
          if (is.null(rounds) || is.na(rounds))
             rounds <- 0
 
-         age <- tail(sub$player[[player]]$date, 1)
+         age <- .last(sub$player[[player]]$date)
          if (is.null(age))
             age <- NA
          age <- as.numeric(Sys.time() - as.POSIXct(age), units="days")
@@ -1062,8 +1048,12 @@ play <- function(lang="en", online, ...) {
             bestmove <<- list("")
             run.rnd <<- FALSE
             input <<- FALSE
-            if (seqno1)
-               seqno <<- 1
+            if (seqno1) {
+               seqno <<- 1L
+               lastseq <<- ""
+               replast <<- FALSE
+               nextseq <<- FALSE
+            }
             return()
          }
 
@@ -1085,7 +1075,7 @@ play <- function(lang="en", online, ...) {
             if (nrow(sub$moves) == 0L) { # for sequences that are just a start comment
                .texttop("")
                run.rnd <- FALSE
-               seqno <- ifelse(seqno == k, 1, seqno + 1)
+               seqno <- ifelse(seqno == k, 1L, seqno + 1L)
                next
             }
 
@@ -1217,7 +1207,7 @@ play <- function(lang="en", online, ...) {
                   tmp <- .parsemove(bestmove[[1]][1], pos=pos, flip=flip, evalval=NA, i=i, sidetoplay=sidetoplay, rename=FALSE, returnline=0, hintdepth=1, san=FALSE)
                   moveuci <- .lan2uci(tmp$txt, sidetoplay=sidetoplay)
                   movesan <- .parsemove(moveuci, pos=pos, flip=flip, evalval=NA, i=i, sidetoplay=sidetoplay, rename=FALSE, returnline=2, hintdepth=1, san=TRUE)
-                  sub$moves <- rbind(sub$moves, data.frame(x1=tmp$x1, y1=tmp$y1, x2=tmp$x2, y2=tmp$y2, show=TRUE, move=tmp$txt, san=movesan, eval=NA_real_, comment="", circles="", arrows="", glyph="", fen=""))
+                  sub$moves <- rbind(sub$moves, data.frame(x1=tmp$x1, y1=tmp$y1, x2=tmp$x2, y2=tmp$y2, show=TRUE, move=tmp$txt, san=movesan, eval=NA_real_, comment="", circles="", arrows="", glyph="", nextseq="", fen=""))
                   pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE)
 
                   i <- i + 1
@@ -1354,8 +1344,11 @@ play <- function(lang="en", online, ...) {
             ### general keys
 
             if (advanced && identical(click, "ctrl-P")) {
-               #cat("--------------------------------------------\n\n"); print(pos);
+               cat("--------------------------------------------\n\n")
+               if (seqname != "")
+                  cat("Sequence name:", seqname, "\n\n")
                print(sub)
+               cat("--------------------------------------------\n")
                next
             }
 
@@ -1540,11 +1533,11 @@ play <- function(lang="en", online, ...) {
                next
             }
 
-            # n (or N) to start a new sequence / round (from play/analysis mode, jumps back to oldmode if not in contliquery mode)
+            # n, ctrl-n, or N to start a new sequence / round
 
-            if (identical(click, "n") || identical(click, "N")) {
+            if (identical(click, "n") || identical(click, "ctrl-N") || identical(click, "N")) {
                .texttop(.text("startnewround"), sleep=1, showlast=FALSE)
-               if (mode %in% c("play","analysis")) {
+               if (mode %in% c("play","analysis")) { # from play/analysis mode, jump back to oldmode if not in contliquery mode)
                   if (contliquery) {
                      mode <- "play"
                      assign("mode", mode, envir=.chesstrainer)
@@ -1554,13 +1547,14 @@ play <- function(lang="en", online, ...) {
                   }
                }
                if (mode == "test" && selmode %in% c("sequential","sequential_len","sequential_mov","age_oldest")) {
-                  seqno <- seqno + 1
-                  if (seqno > k) {
-                     seqno <- 1
-                     if (k > 1L) {
-                        playsound(system.file("sounds", "finished.ogg", package="chesstrainer"))
-                        .texttop(.text("finishedround"), sleep=2, showlast=FALSE)
-                     }
+                  if (identical(click, "ctrl-N")) {
+                     seqno <- ifelse(seqno == k, 1L, seqno + 1L)
+                  } else {
+                     seqno <- .incrseqno(seqno, k, selmode, seqname, lastseq, nextseq, filename, files)
+                  }
+                  if (seqno == 1L && k > 1L) {
+                     playsound(system.file("sounds", "finished.ogg", package="chesstrainer"))
+                     .texttop(.text("finishedround"), sleep=2, showlast=FALSE)
                   }
                }
                if (identical(click, "N")) { # N also resets savpos, flip, and sidetoplay
@@ -1930,7 +1924,7 @@ play <- function(lang="en", online, ...) {
                      }
                   }
                   sub$moves <- sub$moves[seq_len(i-2),]
-                  sub$moves <- rbind(sub$moves, data.frame(x1=tmp$x1, y1=tmp$y1, x2=tmp$x2, y2=tmp$y2, show=showval, move=tmp$txt, san=movesan, eval=evalval[1], comment="", circles=circlesvar, arrows=arrowsvar, glyph="", fen=fen))
+                  sub$moves <- rbind(sub$moves, data.frame(x1=tmp$x1, y1=tmp$y1, x2=tmp$x2, y2=tmp$y2, show=showval, move=tmp$txt, san=movesan, eval=evalval[1], comment="", circles=circlesvar, arrows=arrowsvar, glyph="", nextseq="", fen=fen))
                   comment <- ""
                   sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
                   opening <- .findopening(sub$moves[seq_len(i-1),1:4], pos=pos, flip=flip, sidetoplay=sidetoplay, sidetoplaystart=sidetoplaystart, i=i, opening=opening, openings=openings, posnull=is.null(sub$pos))
@@ -2269,9 +2263,9 @@ play <- function(lang="en", online, ...) {
                   }
 
                   if (updateall) { # [u]
-                     seqno <- seqno + 1
+                     seqno <- seqno + 1L
                      if (seqno > k) {
-                        seqno <- 1
+                        seqno <- 1L
                         mode <- "add"
                         assign("mode", mode, envir=.chesstrainer)
                         selmode <- selmodeold
@@ -2307,7 +2301,7 @@ play <- function(lang="en", online, ...) {
                      volumeold <- volume
                      selmode <- "sequential"
                      wait <- FALSE
-                     seqno <- 1
+                     seqno <- 1L
                      assign("volume", 0, envir=.chesstrainer)
                      updateall <- TRUE
                      .sf.setoptions(sfproc, threads=1, hash)
@@ -2361,8 +2355,8 @@ play <- function(lang="en", online, ...) {
                }
                .texttop(.text("replast"), sleep=0.75, showlast=FALSE)
                replast <- TRUE
-               filename <- lastseq
-               seqno <- max(1, seqno - 1)
+               seqno <- .incrseqno(seqno, k, selmode, seqname, lastseq, nextseq, filename, files, replast=TRUE)
+               filename <- files[seqno]
                .newround()
                next
             }
@@ -2383,12 +2377,10 @@ play <- function(lang="en", online, ...) {
 
             if (mode == "test" && identical(click, "M")) {
                mistake <- TRUE
-               if (score >= 1) {
-                  scoreadd <- min(adjustwrong, 100-score)
-                  score <- score + scoreadd
-                  .textbot(score=score, onlyscore=TRUE)
-                  playsound(system.file("sounds", "error.ogg", package="chesstrainer"))
-               }
+               scoreadd <- min(adjustwrong, 100-score)
+               score <- score + scoreadd
+               .textbot(score=score, onlyscore=TRUE)
+               playsound(system.file("sounds", "error.ogg", package="chesstrainer"))
                next
             }
 
@@ -2417,7 +2409,7 @@ play <- function(lang="en", online, ...) {
                   replast <- TRUE
                   filename <- seqname
                }
-               if (!mistake && score > 1)
+               if (!mistake)
                   score <- max(1, round(score * multiplier))
                rounds <- rounds + 1
                tmp <- data.frame(date=as.numeric(Sys.time()), round=rounds, score=score)
@@ -2432,16 +2424,11 @@ play <- function(lang="en", online, ...) {
                session.mean.scores[[session.length]] <- c(session.mean.scores[[session.length]], mean(scores.all, na.rm=TRUE))
                if (!showeval[[mode]])
                   .drawevalbar(sub$moves$eval[i], i=i, starteval=starteval, flip=flip, showeval=TRUE)
-               if (selmode %in% c("sequential","sequential_len","sequential_mov","age_oldest")) {
-                  if (!replast) {
-                     seqno <- seqno + 1
-                     if (seqno > k) {
-                        seqno <- 1
-                        if (k > 1L) {
-                           playsound(system.file("sounds", "finished.ogg", package="chesstrainer"))
-                           .texttop(.text("finishedround"), sleep=2, showlast=FALSE)
-                        }
-                     }
+               if (selmode %in% c("sequential","sequential_len","sequential_mov","age_oldest") && !replast) {
+                  seqno <- .incrseqno(seqno, k, selmode, seqname, lastseq, nextseq, filename, files)
+                  if (seqno == 1L && k > 1L) {
+                     playsound(system.file("sounds", "finished.ogg", package="chesstrainer"))
+                     .texttop(.text("finishedround"), sleep=2, showlast=FALSE)
                   }
                }
                if (unflip)
@@ -2739,7 +2726,7 @@ play <- function(lang="en", online, ...) {
             if (identical(click, "e")) {
                tmp <- sub
                eval(expr=switch1)
-               sub <- .editcomments(sub, seqdir[seqdirpos], seqname)
+               sub <- .editseq(sub)
                eval(expr=switch2)
                if (mode == "test" && !identical(tmp, sub)) {
                   if (unflip)
@@ -2752,7 +2739,7 @@ play <- function(lang="en", online, ...) {
                next
             }
 
-            # E to edit a sequence using edit()
+            # E to edit sub$moves using edit()
 
             if (identical(click, "E")) {
                tmp <- sub
@@ -2761,6 +2748,28 @@ play <- function(lang="en", online, ...) {
                sub$moves$circles[is.na(sub$moves$circles)] <- ""
                sub$moves$arrows[is.na(sub$moves$arrows)] <- ""
                sub$moves$glyph[is.na(sub$moves$glyph)] <- ""
+               sub$moves$nextseq[is.na(sub$moves$nextseq)] <- ""
+               if (mode == "test" && !identical(tmp, sub)) {
+                  if (unflip)
+                     list2env(.doflip(sub, pos, !flip), envir=environment())
+                  saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
+                  if (unflip)
+                     list2env(.doflip(sub, pos, flip), envir=environment())
+               }
+               next
+            }
+
+            # ctrl-e to edit sub$endmoves using prompts
+
+            if (advanced && identical(click, "ctrl-E")) {
+               if (is.null(sub$endmoves)) {
+                  .texttop(.text("noendmoves"), sleep=1.5)
+                  next
+               }
+               tmp <- sub
+               eval(expr=switch1)
+               sub$endmoves <- .editendmoves(sub$endmoves)
+               eval(expr=switch2)
                if (mode == "test" && !identical(tmp, sub)) {
                   if (unflip)
                      list2env(.doflip(sub, pos, !flip), envir=environment())
@@ -2829,6 +2838,11 @@ play <- function(lang="en", online, ...) {
                      sub$endmoves <- NULL
                   if (isFALSE(sub$testend)) # remove sub$testend if it is FALSE
                      sub$testend <- NULL
+                  if (any(sub$moves$nextseq != "")) { # move any nextseq entries to the very last move
+                     tmp <- .last(sub$moves$nextseq[sub$moves$nextseq != ""])
+                     sub$moves$nextseq <- ""
+                     sub$moves$nextseq[length(sub$moves$nextseq)] <- tmp
+                  }
                   saveRDS(sub, file=filenamefull)
                   playsound(system.file("sounds", "complete.ogg", package="chesstrainer"))
                   .newround(seqno1=TRUE)
@@ -2899,14 +2913,14 @@ play <- function(lang="en", online, ...) {
                next
             }
 
-            # ctrl-e to add multiple ending moves
+            # ctrl-a to add an end move
 
-            if (advanced && mode == "add" && identical(click, "ctrl-E")) {
+            if (advanced && mode == "add" && identical(click, "ctrl-A")) {
                if (i == 1 || flip && sidetoplay == "b" || !flip && sidetoplay == "w")
                   next
                if (is.null(sub$endmoves)) {
                   .texttop(.text("addnewendmove"), sleep=0.75)
-                  sub$endmoves <- sub$moves[i-1,] # if not null, then the move is added at [e]
+                  sub$endmoves <- sub$moves[i-1,,drop=FALSE] # if not null, then the move is added at [e]
                } else {
                   .texttop(.text("addnewendmove"), sleep=0.25)
                }
@@ -2972,14 +2986,14 @@ play <- function(lang="en", online, ...) {
                next
             }
 
-            # ctrl-t to toggle test at end of the sequence
+            # ctrl-t to toggle test at the end of the sequence
 
             if (advanced && mode == "add" && identical(click, "ctrl-T")) {
                if (is.null(sub$testend) || isFALSE(sub$testend)) {
                   sub$testend <- TRUE
                   .texttop(.text("testend", sub$testend), sleep=1)
                   eval(expr=switch1)
-                  sub <- .editcomments(sub, seqdir[seqdirpos], seqname, key="e")
+                  sub <- .editseq(sub, key="e")
                   eval(expr=switch2)
                } else {
                   sub$testend <- FALSE
@@ -3312,7 +3326,7 @@ play <- function(lang="en", online, ...) {
                verbose <- !verbose
                if (verbose) {
                   eval(expr=switch1)
-                  .printverbose(selected, seqno, filename, lastseq, upsidedown, flip, unflip, replast, oldmode, i, seqname, seqnum, score, rounds, totalmoves, show, showcomp, comment, bestmove, starteval, evalval, scoreadd, sidetoplay, givehint1, givehint2, mistake, timetotal, movesplayed, movestoplay, drawcircles, drawarrows, showstartcom, pos)
+                  .printverbose(selected, seqno, filename, lastseq, upsidedown, flip, unflip, replast, nextseq, oldmode, i, seqname, seqnum, score, rounds, totalmoves, show, showcomp, comment, bestmove, starteval, evalval, scoreadd, sidetoplay, givehint1, givehint2, mistake, timetotal, movesplayed, movestoplay, drawcircles, drawarrows, showstartcom, pos)
                   eval(expr=switch2)
                }
                assign("verbose", verbose, envir=.chesstrainer)
@@ -3361,7 +3375,7 @@ play <- function(lang="en", online, ...) {
                         bookmarks <- bookmark
                      } else {
                         bookmarks <- unique(c(bookmark, tmp[[1]])) # add bookmark at front and remove duplicates
-                        bookmarks <- bookmarks[is.element(bookmarks, list.files(seqdir[seqdirpos], pattern=".rds$"))] # keep only existing bookmarks
+                        bookmarks <- bookmarks[is.element(bookmarks, list.files(seqdir[seqdirpos], pattern="\\.rds$"))] # keep only existing bookmarks
                      }
                   } else {
                      bookmarks <- bookmark
@@ -3378,7 +3392,7 @@ play <- function(lang="en", online, ...) {
                bookmark <- .bookmarks(seqdir, seqdirpos) # returns NA if bookmark screen was not draw
                if (isTRUE(bookmark != "")) { # only TRUE if bookmark is neither NA nor ""
                   selected <- grepl(bookmark, files.all)
-                  selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected]
+                  selected <- list.files(seqdir[seqdirpos], pattern="\\.rds$")[selected]
                   mode <- oldmode <- "add"
                   assign("mode", mode, envir=.chesstrainer)
                   .newround(seqno1=TRUE)
@@ -3587,7 +3601,7 @@ play <- function(lang="en", online, ...) {
                      if (is.null(x))
                         return(FALSE)
                      x <- rbind(c(date=0, round=0, score=100), x)
-                     ismistake <- diff(x$score) >= 0 & x$score[-1] > 5
+                     ismistake <- diff(x$score) >= 0 & x$score[-1] > 5 # TODO: is this right?
                      if (any(ismistake)) {
                         ismistake <- which(ismistake) + 1
                         daysago <- as.numeric(Sys.time() - as.POSIXct(x$date[ismistake]), units="days")
@@ -3600,7 +3614,7 @@ play <- function(lang="en", online, ...) {
                         return(FALSE)
                      }
                   })
-                  selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected]
+                  selected <- list.files(seqdir[seqdirpos], pattern="\\.rds$")[selected]
                   if (length(selected) == 0L) {
                      cat(.text("noseqsfound"))
                      selected <- NULL
@@ -3624,7 +3638,7 @@ play <- function(lang="en", online, ...) {
                      cat(.text("noseqsfound"))
                   } else {
                      cat(.text("selseq12", c(tmp$seq.lo, tmp$seq.hi)))
-                     selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[tmp$seq.lo:tmp$seq.hi]
+                     selected <- list.files(seqdir[seqdirpos], pattern="\\.rds$")[tmp$seq.lo:tmp$seq.hi]
                      mode <- oldmode <- "add"
                      assign("mode", mode, envir=.chesstrainer)
                      listseqs <- TRUE
@@ -3636,13 +3650,13 @@ play <- function(lang="en", online, ...) {
 
                # 'number' entered
 
-               if (grepl("^[1-9][0-9]+$", searchterm)) {
+               if (grepl("^[1-9][0-9]*$", searchterm)) {
                   tmp <- as.numeric(searchterm)
                   if (tmp < 1 || tmp > k.all) {
                      cat(.text("noseqfound"))
                   } else {
                      cat(.text("selseq", tmp))
-                     selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[tmp]
+                     selected <- list.files(seqdir[seqdirpos], pattern="\\.rds$")[tmp]
                      mode <- oldmode <- "add"
                      assign("mode", mode, envir=.chesstrainer)
                      listseqs <- TRUE
@@ -3661,7 +3675,7 @@ play <- function(lang="en", online, ...) {
                   if (identical(tmp$sign, "="))
                       tmp$sign <- "=="
                   selected <- eval(parse(text = paste("scores.all", tmp$sign, tmp$cutoff)))
-                  selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected]
+                  selected <- list.files(seqdir[seqdirpos], pattern="\\.rds$")[selected]
                   if (length(selected) == 0L) {
                      cat(.text("noseqsfound"))
                      selected <- NULL
@@ -3685,7 +3699,7 @@ play <- function(lang="en", online, ...) {
                   if (identical(tmp$sign, "="))
                       tmp$sign <- "=="
                   selected <- eval(parse(text = paste("rounds.all", tmp$sign, tmp$cutoff)))
-                  selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected]
+                  selected <- list.files(seqdir[seqdirpos], pattern="\\.rds$")[selected]
                   if (length(selected) == 0L) {
                      cat(.text("noseqsfound"))
                      selected <- NULL
@@ -3710,7 +3724,7 @@ play <- function(lang="en", online, ...) {
                       tmp$sign <- "=="
                   selected <- eval(parse(text = paste("age.all", tmp$sign, tmp$cutoff)))
                   selected[is.na(selected)] <- FALSE
-                  selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected]
+                  selected <- list.files(seqdir[seqdirpos], pattern="\\.rds$")[selected]
                   if (length(selected) == 0L) {
                      cat(.text("noseqsfound"))
                      selected <- NULL
@@ -3735,7 +3749,7 @@ play <- function(lang="en", online, ...) {
                       tmp$sign <- "=="
                   selected <- eval(parse(text = paste("difficulty.all", tmp$sign, tmp$cutoff)))
                   selected[is.na(selected)] <- FALSE
-                  selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected]
+                  selected <- list.files(seqdir[seqdirpos], pattern="\\.rds$")[selected]
                   if (length(selected) == 0L) {
                      cat(.text("noseqsfound"))
                      selected <- NULL
@@ -3765,8 +3779,8 @@ play <- function(lang="en", online, ...) {
                   orsearch <- TRUE
                   searchterm <- substr(searchterm, 3, nchar(searchterm))
                }
-
-               if (length(grep(searchterm, files.all)) == 0L) {
+               tmp <- suppressWarnings(try(grep(searchterm, files.all), silent=TRUE))
+               if (inherits(tmp, "try-error") || length(grep(searchterm, files.all)) == 0L) {
                   cat(.text("noseqsfound"))
                } else {
                   if (identical(click, "|")) {
@@ -3779,14 +3793,14 @@ play <- function(lang="en", online, ...) {
                   } else {
                      if (andsearch || orsearch) {
                         selected2 <- grepl(searchterm, files.all)
-                        selected2 <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected2]
+                        selected2 <- list.files(seqdir[seqdirpos], pattern="\\.rds$")[selected2]
                         if (andsearch)
                            selected <- intersect(selected, selected2)
                         if (orsearch)
                            selected <- union(selected, selected2)
                      } else {
                         selected <- grepl(searchterm, files.all)
-                        selected <- list.files(seqdir[seqdirpos], pattern=".rds$")[selected]
+                        selected <- list.files(seqdir[seqdirpos], pattern="\\.rds$")[selected]
                      }
                      cat(.text("numseqfound", length(selected)))
                      mode <- oldmode <- "add"
@@ -3981,7 +3995,7 @@ play <- function(lang="en", online, ...) {
                   next
                searchterm <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                searchterm <- .fenpart(searchterm)
-               seqident <- sapply(dat.all, function(x) grepl(searchterm, tail(x$moves$fen, 1), fixed=TRUE) && identical(flip, x$flip))
+               seqident <- sapply(dat.all, function(x) grepl(searchterm, .last(x$moves$fen), fixed=TRUE) && identical(flip, x$flip))
                if (any(seqident)) {
                   #eval(expr=switch1)
                   .flush()
@@ -4409,6 +4423,7 @@ play <- function(lang="en", online, ...) {
                   lastseq  <- ""
                   bestmove <- list("")
                   replast  <- FALSE
+                  nextseq  <- FALSE
                   oldmode  <- ifelse(mode %in% c("play","analysis"), "add", mode)
                   mode <- "add"
                   assign("mode", mode, envir=.chesstrainer)
@@ -4544,7 +4559,7 @@ play <- function(lang="en", online, ...) {
                         }
                      }
                      # 'number' entered
-                     if (grepl("^[0-9]+$", rowvals)) {
+                     if (grepl("^[1-9][0-9]*$", rowvals)) {
                         rowval <- as.numeric(rowvals)
                         if (rowval < 1 || rowval > nrow(dat.player)) {
                            next
@@ -4858,7 +4873,7 @@ play <- function(lang="en", online, ...) {
                nextmoves <- lapply(dat.all.short, function(x) {
                   if (any(searchterm == x$fenshortall) && identical(flip, x$flip)) {
                      if (searchterm %in% x$fenshortend) {
-                        return("")
+                        return()
                      } else {
                         pos <- min(which(searchterm == x$fenshort))
                      }
@@ -4943,10 +4958,8 @@ play <- function(lang="en", online, ...) {
 
                if (domistake) {
                   mistake <- TRUE
-                  if (score >= 1) {
-                     scoreadd <- min(adjustwrong, 100-score)
-                     score <- score + scoreadd
-                  }
+                  scoreadd <- min(adjustwrong, 100-score)
+                  score <- score + scoreadd
                   .textbot(score=score, onlyscore=TRUE)
                   .rmrect(click1.x, click1.y, flip=flip)
                   .addrect(click2.x, click2.y, col=.get("col.wrong"))
@@ -4990,10 +5003,8 @@ play <- function(lang="en", online, ...) {
 
                   if (timetotal > timepermitted) {
                      mistake <- TRUE
-                     if (score >= 1) {
-                        scoreadd <- min(adjustwrong, 100-score)
-                        score <- score + scoreadd
-                     }
+                     scoreadd <- min(adjustwrong, 100-score)
+                     score <- score + scoreadd
                      .texttop(.text("tooslow", round(timetotal, digits=2), round(timepermitted, digits=2)))
                      .waitforclick()
                   }
@@ -5049,8 +5060,6 @@ play <- function(lang="en", online, ...) {
                         .texttop("")
                         break
                      }
-                     # a and A should work
-                     # o should work
                      if (is.null(click1.x) || is.null(click2.x) || is.null(click1.y) || is.null(click2.y))
                         next
                      if (is.na(click1.x) || is.na(click2.x) || is.na(click1.y) || is.na(click2.y))
@@ -5107,10 +5116,8 @@ play <- function(lang="en", online, ...) {
                      if (mistake) {
                         playsound(system.file("sounds", "error.ogg", package="chesstrainer"))
                         playendsound <- FALSE
-                        if (score >= 1) {
-                           scoreadd <- min(adjustwrong, 100-score)
-                           score <- score + scoreadd
-                        }
+                        scoreadd <- min(adjustwrong, 100-score)
+                        score <- score + scoreadd
                      }
                   }
                }
@@ -5120,11 +5127,22 @@ play <- function(lang="en", online, ...) {
                if (mistake && repmistake) {
                   replast <- TRUE
                   filename <- seqname
+               } else {
+                  nextseqval <- sub$moves$nextseq[i-1]
+                  if (!identical(nextseqval, "")) {
+                     if (!endsWith(nextseqval, ".rds"))
+                        nextseqval <- paste0(nextseqval, ".rds")
+                     if (is.element(nextseqval, files)) {
+                        nextseq <- TRUE
+                        filename <- nextseqval
+                        playendsound <- FALSE
+                     }
+                  }
                }
 
                # adjust the score (but only if no mistake was made)
 
-               if (!mistake && score > 1)
+               if (!mistake)
                   score <- max(1, round(score * multiplier))
 
                if (runthis) {
@@ -5135,9 +5153,9 @@ play <- function(lang="en", online, ...) {
                   # if sub$endmoves is not NULL, show alternative endmoves via arrows
 
                   if (!is.null(sub$endmoves)) {
-                     tmp <- sub$endmoves
-                     harrows <- .parseannot(paste0(apply(tmp, 1, function(x) paste0("(",x[1],",",x[2],",",x[3],",",x[4],")")), collapse=";"), cols=4)
-                     .drawarrows(arrows=harrows, hint=TRUE, evalvals=tmp$eval, sidetoplay=ifelse(sidetoplay == "w", "b", "w"), allarrows=TRUE)
+                     harrows <- .parseannot(paste0(apply(sub$endmoves, 1, function(x) paste0("(",x[1],",",x[2],",",x[3],",",x[4],")")), collapse=";"), cols=4)
+                     evalvals <- sub$endmoves$eval
+                     .drawarrows(arrows=harrows, hint=TRUE, evalvals=evalvals, sidetoplay=ifelse(sidetoplay == "w", "b", "w"), allarrows=TRUE)
                   }
 
                   # show symbolend if it is not NULL
@@ -5355,7 +5373,7 @@ play <- function(lang="en", online, ...) {
                               bookmarks <- bookmark
                            } else {
                               bookmarks <- unique(c(bookmark, tmp[[1]]))
-                              bookmarks <- bookmarks[is.element(bookmarks, list.files(seqdir[seqdirpos], pattern=".rds$"))]
+                              bookmarks <- bookmarks[is.element(bookmarks, list.files(seqdir[seqdirpos], pattern="\\.rds$"))]
                            }
                         } else {
                            bookmarks <- bookmark
@@ -5380,16 +5398,14 @@ play <- function(lang="en", online, ...) {
                      }
 
                      if (identical(click, "M")) {
-                        if (score >= 1) {
-                           scoreadd <- min(adjustwrong, 100-score)
-                           score <- score + scoreadd
-                           .textbot(score=score, onlyscore=TRUE)
-                           sub$player[[player]]$score[length(sub$player[[player]]$score)] <- score
-                           playsound(system.file("sounds", "error.ogg", package="chesstrainer"))
-                           if (mistake && repmistake) {
-                              replast <- TRUE
-                              filename <- seqname
-                           }
+                        scoreadd <- min(adjustwrong, 100-score)
+                        score <- score + scoreadd
+                        .textbot(score=score, onlyscore=TRUE)
+                        sub$player[[player]]$score[length(sub$player[[player]]$score)] <- score
+                        playsound(system.file("sounds", "error.ogg", package="chesstrainer"))
+                        if (mistake && repmistake) {
+                           replast <- TRUE
+                           filename <- seqname
                         }
                         next
                      }
@@ -5423,7 +5439,7 @@ play <- function(lang="en", online, ...) {
                         }
                         dev.hold()
                         .redrawpos(pos, flip=flip)
-                        .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph)
+                        .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
                         dev.flush()
                         next
                      }
@@ -5435,7 +5451,7 @@ play <- function(lang="en", online, ...) {
 
                      if (identical(click, "ctrl-V")) {
                         eval(expr=switch1)
-                        .printverbose(selected, seqno, filename, lastseq, flip, replast, oldmode, i, seqname, seqnum, score, rounds, totalmoves, show, showcomp, comment, bestmove, starteval, evalval, scoreadd, sidetoplay, givehint1, givehint2, mistake, timetotal, movesplayed, movestoplay, drawcircles, drawarrows, showstartcom, pos)
+                        .printverbose(selected, seqno, filename, lastseq, upsidedown, flip, unflip, replast, nextseq, oldmode, i, seqname, seqnum, score, rounds, totalmoves, show, showcomp, comment, bestmove, starteval, evalval, scoreadd, sidetoplay, givehint1, givehint2, mistake, timetotal, movesplayed, movestoplay, drawcircles, drawarrows, showstartcom, pos)
                         eval(expr=switch2)
                         next
                      }
@@ -5445,7 +5461,7 @@ play <- function(lang="en", online, ...) {
                } # end of 'if (dowait) {}'
 
                if (!replast)
-                  seqno <- ifelse(seqno == k, 1, seqno + 1)
+                  seqno <- .incrseqno(seqno, k, selmode, seqname, lastseq, nextseq, filename, files)
 
                if (dosave) {
                   if (unflip)
@@ -5462,7 +5478,7 @@ play <- function(lang="en", online, ...) {
 
                if (!replast && k > 1L) {
                   if (selmode %in% c("sequential","sequential_len","sequential_mov","age_oldest")) {
-                     if (seqno == 1) {
+                     if (seqno == 1L) {
                         playsound(system.file("sounds", "finished.ogg", package="chesstrainer"))
                         .texttop(.text("finishedround"), sleep=2, showlast=FALSE)
                      }
@@ -5558,7 +5574,7 @@ play <- function(lang="en", online, ...) {
             # add the current move to sub
 
             sub$moves <- sub$moves[seq_len(i-2),]
-            sub$moves <- rbind(sub$moves, data.frame(x1=click1.x, y1=click1.y, x2=click2.x, y2=click2.y, show=showval, move=attr(pos,"move"), san=movesan, eval=evalval[1], comment=comment, circles=circlesvar, arrows=arrowsvar, glyph="", fen=fen))
+            sub$moves <- rbind(sub$moves, data.frame(x1=click1.x, y1=click1.y, x2=click2.x, y2=click2.y, show=showval, move=attr(pos,"move"), san=movesan, eval=evalval[1], comment=comment, circles=circlesvar, arrows=arrowsvar, glyph="", nextseq="", fen=fen))
             comment <- ""
             glyph <- ""
 
@@ -5578,7 +5594,7 @@ play <- function(lang="en", online, ...) {
 
             if (!is.null(sub$endmoves)) {
                if (flip && sidetoplay == "w" || !flip && sidetoplay == "b") {
-                  sub$endmoves <- rbind(sub$endmoves, sub$moves[i-1,])
+                  sub$endmoves <- rbind(sub$endmoves, sub$moves[i-1,,drop=FALSE])
                   rownames(sub$endmoves) <- paste0(i-1, letters[seq_len(nrow(sub$endmoves))])
                } else {
                   sub$endmoves <- NULL # but erase endmoves if it is the wrong side to play

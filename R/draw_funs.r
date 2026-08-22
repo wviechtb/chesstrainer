@@ -1553,7 +1553,7 @@
    return(out)
 }
 
-.drawevalbar <- function(eval=NA_real_, i=1, starteval=NA_real_, flip=FALSE, clear=FALSE, showeval=TRUE) {
+.drawevalbar <- function(eval=NA_real_, i=1, starteval=NA_real_, flip=FALSE, clear=FALSE, showeval=TRUE, onlyifchange=FALSE) {
 
    col.bg  <- .get("col.bg")
    xpos    <- .get("drawevalbar.xpos")
@@ -1611,53 +1611,54 @@
    lasteval <- min(max(lasteval, -maxeval), maxeval)
    lasteval <- (lasteval + maxeval) / (2*maxeval) * 8 + 1
 
-   if (!identical(eval, lasteval)) {
+   if (onlyifchange && identical(eval, lasteval)) {
+      .drawdepth(showeval=showeval)
+      return()
+   }
 
-      props <- seq(0, 1, length.out=evalsteps)^(1/5)
+   props <- seq(0, 1, length.out=evalsteps)^(1/5)
 
-      doanim <- !is.na(lasteval) && evalsteps >= 3
+   doanim <- !is.na(lasteval) && evalsteps >= 3
 
-      if (flip) {
-         if (doanim) {
-            rect(xpos, 10-lasteval, xpos+indsize, 9, border=NA, col=col.side.w)
-            rect(xpos, 1, xpos+indsize, 10-lasteval, border=NA, col=col.side.b)
-            evals <- lasteval + (eval - lasteval) * props
-            col.side.bar <- ifelse(eval > lasteval, col.side.w, col.side.b)
-            for (i in 2:evalsteps) {
-               rect(xpos, 10-evals[i-1], xpos+indsize, 10-evals[i], border=NA, col=col.side.bar)
-            }
-         } else {
-            rect(xpos, 10-eval, xpos+indsize, 9, border=NA, col=col.side.w)
-            rect(xpos, 1, xpos+indsize, 10-eval, border=NA, col=col.side.b)
-         }
-         if (eval > 5) {
-            text(xpos + indsize/2, 8.9, evaltxt, cex=cex.eval, col=col.side.b)
-         } else {
-            text(xpos + indsize/2, 1.1, evaltxt, cex=cex.eval, col=col.side.w)
+   if (flip) {
+      if (doanim) {
+         rect(xpos, 10-lasteval, xpos+indsize, 9, border=NA, col=col.side.w)
+         rect(xpos, 1, xpos+indsize, 10-lasteval, border=NA, col=col.side.b)
+         evals <- lasteval + (eval - lasteval) * props
+         col.side.bar <- ifelse(eval > lasteval, col.side.w, col.side.b)
+         for (i in 2:evalsteps) {
+            rect(xpos, 10-evals[i-1], xpos+indsize, 10-evals[i], border=NA, col=col.side.bar)
          }
       } else {
-         if (doanim) {
-            rect(xpos, lasteval, xpos+indsize, 9, border=NA, col=col.side.b)
-            rect(xpos, 1, xpos+indsize, lasteval, border=NA, col=col.side.w)
-            evals <- lasteval + (eval - lasteval) * props
-            col.side.bar <- ifelse(eval > lasteval, col.side.w, col.side.b)
-            for (i in 2:evalsteps) {
-               rect(xpos, evals[i-1], xpos+indsize, evals[i], border=NA, col=col.side.bar)
-            }
-         } else {
-            rect(xpos, eval, xpos+indsize, 9, border=NA, col=col.side.b)
-            rect(xpos, 1, xpos+indsize, eval, border=NA, col=col.side.w)
-         }
-         if (eval > 5) {
-            text(xpos + indsize/2, 1.1, evaltxt, cex=cex.eval, col=col.side.b)
-         } else {
-            text(xpos + indsize/2, 8.9, evaltxt, cex=cex.eval, col=col.side.w)
-         }
+         rect(xpos, 10-eval, xpos+indsize, 9, border=NA, col=col.side.w)
+         rect(xpos, 1, xpos+indsize, 10-eval, border=NA, col=col.side.b)
       }
-
-      segments(xpos+0.005, 5, xpos+indsize-0.005, col=col.fg)
-
+      if (eval > 5) {
+         text(xpos + indsize/2, 8.9, evaltxt, cex=cex.eval, col=col.side.b)
+      } else {
+         text(xpos + indsize/2, 1.1, evaltxt, cex=cex.eval, col=col.side.w)
+      }
+   } else {
+      if (doanim) {
+         rect(xpos, lasteval, xpos+indsize, 9, border=NA, col=col.side.b)
+         rect(xpos, 1, xpos+indsize, lasteval, border=NA, col=col.side.w)
+         evals <- lasteval + (eval - lasteval) * props
+         col.side.bar <- ifelse(eval > lasteval, col.side.w, col.side.b)
+         for (i in 2:evalsteps) {
+            rect(xpos, evals[i-1], xpos+indsize, evals[i], border=NA, col=col.side.bar)
+         }
+      } else {
+         rect(xpos, eval, xpos+indsize, 9, border=NA, col=col.side.b)
+         rect(xpos, 1, xpos+indsize, eval, border=NA, col=col.side.w)
+      }
+      if (eval > 5) {
+         text(xpos + indsize/2, 1.1, evaltxt, cex=cex.eval, col=col.side.b)
+      } else {
+         text(xpos + indsize/2, 8.9, evaltxt, cex=cex.eval, col=col.side.w)
+      }
    }
+
+   segments(xpos+0.005, 5, xpos+indsize-0.005, col=col.fg)
 
    .drawdepth(showeval=showeval)
 

@@ -75,7 +75,7 @@
       resp <- readline(prompt=.text("whichsetting"))
       if (identical(resp, ""))
          break
-      if (grepl("^[0-9]+$", resp)) {
+      if (grepl("^[1-9][0-9]*$", resp)) {
          number <- round(as.numeric(resp))
          if (number < 1 || number > nrow(tab))
             next

@@ -206,18 +206,6 @@
                          paste0("day", ifelse(arg, "s", ""))
    ))}
 
-   if (x == "week") {
-      return(switch(lang,
-                    de = paste0("Woche", ifelse(arg, "n", "")),
-                         paste0("week", ifelse(arg, "s", ""))
-   ))}
-
-   if (x == "month") {
-      return(switch(lang,
-                    de = paste0("Monat", ifelse(arg, "e", "")),
-                         paste0("month", ifelse(arg, "s", ""))
-   ))}
-
    if (x == "hour") {
       return(switch(lang,
                     de = paste0("Stunde", ifelse(arg, "n", "")),
@@ -497,12 +485,6 @@
                          "That was the last move!"
    ))}
 
-   if (x == "notlastmove") {
-      return(switch(lang,
-                    de = "Das war nicht der letzte Zug!",
-                         "That was not the last move!"
-   ))}
-
    if (x == "currentexpval") {
       return(switch(lang,
                     de = "Aktueller Exponentenwert: ",
@@ -557,12 +539,6 @@
                          "Choose setting (<number> or <enter> to quit): "
    ))}
 
-   if (x == "colwhich") {
-      return(switch(lang,
-                    de = "Farbe \U000000E4ndern (<Nummer> oder <Enter> zum Verlassen): ",
-                         "Change color (<number> or <enter> to quit): "
-   ))}
-
    if (x == "colval") {
       return(switch(lang,
                     de = paste0("Farbe eingeben (jetztiger Wert ist '", arg, "'): "),
@@ -587,40 +563,10 @@
                          c("General size setting", "Size of text at the top", "Size of text at the bottom", "Size of the text in the evaluation bar", "Size of the board coordinates", "Size of the material difference", "Size of plots", "Size of text in glyphs", "Size of text in Lichess window")
    ))}
 
-   if (x == "miscsetexpl") {
-      return(switch(lang,
-                    de = c("Punktemultiplikator f\U000000FCr fehlerfrei abgeschlossene Sequenzen", "Strafpunkte f\U000000FCr falsche Z\U000000FCge", "Strafpunkte pro Hinweis", "Animationsschritte f\U000000FCr die Bewertungsleiste", "Anzahl der anzuzeigenden n\U000000E4chsten Z\U000000FCge nach Suchen", "Zeit pro Zug im zeitgesteuerten Modus (Sekunden)", "Leerlaufzeit (Sekunden)", "Mindestdauer der Sitzung (Sekunden)", "Pausenanpassung (Sekunden)"),
-                         c("Score multiplier for completed sequences without mistakes", "Score penalty for wrong moves", "Score penalty per hint", "Animation steps for the evaluation bar", "Number of next moves to show after searches", "Time per move in timed mode (seconds)", "Idle time (seconds)", "Minimum session time (seconds)", "Pause adjustment (seconds)")
-   ))}
-
-   if (x == "showcoordsexpl") {
-      return(switch(lang,
-                    de = "Brettkoordinaten anzeigen",
-                         "Show board coordinates"
-   ))}
-
-   if (x == "cexwhich") {
-      return(switch(lang,
-                    de = "Gr\U000000F6\U000000DFe \U000000E4ndern (<Nummer> oder <Enter> zum Verlassen): ",
-                         "Change size (<number> or <enter> to quit): "
-   ))}
-
    if (x == "cexval") {
       return(switch(lang,
                     de = paste0("Gr\U000000F6\U000000DFe eingeben (jetztiger Wert ist ", arg, "): "),
                          paste0("Enter size (current value is ", arg, "): ")
-   ))}
-
-   if (x == "settingwhich") {
-      return(switch(lang,
-                    de = "Einstellung \U000000E4ndern (<Nummer> oder <Enter> zum Verlassen): ",
-                         "Change setting (<number> or <enter> to quit): "
-   ))}
-
-   if (x == "settingval") {
-      return(switch(lang,
-                    de = paste0("Wert eingeben (jetztiger Wert ist ", arg, "): "),
-                         paste0("Enter value (current value is ", arg, "): ")
    ))}
 
    if (x == "verbose") {
@@ -917,12 +863,6 @@
                          "Starting deep evaluation ..."
    ))}
 
-   if (x == "curdepth") {
-      return(switch(lang,
-                    de = paste0("Tiefe: ", arg),
-                         paste0("Depth: ", arg)
-   ))}
-
    if (x == "quit") {
       return(switch(lang,
                     de = "Schachtrainer wird beendet ...\n",
@@ -973,20 +913,20 @@
 
    if (x == "commentedit") {
       return(switch(lang,
-                    de = "Kommentar bearbeiten (<Nummer>, 's' (Startkommentar) 'e' (Endkommentar), 'l' (l\U000000F6schen), <Enter> zum Verlassen): ",
-                         "Edit a comment (<number>, 's' (start comment), 'e' (end comment), 'd' (delete), <enter> to quit): "
+                    de = "Bearbeiten (<Nummer>, 's' (Startkommentar) 'e' (Endkommentar), 'n' (n\U000000E4chste Sequenz), <Enter> zum Verlassen): ",
+                         "Edit (<number>, 's' (start comment), 'e' (end comment), 'n' (next sequence), <enter> to quit): "
+   ))}
+
+   if (x == "endmovesedit") {
+      return(switch(lang,
+                    de = "Bearbeiten (<Nummer>, 'n' (n\U000000E4chste Sequenz), <Enter> zum Verlassen): ",
+                         "Edit (<number>, 'n' (next sequence), <enter> to quit): "
    ))}
 
    if (x == "commentnew") {
       return(switch(lang,
-                    de = "Neuer Kommentar: ",
-                         "New comment: "
-   ))}
-
-   if (x == "commentdelete") {
-      return(switch(lang,
-                    de = paste0("Zu l\U000000F6schender Kommentar (<Nummer>, 's' f\U000000FCr Startkommentar, 'e' f\U000000FCr Endkommentar): "),
-                         paste0("Comment to delete (<number>, 's' for start comment, or 'e' for endcomment): ")
+                    de = "Neuer Kommentar ('-' zum l\U000000F6schen): ",
+                         "New comment ('-' to delete): "
    ))}
 
    if (x == "commentend") {
@@ -995,22 +935,10 @@
                          paste0("\nEnd comment: ", arg, "\n")
    ))}
 
-   if (x == "commentendnow") {
-      return(switch(lang,
-                    de = paste0("Aktueller Endkommentar: ", arg, "\n"),
-                         paste0("Current end comment: ", arg, "\n")
-   ))}
-
    if (x == "commentendnew") {
       return(switch(lang,
                     de = "Neuer Endkommentar: ",
                          "New end comment: "
-   ))}
-
-   if (x == "commentenddeleted") {
-      return(switch(lang,
-                    de = "Endkommentar gel\U000000F6scht.\n",
-                         "Deleted end comment.\n"
    ))}
 
    if (x == "commentstart") {
@@ -1019,28 +947,34 @@
                          paste0("\nStart comment: ", arg, "\n")
    ))}
 
-   if (x == "commentstartnow") {
-      return(switch(lang,
-                    de = paste0("Aktueller Startkommentar: ", arg, "\n"),
-                         paste0("Current start comment: ", arg, "\n")
-   ))}
-
    if (x == "commentstartnew") {
       return(switch(lang,
                     de = "Neuer Startkommentar: ",
                          "New start comment: "
    ))}
 
-   if (x == "commentstartdeleted") {
-      return(switch(lang,
-                    de = "Startkommentar gel\U000000F6scht.\n",
-                         "Deleted start comment.\n"
-   ))}
-
    if (x == "flipshow") {
       return(switch(lang,
-                    de = "Die 'show'-Werte f\U000000FCr diese Zeilen umkehren (<Nummer>, <Nummer1-Nummer2>, 'g' = gerade Zeilen, 'u' = ungerade Zeilen: ",
+                    de = "Die 'show'-Werte f\U000000FCr dieser Zeilen umkehren (<Nummer>, <Nummer1-Nummer2>, 'g' = gerade Zeilen, 'u' = ungerade Zeilen): ",
                          "Flip 'show' values for these rows (<number>, <number1-number2>, 'e' = even rows, 'o' = odd rows): "
+   ))}
+
+   if (x == "nextseqwhich") {
+      return(switch(lang,
+                    de = "Die n\U000000E4chste Sequenz f\U000000FCr diesen Zug editieren (<Nummer>, '-' zum l\U000000F6schen, <Enter> zum Verlassen): ",
+                         "Edit the next sequence entry for this move (<number>, '-' to delete, <enter> to quit): "
+   ))}
+
+   if (x == "nextseqnew") {
+      return(switch(lang,
+                    de = "Neuer Eintrag ('-' zum l\U000000F6schen): ",
+                         "New entry ('-' to delete): "
+   ))}
+
+   if (x == "noendmoves") {
+      return(switch(lang,
+                    de = "Die Sequenz hat nur einen Schlusszug.",
+                         "The sequence only has a single end move."
    ))}
 
    if (x == "copyfen") {
@@ -1163,18 +1097,6 @@
                          c("best possible performance", "actual performance")
    ))}
 
-   if (x == "noreadaccess") {
-      return(switch(lang,
-                    de = "Keine Leseberechtigung f\U000000FCr das angegebene Sequenzverzeichnis.",
-                         "No read permissions for the specified sequence directory."
-   ))}
-
-   if (x == "nowriteaccess") {
-      return(switch(lang,
-                    de = "Keine Schreibberechtigung f\U000000FCr das angegebene Sequenzverzeichnis.",
-                         "No write permissions for the specified sequence directory."
-   ))}
-
    if (x == "replast") {
       return(switch(lang,
                     de = "Wiederhole die letzte Sequenz ...",
@@ -1191,18 +1113,6 @@
       return(switch(lang,
                     de = "Schalte in den sequenziellen Selektionsmodus ...",
                          "Switching to the sequential selection mode ..."
-   ))}
-
-   if (x == "mate") {
-      return(switch(lang,
-                    de = "Matt!",
-                         "Mate!"
-   ))}
-
-   if (x == "stalemate") {
-      return(switch(lang,
-                    de = "Patt!",
-                         "Stalemate!"
    ))}
 
    if (x == "generalsettings") {
@@ -1766,7 +1676,7 @@
    if (x == "addnewendmove") {
       return(switch(lang,
                     de = "F\U000000FCge einen zus\U000000E4tzlichen Schlusszug hinzu ...",
-                         "Add an additional ending move ..."
+                         "Add an additional end move ..."
    ))}
 
    if (x == "advanced") {

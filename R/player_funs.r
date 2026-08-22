@@ -6,7 +6,7 @@
 
    # find all players in the sequence files
 
-   files <- list.files(seqdir, full.names=TRUE, pattern=".rds$")
+   files <- list.files(seqdir, full.names=TRUE, pattern="\\.rds$")
    dat <- lapply(files, readRDS)
 
    players <- sort(unique(unlist(lapply(dat, function(x) names(x$player)))))
@@ -33,7 +33,7 @@
       # if there are players in the sequence files, show a list of them
 
       tmp.rounds <- lapply(players, function(player) {
-         x <- lapply(dat, function(x) tail(x$player[[player]]$round,1))
+         x <- lapply(dat, function(x) .last(x$player[[player]]$round))
          x[.is.null(x)] <- 0
          unlist(x)
       })
@@ -45,7 +45,7 @@
          if (!file.exists(player.file))
             return(NA)
          tmp <- readRDS(player.file)
-         return(tail(tmp$date.end, 1))
+         return(.last(tmp$date.end))
       })
       tmp.date[current == players] <- Sys.time()
       last.session <- format(as.POSIXct(tmp.date), "%Y-%m-%d %H:%M:%S")
@@ -80,7 +80,7 @@
       text(1.8, ypos, txt, pos=4, cex=cex, offset=0, family=font.mono, font=font, col=.get("col.help"))
 
       dist <- (ypos[1] - ypos[2]) / 2
-      ypos.string <- tail(ypos, 1) - 3 * dist
+      ypos.string <- .last(ypos) - 3 * dist
       ypos.string.bot <- ypos.string - dist
       ypos.string.top <- ypos.string + dist
 
@@ -150,7 +150,7 @@
                break
             }
          }
-         if (grepl("^[0-9]+$", val) && nplayers > 0L) {
+         if (grepl("^[1-9][0-9]*$", val) && nplayers > 0L) {
             val <- round(as.numeric(val))
             if (val >= 1L && val <= nplayers) {
                player <- players[val]
@@ -190,7 +190,7 @@
 
 .selectplayerconsole <- function(current, seqdir, mustselect=FALSE) {
 
-   files <- list.files(seqdir, full.names=TRUE, pattern=".rds$")
+   files <- list.files(seqdir, full.names=TRUE, pattern="\\.rds$")
    dat <- lapply(files, readRDS)
 
    players <- sort(unique(unlist(lapply(dat, function(x) names(x$player)))))
@@ -220,7 +220,7 @@
                break
             }
          }
-         if (grepl("^[0-9]+$", player)) {
+         if (grepl("^[1-9][0-9]*$", player)) {
             player <- round(as.numeric(player))
             if (player >= 1L && player <= nplayers) {
                player <- players[player]
@@ -239,7 +239,7 @@
 
 .removeplayer <- function(player, seqdir) {
 
-   files <- list.files(seqdir, full.names=TRUE, pattern=".rds$")
+   files <- list.files(seqdir, full.names=TRUE, pattern="\\.rds$")
 
    if (length(files) >= 1L) {
       for (i in 1:length(files)) {

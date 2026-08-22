@@ -1,0 +1,114 @@
+body {
+  background-color: #211b12 !important;
+  color: #e8dcc8 !important;
+}
+
+.navbar-default {
+  background-color: #694e38 !important;
+}
+
+.navbar-default .navbar-nav > .active > a,
+.navbar-default .navbar-nav > .active > a:hover,
+.navbar-default .navbar-nav > .active > a:focus {
+  background-color: #b58863 !important;
+  color: #e8dcc8 !important;
+}
+
+.navbar .version {
+  background-color: #786250 !important;
+  color: #e8dcc8 !important;
+}
+
+.navbar-default .navbar-nav > li > a {
+  color: #e8dcc8 !important;
+}
+
+.navbar-default .navbar-nav > li > a:hover,
+.navbar-default .navbar-nav > li > a:focus {
+  color: #e8dcc8 !important;
+  font-weight: bold;
+}
+
+.navbar-default .navbar-link {
+  color: #e8dcc8 !important;
+}
+
+.navbar-default .navbar-link:hover,
+.navbar-default .navbar-link:focus {
+  color: #e8dcc8 !important;
+  font-weight: bold;
+}
+
+main a:link,
+main a:visited,
+.contents a:link,
+.contents a:visited {
+  color: #f0d9b5 !important;
+}
+
+main a:hover,
+main a:focus,
+.contents a:hover,
+.contents a:focus {
+  color: #f0d9b5 !important;
+}
+
+footer a,
+footer a:hover,
+footer a:focus,
+footer a:visited {
+  color: #f0d9b5 !important;
+}
+
+#pkgdown-sidebar a:link,
+#pkgdown-sidebar a:visited {
+  color: #f0d9b5 !important;
+}
+
+#pkgdown-sidebar a:hover,
+#pkgdown-sidebar a:focus {
+  color: #f0d9b5 !important;
+}
+
+code {
+  color: #cccccc !important;
+  background-color: #211b12 !important;
+}
+
+.sourceCode.hasCopyButton,
+.sourceCode.hasCopyButton pre,
+.sourceCode.hasCopyButton code {
+  background-color: #362c1d !important;
+}
+
+.btn-copy-ex,
+.btn-copy-ex:hover,
+.btn-copy-ex:focus {
+  background-color: #4f402a !important;
+  border-color: #4f402a !important;
+}
+
+em {
+    font-style: normal;
+    font-weight: 600;
+    color: #f0d9b5;
+    border-bottom: 2px solid #b58863;
+    padding: 0 0.05em 0.05em;
+}
+
+kbd {
+    border: 1px solid #8a725e;
+    border-radius: 0.2em;
+    box-shadow: 0.1em 0.1em 0.2em rgba(0, 0, 0, 0.5);
+    background-color: #4a3b2e;
+    background-image: linear-gradient(
+        to bottom,
+        #594838,
+        #4a3b2e,
+        #3c3026
+    );
+    color: #e8dcc8;
+    padding: 0.1em 0.3em;
+    font-family: inherit;
+    font-size: 0.85em;
+}
