@@ -29,7 +29,7 @@
 
    In \emph{test mode}, information is shown at the bottom about the current mode, the name of the current sequence, the player name, the current move number and the total number of moves of the sequence, the number of rounds (how many times the sequence has been played so far), the age of the sequence (how many days ago the sequence was last played), the estimated difficulty of the sequence (see below), and the sequence score (also see below). Some elements at the bottom are clickable (e.g., clicking on \sQuote{Mode} toggles between the \emph{test mode} and the \emph{add mode}).
 
-   With \verb{<F1>}, you can obtain an overview of all keyboard shortcuts. The \verb{<left>} and \verb{<right>} arrow keys toggle between the two help pages. The \verb{<t>} key prints this manual in text format to the console. The \verb{<m>} key opens up the manual online. The \verb{<F1>} or \verb{<Escape>} keys close the help overlay.
+   With \verb{<F1>}, you can obtain an overview of all keyboard shortcuts. The \verb{<Left>} and \verb{<Right>} arrow keys toggle between the two help pages. The \verb{<t>} key prints this manual in text format to the console. The \verb{<m>} key opens up the manual online. The \verb{<F1>} or \verb{<Escape>} keys close the help overlay.
 
    You can quit the trainer with the \verb{<q>} key.
 
@@ -85,7 +85,7 @@
 
    When entering a text string, you can refine your search by prefixing the string with either \sQuote{\verb{& }} or \sQuote{\verb{| }}, that is, \sQuote{\verb{& <text string>}} searches for the intersection of the currently selected sequences and those matching the new text string while \sQuote{\verb{| <text string>}} searches for their union.
 
-   Just pressing \verb{<enter>} at the prompt (i.e., not entering any search string) keeps the current selection. Entering \verb{*} at the prompt selects all sequences. The \verb{<*>} (or \verb{<8>}) key also selects all sequences without using \verb{</>} first. If you only want to search for sequences (without selecting them), you can use the \verb{<|>} key (instead of \verb{</>}).
+   Just pressing \verb{<Enter>} at the prompt (i.e., not entering any search string) keeps the current selection. Entering \verb{*} at the prompt selects all sequences. The \verb{<*>} (or \verb{<8>}) key also selects all sequences without using \verb{</>} first. If you only want to search for sequences (without selecting them), you can use the \verb{<|>} key (instead of \verb{</>}).
 
    In \emph{test mode}, sequences are played by default at random based on the score as described above. However, you can toggle into a different sequence selection mode with the \verb{<m>} key. Selection can be based on:
 
@@ -193,7 +193,7 @@
    \if{html}{\figure{eval-bar.png}{options: width=900}}
    \if{latex}{\figure{eval-bar.png}{options: width=5.5in}}
 
-   By default, evaluations are based on a search depth of 12 half-moves (the depth is shown below the evaluation bar). Obtaining such an evaluation for a given position should be relatively quick and not add much lag when creating a sequence. In \emph{add mode}, the \verb{<h>} key shows the best move according to Stockfish in a given position. The \verb{<y>} key can be used to switch on a continuous analysis mode where the best move is automatically shown after each move. The \verb{<right>} key automatically plays the best move in a given position according to the evaluation.
+   By default, evaluations are based on a search depth of 12 half-moves (the depth is shown below the evaluation bar). Obtaining such an evaluation for a given position should be relatively quick and not add much lag when creating a sequence. In \emph{add mode}, the \verb{<h>} key shows the best move according to Stockfish in a given position. The \verb{<y>} key can be used to switch on a continuous analysis mode where the best move is automatically shown after each move. The \verb{<Right>} key automatically plays the best move in a given position according to the evaluation.
 
    \if{html}{\figure{get-best-move.png}{options: width=900}}
    \if{latex}{\figure{get-best-move.png}{options: width=5.5in}}
@@ -258,7 +258,7 @@
 
    With \verb{<F2>}, a leaderboard (based on the lowest average score) and player statistics are shown (i.e., the average score, the standard deviation of the scores, the minimum, first quartile, third quartile, and the maximum score, and the total number of rounds played). The statistics are based on the currently selected sequences (or all sequences in the current sequence directory if no selection has been applied).
 
-   For each player, the trainer also keeps track of each session including the play time. With \verb{<F12>} (or \verb{<Ctrl-3>}), you can obtain a plot of your session history, showing the play time (in minutes) over days (multiple sessions on the same day are collapsed into a single session; sessions shorter than two minutes are not counted). The total play time across all sessions is also shown. With the \verb{<Down>}/\verb{<Up>} arrows (or the middle mouse button), you can toggle to a view of the number of sequences played over days. You can zoom into a particular time frame by left-clicking twice (once for the start and once for the end of the interval). This can be repeated to zoom in further. Clicking the right mouse button zooms all the way out. With the \verb{<right>/<left>} arrows, you can toggle to a view of the history over weeks and months (these views are only available if the session history spans multiple weeks/months). Again, you can zoom into particular time frames in these views by clicking the left mouse button twice. Clicking outside of the graph, right-clicking anywhere when zoomed out, or \verb{<Escape>} closes the graph.
+   For each player, the trainer also keeps track of each session including the play time. With \verb{<F12>} (or \verb{<Ctrl-3>}), you can obtain a plot of your session history, showing the play time (in minutes) over days (multiple sessions on the same day are collapsed into a single session; sessions shorter than two minutes are not counted). The total play time across all sessions is also shown. With the \verb{<Down>}/\verb{<Up>} arrows (or the middle mouse button), you can toggle to a view of the number of sequences played over days. You can zoom into a particular time frame by left-clicking twice (once for the start and once for the end of the interval). This can be repeated to zoom in further. Clicking the right mouse button zooms all the way out. With the \verb{<Right>}/\verb{<Left>} arrows, you can toggle to a view of the history over weeks and months (these views are only available if the session history spans multiple weeks/months). Again, you can zoom into particular time frames in these views by clicking the left mouse button twice. Clicking outside of the graph, right-clicking anywhere when zoomed out, or \verb{<Escape>} closes the graph.
 
 }
 \section{Play and Analysis Mode}{
