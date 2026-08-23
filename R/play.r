@@ -4718,13 +4718,17 @@ play <- function(lang="en", online, ...) {
                   hascircle <- apply(circles, 1, function(x) isTRUE(x[1] == click1.x && x[2] == click1.y))
 
                   if (any(hascircle)) {
+                     dev.hold()
+                     .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), flip=flip, hold=FALSE)
+                     circles <- circles[!hascircle,,drop=FALSE]
                      .drawsquare(click1.x, click1.y, flip)
                      .drawpiece(click1.x, click1.y, ifelse(flip, pos[9-click1.x,9-click1.y], pos[click1.x,click1.y]))
-                     circles <- circles[!hascircle,,drop=FALSE]
                      checkpos <- as.numeric(.get("checkpos"))
                      if (identical(checkpos, c(click1.x, click1.y)))
                         .drawcheck(pos, flip=flip)
+                     .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
                      .drawglyph(glyph)
+                     dev.flush()
                   } else {
                      .drawcircle(click1.x, click1.y)
                      circles <- rbind(circles, c(click1.x, click1.y))
