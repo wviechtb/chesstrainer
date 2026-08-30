@@ -10,19 +10,19 @@
 }
 \section{Starting the Trainer}{
 
-   To start the trainer, run \code{\link{play}()} from the console. When starting the trainer for the first time, a directory for storing settings, a cache directory, and a directory for storing sequences are created. A few example sequences also come with the package and you will receive a prompt whether to copy these sequences to the sequence directory. To familiarize yourself with the trainer, it would be good to do so. Finally, you will receive a prompt to enter a player name. Choose a name and press enter.
+   To start the trainer, type \code{\link{play}()} in the console. When starting the trainer for the first time, a directory for storing settings, a cache directory, and a directory for storing sequences are created. A few example sequences also come with the package and you will receive a prompt whether to copy these sequences to the sequence directory. To familiarize yourself with the trainer, it would be good to do so. Finally, you will receive a prompt to enter a player name. Choose a name and press enter.
 
    \if{html}{\figure{console-first-run.png}{options: width=900}}
    \if{latex}{\figure{console-first-run.png}{options: width=5.5in}}
 
-   The trainer then starts in \emph{add mode} (see the \sQuote{Note} section at the bottom if you receive an error that the graphics device does not support event handling; for RStudio / Windows users, see also the \sQuote{Note for RStudio / Windows Users} section below). For now, click on the window showing the chess board and press \verb{<Space>} (i.e., the space bar), which will switch to \emph{test mode} (note: in this manual, key presses are indicated as: \verb{<key>}). One of the existing sequences will then be chosen at random. The trainer may immediately prompt you to play a certain opening (via a comment at the top of the window), it may make some moves for you, or it may start at a later position during a game. Either way, you will then have to make the correct move based on the position and instructions. You do this by either left-clicking and dragging the piece to be played from its current position to the desired target square or by left-clicking on the piece to be moved and then left-clicking on the target square.
+   The trainer then starts in \emph{add mode} (see the \sQuote{Note} section at the bottom if you receive an error that the graphics device does not support event handling; for RStudio / Windows users, see also the \sQuote{Note for RStudio / Windows Users} section below). For now, click on the window showing the chess board and press \verb{<Space>} (i.e., the space bar), which will switch to \emph{test mode} (note: in this manual, key presses are indicated as \verb{<key>}). One of the existing sequences will then be chosen at random. The trainer may immediately prompt you to play a certain opening (via a comment at the top of the window), it may make some moves for you, or it may start at a later position during a game. Either way, you will then have to make the correct move based on the position and instructions. You do this by either left-clicking and dragging the piece to be played from its current position to the desired target square or by left-clicking on the piece to be moved and then left-clicking on the target square.
 
    \if{html}{\figure{play-sequence.png}{options: width=900}}
    \if{latex}{\figure{play-sequence.png}{options: width=5.5in}}
 
-   Sidenote: If the text on the bottom or other visual elements are cut off, you can use the \verb{<Ctrl-->} and \verb{<Ctrl-=>} keys to decrease/increase the margin width. This is also possible by opening up the settings menu via \verb{<F5>}.
+   Sidenote: If the text on the bottom or other visual elements are cut off, you can use the \verb{<Ctrl-->} and \verb{<Ctrl-=>} keys to decrease/increase the margin width. This is also possible by opening up the settings menu with \verb{<F5>}.
 
-   The trainer will then make the next move, after which you will then again have to make the correct move. This will continue until the end of the sequence. If you do not know what the correct move is, the \verb{<h>} key will provide a hint showing which piece to move. Pressing \verb{<h>} for a second time will show the target square. Once the sequence has ended, left-clicking starts a new sequence.
+   The trainer will then make the next move, after which you will then again have to make the correct move. This will continue until the end of the sequence. If you do not know what the correct move is, pressing the \verb{<h>} key will provide a hint showing which piece to move. Pressing \verb{<h>} for a second time will show the target square. Once the sequence has ended, left-clicking starts a new sequence.
 
    \if{html}{\figure{get-hint.png}{options: width=900}}
    \if{latex}{\figure{get-hint.png}{options: width=5.5in}}
@@ -123,7 +123,7 @@
 
    \if{latex}{\figure{timed-mode.png}{options: width=5.5in}}
 
-   The \sQuote{time per move} value can be adjusted via the \verb{<F6>} menu.
+   The \sQuote{time per move} value can be adjusted in the \verb{<F6>} menu.
 
    In the \verb{<F5>} menu, one can switch on a \emph{zen mode}. In this mode, all information at the bottom is hidden during \emph{test mode} to minimize distractions.
 
@@ -143,7 +143,7 @@
    \item the decay parameter from an exponential regression model (ERM).
    }
 
-   These different calculations methods reflect the difficulty of a sequence in various ways. Sequences with high values for the ASI, PNI, NNI, PCT, SD, and RMSSD tend to show larger fluctuations in their scores over time and are apparently difficult to remember. Sequences with high AVG values are also difficult. Sequences with high ERM values are deviating strongly from the optimal decrease in the score that should happen when never making mistakes while playing a sequence (i.e., \eqn{100}, \eqn{100 \times 0.8 = 80}, \eqn{80 \times 0.8 = 64}, and so on). By default, only the 15 most recent scores are used in the calculation of these statistics. Also, by default the difficulty is only computed when a sequence has been played at least 5 times. These values can also be adjusted via the menu that comes up when pressing the \verb{<d>} key.
+   These different calculations methods reflect the difficulty of a sequence in various ways. Sequences with high values for the ASI, PNI, NNI, PCT, SD, and RMSSD tend to show larger fluctuations in their scores over time and are apparently difficult to remember. Sequences with high AVG values are also difficult. Sequences with high ERM values are deviating strongly from the optimal decrease in the score that should happen when never making mistakes while playing a sequence (i.e., \eqn{100}, \eqn{100 \times 0.8 = 80}, \eqn{80 \times 0.8 = 64}, and so on). By default, only the 15 most recent scores are used in the calculation of these statistics. Also, by default the difficulty is only computed when a sequence has been played at least 5 times. These values can also be adjusted in the menu that comes up when pressing the \verb{<d>} key.
 
 }
 \section{Adding New Sequences}{
@@ -188,7 +188,7 @@
 }
 \section{Position Evaluations via Stockfish}{
 
-   If Stockfish (\url{https://stockfishchess.org}) is installed (see the \code{\link{install_stockfish}} function), it can be used in the background to automatically obtain position evaluations when adding sequences. For this, open up the settings for Stockfish via \verb{<F7>}, click on \sQuote{Stockfish path}, and enter the path (including the executable) to Stockfish. If this is set correctly, then position evaluations will be automatically computed and added to a sequence. Evaluations are given in centipawns divided by 100, except for forced mates, which are given as \eqn{\pm99.9}. When playing a sequence, these evaluations are then shown as an evaluation bar on the left of the board.
+   If Stockfish (\url{https://stockfishchess.org}) is installed (see the \code{\link{install_stockfish}} function), it can be used in the background to automatically obtain position evaluations when adding sequences. For this, open up the settings for Stockfish with \verb{<F7>}, click on \sQuote{Stockfish path}, and enter the path (including the executable) to Stockfish. If this is set correctly, then position evaluations will be automatically computed and added to a sequence. Evaluations are given in centipawns divided by 100, except for forced mates, which are given as \eqn{\pm99.9}. When playing a sequence, these evaluations are then shown as an evaluation bar on the left of the board.
 
    \if{html}{\figure{eval-bar.png}{options: width=900}}
    \if{latex}{\figure{eval-bar.png}{options: width=5.5in}}
@@ -229,7 +229,7 @@
 
    In order to access the Lichess database via its API, you must set an API access token, which requires a Lichess account (on the Lichess website, go to Preferences, API access tokens, and then generate a token leaving all toggles off; then enter this token under the \verb{<F8>} menu by clicking on \sQuote{API Token}).
 
-   Also, to reduce the number of times that the Lichess database is queried, the information returned is cached locally (also across sessions) and reused if the database was queried for the same position before. The cache can be cleared via the \verb{<F8>} menu. Also, cached entries that are older than a certain number of months are automatically removed from the cache. You can also switch off that information about the current position is obtained from the cache (this can also be toggled with \verb{<Ctrl-i>}), but this implies that the Lichess database is queried even for positions seen before. Note that the API has rate limits, which might be triggered when making too many queries within a short amount of time. If this happens, please wait a minute or so before querying the database again.
+   Also, to reduce the number of times that the Lichess database is queried, the information returned is cached locally (also across sessions) and reused if the database was queried for the same position before. The cache can be cleared in the \verb{<F8>} menu. Also, cached entries that are older than a certain number of months are automatically removed from the cache. You can also switch off that information about the current position is obtained from the cache (this can also be toggled with \verb{<Ctrl-i>}), but this implies that the Lichess database is queried even for positions seen before. Note that the API has rate limits, which might be triggered when making too many queries within a short amount of time. If this happens, please wait a minute or so before querying the database again.
 
    The \verb{<Y>} key can be used to switch on a continuous query mode, where the database is automatically queried after each move. When the continuous query mode is on, an evaluation bar will be shown on the left indicating the outcome percentages for the current position. This bar can be toggled on and off with the \verb{<V>} key.
 
@@ -244,7 +244,7 @@
 }
 \section{The Board Editor}{
 
-   When in \emph{add mode}, \verb{<b>} opens up a board editor. Here, you can quickly set up a more advanced position (e.g., for a chess puzzle). With left-click and drag, pieces can be moved around. With right-click and drag, you can copy a piece that is already on the board. A right-click without a drag (or moving a piece to the left or right of the board) deletes a piece. The \verb{<f>} key flips the board. The \verb{<n>} key resets the board into the starting position. The \verb{<c>} key clears the board. The \verb{<s>} key can be used to select which side plays the first move. The \verb{<r>} key can be used to enter castling availability in FEN notation (K = white can castle kingside, Q = white can castle queenside, k = black can castle kingside, q = black can castle queenside, - = neither side can castle). With the \verb{<e>} key, you can enter a FEN to set up the corresponding position. With \verb{<F1>}, you can receive a help overlay. You can quit the board editor with \verb{<q>} or \verb{<Escape>}.
+   When in \emph{add mode}, \verb{<b>} opens up a board editor. Here, you can quickly set up a more advanced position (e.g., for a chess puzzle). With left-click and drag, pieces can be moved around. With right-click and drag, you can copy a piece that is already on the board. A right-click without a drag (or moving a piece to the left or right of the board) deletes a piece. The \verb{<f>} key flips the board. The \verb{<n>} key resets the board into the starting position. The \verb{<c>} key clears the board. The \verb{<s>} key can be used to select which side plays the first move. With the \verb{<e>} key, you can enter a FEN to set up the corresponding position. With \verb{<F1>}, you can receive a help overlay. You can quit the board editor with \verb{<q>} or \verb{<Escape>}.
 
    \if{html}{\figure{boardeditor.png}{options: width=900}}
    \if{latex}{\figure{boardeditor.png}{options: width=5.5in}}
@@ -263,7 +263,7 @@
 }
 \section{Play and Analysis Mode}{
 
-   If Stockfish is running, you can switch into \emph{play mode} at any time with the \verb{<\>} key. This is for example useful at the end of a sequence, to continue playing further moves against the computer from the end position of a sequence (e.g., to practice holding an advantage gained during an opening sequence). In this mode, the computer chooses by default its move according to a search depth of 8 half-moves, but this can be adjusted via \verb{<F7>}. Here, you can also set a limit on the play strength of Stockfish, either as a skill level between 0 and 20 or as an approximate Elo value between 1320 and 3190. Note that only one of these two settings can be in effect at the same time.
+   If Stockfish is running, you can switch into \emph{play mode} at any time with the \verb{<\>} key. This is for example useful at the end of a sequence, to continue playing further moves against the computer from the end position of a sequence (e.g., to practice holding an advantage gained during an opening sequence). In this mode, the computer chooses by default its move according to a search depth of 8 half-moves, but this can be adjusted with \verb{<F7>}. Here, you can also set a limit on the play strength of Stockfish, either as a skill level between 0 and 20 or as an approximate Elo value between 1320 and 3190. Note that only one of these two settings can be in effect at the same time.
 
    Using the \verb{<g>} key in \emph{play mode} shows a graph of the position evaluations for the moves played so far (this also works in \emph{add mode}). The y-axis shows the evaluation based on the centipawns (\eqn{cp}) divided by 100, but pressing the \verb{<Down>}/\verb{<Up>} arrows or the middle mouse button shows the win percentage (computed with \eqn{50 + 50 \times (2 / (1 + \exp(-0.00368208 \times cp)) - 1)}; see here: \verb{https://lichess.org/page/accuracy}).
 
@@ -306,7 +306,7 @@
 
 }
 \section{Notes for RStudio / Windows Users}{
-   The \code{RStudioGD} graphics device that is used by RStudio does not support event handling (see the \sQuote{Note} section below). Running \code{windows()} (under Windows) or \code{x11()} (under macOS or Linux) before starting the trainer with \code{play()} should work. Under Windows, you could also run R via RGui, which uses the windows plotting device by default (this is actually the recommended way to run the trainer under Windows). Under macOS or Linux, you can just run R from the command line.
+   The \code{RStudioGD} graphics device that is used by RStudio does not support event handling (see the \sQuote{Note} section below). Running \code{windows()} (under Windows) or \code{x11()} (under macOS or Linux) before starting the trainer with \code{play()} should work. Under Windows, you could also run R with RGui, which uses the windows plotting device by default (this is actually the recommended way to run the trainer under Windows). Under macOS or Linux, you can just run R from the command line.
 
    If the graphics look fuzzy under RGui, then this might be related to high DPI scaling (under high resolutions, it is common to scale apps by 150\% or 200\% so that text and graphical elements are not tiny; see the display settings under Windows). To avoid this issue, go the the properties of RGui, select Compatibility, Change high DPI settings, High DPI scaling override, and select \sQuote{Application}. After restarting RGui, the graphics should look sharper.
 

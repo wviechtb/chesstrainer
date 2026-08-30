@@ -780,6 +780,48 @@
 
 }
 
+.boardeditor.rochade <- function(new, old, flip, clear=FALSE) {
+
+   if (identical(new, old))
+      return()
+
+   col    <- .get("col.bot")
+   col.bg <- .get("col.bg")
+   cex    <- .get("cex.top")
+
+   cex <- cex * 0.75
+
+   xpos.l <- 10.25
+   xpos.r <- 11.25
+   ypos.t <- 10.75
+   ypos.b <-  1.75
+   dist   <-  0.25
+
+   dev.hold()
+
+   rect(10.1,  1,   12, 1.9, col=col.bg, border=NA)
+   rect(10.1, 10.1, 12,  11, col=col.bg, border=NA)
+
+   # bottom side
+   text(xpos.l, ypos.b-0*dist, .text("rochade"), font=2, col=col, cex=cex, adj=c(0,0.5))
+   text(xpos.l, ypos.b-1*dist, "O-O",   col=col, cex=cex, adj=c(0,0.5))
+   text(xpos.l, ypos.b-2*dist, "O-O-O", col=col, cex=cex, adj=c(0,0.5))
+   text(xpos.r, ypos.b-1*dist, ifelse(flip, ifelse(new[3], "\U00002612", "\U00002610"), ifelse(new[1], "\U00002612", "\U00002610")), col=col, cex=cex, adj=c(1,0.5))
+   text(xpos.r, ypos.b-2*dist, ifelse(flip, ifelse(new[4], "\U00002612", "\U00002610"), ifelse(new[2], "\U00002612", "\U00002610")), col=col, cex=cex, adj=c(1,0.5))
+
+   # top side
+   text(xpos.l, ypos.t-0*dist, .text("rochade"), font=2, col=col, cex=cex, adj=c(0,0.5))
+   text(xpos.l, ypos.t-1*dist, "O-O",   col=col, cex=cex, adj=c(0,0.5))
+   text(xpos.l, ypos.t-2*dist, "O-O-O", col=col, cex=cex, adj=c(0,0.5))
+   text(xpos.r, ypos.t-1*dist, ifelse(flip, ifelse(new[1], "\U00002612", "\U00002610"), ifelse(new[3], "\U00002612", "\U00002610")), col=col, cex=cex, adj=c(1,0.5))
+   text(xpos.r, ypos.t-2*dist, ifelse(flip, ifelse(new[2], "\U00002612", "\U00002610"), ifelse(new[4], "\U00002612", "\U00002610")), col=col, cex=cex, adj=c(1,0.5))
+
+   dev.flush()
+
+   return()
+
+}
+
 .drawcircle <- function(x, y, offset=0.05, width=0.05, col=.get("col.annot")) {
 
    cx <- y + 0.5

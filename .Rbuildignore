@@ -5,4 +5,5 @@
 ^\.Rproj\.user$
 ^_pkgdown\.yml$
 ^docs$
+^pkgdown$
 ^R/misc_funs2.r$

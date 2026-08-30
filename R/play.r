@@ -2598,7 +2598,8 @@ play <- function(lang="en", online, ...) {
             if (mode == "add" && identical(click, "0")) {
                if (!.is.start.pos(pos)) {
                   .texttop(.text("setposstart"), sleep=1)
-                  starteval <- sub$moves$eval[i-1]
+                  if (i >= 2L && !is.na(sub$moves$eval[i-1]))
+                     starteval <- sub$moves$eval[i-1]
                   i <- 1
                   comment <- ""
                   sub$moves <- sub$moves[numeric(0),]

@@ -3,7 +3,8 @@
    attr(pos,"moves50") <- 0
 
    curfen <- .genfen(pos, flip, sidetoplay, sidetoplay, i=1)
-   oldfen <- curfen
+   oldfen <- NULL
+   oldrochade <- NULL
 
    pos <- .expandpos(pos)
 
@@ -15,25 +16,39 @@
    click2.y <- NULL
    empty.square <- TRUE
    button <- 0L
+   rochade.sel <- ""
 
    verbose <- .get("verbose")
 
    mousedown <- function(buttons, x, y) {
+      if (identical(buttons, 0L)) {
+         xuser <- grconvertX(x, from="ndc", to="user")
+         yuser <- grconvertY(y, from="ndc", to="user")
+         if (xuser > 10.25 && xuser < 11.25 && yuser > 1.50-0.10 && yuser < 1.50+0.10)
+            rochade.sel <<- "Bottom O-O"
+         if (xuser > 10.25 && xuser < 11.25 && yuser > 1.25-0.10 && yuser < 1.25+0.10)
+            rochade.sel <<- "Bottom O-O-O"
+         if (xuser > 10.25 && xuser < 11.25 && yuser > 10.50-0.10 && yuser < 10.50+0.10)
+            rochade.sel <<- "Top O-O"
+         if (xuser > 10.25 && xuser < 11.25 && yuser > 10.25-0.10 && yuser < 10.25+0.10)
+            rochade.sel <<- "Top O-O-O"
+         if (!identical(rochade.sel, ""))
+            return(NULL)
+      }
       squares <- .calcsquarebe(x,y,plt)
       pos.x <- squares[1]
       pos.y <- squares[2]
-      if (pos.x >= 11 || pos.x <= 0)
+      #cat("pos.x =", pos.x, "pos.y =", pos.y, "\n")
+      if (pos.x >= 11 || pos.x <= 0) # when clicking above or below the row with the pieces, exit
          return(NULL)
-      if (pos.y <= 1 || pos.y >= 10)
+      if (pos.y <= 1 || pos.y >= 10) # when clicking left or right of the board, exit
          return(NULL)
       click1.x <<- pos.x
       click1.y <<- pos.y
       click2.x <<- pos.x
       click2.y <<- pos.y
       button <<- buttons[1]
-      if (flip && pos[11-pos.x, 11-pos.y] == "")
-         return(NULL)
-      if (!flip && pos[pos.x, pos.y] == "")
+      if (pos[ifelse(flip, 11-pos.x, pos.x), ifelse(flip, 11-pos.y, pos.y)] == "") # when clicking on an empty square, exit
          return(NULL)
       empty.square <<- FALSE
       if (identical(buttons, 0L))
@@ -46,10 +61,12 @@
          squares <- .calcsquarebe(x,y,plt)
          pos.x <- squares[1]
          pos.y <- squares[2]
+         #cat("pos.x =", pos.x, "pos.y =", pos.y, "\n")
          pos.x[pos.x < 1] <- 1
          pos.x[pos.x > 10] <- 10
          if (isTRUE(pos.x != click2.x) || isTRUE(pos.y != click2.y)) {
-            .boardeditor.rmrect(click2.x, click2.y, flip=flip)
+            if (click2.y >= 2 && click2.y <= 9)
+               .boardeditor.rmrect(click2.x, click2.y, flip=flip)
             if (pos.y >= 2 && pos.y <= 9)
                .addrect(pos.x, pos.y, col=col.rect)
          }
@@ -71,22 +88,74 @@
    switch1  <- .get("switch1")
    switch2  <- .get("switch2")
 
-   cex <- .get("cex.top") * 0.8
+   cex <- .get("cex.top")
+   cex.fen <- cex * 0.8
 
-   text(6, 0.5, paste("FEN: ", curfen), col=col, cex=cex)
+   text(6, 0.5, paste("FEN: ", curfen), col=col, cex=cex.fen)
 
    while (TRUE) {
 
       plt <- par("plt")
 
-      if (curfen != oldfen) {
+      curfen <- .genfen(.shrinkpos(pos), flip, sidetoplay, sidetoplay, i=1)
+
+      if (!identical(curfen, oldfen)) {
+         dev.hold()
          rect(0, 0.2, 12, 0.8, col=col.bg, border=NA)
-         text(6, 0.5, paste("FEN: ", curfen), col=col, cex=cex)
+         text(6, 0.5, paste("FEN: ", curfen), col=col, cex=cex.fen)
+         dev.flush()
       }
+
+      .boardeditor.rochade(new=attr(pos,"rochade"), old=oldrochade, flip=flip)
+      oldrochade <- attr(pos,"rochade")
 
       click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=dragmousemove, onMouseUp=mouseup, onKeybd=.keyfun)
 
-      keys <- c("q", "\033", "ctrl-[", "n", "f", "s", "c", "r", "e", "o", "F1", "ctrl-F")
+      if (!identical(rochade.sel, "")) {
+         tmp <- .shrinkpos(pos)
+         if (rochade.sel == "Bottom O-O") {
+            if (flip) {
+               if (tmp[8,5] == "BK" && tmp[8,8] == "BR")
+                  attr(pos,"rochade")[3] <- !attr(pos,"rochade")[3]
+            } else {
+               if (tmp[1,5] == "WK" && tmp[1,8] == "WR")
+                  attr(pos,"rochade")[1] <- !attr(pos,"rochade")[1]
+            }
+         }
+         if (rochade.sel == "Bottom O-O-O") {
+            if (flip) {
+               if (tmp[8,5] == "BK" && tmp[8,1] == "BR")
+                  attr(pos,"rochade")[4] <- !attr(pos,"rochade")[4]
+            } else {
+               if (tmp[1,5] == "WK" && tmp[1,1] == "WR")
+                  attr(pos,"rochade")[2] <- !attr(pos,"rochade")[2]
+            }
+         }
+         if (rochade.sel == "Top O-O") {
+            if (flip) {
+               if (tmp[1,5] == "WK" && tmp[1,8] == "WR")
+                  attr(pos,"rochade")[1] <- !attr(pos,"rochade")[1]
+            } else {
+               if (tmp[8,5] == "BK" && tmp[8,8] == "BR")
+                  attr(pos,"rochade")[3] <- !attr(pos,"rochade")[3]
+            }
+         }
+         if (rochade.sel == "Top O-O-O") {
+            if (flip) {
+               if (tmp[1,5] == "WK" && tmp[1,1] == "WR")
+                  attr(pos,"rochade")[2] <- !attr(pos,"rochade")[2]
+            } else {
+               if (tmp[8,5] == "BK" && tmp[8,1] == "BR")
+                  attr(pos,"rochade")[4] <- !attr(pos,"rochade")[4]
+            }
+         }
+         rochade.sel <- ""
+         if (!identical(oldrochade, attr(pos,"rochade")))
+             oldfen <- NULL
+         next
+      }
+
+      keys <- c("q", "\033", "ctrl-[", "n", "f", "s", "c", "e", "o", "F1", "ctrl-F", "ctrl-P")
 
       if (is.character(click) && !is.element(click, keys))
          next
@@ -111,6 +180,10 @@
             .texttop(.text("wrongsidecheck"), sleep=2, xadj=1, yadj=2, showlast=FALSE)
             next
          }
+         if (any(tmp[c(1,8),] == "WP") || any(tmp[c(1,8),] == "BP")) {
+            .texttop(.text("pawns18"), sleep=2, xadj=1, yadj=2, showlast=FALSE)
+            next
+         }
          break
       }
 
@@ -119,10 +192,9 @@
       if (identical(click, "n")) {
          pos <- .get("boardeditorpos")
          sidetoplay <- "w"
-         curfen <- .genfen(.shrinkpos(pos), flip, sidetoplay, sidetoplay, i=1)
-         oldfen <- curfen
+         oldfen <- NULL
+         oldrochade <- NULL
          .boardeditor.drawboard(pos, flip, sidetoplay)
-         text(6, 0.5, paste("FEN: ", curfen), col=col, cex=cex)
          next
       }
 
@@ -130,17 +202,17 @@
 
       if (identical(click, "f")) {
          flip <- !flip
+         oldfen <- NULL
+         oldrochade <- NULL
          .boardeditor.drawboard(pos, flip, sidetoplay)
-         text(6, 0.5, paste("FEN: ", curfen), col=col, cex=cex)
          next
       }
 
       # s to switch sidetoplay
 
       if (identical(click, "s")) {
-         oldfen <- curfen
+         oldfen <- NULL
          sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
-         curfen <- .genfen(.shrinkpos(pos), flip, sidetoplay, sidetoplay, i=1)
          .drawsideindicator(sidetoplay, flip=flip, adj=1)
          next
       }
@@ -149,26 +221,12 @@
 
       if (identical(click, "c")) {
          pos[2:9,2:9] <- ""
-         curfen <- .genfen(.shrinkpos(pos), flip, sidetoplay, sidetoplay, i=1)
-         oldfen <- curfen
+         attr(pos,"rochade") <- rep(FALSE, 4)
+         attr(pos,"ispp") <- NULL
+         attr(pos,"y1") <- NULL
+         oldfen <- NULL
+         oldrochade <- NULL
          .boardeditor.drawboard(pos, flip, sidetoplay)
-         text(6, 0.5, paste("FEN: ", curfen), col=col, cex=cex)
-         next
-      }
-
-      # r to enter rochade availability
-
-      if (identical(click, "r")) {
-         eval(expr=switch1)
-         resp <- readline(prompt=.text("enterrochade"))
-         if (grepl("^K?Q?k?q?$", resp)) {
-            oldfen <- curfen
-            attr(pos,"rochade") <- c(grepl("K", resp), grepl("Q", resp), grepl("k", resp), grepl("q", resp))
-            curfen <- .genfen(.shrinkpos(pos), flip, sidetoplay, sidetoplay, i=1)
-         } else {
-            cat(.text("notcorrectrochade"))
-         }
-         eval(expr=switch2)
          next
       }
 
@@ -184,18 +242,26 @@
          norochade <- tmp$norochade
          fen <- tmp$fen
          isvalidfen <- .validatefen(fen)
-         oldfen <- curfen
          if (isvalidfen) {
             tmp <- .fentopos(fen)
             pos <- tmp$pos
             sidetoplay <- tmp$sidetoplay
             if (norochade) {
-               rochade <- c((pos[1,5] == "WK" && pos[1,8] == "WR"), (pos[1,5] == "WK" && pos[1,1] == "WR"),
-                            (pos[8,5] == "BK" && pos[8,8] == "BR"), (pos[8,5] == "BK" && pos[8,1] == "BR"))
-               attr(pos,"rochade") <- rochade
+               attr(pos,"rochade") <- c((pos[1,5] == "WK" && pos[1,8] == "WR"), (pos[1,5] == "WK" && pos[1,1] == "WR"),
+                                        (pos[8,5] == "BK" && pos[8,8] == "BR"), (pos[8,5] == "BK" && pos[8,1] == "BR"))
+            } else {
+               if (pos[1,5] != "WK" || pos[1,8] != "WR")
+                  attr(pos,"rochade")[1] <- FALSE
+               if (pos[1,5] != "WK" || pos[1,1] != "WR")
+                  attr(pos,"rochade")[2] <- FALSE
+               if (pos[8,5] != "BK" || pos[8,8] != "BR")
+                  attr(pos,"rochade")[3] <- FALSE
+               if (pos[8,5] != "BK" || pos[8,1] != "BR")
+                  attr(pos,"rochade")[4] <- FALSE
             }
-            curfen <- .genfen(pos, flip, sidetoplay, sidetoplay, i=1)
             pos <- .expandpos(pos)
+            oldfen <- NULL
+            oldrochade <- NULL
             .boardeditor.drawboard(pos, flip, sidetoplay)
          } else {
             .texttop(.text("notvalidfen"), sleep=2, xadj=1, yadj=2, showlast=FALSE)
@@ -223,19 +289,28 @@
 
       if (identical(click, "F1")) {
          .showhelp.boardeditor()
+         oldfen <- NULL
+         oldrochade <- NULL
          .boardeditor.drawboard(pos, flip, sidetoplay)
-         text(6, 0.5, paste("FEN: ", curfen), col=col, cex=cex)
          next
       }
 
       # ctrl-f to print and copy the FEN to the clipboard
 
       if (identical(click, "ctrl-F")) {
-         eval(expr=switch1)
-         fen <- .genfen(.shrinkpos(pos), flip, sidetoplay, sidetoplay, i=1)
-         cat(fen, "\n")
-         eval(expr=switch2)
-         clipr::write_clip(fen, object_type="character")
+         #eval(expr=switch1)
+         cat(curfen, "\n")
+         #eval(expr=switch2)
+         clipr::write_clip(curfen, object_type="character")
+         next
+      }
+
+      # ctrl-p to print 'pos'
+
+      if (identical(click, "ctrl-P")) {
+         #eval(expr=switch1)
+         print(pos)
+         #eval(expr=switch2)
          next
       }
 
@@ -264,14 +339,30 @@
          next
 
       oldpos <- pos
-      oldfen <- .genfen(.shrinkpos(oldpos), flip, sidetoplay, sidetoplay, i=1)
+      oldfen <- curfen
 
       pos <- .boardeditor.updateboard(pos, move=c(click1.x, click1.y, click2.x, click2.y), flip=flip, button=button)
+
+      click1.x <- NULL
+      click1.y <- NULL
+      click2.x <- NULL
+      click2.y <- NULL
 
       if (!identical(oldpos[2:9,2:9], pos[2:9,2:9])) {
          attr(pos,"ispp") <- NULL
          attr(pos,"y1") <- NULL
       }
+
+      tmp <- .shrinkpos(pos)
+
+      if (tmp[1,5] != "WK" || tmp[1,8] != "WR")
+         attr(pos,"rochade")[1] <- FALSE
+      if (tmp[1,5] != "WK" || tmp[1,1] != "WR")
+         attr(pos,"rochade")[2] <- FALSE
+      if (tmp[8,5] != "BK" || tmp[8,8] != "BR")
+         attr(pos,"rochade")[3] <- FALSE
+      if (tmp[8,5] != "BK" || tmp[8,1] != "BR")
+         attr(pos,"rochade")[4] <- FALSE
 
       curfen <- .genfen(.shrinkpos(pos), flip, sidetoplay, sidetoplay, i=1)
 
@@ -285,7 +376,7 @@
 
    if (is.null(rochade)) {
 
-      # if castling availability is not available, then assume availability based on king and rook positions ([a])
+      # if castling availability is not available, then assume availability based on king and rook positions
 
       rochade <- c((pos[1,5] == "WK" && pos[1,8] == "WR"), (pos[1,5] == "WK" && pos[1,1] == "WR"),
                    (pos[8,5] == "BK" && pos[8,8] == "BR"), (pos[8,5] == "BK" && pos[8,1] == "BR"))
@@ -382,7 +473,6 @@
       "s  - set which side plays the first move",
       "n  - reset the board into the starting position",
       "c  - clear the board",
-      "r  - enter castling availability",
       "e  - enter the FEN for a given position",
       "o  - open the current position on lichess.org",
       "F1 - show this help")
@@ -402,7 +492,6 @@
       "s  - festlegen, welche Seite den ersten Zug macht",
       "n  - Brett in die Ausgangsposition zur\U000000FCcksetzen",
       "c  - Brett leer r\U000000E4umen",
-      "r  - Rochadem\U000000F6glichkeiten eingeben",
       "e  - die FEN f\U000000FCr eine bestimmte Stellung eingeben",
       "o  - die aktuelle Stellung auf lichess.org \U000000F6ffnen",
       "F1 - diese Hilfe anzeigen")

@@ -1139,16 +1139,10 @@
                          "Stockfish path:"
    ))}
 
-   if (x == "enterrochade") {
+   if (x == "rochade") {
       return(switch(lang,
-                    de = "Rochadem\U000000F6glichkeiten eingeben in FEN Notation (z.B., Kq): ",
-                         "Enter castling availability in FEN notation (e.g., Kq): "
-   ))}
-
-   if (x == "notcorrectrochade") {
-      return(switch(lang,
-                    de = "Falsche Rochade Angabe.\n",
-                         "Incorrect castling specification.\n"
+                    de = "Rochade",
+                         "Castling"
    ))}
 
    if (x == "enterfen") {
@@ -1292,7 +1286,7 @@
    if (x == "kingswrong") {
       return(switch(lang,
                     de = "Illegale Stellung (zu wenige oder zu viele K\U000000F6nige auf dem Brett)",
-                         "Illegal position (too few or many kings on the board)"
+                         "Illegal position (too few or too many kings on the board)"
    ))}
 
    if (x == "doublecheck") {
@@ -1305,6 +1299,12 @@
       return(switch(lang,
                     de = "Illegale Stellung (K\U000000F6nig im Schach, aber die andere Seite zieht)",
                          "Illegal position (king in check but the other side moves)"
+   ))}
+
+   if (x == "pawns18") {
+      return(switch(lang,
+                    de = "Illegale Stellung (es befinden sich Bauern auf der 1. und/oder 8. Reihe)",
+                         "Illegal position (there are pawns on rank 1 and/or 8)"
    ))}
 
    if (x == "threefold") {
