@@ -6,6 +6,11 @@
    oldfen <- NULL
    oldrochade <- NULL
 
+   if (is.null(attr(pos,"rochade"))) {
+      attr(pos,"rochade") <- c((pos[1,5] == "WK" && pos[1,8] == "WR"), (pos[1,5] == "WK" && pos[1,1] == "WR"),
+                               (pos[8,5] == "BK" && pos[8,8] == "BR"), (pos[8,5] == "BK" && pos[8,1] == "BR"))
+   }
+
    pos <- .expandpos(pos)
 
    .boardeditor.drawboard(pos, flip, sidetoplay)
@@ -372,35 +377,30 @@
 
    pos <- .shrinkpos(pos)
 
-   rochade <- attr(pos,"rochade")
+   if (is.null(attr(pos,"rochade"))) {
 
-   if (is.null(rochade)) {
+      # if the rochade attribute is NULL, then assume availability based on king and rook positions
 
-      # if castling availability is not available, then assume availability based on king and rook positions
-
-      rochade <- c((pos[1,5] == "WK" && pos[1,8] == "WR"), (pos[1,5] == "WK" && pos[1,1] == "WR"),
-                   (pos[8,5] == "BK" && pos[8,8] == "BR"), (pos[8,5] == "BK" && pos[8,1] == "BR"))
+      attr(pos,"rochade") <- c((pos[1,5] == "WK" && pos[1,8] == "WR"), (pos[1,5] == "WK" && pos[1,1] == "WR"),
+                               (pos[8,5] == "BK" && pos[8,8] == "BR"), (pos[8,5] == "BK" && pos[8,1] == "BR"))
 
    } else {
 
       # fix any incorrect castling availability values
 
       if (pos[1,5] != "WK" || pos[1,8] != "WR")
-         rochade[1] <- FALSE
+         attr(pos,"rochade")[1] <- FALSE
       if (pos[1,5] != "WK" || pos[1,1] != "WR")
-         rochade[2] <- FALSE
+         attr(pos,"rochade")[2] <- FALSE
       if (pos[8,5] != "BK" || pos[8,8] != "BR")
-         rochade[3] <- FALSE
+         attr(pos,"rochade")[3] <- FALSE
       if (pos[8,5] != "BK" || pos[8,1] != "BR")
-         rochade[4] <- FALSE
+         attr(pos,"rochade")[4] <- FALSE
 
    }
 
-   attr(pos,"rochade") <- rochade
-
-   ischeck <- c(.isattacked(pos, xy=c(which(pos=="WK", arr.ind=TRUE)), attackcolor="b"),
-                .isattacked(pos, xy=c(which(pos=="BK", arr.ind=TRUE)), attackcolor="w"))
-   attr(pos,"ischeck") <- ischeck
+   attr(pos,"ischeck") <- c(.isattacked(pos, xy=c(which(pos=="WK", arr.ind=TRUE)), attackcolor="b"),
+                            .isattacked(pos, xy=c(which(pos=="BK", arr.ind=TRUE)), attackcolor="w"))
 
    return(list(pos=pos, flip=flip, sidetoplay=sidetoplay))
 
