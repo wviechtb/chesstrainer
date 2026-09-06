@@ -709,7 +709,7 @@ play <- function(lang="en", online, ...) {
 
       # run integrity check on sequences (check that sub$moves has all columns and add SAN column to any sequences that are missing this)
 
-      .checkseq(dat.all, seqdir[seqdirpos], files.all)
+      .checkseqs(dat.all, seqdir[seqdirpos], files.all)
 
       # copy of dat.all with short FENs
 
@@ -4401,7 +4401,7 @@ play <- function(lang="en", online, ...) {
                settings$minfreq    <- minfreq
                settings$minperc    <- minperc
                settings$token      <- token
-               if (contliquery)
+               if (mode != "play" && contliquery)
                   .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc)
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                next
@@ -5454,6 +5454,15 @@ play <- function(lang="en", online, ...) {
                         next
                      }
 
+                     if (identical(click, "ctrl-I")) {
+                        uselicache <- !uselicache
+                        .texttop(.text("uselicache", uselicache), sleep=1.5)
+                        assign("uselicache", uselicache, envir=.chesstrainer)
+                        settings$uselicache <- uselicache
+                        saveRDS(settings, file=file.path(configdir, "settings.rds"))
+                        next
+                     }
+
                      if (identical(click, "ctrl-V")) {
                         eval(expr=switch1)
                         .printverbose(selected, seqno, filename, lastseq, upsidedown, flip, unflip, replast, nextseq, oldmode, i, seqname, seqnum, score, rounds, totalmoves, show, showcomp, comment, bestmove, starteval, evalval, scoreadd, sidetoplay, givehint1, givehint2, mistake, timetotal, movesplayed, movestoplay, drawcircles, drawarrows, showstartcom, pos)
@@ -5599,8 +5608,10 @@ play <- function(lang="en", online, ...) {
 
             if (!is.null(sub$endmoves)) {
                if (flip && sidetoplay == "w" || !flip && sidetoplay == "b") {
-                  sub$endmoves <- rbind(sub$endmoves, sub$moves[i-1,,drop=FALSE])
-                  rownames(sub$endmoves) <- paste0(i-1, letters[seq_len(nrow(sub$endmoves))])
+                  if (!is.element(sub$moves$move[i-1], sub$endmoves$move)) {
+                     sub$endmoves <- rbind(sub$endmoves, sub$moves[i-1,,drop=FALSE])
+                     rownames(sub$endmoves) <- paste0(i-1, letters[seq_len(nrow(sub$endmoves))])
+                  }
                } else {
                   sub$endmoves <- NULL # but erase endmoves if it is the wrong side to play
                }

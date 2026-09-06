@@ -206,6 +206,18 @@
                          paste0("day", ifelse(arg, "s", ""))
    ))}
 
+   if (x == "week") { # don't remove (used in historygraph() via .text(timeframe, FALSE))
+      return(switch(lang,
+                    de = paste0("Woche", ifelse(arg, "n", "")),
+                         paste0("week", ifelse(arg, "s", ""))
+   ))}
+
+   if (x == "month") { # don't remove (used in historygraph() via .text(timeframe, FALSE))
+      return(switch(lang,
+                    de = paste0("Monat", ifelse(arg, "e", "")),
+                         paste0("month", ifelse(arg, "s", ""))
+   ))}
+
    if (x == "hour") {
       return(switch(lang,
                     de = paste0("Stunde", ifelse(arg, "n", "")),

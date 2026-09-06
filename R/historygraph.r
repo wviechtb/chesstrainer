@@ -57,7 +57,7 @@
    plot.playtime <- function(x) {
       dev.hold()
       # make the line width a function of the number of lines
-      plotlwd <- max(0.1, 5 - 0.02*nrow(x)) * cex.plots
+      plotlwd <- max(0.5, 5 - 0.02*nrow(x)) * cex.plots
       total.playtime <- sum(x$playtime)
       x$playtime <- round(x$playtime / 60, 1)
       rect(1.3, 1.3, 8.7, 8.7, col=col.bg, border=NA)
@@ -89,7 +89,7 @@
    plot.seqsplayed <- function(x) {
       dev.hold()
       # make the line width a function of the number of lines
-      plotlwd <- max(0.1, 5 - 0.02*nrow(x)) * cex.plots
+      plotlwd <- max(0.5, 5 - 0.02*nrow(x)) * cex.plots
       total.seqsplayed <- sum(x$seqsplayed)
       rect(1.3, 1.3, 8.7, 8.7, col=col.bg, border=NA)
       par(new=TRUE, mar=mar2)

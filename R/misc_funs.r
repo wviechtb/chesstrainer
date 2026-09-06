@@ -1329,7 +1329,7 @@
 
 }
 
-.checkseq <- function(dat, seqdir, files) {
+.checkseqs <- function(dat, seqdir, files) {
 
    if (length(dat) == 0L)
       return()
