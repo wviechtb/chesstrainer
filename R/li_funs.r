@@ -196,12 +196,12 @@
       if (showout) {
          totalpercs <- .percent(totals[1:3])
          out$perc   <- .percent(out$total)
-         bars       <- apply(out[2:4], 1, .percbar, len=barlen, invert=invertbar)
+         bars       <- apply(out[2:4], 1, .percbar, len=barlen, invertbar=invertbar)
          out[2:4]   <- t(apply(out[2:4], 1, .percent))
          out[1]     <- sapply(out[[1]], function(x) .parsemove(x, pos=pos, flip=flip, evalval="", i=NULL, sidetoplay=sidetoplay, rename=TRUE, space="", returnline=0, hintdepth=1)$txt)
          out        <- out[c(1,6,5,2:4)]
          out        <- rbind(out, data.frame(move="total", perc=100, total=totals[[4]], white=totalpercs[[1]], draw=totalpercs[[2]], black=totalpercs[[3]]))
-         bars       <- c(bars, .percbar(totals[1:3], len=barlen, invert=invertbar))
+         bars       <- c(bars, .percbar(totals[1:3], len=barlen, invertbar=invertbar))
          out$total  <- .numshort(out$total)
          colnames(out)[c(2,4:6)] <- c("%", "white%", "draw%", "black%")
          if (lisort == 2) {
@@ -256,12 +256,12 @@
 
 }
 
-.percbar <- function(x, len=50, invert=FALSE) {
+.percbar <- function(x, len=50, invertbar=FALSE) {
    percent <- .percent(x)
    times <- .percent(x, total=len)
    ncols <- num_ansi_colors()
    if (ncols >= 256) {
-      if (invert) {
+      if (invertbar) {
          w <- function(x) make_ansi_style("gray80", bg=TRUE)(make_ansi_style("gray14")(x))
          b <- function(x) make_ansi_style("gray20", bg=TRUE)(make_ansi_style("gray87")(x))
       } else {
@@ -274,7 +274,7 @@
       black <- .centertext(times[3], ifelse(nchar(percent[3])+3 < times[3], paste0(percent[3], "%", collapse=""), ""))
       bar <- paste0(w(white), d(draw), b(black), collapse="")
    } else {
-      if (invert) {
+      if (invertbar) {
          w <- "\U00002593"
          b <- "\U00002591"
       } else {

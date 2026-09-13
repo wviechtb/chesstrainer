@@ -5,15 +5,18 @@
 
    lang <- .get("lang")
 
-   col.help   <- .get("col.help")
-   font.mono  <- .get("font.mono")
+   col.help <- .get("col.help")
+   col.hi   <- .adjustcolor(col.help,  0.4)
+   col.lo   <- .adjustcolor(col.help, -0.4)
+
+   font.mono <- .get("font.mono")
 
    if (lang == "en") {
 
       txt.general1 <- c(
       "General shortcuts:",
       "Ctrl-l   - toggle the language (English/German)",
-      "<space>  - switch mode (test/add)",
+      "<Space>  - switch mode (test/add)",
       "\\        - switch to play mode",
       "p        - select a player",
       "Ctrl-r   - remove a player",
@@ -39,7 +42,7 @@
       "V        - Lichess evaluation bar on/off",
       "Ctrl-h   - get Stockfish position evaluations from the cache on/off",
       "Ctrl-i   - get Lichess position evaluations from the cache on/off",
-      "<escape> - redraw the board / exit a menu",
+      "<Escape> - redraw the board / exit a menu",
       "o        - open the current position on lichess.org",
       "F1       - show this help",
       "F2       - show the leaderboard and player statistics",
@@ -110,7 +113,7 @@
       txt.general1 <- c(
       "Allgemeine Tastenk\U000000FCrzel:",
       "Strg-l   - Sprache wechseln (Englisch/Deutsch)",
-      "<space>  - Modus wechseln (Test/Hinzuf\U000000FCgen)",
+      "<Space>  - Modus wechseln (Test/Hinzuf\U000000FCgen)",
       "\\ oder \U000000E4 - in den Spielmodus wechseln",
       "p        - Spieler ausw\U000000E4hlen",
       "Strg-r   - Spieler l\U000000F6schen",
@@ -136,7 +139,7 @@
       "V        - Lichess Bewertungsbalken an/aus",
       "Strg-h   - Stockfish Positionsbewertungen aus dem Cache abrufen an/aus",
       "Strg-i   - Lichess Positionsdaten aus dem Cache abrufen an/aus",
-      "<escape> - Brett neu zeichnen / ein Men\U000000FC verlassen",
+      "<Escape> - Brett neu zeichnen / ein Men\U000000FC verlassen",
       "o        - die aktuelle Stellung auf lichess.org \U000000F6ffnen",
       "F1       - diese Hilfe anzeigen",
       "F2       - Rangliste und Spielerstatistiken anzeigen",
@@ -228,16 +231,26 @@
 
    redraw <- TRUE
 
+   searchtxt <- ""
+
    while (TRUE) {
 
       if (redraw) {
+         dev.hold()
          .drawbox()
-         text(1.5, ypos, txt, pos=4, offset=0, cex=cex, family=font.mono, font=ifelse(grepl("[a-z]:", txt), 2, 1), col=col.help)
+         if (nchar(searchtxt) <= 1L) {
+            txtcol <- col.help
+         } else {
+            txtcol <- ifelse(grepl(tolower(searchtxt), tolower(txt), fixed=TRUE), col.hi, col.lo)
+            txtcol[grepl("[a-z]:", txt)] <- col.help
+         }
+         text(1.5, ypos, txt, pos=4, offset=0, cex=cex, family=font.mono, font=ifelse(grepl("[a-z]:", txt), 2, 1), col=txtcol)
          text(8.6, 1.4, paste0(page, " / 2"), pos=2, offset=0, cex=cex, family=font.mono, col=col.help)
          if (lang == "en")
-            text(1.5, 1.4, "\U00002190/\U00002192: next page; t: show manual; m: show manual online", pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+            text(1.5, 1.4, "\U00002190/\U00002192: next page; ctrl-t: show manual; ctrl-m: show manual online", pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
          if (lang == "de")
-            text(1.5, 1.4, "\U00002190/\U00002192: n\U000000E4chste Seite; t: Anleitung zeigen; m: Anleitung online zeigen", pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+            text(1.5, 1.4, "\U00002190/\U00002192: n\U000000E4chste Seite; Strg-t: Anleitung zeigen; Strg-m: Anleitung online zeigen", pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
+         dev.flush()
       } else {
          redraw <- TRUE
       }
@@ -247,20 +260,32 @@
       if (is.numeric(click)) {
          x <- grconvertX(click[[1]], from="ndc", to="user")
          y <- grconvertY(click[[2]], from="ndc", to="user")
-         if (x <= 1.2 || x >= 8.8 || y <= 1.2 || y >= 8.8)
+         if (x <= 1.2 || x >= 8.8 || y <= 1.2 || y >= 8.8) {
             break
+         } else {
+            click <- "nextpage"
+         }
       }
 
-      if (identical(click, "F1") || identical(click, "\r") || identical(click, "ctrl-J") || identical(click, "q") || identical(click, "\033") || identical(click, "ctrl-[") || identical(click, " "))
+      if (identical(click, "F1") || identical(click, "\r") || identical(click, "ctrl-J"))
          break
 
-      if (identical(click, "m")) {
+      if (identical(click, "\033") || identical(click, "ctrl-[")) {
+         if (nchar(searchtxt) == 0L) {
+            break
+         } else {
+            searchtxt <- ""
+         }
+         next
+      }
+
+      if (identical(click, "ctrl-M")) {
          browseURL("https://wviechtb.github.io/chesstrainer/reference/chesstrainer-package.html")
          redraw <- FALSE
          next
       }
 
-      if (identical(click, "t")) {
+      if (identical(click, "ctrl-T")) {
          print(help("chesstrainer", help_type="text"))
          redraw <- FALSE
          next
@@ -275,6 +300,20 @@
          assign("lang", lang, envir=.chesstrainer)
          langswitch <- TRUE
          break
+      }
+
+      if (grepl("^[[:alnum:]]$", click)) {
+         searchtxt <- paste0(searchtxt, click)
+         next
+      }
+
+      if (identical(click, "\b") || identical(click, "ctrl-H")) {
+         if (nchar(searchtxt) <= 1L) {
+            searchtxt <- ""
+         } else {
+            searchtxt <- substr(searchtxt, 1, nchar(searchtxt)-1)
+         }
+         next
       }
 
       if (page == 1) {

@@ -72,7 +72,7 @@
       cat(.text("currentsettings"))
       print(tab, right=FALSE, print.gap=3)
       cat("\n")
-      resp <- readline(prompt=.text("whichsetting"))
+      resp <- readline(prompt=style_bold(.text("whichsetting")))
       if (identical(resp, ""))
          break
       if (grepl("^[1-9][0-9]*$", resp)) {
@@ -82,9 +82,9 @@
          if (number %in% which(tab[,1] == ""))
             next
          if (number %in% numbers.col)
-            val <- readline(prompt=.text("colval", tab[number,2]))
+            val <- readline(prompt=style_bold(.text("colval", tab[number,2])))
          if (number %in% numbers.cex)
-            val <- readline(prompt=.text("cexval", tab[number,2]))
+            val <- readline(prompt=style_bold(.text("cexval", tab[number,2])))
          if (number %in% numbers.scheme) {
             if (number == which(tab[,1] == "scheme.brown"))
                scheme <- c(col.bg="#211b12", col.fg="gray75", col.square.l="#f0d9b5", col.square.d="#b58863", col.top="#b09d7f", col.bot="#b09d7f", col.help="#b09d7f", col.border="#63462e", col.rect="darkseagreen4", col.square.be="#6b6b6b")
@@ -861,7 +861,7 @@
                   next
             } else {
                eval(expr=switch1)
-               tmp <- readline(prompt=.text("sfenterpath"))
+               tmp <- readline(prompt=style_bold(.text("sfenterpath")))
                eval(expr=switch2)
                if (identical(tmp, ""))
                   next
@@ -1380,7 +1380,7 @@
          hit <- xy1[1] >= 6.9 & xy1[2] >= liout.box[[1]][2] & xy1[1] <= 8.0 & xy1[2] <= (title.ypos[7]+0.2)
          if (hit) {
             eval(expr=switch1)
-            tmp <- readline(prompt=.text("token"))
+            tmp <- readline(prompt=style_bold(.text("token")))
             eval(expr=switch2)
             if (identical(tmp, ""))
                next

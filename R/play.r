@@ -312,7 +312,7 @@ play <- function(lang="en", online, ...) {
          success <- dir.create(seqdir, recursive=TRUE)
          if (!success)
             stop(.text("dircreateerror"), call.=FALSE)
-         copyseqs <- readline(prompt=.text("copyseqs"))
+         copyseqs <- readline(prompt=style_bold(.text("copyseqs")))
          if (identical(copyseqs, "") || .confirm(copyseqs))
             file.copy(list.files(system.file("sequences", package="chesstrainer"), full.names=TRUE, pattern="\\.rds$"), seqdir)
       }
@@ -1036,7 +1036,7 @@ play <- function(lang="en", online, ...) {
       .clearliwin(dev.after=2L)
 
       if (listseqs) {
-         .listseqs(k, files, files.all, selected, scores.selected, age.selected, rounds.selected, difficulty.selected, probvals.selected)
+         .listseqs(mode, k, files, files.all, selected, scores.selected, age.selected, rounds.selected, difficulty.selected, probvals.selected, seqname)
          listseqs <- FALSE
       }
 
@@ -2218,7 +2218,7 @@ play <- function(lang="en", online, ...) {
                      sidetoplay <- sidetoplaystart
 
                      .flush()
-                     cat(.text("evalupdateold"))
+                     cat(style_bold(.text("evalupdateold")))
                      print(sub$moves[1:8])
                      cat(.text("evalupdatestart"))
 
@@ -2253,7 +2253,7 @@ play <- function(lang="en", online, ...) {
                      i <- i + 1
                      .textbot(i=i, totalmoves=totalmoves, onlyi=TRUE)
                      sideindicator <- .drawsideindicator(sidetoplay, flip=flip)
-                     cat(.text("evalupdatenew"))
+                     cat(style_bold(.text("evalupdatenew")))
                      print(sub$moves[1:8])
                      cat("\n")
                      if (mode == "test")
@@ -2654,7 +2654,7 @@ play <- function(lang="en", online, ...) {
 
             if (mode == "add" && identical(click, "c")) {
                eval(expr=switch1)
-               comment <- readline(prompt=.text("comment"))
+               comment <- readline(prompt=style_bold(.text("comment")))
                eval(expr=switch2)
                .texttop(comment)
                next
@@ -2817,7 +2817,7 @@ play <- function(lang="en", online, ...) {
                   symbolend <- data.frame(circles=circlesvar, arrows=arrowsvar)
                   sub$symbolend <- symbolend
                }
-               filename <- readline(prompt=.text("filename"))
+               filename <- readline(prompt=style_bold(.text("filename")))
                if (identical(filename, "")) {
                   eval(expr=switch2)
                   .texttop(onlylast=TRUE)
@@ -2828,7 +2828,7 @@ play <- function(lang="en", online, ...) {
                dosave <- TRUE
                if (file.exists(filenamefull)) {
                   dosave <- FALSE
-                  overwrite <- readline(prompt=.text("rlyoverwrite"))
+                  overwrite <- readline(prompt=style_bold(.text("rlyoverwrite")))
                   if (.confirm(overwrite)) {
                      cat(.text("overwrite"))
                      dosave <- TRUE
@@ -3354,7 +3354,7 @@ play <- function(lang="en", online, ...) {
             if (identical(click, "l")) {
                eval(expr=switch1)
                .flush()
-               .listseqs(k, files, files.all, selected, scores.selected, age.selected, rounds.selected, difficulty.selected, probvals.selected)
+               .listseqs(mode, k, files, files.all, selected, scores.selected, age.selected, rounds.selected, difficulty.selected, probvals.selected, seqname)
                eval(expr=switch2)
                next
             }
@@ -3414,7 +3414,7 @@ play <- function(lang="en", online, ...) {
             if (identical(click, "ctrl-F")) {
                eval(expr=switch1)
                fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
-               cat(fen, "\n")
+               cat(style_bold("FEN: "), fen, "\n")
                eval(expr=switch2)
                clipr::write_clip(fen, object_type="character")
                .texttop(.text("copyfen"), sleep=0.75)
@@ -3484,7 +3484,7 @@ play <- function(lang="en", online, ...) {
                eval(expr=switch1)
 
                if (doprompt) {
-                  cat(.text("seqsearch"))
+                  cat(style_bold(.text("seqsearch")))
                   searchterm <- readline(prompt="")
                }
 
@@ -3545,7 +3545,7 @@ play <- function(lang="en", online, ...) {
                      }
                      rownames(tab) <- which(notnull)
                      .printdf(tab, align=c("l",rep("r",movestoshow)))
-                     selmatches <- readline(prompt=.text("selmatches"))
+                     selmatches <- readline(prompt=style_bold(.text("selmatches")))
                      if (identical(selmatches, "") || .confirm(selmatches)) {
                         cat(.text("selmatchesconfirm", sum(notnull)))
                         selected <- files.all[notnull]
@@ -3573,7 +3573,7 @@ play <- function(lang="en", online, ...) {
                      names(tab)[1] <- ""
                      rownames(tab) <- which(seqident)
                      print(tab, print.gap=2)
-                     selmatches <- readline(prompt=.text("selmatches"))
+                     selmatches <- readline(prompt=style_bold(.text("selmatches")))
                      if (identical(selmatches, "") || .confirm(selmatches)) {
                         cat(.text("selmatchesconfirm", sum(seqident)))
                         selected <- files.all[seqident]
@@ -4450,7 +4450,7 @@ play <- function(lang="en", online, ...) {
             if (identical(click, "o")) {
                eval(expr=switch1)
                fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
-               cat(fen, "\n")
+               cat(style_bold("FEN: "), fen, "\n")
                eval(expr=switch2)
                if (flip) {
                   fen <- paste0("https://lichess.org/analysis/standard/", gsub(" ", "_", fen, fixed=TRUE), "?color=black")
@@ -4542,7 +4542,7 @@ play <- function(lang="en", online, ...) {
                   eval(expr=switch1)
                   while (TRUE) {
                      print(dat.player)
-                     cat(.text("edithistory"))
+                     cat(style_bold(.text("edithistory")))
                      rowvals <- readline(prompt="")
                      # enter to exit
                      if (identical(rowvals , ""))
@@ -4632,33 +4632,33 @@ play <- function(lang="en", online, ...) {
 
                eval(expr=switch1)
 
-               genminperc <- readline(prompt="Minimum percent (10 is the default): ")
+               genminperc <- readline(prompt=style_bold("Minimum percent (10 is the default): "))
                if (identical(genminperc, "")) {
                   genminperc <- 10
                } else {
                   genminperc <- as.numeric(genminperc)
                }
 
-               genminfreq <- readline(prompt="Minimum number of games (1000 is the default): ")
+               genminfreq <- readline(prompt=style_bold("Minimum number of games (1000 is the default): "))
                if (identical(genminfreq, "")) {
                   genminfreq <- 1000
                } else {
                   genminfreq <- as.numeric(genminfreq)
                }
 
-               movedb <- readline(prompt="Move database (1 = Stockfish, 2 = Lichess): ")
+               movedb <- readline(prompt=style_bold("Move database (1 = Stockfish, 2 = Lichess): "))
                if (identical(movedb, "")) {
                   movedb <- 1
                } else {
                   movedb <- as.numeric(movedb)
                }
 
-               nmoves <- readline(prompt="Number of moves: ")
+               nmoves <- readline(prompt=style_bold("Number of moves: "))
                if (identical(nmoves, ""))
                   next
                nmoves <- as.numeric(nmoves)
 
-               basename <- readline(prompt="Filename base: ")
+               basename <- readline(prompt=style_bold("Filename base: "))
                if (identical(basename, ""))
                   next
 
@@ -5001,9 +5001,9 @@ play <- function(lang="en", online, ...) {
                   timepermitted <- timepermove * movestoplay
 
                   if (verbose) {
-                     cat("Moves played:   ", movestoplay, "\n")
-                     cat("Time permitted: ", timepermitted, "\n")
-                     cat("Time total:     ", timetotal, "\n")
+                     cat(style_bold("Moves played:   "), movestoplay, "\n")
+                     cat(style_bold("Time permitted: "), timepermitted, "\n")
+                     cat(style_bold("Time total:     "), timetotal, "\n")
                   }
 
                   if (timetotal > timepermitted) {
@@ -5391,7 +5391,7 @@ play <- function(lang="en", online, ...) {
                      if (identical(click, "o")) {
                         eval(expr=switch1)
                         fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
-                        cat(fen, "\n")
+                        cat(style_bold("FEN: "), fen, "\n")
                         eval(expr=switch2)
                         if (flip) {
                            fen <- paste0("https://lichess.org/analysis/standard/", gsub(" ", "_", fen, fixed=TRUE), "?color=black")
@@ -5418,7 +5418,7 @@ play <- function(lang="en", online, ...) {
                      if (identical(click, "ctrl-F")) {
                         eval(expr=switch1)
                         fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i+1)
-                        cat(fen, "\n")
+                        cat(style_bold("FEN: "), fen, "\n")
                         eval(expr=switch2)
                         clipr::write_clip(fen, object_type="character")
                         .texttop(.text("copyfen"), sleep=0.75)

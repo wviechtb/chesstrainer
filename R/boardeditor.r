@@ -239,7 +239,7 @@
 
       if (identical(click, "e")) {
          eval(expr=switch1)
-         fen <- readline(prompt=.text("enterfen"))
+         fen <- readline(prompt=style_bold(.text("enterfen")))
          eval(expr=switch2)
          if (identical(fen, ""))
             next

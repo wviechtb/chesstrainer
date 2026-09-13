@@ -94,6 +94,24 @@
 #
 #}
 
+.is.dark <- function() {
+   rgb <- col2rgb(.get("col.bg"))
+   res <- sum(rgb) <= 384 # note: sum(col2rgb(rgb(0.5,0.5,0.5))) == 384
+   return(res)
+}
+
+.adjustcolor <- function(col, amount=0) {
+   if (!.is.dark())
+      amount <- -1 * amount
+   x <- col2rgb(col) / 255
+   if (amount >= 0) {
+      x <- x + amount * (1 - x)
+   } else {
+      x <- x * (1 + amount)
+   }
+   return(rgb(x[1,], x[2,], x[3,]))
+}
+
 .mistakediff <- function(x, dbl100pen=20) {
    x <- c(na.omit(x))
    n <- length(x)
@@ -1630,7 +1648,7 @@
 
 }
 
-.listseqs <- function(k, files, files.all, selected, scores.selected, age.selected, rounds.selected, difficulty.selected, probvals.selected) {
+.listseqs <- function(mode, k, files, files.all, selected, scores.selected, age.selected, rounds.selected, difficulty.selected, probvals.selected, seqname) {
 
    if (k > 0L) {
       if (max(probvals.selected) == min(probvals.selected)) {
@@ -1650,6 +1668,10 @@
       txt <- capture.output(print(tab, print.gap=2))
       if (length(txt) > 50)
          txt <- c(txt, txt[1])
+      if (mode == "test") {
+         pos <- which(seqname == selected) + 1
+         txt[pos] <- style_bold(style_inverse(txt[pos]))
+      }
       .print(txt)
    } else {
       cat(.text("zeroseqsfound"))

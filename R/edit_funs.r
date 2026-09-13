@@ -22,7 +22,7 @@
       cat("\n")
 
       if (doreadline) {
-         resp <- readline(prompt=.text("commentedit"))
+         resp <- readline(prompt=style_bold(.text("commentedit")))
       } else {
          resp <- key
          doreadline <- TRUE
@@ -39,7 +39,7 @@
          comnum <- as.integer(resp)
          if (comnum < 1L || comnum > nrow(sub$moves))
             next
-         newcom <- readline(prompt=.text("commentnew"))
+         newcom <- readline(prompt=style_bold(.text("commentnew")))
          if (identical(newcom, ""))
             next
          if (grepl("^(-|NA|na)$", newcom)) {
@@ -54,7 +54,7 @@
       # e or E = to edit the end comment
 
       if (grepl("^[Ee]$", resp)) {
-         endcom <- readline(prompt=.text("commentendnew"))
+         endcom <- readline(prompt=style_bold(.text("commentendnew")))
          if (identical(endcom, ""))
             next
          if (grepl("^(-|NA|na)$", endcom)) {
@@ -68,7 +68,7 @@
       # s or S = to edit the start comment
 
       if (grepl("^[Ss]$", resp)) {
-         startcom <- readline(prompt=.text("commentstartnew"))
+         startcom <- readline(prompt=style_bold(.text("commentstartnew")))
          if (identical(startcom, ""))
             next
          if (grepl("^(-|NA|na)$", startcom)) {
@@ -83,7 +83,7 @@
 
       if (grepl("^[Nn]$", resp)) {
          nextseqnum <- nrow(sub$moves)
-         nextseqnew <- readline(prompt=.text("nextseqnew"))
+         nextseqnew <- readline(prompt=style_bold(.text("nextseqnew")))
          if (identical(nextseqnew, ""))
             next
          if (grepl("^(-|NA|na)$", nextseqnew)) {
@@ -97,7 +97,7 @@
       # f = to flip show values
 
       if (grepl("^[Ff]$", resp)) {
-         whichflip <- readline(prompt=.text("flipshow"))
+         whichflip <- readline(prompt=style_bold(.text("flipshow")))
          if (grepl("^[EeGg]$", whichflip)) { # EeGg for even rows
             whichflip <- 2L * seq_len(nrow(sub$moves) %/% 2L)
             sub$moves$show[whichflip] <- !sub$moves$show[whichflip]
@@ -131,7 +131,7 @@
       print(endmoves[c(5:9,13)])
       cat("\n")
 
-      resp <- readline(prompt=.text("endmovesedit"))
+      resp <- readline(prompt=style_bold(.text("endmovesedit")))
 
       # enter = exit the while loop
 
@@ -144,7 +144,7 @@
          comnum <- as.integer(resp)
          if (comnum < 1L || comnum > nrow(endmoves))
             next
-         newcom <- readline(prompt=.text("commentnew"))
+         newcom <- readline(prompt=style_bold(.text("commentnew")))
          if (identical(newcom, ""))
             next
          if (grepl("^(-|NA|na)$", newcom)) {
@@ -159,7 +159,7 @@
       # n or N = to edit nextseq
 
       if (grepl("^[Nn]$", resp)) {
-         nextseqnum <- readline(prompt=.text("nextseqwhich"))
+         nextseqnum <- readline(prompt=style_bold(.text("nextseqwhich")))
          if (identical(nextseqnum, ""))
             next
          if (grepl("^[1-9][0-9]*$", nextseqnum)) {
@@ -169,7 +169,7 @@
          } else {
             next
          }
-         nextseqnew <- readline(prompt=.text("nextseqnew"))
+         nextseqnew <- readline(prompt=style_bold(.text("nextseqnew")))
          if (identical(nextseqnew, ""))
             next
          if (grepl("^(-|NA|na)$", nextseqnew)) {

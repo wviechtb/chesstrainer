@@ -1127,6 +1127,18 @@
                          "Switching to the sequential selection mode ..."
    ))}
 
+   if (x == "mate") { # don't remove (used in play() via .text(matetype))
+      return(switch(lang,
+                    de = "Matt!",
+                         "Mate!"
+   ))}
+
+   if (x == "stalemate") { # don't remove (used in play() via .text(matetype))
+      return(switch(lang,
+                    de = "Patt!",
+                         "Stalemate!"
+   ))}
+
    if (x == "generalsettings") {
       return(switch(lang,
                     de = "Allgemeine Einstellungen:",

@@ -192,7 +192,7 @@
                next
          } else {
             eval(expr=switch1)
-            seqdirnew <- readline(prompt=.text("addseqdir"))
+            seqdirnew <- readline(prompt=style_bold(.text("addseqdir")))
             eval(expr=switch2)
             if (identical(seqdirnew, ""))
                next

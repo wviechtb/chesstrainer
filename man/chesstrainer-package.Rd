@@ -29,7 +29,7 @@
 
    In \emph{test mode}, information is shown at the bottom about the current mode, the name of the current sequence, the player name, the current move number and the total number of moves of the sequence, the number of rounds (how many times the sequence has been played so far), the age of the sequence (how many days ago the sequence was last played), the estimated difficulty of the sequence (see below), and the sequence score (also see below). Some elements at the bottom are clickable (e.g., clicking on \sQuote{Mode} toggles between the \emph{test mode} and the \emph{add mode}).
 
-   With \verb{<F1>}, you can obtain an overview of all keyboard shortcuts. The \verb{<Left>} and \verb{<Right>} arrow keys toggle between the two help pages. The \verb{<t>} key prints this manual in text format to the console. The \verb{<m>} key opens up the manual online. The \verb{<F1>} or \verb{<Escape>} keys close the help overlay.
+   With \verb{<F1>}, you can obtain an overview of all keyboard shortcuts. The \verb{<Left>} and \verb{<Right>} arrow keys toggle between the two help pages. You can search the help pages by typing some text; corresponding entries are then highlighted. With \verb{<Escape>}, the typed text is reset. The \verb{<Ctrl-t>} key prints this manual in text format to the console. The \verb{<Ctrl-m>} key opens up the manual online. The \verb{<F1>} or \verb{<Escape>} keys close the help overlay.
 
    You can quit the trainer with the \verb{<q>} key.
 

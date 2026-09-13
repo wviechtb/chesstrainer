@@ -177,7 +177,7 @@
          } else {
             val <- ""
          }
-         rect(1.8+sw.string, ypos.string.bot, 8.7, ypos.string.top, col=col.bg, border=NA)
+         rect(1.8+sw.string, ypos.string.bot, 8.7, ypos.string.top, col=col.bg, border=col.bg)
          text(1.8+sw.string, ypos.string, val, pos=4, offset=0, cex=cex, family=font.mono, col=col.help)
          sw.val <- strwidth(val, family=font.mono, cex=cex)
       }
@@ -198,7 +198,7 @@
 
    if (nplayers == 0L) {
       while (TRUE) {
-         player <- readline(prompt=.text("newplayername"))
+         player <- readline(prompt=style_bold(.text("newplayername")))
          if (!identical(player, "")) {
             player <- make.names(player) # just in case
             break
@@ -211,7 +211,7 @@
       print(tmp)
       cat("\n")
       while (TRUE) {
-         player <- readline(prompt=.text("enterplayer"))
+         player <- readline(prompt=style_bold(.text("enterplayer")))
          if (identical(player, "")) {
             if (mustselect) {
                next
