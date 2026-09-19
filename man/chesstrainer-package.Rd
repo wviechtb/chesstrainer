@@ -20,7 +20,7 @@
    \if{html}{\figure{play-sequence.png}{options: width=900}}
    \if{latex}{\figure{play-sequence.png}{options: width=5.5in}}
 
-   Sidenote: If the text on the bottom or other visual elements are cut off, you can use the \verb{<Ctrl-->} and \verb{<Ctrl-=>} keys to decrease/increase the margin width. This is also possible by opening up the settings menu with \verb{<F5>}.
+   \bold{Sidenote:} If the text on the bottom or other visual elements are cut off, you can use the \verb{<Ctrl-->} and \verb{<Ctrl-=>} keys to decrease/increase the margin width. This is also possible by opening up the settings menu with \verb{<F5>}.
 
    The trainer will then make the next move, after which you will then again have to make the correct move. This will continue until the end of the sequence. If you do not know what the correct move is, pressing the \verb{<h>} key will provide a hint showing which piece to move. Pressing \verb{<h>} for a second time will show the target square. Once the sequence has ended, left-clicking starts a new sequence.
 
@@ -251,6 +251,8 @@
    \if{html}{\figure{boardeditor.png}{options: width=900}}
    \if{latex}{\figure{boardeditor.png}{options: width=5.5in}}
 
+   \bold{Sidenote:} There is no possibility to enter en passant availability in the board editor. Instead, just set up the position right before the pawn move that would enable en passant, exit the board editor, make the pawn move, and hit the \verb{<0>} key to make the current position the starting position.
+
 }
 \section{Managing and Selecting Players}{
 
@@ -291,7 +293,7 @@
 
    With \verb{<F4>}, you can adjust the display settings (i.e., colors and text sizes). Depending on your screen resolution and size of the plotting window (where the board is shown), it may require some fiddling with the size settings to find a comfortable arrangement.
 
-   With \verb{<F5>}, various settings of the trainer can be adjusted. Most of these were already explained above or are self-explanatory. However, a few require explanation. The time between moves setting controls the delay for moves played by the trainer (this can also be adjusted outside of the \verb{<F5>} menu with the \verb{<->} and \verb{<=>} keys). The pause adjustment can be used in case that text shown at the top of the screen disappears too quickly (this seems to be an issue especially under Windows, in which case setting this to something like 0.3 should fix the issue).
+   With \verb{<F5>}, various settings of the trainer can be adjusted. Most of these were already explained above or are self-explanatory. However, a few require explanation. By default, the trainer waits in \emph{test mode} after completing a sequences for user input before starting the next sequence (this can also be toggled outside of the \verb{<F5>} menu with the \verb{<W>} key). The time between moves setting controls the delay for moves played by the trainer (this can also be adjusted outside of the \verb{<F5>} menu with the \verb{<->} and \verb{<=>} keys). The pause adjustment can be used in case that text shown at the top of the screen disappears too quickly (this seems to be an issue especially under Windows, in which case setting this to something like 0.3 should fix the issue).
 
    With \verb{<F6>}, you can adjust some miscellaneous settings, namely the score multiplier for completed sequences without mistakes (0.8 by default), the score penalty when making a wrong move (40 by default), the score penalty per hint (20 by default), the time per move for the \emph{timed mode} (5 seconds by default), the number of next moves to show after searches (5 by default), the idle time (120 seconds by default; time without any inputs longer than this value is not counted towards the play time for the session history), the minimum session time (60 seconds by default; sessions shorter than this are not actually saved in the session history), the number of animation steps for the evaluation bar (5 by default), and the target value for the scores.
 

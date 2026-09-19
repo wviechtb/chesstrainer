@@ -1183,7 +1183,9 @@
    if (onlylast)
       txt <- oldtext
 
-   if (length(txt) == 0L || is.na(txt))
+   isexporcall <- is.expression(txt) || is.call(txt)
+
+   if (!isexporcall && (length(txt) == 0L || is.na(txt)))
       return()
 
    if (isTRUE(attr(txt, "left")))
@@ -1201,8 +1203,10 @@
    rect(xleft, ybottom-ymargin, xright, ytop+ymargin, col=col.bg, border=NA)
 
    if (!identical(txt, "")) {
-      txt <- gsub("\\n", "\n", txt, fixed=TRUE)
-      txt <- strsplit(txt, "\n", fixed=TRUE)[[1]]
+      if (!isexporcall) {
+         txt <- gsub("\\n", "\n", txt, fixed=TRUE)
+         txt <- strsplit(txt, "\n", fixed=TRUE)[[1]]
+      }
       max_line_width <- max(strwidth(txt))
       max_line_height <- strheight("A")
       total_text_height <- length(txt) * max_line_height

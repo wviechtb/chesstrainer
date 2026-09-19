@@ -5,7 +5,8 @@
    sfrun  <- tmp$sfrun
 
    if (sfpath != "") {
-      cat(.text("sfstart"))
+      cat(style_bold(.text("sfstart")))
+      cat(sfpath, "\n")
       sfproc <- try(process$new(sfpath, stdin = "|", stdout = "|", stderr = "2>&1"), silent=TRUE)
       if (inherits(sfproc, "try-error")) {
          cat(.text("sfstarterror"))

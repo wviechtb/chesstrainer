@@ -143,7 +143,8 @@ play <- function(lang="en", online, ...) {
    configdir <- tools::R_user_dir(package="chesstrainer", which="config")
 
    if (!dir.exists(configdir)) {
-      cat(.text("createconfigdir", configdir))
+      cat(style_bold(.text("createconfigdir")))
+      cat(configdir, "\n")
       success <- dir.create(configdir, recursive=TRUE)
       if (!success)
          stop(.text("dircreateerror"), call.=FALSE)
@@ -168,7 +169,8 @@ play <- function(lang="en", online, ...) {
          if (is.null(mc[["lang"]]))
             lang <- settings[["lang"]]
          assign("lang", lang, envir=.chesstrainer)
-         cat(.text("loadsettings"))
+         cat(style_bold(.text("loadsettings")))
+         cat(file.path(configdir, "settings.rds"), "\n")
          for (element in names(settings)) {
             if (is.null(mc[[element]])) {
                val <- settings[[element]]
@@ -255,7 +257,8 @@ play <- function(lang="en", online, ...) {
    cachedir <- tools::R_user_dir(package="chesstrainer", which="cache")
 
    if (!dir.exists(cachedir)) {
-      cat(.text("createcachedir", cachedir))
+      cat(style_bold(.text("createcachedir")))
+      cat(cachedir, "\n")
       success <- dir.create(cachedir, recursive=TRUE)
       if (!success)
          stop(.text("dircreateerror"), call.=FALSE)
@@ -308,7 +311,8 @@ play <- function(lang="en", online, ...) {
       seqdir <- normalizePath(seqdir, winslash="/", mustWork=FALSE)
 
       if (!dir.exists(seqdir)) {
-         cat(.text("createseqdir", seqdir))
+         cat(style_bold(.text("createseqdir")))
+         cat(seqdir, "\n")
          success <- dir.create(seqdir, recursive=TRUE)
          if (!success)
             stop(.text("dircreateerror"), call.=FALSE)
@@ -329,7 +333,8 @@ play <- function(lang="en", online, ...) {
    sessionsdir <- normalizePath(sessionsdir, winslash="/", mustWork=FALSE)
 
    if (!dir.exists(sessionsdir)) {
-      cat(.text("createsessionsdir", sessionsdir))
+      cat(style_bold(.text("createsessionsdir")))
+      cat(sessionsdir, "\n")
       dir.create(sessionsdir, recursive=TRUE)
    }
 
@@ -369,7 +374,8 @@ play <- function(lang="en", online, ...) {
       }
    }
 
-   cat(.text("useseqdir", seqdir[seqdirpos]))
+   cat(style_bold(.text("useseqdir")))
+   cat(seqdir[seqdirpos], "\n")
 
    # load selmode from .selmode file in sequence directory (if it exist; otherwise create it)
 

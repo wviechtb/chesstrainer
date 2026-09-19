@@ -16,32 +16,32 @@
 
    if (x == "createconfigdir") {
       return(switch(lang,
-                    de = paste0("Erstelle Verzeichnis f\U000000FCr Einstellungen: ", arg, "\n"),
-                         paste0("Creating directory for settings: ", arg, "\n")
+                    de = "Erstelle Verzeichnis f\U000000FCr Einstellungen: ",
+                         "Creating directory for settings: "
    ))}
 
    if (x == "createcachedir") {
       return(switch(lang,
-                    de = paste0("Erstelle Verzeichnis f\U000000FCr Caches: ", arg, "\n"),
-                         paste0("Creating directory for caches: ", arg, "\n")
+                    de = "Erstelle Verzeichnis f\U000000FCr Caches: ",
+                         "Creating directory for caches: "
    ))}
 
    if (x == "createseqdir") {
       return(switch(lang,
-                    de = paste0("Erstelle Standardverzeichnis f\U000000FCr Sequenzen: ", arg, "\n"),
-                         paste0("Creating default directory for sequences: ", arg, "\n")
+                    de = "Erstelle Standardverzeichnis f\U000000FCr Sequenzen: ",
+                         "Creating default directory for sequences: "
    ))}
 
    if (x == "createsessionsdir") {
       return(switch(lang,
-                    de = paste0("Erstelle Verzeichnis f\U000000FCr Session Infos: ", arg, "\n"),
-                         paste0("Creating directory for session infos: ", arg, "\n")
+                    de = "Erstelle Verzeichnis f\U000000FCr Session Infos: ",
+                         "Creating directory for session infos: "
    ))}
 
    if (x == "loadsettings") {
       return(switch(lang,
-                    de = "Lade Einstellungen ...\n",
-                         "Loading settings ...\n"
+                    de = "Lade Einstellungen: ",
+                         "Loading settings: "
    ))}
 
    if (x == "dircreateerror") {
@@ -70,8 +70,8 @@
 
    if (x == "useseqdir") {
       return(switch(lang,
-                    de = paste0("Benutze Sequenzverzeichnis: ", arg, "\n"),
-                         paste0("Using sequence directory: ", arg, "\n")
+                    de = "Benutze Sequenzverzeichnis: ",
+                         "Using sequence directory: "
    ))}
 
    if (x == "newplayername") {
@@ -109,6 +109,12 @@
                     de = paste0("L\U000000F6sche Spieler '", arg, "' ..."),
                          paste0("Deleting the player '", arg, "' ...")
    ))}
+
+   #if (x == "waitonoff") {
+   #   return(switch(lang,
+   #                 de = as.expression(bquote(bold("Warten:") ~ .(ifelse(arg, "an", "aus")))),
+   #                      as.expression(bquote(bold("Wait: ") ~ (.ifelse(arg, "on", "off"))))
+   #))}
 
    if (x == "waitonoff") {
       return(switch(lang,
@@ -539,6 +545,12 @@
                          "Language: English"
    ))}
 
+   #if (x == "lang") {
+   #   return(switch(lang,
+   #                 de = expression(bold("Sprache:") ~ "Deutsch"),
+   #                      expression(bold("Language:") ~ "English")
+   #))}
+
    if (x == "maradj") {
       return(switch(lang,
                     de = paste0("Randbreite: ", paste0(arg, collapse="/")),
@@ -625,8 +637,8 @@
 
    if (x == "sfstart") {
       return(switch(lang,
-                    de = "Starte Stockfish ...\n",
-                         "Starting Stockfish ...\n"
+                    de = "Starte Stockfish: ",
+                         "Starting Stockfish: "
    ))}
 
    if (x == "sfstop") {
@@ -1154,13 +1166,13 @@
    if (x == "generalsettings") {
       return(switch(lang,
                     de = "Allgemeine Einstellungen:",
-                         "General settings: "
+                         "General settings:"
    ))}
 
    if (x == "sfsettings") {
       return(switch(lang,
                     de = "Stockfish Einstellungen:",
-                         "Stockfish settings: "
+                         "Stockfish settings:"
    ))}
 
    if (x == "seqdirsettings") {
