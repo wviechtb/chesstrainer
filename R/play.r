@@ -773,7 +773,7 @@ play <- function(lang="en", online, ...) {
 
       # if all selected sequences have no moves, then select all sequences and start over
 
-      if (k.all > 0L && all(sapply(dat, function(x) nrow(x$moves) == 0L))) {
+      if (k.all > 0L && all(sapply(dat, function(x) nrow(x$moves) == 0L && is.null(x$testend)))) {
          cat(.text("seqsnomoves"))
          cat(.text("allseqselected"))
          selected <- NULL
@@ -795,7 +795,7 @@ play <- function(lang="en", online, ...) {
       difficulty.selected <- unlist(difficulty.selected)
       length.selected <- sapply(dat, function(x) sum(!x$moves$show))
       moves.selected <- sapply(dat, function(x) paste0(x$moves$move, collapse=", "))
-      moves.selected <- gsub("[NBRKQ+#=]", "", moves.selected)
+      moves.selected <- gsub("[NBRKQ+#%=]", "", moves.selected)
       moves.selected <- gsub("x", "-", moves.selected)
       flip.selected <- sapply(dat, function(x) x$flip)
       moves.selected <- paste0(ifelse(flip.selected, "2 ", "1 "), moves.selected) # to also sort below by whether one plays with white/black
@@ -888,7 +888,7 @@ play <- function(lang="en", online, ...) {
          sub <- list(flip = flip, moves = data.frame(x1=numeric(), y1=numeric(), x2=numeric(), y2=numeric(), show=logical(), move=character(), san=character(), eval=numeric(),
                                                      comment=character(), circles=character(), arrows=character(), glyph=character(), nextseq=character(), fen=character()))
 
-         if (mode=="play" && contliquery && !is.null(savpos)) {
+         if (mode == "play" && contliquery && !is.null(savpos)) {
             pos <- savpos
             sub$pos <- pos
          }
@@ -1006,17 +1006,26 @@ play <- function(lang="en", online, ...) {
          unflip <- TRUE
       }
 
-      # draw board and add info at the bottom
+      # when starting up, set up the plotting device
 
-      if (!isstart)
-         dev.hold()
+      if (isstart) {
+         dev.new(bg=.get("col.bg"), canvas=.get("col.bg"), cex=cex, title="Chesstrainer")
+         if (.get("inhibit")) {
+            Sys.sleep(0.2)
+            dev.control(displaylist="inhibit")
+         }
+      }
+
+      isstart <- FALSE
+
+      # draw the board and the text at the bottom
+
+      dev.hold()
       .drawboard(pos, flip=flip)
       .drawcheck(pos, flip=flip)
       .textbot(show, showcomp, player, seqdir, seqdirpos, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
-      if (!isstart)
-         dev.flush()
       .drawevalbar(starteval, i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]])
-      isstart <- FALSE
+      dev.flush()
 
       # check for getGraphicsEvent() capabilities of the current plotting device
 
@@ -1072,7 +1081,7 @@ play <- function(lang="en", online, ...) {
                .drawevalbar(starteval, i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]])
             }
 
-            if (nrow(sub$moves) == 0L) { # for sequences that are just a start comment
+            if (nrow(sub$moves) == 0L && !is.null(sub$commendstart)) { # for sequences that are just a start comment
                .texttop("")
                run.rnd <- FALSE
                seqno <- ifelse(seqno == k, 1L, seqno + 1L)
@@ -1242,8 +1251,11 @@ play <- function(lang="en", online, ...) {
                   }
 
                   if (!identical(matetype, "none")) {
-                     if (matetype == "stalemate")
+                     if (matetype == "stalemate") {
                         evalval <- 0
+                        sub$moves$move[i-1] <- paste0(sub$moves$move[i-1], "%")
+                        sub$moves$san[i-1] <- paste0(sub$moves$san[i-1], "%")
+                     }
                      .texttop(.text(matetype))
                      mode <- "analysis"
                      assign("mode", mode, envir=.chesstrainer)
@@ -1253,6 +1265,8 @@ play <- function(lang="en", online, ...) {
 
                   if (threefold) {
                      .texttop(.text("threefold"))
+                     sub$moves$move[i-1] <- paste0(sub$moves$move[i-1], "%")
+                     sub$moves$san[i-1] <- paste0(sub$moves$san[i-1], "%")
                      evalval <- 0
                      mode <- "analysis"
                      assign("mode", mode, envir=.chesstrainer)
@@ -1262,6 +1276,8 @@ play <- function(lang="en", online, ...) {
 
                   if (fifty) {
                      .texttop(.text("fifty"))
+                     sub$moves$move[i-1] <- paste0(sub$moves$move[i-1], "%")
+                     sub$moves$san[i-1] <- paste0(sub$moves$san[i-1], "%")
                      evalval <- 0
                      mode <- "analysis"
                      assign("mode", mode, envir=.chesstrainer)
@@ -1933,18 +1949,25 @@ play <- function(lang="en", online, ...) {
                      sub$moves$san[i-1] <- sub("+", "#", sub$moves$san[i-1], fixed=TRUE)
                   }
                   if (!identical(matetype, "none")) {
-                     if (matetype == "stalemate")
+                     if (matetype == "stalemate") {
                         evalval <- 0
+                        sub$moves$move[i-1] <- paste0(sub$moves$move[i-1], "%")
+                        sub$moves$san[i-1] <- paste0(sub$moves$san[i-1], "%")
+                     }
                      .texttop(.text(matetype))
                   }
                   threefold <- any(table(sapply(sub$moves$fen, .fenpart, parts=1:4)) == 3L)
                   if (threefold) {
                      .texttop(.text("threefold"))
+                     sub$moves$move[i-1] <- paste0(sub$moves$move[i-1], "%")
+                     sub$moves$san[i-1] <- paste0(sub$moves$san[i-1], "%")
                      evalval <- 0
                   }
                   fifty <- identical(strsplit(fen, " ", fixed=TRUE)[[1]][5], "100")
                   if (fifty) {
                      .texttop(.text("fifty"))
+                     sub$moves$move[i-1] <- paste0(sub$moves$move[i-1], "%")
+                     sub$moves$san[i-1] <- paste0(sub$moves$san[i-1], "%")
                      evalval <- 0
                   }
                   .drawevalbar(evalval[1], i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]])
@@ -2488,6 +2511,7 @@ play <- function(lang="en", online, ...) {
                sub$symbolend  <- NULL
                sub$endmoves   <- NULL
                sub$testend    <- NULL
+               sub$tags       <- NULL
 
                .texttop("")
 
@@ -2994,12 +3018,12 @@ play <- function(lang="en", online, ...) {
                   sub$testend <- TRUE
                   .texttop(.text("testend", sub$testend), sleep=1)
                   eval(expr=switch1)
-                  sub <- .editseq(sub, key="e")
+                  sub$commentend <- readline(prompt=style_bold(.text("testprompt")))
                   eval(expr=switch2)
                } else {
-                  sub$testend <- FALSE
+                  .texttop(.text("testend", FALSE), sleep=1)
                   sub$commentend <- NULL
-                  .texttop(.text("testend", sub$testend), sleep=1)
+                  sub$testend <- NULL
                }
                next
             }
@@ -3414,7 +3438,7 @@ play <- function(lang="en", online, ...) {
             if (identical(click, "ctrl-F")) {
                eval(expr=switch1)
                fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
-               cat(style_bold("FEN: "), fen, "\n")
+               cat(style_bold("FEN:"), fen, "\n")
                eval(expr=switch2)
                clipr::write_clip(fen, object_type="character")
                .texttop(.text("copyfen"), sleep=0.75)
@@ -4450,7 +4474,7 @@ play <- function(lang="en", online, ...) {
             if (identical(click, "o")) {
                eval(expr=switch1)
                fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
-               cat(style_bold("FEN: "), fen, "\n")
+               cat(style_bold("FEN:"), fen, "\n")
                eval(expr=switch2)
                if (flip) {
                   fen <- paste0("https://lichess.org/analysis/standard/", gsub(" ", "_", fen, fixed=TRUE), "?color=black")
@@ -4925,6 +4949,13 @@ play <- function(lang="en", online, ...) {
                   Sys.sleep(1)
             }
 
+            # remove testend info
+
+            if (mode == "add" && isTRUE(sub$testend)) {
+               sub$commentend <- NULL
+               sub$testend <- NULL
+            }
+
          }
 
          if (mode == "test") {
@@ -5001,9 +5032,9 @@ play <- function(lang="en", online, ...) {
                   timepermitted <- timepermove * movestoplay
 
                   if (verbose) {
-                     cat(style_bold("Moves played:   "), movestoplay, "\n")
-                     cat(style_bold("Time permitted: "), timepermitted, "\n")
-                     cat(style_bold("Time total:     "), timetotal, "\n")
+                     cat(style_bold("Moves played:  "), movestoplay, "\n")
+                     cat(style_bold("Time permitted:"), timepermitted, "\n")
+                     cat(style_bold("Time total:    "), timetotal, "\n")
                   }
 
                   if (timetotal > timepermitted) {
@@ -5069,8 +5100,6 @@ play <- function(lang="en", online, ...) {
                         next
                      if (is.na(click1.x) || is.na(click2.x) || is.na(click1.y) || is.na(click2.y))
                         next
-                     if (is.character(click))
-                        next
                      if (identical(button, 0L)) {
                         if (nrow(circles) >= 1L)
                            circlesvar <- paste0(apply(circles, 1, function(x) paste0("(",x[1],",",x[2],")")), collapse=";")
@@ -5134,7 +5163,7 @@ play <- function(lang="en", online, ...) {
                   filename <- seqname
                } else {
                   nextseqval <- sub$moves$nextseq[i-1]
-                  if (!identical(nextseqval, "")) {
+                  if (length(nextseqval) != 0L && !identical(nextseqval, "")) {
                      if (!endsWith(nextseqval, ".rds"))
                         nextseqval <- paste0(nextseqval, ".rds")
                      if (is.element(nextseqval, files)) {
@@ -5222,9 +5251,14 @@ play <- function(lang="en", online, ...) {
                      if (!showeval[[mode]])
                         .drawevalbar(sub$moves$eval[i-1], i=i, starteval=starteval, flip=flip, showeval=TRUE)
 
-                     # also show the Lichess bar (but only if contliquery is on and if it not a (stale)mate)
-                     if (showlibar && contliquery && token != "" && isonline && !grepl("#", sub$moves$move[i-1], fixed=TRUE))
-                        .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc, showout=FALSE)
+                     # also show the Lichess bar (but only if not a (stale)mate / draw)
+                     if (contliquery) {
+                        if (token != "" && isonline && isTRUE(!grepl("[#%]$", sub$moves$move[i-1])))
+                           .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc, showout=FALSE)
+                     } else {
+                        if (isTRUE(!grepl("[#%]$", sub$moves$move[i-1])))
+                           .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc, showout=FALSE, onlycache=TRUE)
+                     }
 
                   }
 
@@ -5252,6 +5286,8 @@ play <- function(lang="en", online, ...) {
 
                      if (identical(click, " ") || identical(click, "a") || identical(click, "A") || (is.numeric(click) && identical(click[3], 2))) { # space, a/A, and right mouse button goes to add mode
                         dev.hold()
+                        if (!contliquery)
+                           .drawlibar(clear=TRUE)
                         if (unflip) {
                            flip <- !flip
                            unflip <- FALSE
@@ -5272,6 +5308,7 @@ play <- function(lang="en", online, ...) {
                         sub$symbolend  <- NULL
                         sub$endmoves   <- NULL
                         sub$testend    <- NULL
+                        sub$tags       <- NULL
                         show <- FALSE
                         showcomp <- TRUE
                         .texttop("")
@@ -5300,6 +5337,7 @@ play <- function(lang="en", online, ...) {
 
                      if (identical(click, "\\") || identical(click, "\U000000E4")) { # \ or ä goes to play mode
                         dev.hold()
+                        .drawlibar(clear=TRUE)
                         if (unflip) {
                            flip <- !flip
                            unflip <- FALSE
@@ -5321,6 +5359,7 @@ play <- function(lang="en", online, ...) {
                         sub$symbolend  <- NULL
                         sub$endmoves   <- NULL
                         sub$testend    <- NULL
+                        sub$tags       <- NULL
                         show <- FALSE
                         showcomp <- TRUE
                         if (timed)
@@ -5391,7 +5430,7 @@ play <- function(lang="en", online, ...) {
                      if (identical(click, "o")) {
                         eval(expr=switch1)
                         fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
-                        cat(style_bold("FEN: "), fen, "\n")
+                        cat(style_bold("FEN:"), fen, "\n")
                         eval(expr=switch2)
                         if (flip) {
                            fen <- paste0("https://lichess.org/analysis/standard/", gsub(" ", "_", fen, fixed=TRUE), "?color=black")
@@ -5418,7 +5457,7 @@ play <- function(lang="en", online, ...) {
                      if (identical(click, "ctrl-F")) {
                         eval(expr=switch1)
                         fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i+1)
-                        cat(style_bold("FEN: "), fen, "\n")
+                        cat(style_bold("FEN:"), fen, "\n")
                         eval(expr=switch2)
                         clipr::write_clip(fen, object_type="character")
                         .texttop(.text("copyfen"), sleep=0.75)
@@ -5450,7 +5489,9 @@ play <- function(lang="en", online, ...) {
                      }
 
                      if (identical(click, "i")) {
+                        assign("contliquery", TRUE, envir=.chesstrainer)
                         .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc)
+                        assign("contliquery", contliquery, envir=.chesstrainer)
                         next
                      }
 
@@ -5460,6 +5501,16 @@ play <- function(lang="en", online, ...) {
                         assign("uselicache", uselicache, envir=.chesstrainer)
                         settings$uselicache <- uselicache
                         saveRDS(settings, file=file.path(configdir, "settings.rds"))
+                        next
+                     }
+
+                     if (advanced && identical(click, "ctrl-P")) {
+                        eval(expr=switch1)
+                        cat("--------------------------------------------\n\n")
+                        cat("Sequence name:", seqname, "\n\n")
+                        print(sub)
+                        cat("--------------------------------------------\n")
+                        eval(expr=switch2)
                         next
                      }
 
@@ -5597,11 +5648,30 @@ play <- function(lang="en", online, ...) {
             if (mode == "add" && showtransp)
                .findmovetransp(fen=fen, flip=flip, i=i, sub=sub, dat=dat.all.short, files=files.all, pos=sub$pos, contanalysis=contanalysis, movestoshow=movestoshow) # TODO: does this require updating to allow for multiple endmoves?
 
-            # use the correct symbol if it is mate
+            # use the correct symbol if it is mate or draw by stalemate / threefold repetition / fifty-move rule
 
             if (identical(matetype, "mate")) {
                sub$moves$move[i-1] <- sub("+", "#", sub$moves$move[i-1], fixed=TRUE)
                sub$moves$san[i-1] <- sub("+", "#", sub$moves$san[i-1], fixed=TRUE)
+            }
+
+            if (identical(matetype, "stalemate")) {
+               sub$moves$move[i-1] <- paste0(sub$moves$move[i-1], "%")
+               sub$moves$san[i-1] <- paste0(sub$moves$san[i-1], "%")
+            }
+
+            threefold <- any(table(sapply(sub$moves$fen, .fenpart, parts=1:4)) == 3L)
+
+            if (threefold) {
+               sub$moves$move[i-1] <- paste0(sub$moves$move[i-1], "%")
+               sub$moves$san[i-1] <- paste0(sub$moves$san[i-1], "%")
+            }
+
+            fifty <- identical(strsplit(fen, " ", fixed=TRUE)[[1]][5], "100")
+
+            if (fifty) {
+               sub$moves$move[i-1] <- paste0(sub$moves$move[i-1], "%")
+               sub$moves$san[i-1] <- paste0(sub$moves$san[i-1], "%")
             }
 
             # add the move as an endmove if endmoves is not null ([e])
@@ -5635,8 +5705,6 @@ play <- function(lang="en", online, ...) {
 
             # check for threefold repetition
 
-            threefold <- any(table(sapply(sub$moves$fen, .fenpart, parts=1:4)) == 3L)
-
             if (threefold) {
                .texttop(.text("threefold"))
                evalval <- 0
@@ -5651,8 +5719,6 @@ play <- function(lang="en", online, ...) {
             }
 
             # check fifty-move rule
-
-            fifty <- identical(strsplit(fen, " ", fixed=TRUE)[[1]][5], "100")
 
             if (fifty) {
                .texttop(.text("fifty"))

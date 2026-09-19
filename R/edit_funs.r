@@ -7,22 +7,34 @@
       .flush()
 
       if (!is.null(sub$commentstart)) {
-         cat(.text("commentstart", sub$commentstart))
          cat("\n")
+         cat(style_bold(.text("commentstart")))
+         cat(sub$commentstart, "\n")
+         if (nrow(sub$moves) > 0L)
+            cat("\n")
       }
-      if (nrow(sub$moves) > 0L) {
-         if (all(sub$moves$nextseq == "")) {
-            print(sub$moves[5:9])
-         } else {
-            print(sub$moves[c(5:9,13)])
-         }
+      if (nrow(sub$moves) > 0L)
+         print(sub$moves[5:9])
+      if (nrow(sub$moves) > 0L && (!is.null(sub$commentend) || any(sub$moves$nextseq != "") || !is.null(sub$tags)))
+         cat("\n")
+      if (!is.null(sub$commentend)) {
+         cat(style_bold(.text("commentend")))
+         cat(sub$commentend, "\n")
       }
-      if (!is.null(sub$commentend))
-         cat(.text("commentend", sub$commentend))
+      if (any(sub$moves$nextseq != "")) {
+         cat(style_bold(.text("nextseq")))
+         cat(.last(sub$moves$nextseq[sub$moves$nextseq != ""]), "\n")
+      }
+      if (!is.null(sub$tags)) {
+         if (!is.null(sub$commentend) || any(sub$moves$nextseq != ""))
+            cat("\n")
+         print(sub$tags)
+      }
+
       cat("\n")
 
       if (doreadline) {
-         resp <- readline(prompt=style_bold(.text("commentedit")))
+         resp <- readline(prompt=style_bold(.text("elementedit")))
       } else {
          resp <- key
          doreadline <- TRUE
@@ -36,6 +48,8 @@
       # number = edit the corresponding comment
 
       if (grepl("^[1-9][0-9]*$", resp)) {
+         if (nrow(sub$moves) == 0L)
+            next
          comnum <- as.integer(resp)
          if (comnum < 1L || comnum > nrow(sub$moves))
             next
@@ -82,14 +96,38 @@
       # n or N = to edit nextseq
 
       if (grepl("^[Nn]$", resp)) {
+         if (nrow(sub$moves) == 0L)
+            next
          nextseqnum <- nrow(sub$moves)
          nextseqnew <- readline(prompt=style_bold(.text("nextseqnew")))
          if (identical(nextseqnew, ""))
             next
          if (grepl("^(-|NA|na)$", nextseqnew)) {
-            sub$moves$nextseq[nextseqnum] <- ""
+            sub$moves$nextseq <- ""
          } else {
+            sub$moves$nextseq <- ""
             sub$moves$nextseq[nextseqnum] <- nextseqnew
+         }
+         next
+      }
+
+      # P or p = to edit PGN tags
+
+      if (grepl("^[Pp]$", resp)) {
+         cat("\n")
+         tag.event  <- readline(prompt=style_bold("Event: "))  # Event
+         tag.site   <- readline(prompt=style_bold("Site: "))   # Site
+         tag.date   <- readline(prompt=style_bold("Date: "))   # Date
+         tag.round  <- readline(prompt=style_bold("Round: "))  # Round
+         tag.white  <- readline(prompt=style_bold("White: "))  # White
+         tag.black  <- readline(prompt=style_bold("Black: "))  # Black
+         tag.result <- readline(prompt=style_bold("Result: ")) # Result
+         if (!identical(tag.event, "") || !identical(tag.site, "") || !identical(tag.date, "") || !identical(tag.round, "") || !identical(tag.white, "") || !identical(tag.black, "") || !identical(tag.result, "")) {
+            sub$tags <- data.frame(tag=c("Event", "Site", "Date", "Round", "White", "Black", "Result"), value=c(tag.event, tag.site, tag.date, tag.round, tag.white, tag.black, tag.result))
+            sub$tags <- sub$tags[sub$tags$value != "",]
+            rownames(sub$tags) <- NULL
+         } else {
+            sub$tags <- NULL
          }
          next
       }
@@ -97,6 +135,8 @@
       # f = to flip show values
 
       if (grepl("^[Ff]$", resp)) {
+         if (nrow(sub$moves) == 0L)
+            next
          whichflip <- readline(prompt=style_bold(.text("flipshow")))
          if (grepl("^[EeGg]$", whichflip)) { # EeGg for even rows
             whichflip <- 2L * seq_len(nrow(sub$moves) %/% 2L)

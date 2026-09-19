@@ -465,7 +465,7 @@
 .lan2uci <- function(moves, sidetoplay) {
 
    moves <- gsub("=([QRBN])", "\\L\\1", moves, perl=TRUE)
-   moves <- gsub("[RNBQK+#=x]", "", moves)
+   moves <- gsub("[RNBQK+#%=x]", "", moves)
 
    if (any(moves %in% c("0-0", "0-0-0"))) {
       nmoves <- length(moves)
@@ -1463,6 +1463,10 @@
             ismate <- grepl("#", sub$moves$move, fixed=TRUE)
             tmp[ismate] <- gsub("+", "#", tmp, fixed=TRUE)[ismate]
 
+            # add % for draws
+            isdraw <- grepl("%", sub$moves$move, fixed=TRUE)
+            tmp[isdraw] <- paste0(tmp, "%")[isdraw]
+
             # add the move in SAN to the sequence
             sub$moves$san <- tmp
 
@@ -1666,12 +1670,16 @@
       if (!is.null(selected))
          rownames(tab) <- which(files.all %in% selected)
       txt <- capture.output(print(tab, print.gap=2))
-      if (length(txt) > 50)
+      if (length(txt) > 50L) {
          txt <- c(txt, txt[1])
-      if (mode == "test") {
-         pos <- which(seqname == selected) + 1
+         txt[length(txt)-1L] <- style_underline(txt[length(txt)-1L])
+         txt[length(txt)] <- style_bold(txt[length(txt)])
+      }
+      if (mode == "test" && length(txt) >= 3L) {
+         pos <- which(seqname == selected) + 1L
          txt[pos] <- style_bold(style_inverse(txt[pos]))
       }
+      txt[1] <- style_bold(style_underline(txt[1]))
       .print(txt)
    } else {
       cat(.text("zeroseqsfound"))

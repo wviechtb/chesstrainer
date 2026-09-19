@@ -69,7 +69,7 @@
 
    while (TRUE) {
       .flush()
-      cat(.text("currentsettings"))
+      cat(style_bold(.text("currentsettings")))
       print(tab, right=FALSE, print.gap=3)
       cat("\n")
       resp <- readline(prompt=style_bold(.text("whichsetting")))

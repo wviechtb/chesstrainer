@@ -49,14 +49,6 @@
    cex <- .get("cex")
    mar <- .get("mar")
 
-   if (dev.cur() == 1L) {
-      dev.new(bg=col.bg, cex=cex, title="Chesstrainer")
-      if (.get("inhibit")) {
-         Sys.sleep(0.2)
-         dev.control(displaylist="inhibit")
-      }
-   }
-
    par(xpd=NA, pty="s", cex=cex, mar=mar, fg=col.fg, bg=col.bg)
 
    mat <- outer(1:8, 1:8, function(x,y) .is.even(x+y))
@@ -407,7 +399,7 @@
    if (flip) {
       if (x1 == 7 && x2 == 8 && piece == "BP") {
          if (autoprom) {
-            promotionpiece <- paste0("B", strsplit(sub("[+#]" ,"", move[[6]]), "=", fixed=TRUE)[[1]][2])
+            promotionpiece <- paste0("B", strsplit(gsub("[+#%]" ,"", move[[6]]), "=", fixed=TRUE)[[1]][2])
          } else {
             sapply(8:5, function(x2) .drawsquare(x2, y2, flip=flip, col=col.square.be))
             mapply(.drawpiece, x=8:5, y=rep(y2,4), piece=c("BQ","BN","BR","BB"))
@@ -426,13 +418,13 @@
             }
             sapply(8:5, function(x2) .drawsquare(x2, y2, flip=flip))
             mapply(.drawpiece, x=8:5, y=rep(y2,4), piece=pos[1:4,9-y2])
-            if (!is.na(move[[6]]) && !identical(promotionpiece, paste0("B", strsplit(sub("[+#]" ,"", move[[6]]), "=", fixed=TRUE)[[1]][2])))
+            if (!is.na(move[[6]]) && !identical(promotionpiece, paste0("B", strsplit(gsub("[+#%]" ,"", move[[6]]), "=", fixed=TRUE)[[1]][2])))
                return("prommistake")
          }
       }
       if (x1 == 2 && x2 == 1 && piece == "WP") {
          if (autoprom) {
-            promotionpiece <- paste0("W", strsplit(sub("[+#]" ,"", move[[6]]), "=", fixed=TRUE)[[1]][2])
+            promotionpiece <- paste0("W", strsplit(gsub("[+#%]" ,"", move[[6]]), "=", fixed=TRUE)[[1]][2])
          } else {
             sapply(1:4, function(x2) .drawsquare(x2, y2, flip=flip,, col=col.square.be))
             mapply(.drawpiece, x=1:4, y=rep(y2,4), piece=c("WQ","WN","WR","WB"))
@@ -451,14 +443,14 @@
             }
             sapply(1:4, function(x2) .drawsquare(x2, y2, flip=flip))
             mapply(.drawpiece, x=1:4, y=rep(y2,4), piece=pos[8:5,9-y2])
-            if (!is.na(move[[6]]) && !identical(promotionpiece, paste0("W", strsplit(sub("[+#]" ,"", move[[6]]), "=", fixed=TRUE)[[1]][2])))
+            if (!is.na(move[[6]]) && !identical(promotionpiece, paste0("W", strsplit(gsub("[+#%]" ,"", move[[6]]), "=", fixed=TRUE)[[1]][2])))
                return("prommistake")
          }
       }
    } else {
       if (x1 == 7 && x2 == 8 && piece == "WP") {
          if (autoprom) {
-            promotionpiece <- paste0("W", strsplit(sub("[+#]" ,"", move[[6]]), "=", fixed=TRUE)[[1]][2])
+            promotionpiece <- paste0("W", strsplit(gsub("[+#%]" ,"", move[[6]]), "=", fixed=TRUE)[[1]][2])
          } else {
             sapply(8:5, function(x2) .drawsquare(x2, y2, flip=flip, col=col.square.be))
             mapply(.drawpiece, x=8:5, y=rep(y2,4), piece=c("WQ","WN","WR","WB"))
@@ -477,13 +469,13 @@
             }
             sapply(8:5, function(x2) .drawsquare(x2, y2, flip=flip))
             mapply(.drawpiece, x=8:5, y=rep(y2,4), piece=pos[8:5,y2])
-            if (!is.na(move[[6]]) && !identical(promotionpiece, paste0("W", strsplit(sub("[+#]" ,"", move[[6]]), "=", fixed=TRUE)[[1]][2])))
+            if (!is.na(move[[6]]) && !identical(promotionpiece, paste0("W", strsplit(gsub("[+#%]" ,"", move[[6]]), "=", fixed=TRUE)[[1]][2])))
                return("prommistake")
          }
       }
       if (x1 == 2 && x2 == 1 && piece == "BP") {
          if (autoprom) {
-            promotionpiece <- paste0("B", strsplit(sub("[+#]" ,"", move[[6]]), "=", fixed=TRUE)[[1]][2])
+            promotionpiece <- paste0("B", strsplit(gsub("[+#%]" ,"", move[[6]]), "=", fixed=TRUE)[[1]][2])
          } else {
             sapply(1:4, function(x2) .drawsquare(x2, y2, flip=flip, col=col.square.be))
             mapply(.drawpiece, x=1:4, y=rep(y2,4), piece=c("BQ","BN","BR","BB"))
@@ -502,7 +494,7 @@
             }
             sapply(1:4, function(x2) .drawsquare(x2, y2, flip=flip))
             mapply(.drawpiece, x=1:4, y=rep(y2,4), piece=pos[1:4,y2])
-            if (!is.na(move[[6]]) && !identical(promotionpiece, paste0("B", strsplit(sub("[+#]" ,"", move[[6]]), "=", fixed=TRUE)[[1]][2])))
+            if (!is.na(move[[6]]) && !identical(promotionpiece, paste0("B", strsplit(gsub("[+#%]" ,"", move[[6]]), "=", fixed=TRUE)[[1]][2])))
                return("prommistake")
          }
       }

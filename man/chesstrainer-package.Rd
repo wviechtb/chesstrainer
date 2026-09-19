@@ -158,7 +158,7 @@
 
    Occasionally, you may want to construct sequences where the player also has to make the moves of the opposing side (i.e., for the computer). The \verb{<Z>} key can be used to toggle whether the computer moves will be automatically played or not (when this is toggled off, then this will also be indicated at the bottom left). For example, you could memorize entire games by pressing the \verb{<z>} and \verb{<Z>} keys at the very beginning and then making all moves of the game. A comment should then be added before making the first move to provide a reminder which game should be played.
 
-   The \verb{<e>} key can be used to edit the comments for a particular sequence. This way, you can also add a \sQuote{start comment} and/or an \sQuote{end comment} to a particular sequence (the former will be shown in an overlay box before the sequence starts, the latter at the top after the last move). Using \sQuote{-} (or \sQuote{NA}) as a comment deletes it. One can also specify the name of a sequence that should always be played next, irrespective of the sequence selection mode.
+   The \verb{<e>} key can be used to edit the comments for a particular sequence. This way, you can also add a \sQuote{start comment} and/or an \sQuote{end comment} to a particular sequence (the former will be shown in an overlay box before the sequence starts, the latter at the top after the last move). Using \sQuote{-} (or \sQuote{NA}) as a comment deletes it. One can also specify the name of a sequence that should always be played next, irrespective of the sequence selection mode. Finally, one can enter various PGN tags (these are not used at the moment, but possibly in the future).
 
    The \verb{<E>} key opens up the \code{\link[=edit]{data editor}} on the data frame that contains the moves for the current sequence. This can also be used to add, edit, and remove comments in the \verb{comment} column or make adjustments to the other columns (but this should only be done if their meaning and format is clear).
 
@@ -235,6 +235,8 @@
 
    \if{html}{\figure{libar.png}{options: width=900}}
    \if{latex}{\figure{libar.png}{options: width=5.5in}}
+
+   In \emph{test mode}, the evaluation bar is always shown at the end of a sequence but only if the position can be found in the cache (you can always press \verb{<i>} to query the database). However, if the continuous query mode is switched on, then the online database will automatically be queried if the position cannot be found in the cache.
 
 }
 \section{Managing and Selecting Sequence Directories}{

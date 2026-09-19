@@ -416,10 +416,11 @@
       eval <- -eval
 
    if (verbose) {
-      cat("\nFEN:  ", fen, "\n")
-      cat("Time: ", end.time[[3]] - start.time[[3]], "\n")
-      cat("Eval: ", eval, "\n")
-      cat("Best: ", sapply(bestmove, head, 1), "\n\n")
+      cat("\n")
+      cat("FEN: ", fen, "\n")
+      cat("Time:", end.time[[3]] - start.time[[3]], "\n")
+      cat("Eval:", eval, "\n")
+      cat("Best:", sapply(bestmove, head, 1), "\n\n")
    }
 
    if (!is.na(sflim))

@@ -923,10 +923,10 @@
                          "Comment for the move: "
    ))}
 
-   if (x == "commentedit") {
+   if (x == "elementedit") {
       return(switch(lang,
-                    de = "Bearbeiten (<Nummer>, 's' (Startkommentar) 'e' (Endkommentar), 'n' (n\U000000E4chste Sequenz), <Enter> zum Verlassen): ",
-                         "Edit (<number>, 's' (start comment), 'e' (end comment), 'n' (next sequence), <enter> to quit): "
+                    de = "Bearbeiten (<Nummer>, 's/e' (Start/Endkommentar) 'n' (n\U000000E4chste Sequenz), 'p' (PGN tags), <Enter> zum Verlassen): ",
+                         "Edit (<number>, 's/e' (start/end comment), 'n' (next sequence), 'p' (PGN tags), <enter> to quit): "
    ))}
 
    if (x == "endmovesedit") {
@@ -943,8 +943,8 @@
 
    if (x == "commentend") {
       return(switch(lang,
-                    de = paste0("\nEndkommentar: ", arg, "\n"),
-                         paste0("\nEnd comment: ", arg, "\n")
+                    de = "Endkommentar: ",
+                         "End comment: "
    ))}
 
    if (x == "commentendnew") {
@@ -955,8 +955,8 @@
 
    if (x == "commentstart") {
       return(switch(lang,
-                    de = paste0("\nStartkommentar: ", arg, "\n"),
-                         paste0("\nStart comment: ", arg, "\n")
+                    de = "Startkommentar: ",
+                         "Start comment: "
    ))}
 
    if (x == "commentstartnew") {
@@ -971,6 +971,12 @@
                          "Flip 'show' values for these rows (<number>, <number1-number2>, 'e' = even rows, 'o' = odd rows): "
    ))}
 
+   if (x == "nextseq") {
+      return(switch(lang,
+                    de = "N\U000000E4chste Sequenz: ",
+                         "Next sequence: "
+   ))}
+
    if (x == "nextseqwhich") {
       return(switch(lang,
                     de = "Die n\U000000E4chste Sequenz f\U000000FCr diesen Zug editieren (<Nummer>, '-' zum l\U000000F6schen, <Enter> zum Verlassen): ",
@@ -981,6 +987,12 @@
       return(switch(lang,
                     de = "Neuer Eintrag ('-' zum l\U000000F6schen): ",
                          "New entry ('-' to delete): "
+   ))}
+
+   if (x == "testprompt") {
+      return(switch(lang,
+                    de = "Test text: ",
+                         "Test Text: "
    ))}
 
    if (x == "noendmoves") {

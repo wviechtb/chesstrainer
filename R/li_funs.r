@@ -15,25 +15,9 @@
 
 }
 
-.liquery <- function(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc, showout=TRUE, showlibar=TRUE, tokencheck=FALSE, retry=4) {
+.liquery <- function(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc, showout=TRUE, onlycache=FALSE, showlibar=TRUE, tokencheck=FALSE, retry=4) {
 
    res <- list(out=NULL, selmove="")
-
-   if (is.null(token) || token == "") {
-      if (liout == 1)
-         .texttop(.text("needtoken"), sleep=2)
-      if (liout == 2)
-         .textliwin(.text("needtoken"), sleep=2)
-      return(res)
-   }
-
-   if (!isonline) {
-      if (liout == 1)
-         .texttop(.text("nointqueryli"), sleep=2)
-      if (liout == 2)
-         .textliwin(.text("nointqueryli"), sleep=2)
-      return(res)
-   }
 
    contliquery <- .get("contliquery")
 
@@ -71,10 +55,29 @@
 
    } else {
 
+      if (onlycache)
+         return()
+
+      if (is.null(token) || token == "") {
+         if (liout == 1)
+            .texttop(.text("needtoken"), sleep=2)
+         if (liout == 2)
+            .textliwin(.text("needtoken"), sleep=2)
+         return(res)
+      }
+
+      if (!isonline) {
+         if (liout == 1)
+            .texttop(.text("nointqueryli"), sleep=2)
+         if (liout == 2)
+            .textliwin(.text("nointqueryli"), sleep=2)
+         return(res)
+      }
+
       # https://lichess.org/api#tag/opening-explorer
 
       if (lichessdb == "lichess") {
-         url <- paste0("https://explorer.lichess.org/lichess?topGames=0&recentGames=0&speeds=", speeds, "&ratings=", ratings, "&")
+         url <- paste0("https://explorer.lichess.org/lichess?topGames=0&recentGames=0", "&speeds=", speeds, "&ratings=", ratings, "&")
       } else {
          url <- paste0("https://explorer.lichess.org/masters?topGames=0&")
       }
@@ -139,6 +142,9 @@
 
    if (is.null(out)) {
 
+      if (onlycache)
+         return()
+
       if (liout == 1)
          cat(.text("posnotfound"), "\n")
       if (liout == 2)
@@ -161,11 +167,13 @@
       res$out <- out
       out$total <- rowSums(out[2:4])
 
-      sel <- out$total >= minfreq & out$total / sum(out$total) >= minperc/100
+      sel <- out$total >= minfreq & out$total / sum(out$total) >= minperc / 100
       out <- out[sel,,drop=FALSE]
       res$out <- res$out[sel,,drop=FALSE]
 
       if (nrow(out) == 0L) {
+         if (onlycache)
+            return()
          if (mode %in% c("add","analysis")) {
             if (liout == 1)
                .texttop(.text("belowthreshold"), sleep=1.5)
@@ -178,6 +186,11 @@
       }
 
       totals <- colSums(out[2:5])
+
+      if (onlycache) {
+         .drawlibar(totals, flip=flip)
+         return()
+      }
 
       if (contliquery && showlibar)
          .drawlibar(totals, flip=flip)
@@ -296,7 +309,7 @@
 .drawliwin <- function() {
 
    col.bg <- .get("col.bg")
-   dev.new(bg=col.bg, title="Lichess")
+   dev.new(bg=col.bg, canvas=col.bg, title="Lichess")
    Sys.sleep(0.05)
    par(mar=c(0,0,0,0))
    plot(NA, xlim=c(0,1), ylim=c(0,1), xaxs="i", yaxs="i", xlab="", ylab="", xaxt="n", yaxt="n", bty="n")
