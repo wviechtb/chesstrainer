@@ -22,8 +22,9 @@
       "9 - sequentially, ordered alphabetical",
       "10 - sequentially, ordered by length",
       "11 - sequentially, ordered by moves",
+      "12 - sequentially, in random order",
       "",
-      "Select via the number keys 1-9, F1-F11, or via mouse click.")
+      "Select via the number keys 1-9, F1-F12, or via mouse click.")
 
    }
 
@@ -43,8 +44,9 @@
       "9 - sequenziell, alphabetisch sortiert",
       "10 - sequenziell, nach L\U000000E4nge sortiert",
       "11 - sequenziell, nach Z\U000000FCgen sortiert",
+      "12 - sequenziell, in zuf\U000000E4lliger Reihenfolge",
       "",
-      "W\U000000E4hle mit den Zifferntasten 1-9, F1-F11, oder per Mausklick aus.")
+      "W\U000000E4hle mit den Zifferntasten 1-9, F1-F12, oder per Mausklick aus.")
 
    }
 
@@ -52,7 +54,7 @@
 
    cex <- .findcex(txt, font=font.mono, x1=1.8, x2=8.2, y1=2.0, y2=8.0)
 
-   selmodes <- c("score_random", "score_highest", "rounds_random", "rounds_lowest", "age_random", "age_oldest", "diff_random", "diff_highest", "sequential", "sequential_len", "sequential_mov")
+   selmodes <- c("score_random", "score_highest", "rounds_random", "rounds_lowest", "age_random", "age_oldest", "diff_random", "diff_highest", "sequential", "sequential_len", "sequential_mov", "sequential_ran")
 
    oldmode <- which(selmode == selmodes)
 
@@ -60,11 +62,11 @@
 
    text(1.8, ypos, txt, pos=4, offset=0, cex=cex, family=font.mono, font=ifelse(c("","",selmodes,"","")==selmode, 2, 1), col=col.help)
 
-   segpos <- ypos[c(2,14)]
+   segpos <- ypos[c(2,15)]
    segments(1.8, segpos[1], 8.2, segpos[1], col=col.help)
    segments(1.8, segpos[2], 8.2, segpos[2], col=col.help)
 
-   ypos <- ypos[-c(1:2,14:15)]
+   ypos <- ypos[-c(1:2,15:16)]
    dist <- (ypos[1] - ypos[2]) / 2
 
    while (TRUE) {
@@ -91,7 +93,7 @@
          if (identical(click, "m") || identical(click, "\r") || identical(click, "ctrl-J") || identical(click, "q") || identical(click, "\033") || identical(click, "ctrl-["))
             break
 
-         if (is.element(click, 0:length(selmodes))) {
+         if (is.element(click, 0:9)) {
             click <- as.numeric(click)
             if (click == 0)
                click <- 10
@@ -105,7 +107,13 @@
             break
          }
 
-         if (is.element(click, paste0("F", 1:11))) {
+         if (is.element(click, c("="))) {
+            click <- 12
+            selmode <- selmodes[click]
+            break
+         }
+
+         if (is.element(click, paste0("F", 1:12))) {
             click <- as.numeric(substring(click, 2))
             selmode <- selmodes[click]
             break

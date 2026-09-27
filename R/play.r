@@ -417,6 +417,11 @@ play <- function(lang="en", online, ...) {
 
    assign("contliquery", contliquery, envir=.chesstrainer)
 
+   # for selmode 'random', need to initalize the state for the random number generator and store it
+
+   runif(1)
+   assign("seed", get(".Random.seed", envir=.GlobalEnv), envir=.chesstrainer)
+
    # session variables
 
    session.seqsplayed <- 0
@@ -682,6 +687,7 @@ play <- function(lang="en", online, ...) {
       threefold     <- FALSE
       fifty         <- FALSE
       savgame       <- NULL
+      transposi     <- 10000L
       assign("lasteval", NULL, envir=.chesstrainer)
       assign("checkpos", c(NA,NA), envir=.chesstrainer)
       assign("mattdiff", 0, envir=.chesstrainer)
@@ -877,7 +883,7 @@ play <- function(lang="en", online, ...) {
          probvals.selected[which(tmp == max(tmp))[1]] <- 100
       }
 
-      if (selmode %in% c("sequential","sequential_len","sequential_mov") && k >= 1L && !replast) {
+      if (selmode %in% c("sequential","sequential_len","sequential_mov","sequential_ran") && k >= 1L && !replast) {
          probvals.selected <- rep(0, k)
          if (selmode == "sequential")
             probvals.selected[seqno] <- 100
@@ -885,6 +891,8 @@ play <- function(lang="en", online, ...) {
             probvals.selected[order(length.selected)[seqno]] <- 100
          if (selmode == "sequential_mov")
             probvals.selected[order(moves.selected)[seqno]] <- 100
+         if (selmode == "sequential_ran")
+            probvals.selected[.sample(k)[seqno]] <- 100
       }
 
       if (mode %in% c("add","play")) {
@@ -1568,13 +1576,14 @@ play <- function(lang="en", online, ...) {
                      assign("mode", mode, envir=.chesstrainer)
                   }
                }
-               if (mode == "test" && selmode %in% c("sequential","sequential_len","sequential_mov","age_oldest")) {
+               if (mode == "test" && selmode %in% c("sequential","sequential_len","sequential_mov","sequential_ran","age_oldest")) {
                   if (identical(click, "ctrl-N")) {
                      seqno <- ifelse(seqno == k, 1L, seqno + 1L)
                   } else {
                      seqno <- .incrseqno(seqno, k, selmode, seqname, lastseq, nextseq, filename, files)
                   }
                   if (seqno == 1L && k > 1L) {
+                     assign("seed", get(".Random.seed", envir=.GlobalEnv), envir=.chesstrainer)
                      playsound(system.file("sounds", "finished.ogg", package="chesstrainer"))
                      .texttop(.text("finishedround"), sleep=2, showlast=FALSE)
                   }
@@ -2328,7 +2337,7 @@ play <- function(lang="en", online, ...) {
                      selmodeold <- selmode
                      waitold <- wait
                      volumeold <- volume
-                     selmode <- "sequential"
+                     selmode <- "sequential_mov"
                      wait <- FALSE
                      seqno <- 1L
                      assign("volume", 0, envir=.chesstrainer)
@@ -2354,7 +2363,7 @@ play <- function(lang="en", online, ...) {
             # j to manually jump to a seqno value when playing sequences sequentially
 
             if (identical(click, "j")) {
-               if (selmode %in% c("sequential","sequential_len","sequential_mov")) {
+               if (selmode %in% c("sequential","sequential_len","sequential_mov","sequential_ran")) {
                   seqnoold <- seqno
                   seqno <- .setseqno(seqno, k)
                   if (seqnoold != seqno) {
@@ -2453,9 +2462,10 @@ play <- function(lang="en", online, ...) {
                session.mean.scores[[session.length]] <- c(session.mean.scores[[session.length]], mean(scores.all, na.rm=TRUE))
                if (!showeval[[mode]])
                   .drawevalbar(sub$moves$eval[i], i=i, starteval=starteval, flip=flip, showeval=TRUE)
-               if (selmode %in% c("sequential","sequential_len","sequential_mov","age_oldest") && !replast) {
+               if (selmode %in% c("sequential","sequential_len","sequential_mov","sequential_ran","age_oldest") && !replast) {
                   seqno <- .incrseqno(seqno, k, selmode, seqname, lastseq, nextseq, filename, files)
                   if (seqno == 1L && k > 1L) {
+                     assign("seed", get(".Random.seed", envir=.GlobalEnv), envir=.chesstrainer)
                      playsound(system.file("sounds", "finished.ogg", package="chesstrainer"))
                      .texttop(.text("finishedround"), sleep=2, showlast=FALSE)
                   }
@@ -2662,7 +2672,7 @@ play <- function(lang="en", online, ...) {
                next
             }
 
-            # z to switch show moves on/off (only in add mode) (in test mode, toggles zenmode on/off)
+            # z to switch show moves on/off (only in add mode)
 
             if (mode == "add" && identical(click, "z")) {
                show <- !show
@@ -3529,6 +3539,7 @@ play <- function(lang="en", online, ...) {
 
                if (identical(searchterm , "*") && !identical(click, "|")) {
                   cat(.text("allseqselected"))
+                  assign("seed", get(".Random.seed", envir=.GlobalEnv), envir=.chesstrainer)
                   selected <- NULL
                   mode <- oldmode <- "add"
                   assign("mode", mode, envir=.chesstrainer)
@@ -3581,6 +3592,7 @@ play <- function(lang="en", online, ...) {
                         selected <- files.all[notnull]
                         mode <- oldmode <- "add"
                         assign("mode", mode, envir=.chesstrainer)
+                        assign("seed", get(".Random.seed", envir=.GlobalEnv), envir=.chesstrainer)
                         listseqs <- TRUE
                         .newround(seqno1=TRUE)
                      }
@@ -3609,6 +3621,7 @@ play <- function(lang="en", online, ...) {
                         selected <- files.all[seqident]
                         mode <- oldmode <- "add"
                         assign("mode", mode, envir=.chesstrainer)
+                        assign("seed", get(".Random.seed", envir=.GlobalEnv), envir=.chesstrainer)
                         listseqs <- TRUE
                         .newround(seqno1=TRUE)
                      }
@@ -3653,6 +3666,7 @@ play <- function(lang="en", online, ...) {
                      cat(.text("numseqfound", length(selected)))
                      mode <- oldmode <- "add"
                      assign("mode", mode, envir=.chesstrainer)
+                     assign("seed", get(".Random.seed", envir=.GlobalEnv), envir=.chesstrainer)
                      listseqs <- TRUE
                      .newround(seqno1=TRUE)
                   }
@@ -3672,6 +3686,7 @@ play <- function(lang="en", online, ...) {
                      selected <- list.files(seqdir[seqdirpos], pattern="\\.rds$")[tmp$seq.lo:tmp$seq.hi]
                      mode <- oldmode <- "add"
                      assign("mode", mode, envir=.chesstrainer)
+                     assign("seed", get(".Random.seed", envir=.GlobalEnv), envir=.chesstrainer)
                      listseqs <- TRUE
                      .newround(seqno1=TRUE)
                   }
@@ -3690,6 +3705,7 @@ play <- function(lang="en", online, ...) {
                      selected <- list.files(seqdir[seqdirpos], pattern="\\.rds$")[tmp]
                      mode <- oldmode <- "add"
                      assign("mode", mode, envir=.chesstrainer)
+                     assign("seed", get(".Random.seed", envir=.GlobalEnv), envir=.chesstrainer)
                      listseqs <- TRUE
                      .newround(seqno1=TRUE)
                   }
@@ -3714,6 +3730,7 @@ play <- function(lang="en", online, ...) {
                      cat(.text("numseqfound", length(selected)))
                      mode <- oldmode <- "add"
                      assign("mode", mode, envir=.chesstrainer)
+                     assign("seed", get(".Random.seed", envir=.GlobalEnv), envir=.chesstrainer)
                      listseqs <- TRUE
                      .newround(seqno1=TRUE)
                   }
@@ -3738,6 +3755,7 @@ play <- function(lang="en", online, ...) {
                      cat(.text("numseqfound", length(selected)))
                      mode <- oldmode <- "add"
                      assign("mode", mode, envir=.chesstrainer)
+                     assign("seed", get(".Random.seed", envir=.GlobalEnv), envir=.chesstrainer)
                      listseqs <- TRUE
                      .newround(seqno1=TRUE)
                   }
@@ -3763,6 +3781,7 @@ play <- function(lang="en", online, ...) {
                      cat(.text("numseqfound", length(selected)))
                      mode <- oldmode <- "add"
                      assign("mode", mode, envir=.chesstrainer)
+                     assign("seed", get(".Random.seed", envir=.GlobalEnv), envir=.chesstrainer)
                      listseqs <- TRUE
                      .newround(seqno1=TRUE)
                   }
@@ -3788,6 +3807,7 @@ play <- function(lang="en", online, ...) {
                      cat(.text("numseqfound", length(selected)))
                      mode <- oldmode <- "add"
                      assign("mode", mode, envir=.chesstrainer)
+                     assign("seed", get(".Random.seed", envir=.GlobalEnv), envir=.chesstrainer)
                      listseqs <- TRUE
                      .newround(seqno1=TRUE)
                   }
@@ -3836,6 +3856,7 @@ play <- function(lang="en", online, ...) {
                      cat(.text("numseqfound", length(selected)))
                      mode <- oldmode <- "add"
                      assign("mode", mode, envir=.chesstrainer)
+                     assign("seed", get(".Random.seed", envir=.GlobalEnv), envir=.chesstrainer)
                      listseqs <- TRUE
                      .newround(seqno1=TRUE)
                   }
@@ -3854,6 +3875,7 @@ play <- function(lang="en", online, ...) {
                   selected <- NULL
                   mode <- oldmode <- "add"
                   assign("mode", mode, envir=.chesstrainer)
+                  assign("seed", get(".Random.seed", envir=.GlobalEnv), envir=.chesstrainer)
                   .newround(seqno1=TRUE)
                } else {
                   .texttop(.text("allseqalreadyselected"), sleep=1)
@@ -3906,6 +3928,7 @@ play <- function(lang="en", online, ...) {
                   if (identical(selmatches, "\r") || identical(selmatches, "ctrl-J") || .confirm(selmatches)) {
                      cat(.text("selmatchesconfirm", sum(notnull)))
                      selected <- files.all[notnull]
+                     assign("seed", get(".Random.seed", envir=.GlobalEnv), envir=.chesstrainer)
                      .newround(seqno1=TRUE)
                   } else {
                      .texttop(onlylast=TRUE)
@@ -3961,6 +3984,7 @@ play <- function(lang="en", online, ...) {
                      if (identical(selmatches, "\r") || identical(selmatches, "ctrl-J") || .confirm(selmatches)) {
                         cat(.text("selmatchesconfirm", sum(notnull)))
                         selected <- files.all[notnull]
+                        assign("seed", get(".Random.seed", envir=.GlobalEnv), envir=.chesstrainer)
                         .newround(seqno1=TRUE)
                      } else {
                         .texttop(onlylast=TRUE)
@@ -4040,6 +4064,7 @@ play <- function(lang="en", online, ...) {
                   if (identical(selmatches, "\r") || identical(selmatches, "ctrl-J") || .confirm(selmatches)) {
                      cat(.text("selmatchesconfirm", sum(seqident)))
                      selected <- files.all[seqident]
+                     assign("seed", get(".Random.seed", envir=.GlobalEnv), envir=.chesstrainer)
                      .newround(seqno1=TRUE)
                   } else {
                      .texttop(onlylast=TRUE)
@@ -4121,6 +4146,7 @@ play <- function(lang="en", online, ...) {
                   if (identical(selmatches, "\r") || identical(selmatches, "ctrl-J") || .confirm(selmatches)) {
                      cat(.text("selmatchesconfirm", sum(seqident)))
                      selected <- files.all[seqident]
+                     assign("seed", get(".Random.seed", envir=.GlobalEnv), envir=.chesstrainer)
                      .newround(seqno1=TRUE)
                   } else {
                      .texttop(onlylast=TRUE)
@@ -4458,6 +4484,7 @@ play <- function(lang="en", online, ...) {
                   oldmode  <- ifelse(mode %in% c("play","analysis"), "add", mode)
                   mode <- "add"
                   assign("mode", mode, envir=.chesstrainer)
+                  assign("seed", get(".Random.seed", envir=.GlobalEnv), envir=.chesstrainer)
                   session.seqsplayed <- c(session.seqsplayed, 0)
                   session.mean.scores <- c(session.mean.scores, list(NULL))
                   session.length <- session.length + 1
@@ -5548,8 +5575,9 @@ play <- function(lang="en", online, ...) {
                Sys.sleep(2*delay)
 
                if (!replast && k > 1L) {
-                  if (selmode %in% c("sequential","sequential_len","sequential_mov","age_oldest")) {
+                  if (selmode %in% c("sequential","sequential_len","sequential_mov","sequential_ran","age_oldest")) {
                      if (seqno == 1L) {
+                        assign("seed", get(".Random.seed", envir=.GlobalEnv), envir=.chesstrainer)
                         playsound(system.file("sounds", "finished.ogg", package="chesstrainer"))
                         .texttop(.text("finishedround"), sleep=2, showlast=FALSE)
                      }
@@ -5651,8 +5679,8 @@ play <- function(lang="en", online, ...) {
 
             # in add mode, check if there are sequences with the current position that occurred via a move transposition
 
-            if (mode == "add" && showtransp)
-               .findmovetransp(fen=fen, flip=flip, i=i, sub=sub, dat=dat.all.short, files=files.all, pos=sub$pos, contanalysis=contanalysis, movestoshow=movestoshow) # TODO: does this require updating to allow for multiple endmoves?
+            if (mode == "add" && showtransp && transposi >= i)
+               transposi <- .findmovetransp(fen=fen, flip=flip, i=i, sub=sub, dat=dat.all.short, files=files.all, pos=sub$pos, contanalysis=contanalysis, movestoshow=movestoshow) # TODO: does this require updating to allow for multiple endmoves?
 
             # use the correct symbol if it is mate or draw by stalemate / threefold repetition / fifty-move rule
 

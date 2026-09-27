@@ -1324,6 +1324,7 @@
                         sequential     = paste0("sequentially, alphabetically, ", seqno, "/", k),
                         sequential_len = paste0("sequentially, by length, ", seqno, "/", k),
                         sequential_mov = paste0("sequentially, by moves, ", seqno, "/", k),
+                        sequential_ran = paste0("sequantially, random order, ", seqno, "/", k),
                         default        = "default")
 
       if (mode == "test") {
@@ -1408,6 +1409,7 @@
                         sequential     = paste0("sequenziell, alphabetisch, ", seqno, "/", k),
                         sequential_len = paste0("sequenziell, nach L\U000000E4nge, ", seqno, "/", k),
                         sequential_mov = paste0("sequenziell, nach Z\U000000FCgen, ", seqno, "/", k),
+                        sequential_ran = paste0("sequenziell, zuf\U000000E4llige Reihenfolge, ", seqno, "/", k),
                         default        = "default")
 
       if (mode == "test") {

@@ -47,11 +47,22 @@
    #return(identical(pos, start.pos))
 }
 
+.sample <- function(k) {
+
+   currentseed <- get(".Random.seed", envir=.GlobalEnv)
+   savedseed <- .get("seed")
+   assign(".Random.seed", savedseed, envir=.GlobalEnv)
+   res <- sample(k)
+   assign(".Random.seed", currentseed, envir=.GlobalEnv)
+   return(res)
+
+}
+
 .flush <- function() {
    flush <- isTRUE(.get("flush"))
    if (flush)
       cat(c("\033[2J","\033[0;0H"))
-   return(flush)
+   return(NULL)
 }
 
 .findcex <- function(txt, font, x1, x2, y1, y2, mincex=1) {
@@ -1267,7 +1278,7 @@
    seqident <- seqident[notnull]
    if (any(notnull)) {
       .texttop(.text("transpositions", length(seqident) == 1L), sleep=2)
-      .flush()
+      #.flush()
       cat(.text("transposseqs", length(seqident) == 1L))
       tab <- data.frame(files[notnull])
       colnames(tab) <- .text("sequence")
@@ -1277,9 +1288,12 @@
          tab <- cbind(tab, nextmoves)
       }
       rownames(tab) <- which(notnull)
-      .printdf(tab, align=c("l",rep("r",movestoshow)))
+      #.printdf(tab, align=c("l",rep("r",movestoshow)))
       if (contanalysis)
          .waitforclick()
+      return(i)
+   } else {
+      return(10000L)
    }
 
 }

@@ -145,10 +145,13 @@
       if (onlycache)
          return()
 
-      if (liout == 1)
-         cat(.text("posnotfound"), "\n")
-      if (liout == 2)
-         .textliwin(.text("posnotfound"), sleep=1.5)
+      if (mode != "test") {
+         if (liout == 1)
+            cat(.text("posnotfound"), "\n")
+         if (liout == 2)
+            .textliwin(.text("posnotfound"))
+            #.textliwin(.text("posnotfound"), sleep=1.5)
+      }
 
       #if (contliquery) {
       #   if (mode %in% c("play","analysis"))
@@ -176,9 +179,11 @@
             return()
          if (mode %in% c("add","analysis")) {
             if (liout == 1)
-               .texttop(.text("belowthreshold"), sleep=1.5)
+               cat(.text("belowthreshold"), "\n")
+               #.texttop(.text("belowthreshold"), sleep=1.5)
             if (liout == 2)
-               .textliwin(.text("belowthreshold"), sleep=1.5)
+               .textliwin(.text("belowthreshold"))
+               #.textliwin(.text("belowthreshold"), sleep=1.5)
          }
          if (contliquery && showlibar)
             .drawlibar(clear=TRUE)
