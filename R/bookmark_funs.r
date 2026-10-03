@@ -195,7 +195,7 @@
          if (nchar(num) == 1) {
             num <- 0
          } else {
-            num <- as.numeric(substr(num, 1, nchar(num)-1))
+            num <- as.numeric(substr(num, 1L, nchar(num)-1L))
          }
          next
       }
@@ -255,8 +255,8 @@
 
    bookmarks2 <- bookmarks
    bookmarkslen <- nchar(bookmarks2)
-   maxlen <- 80
-   bookmarks2 <- sapply(bookmarks2, function(x) if (nchar(x) >= maxlen) paste0("...", substr(x, max(1,nchar(x)-maxlen), nchar(x))) else x, USE.NAMES=FALSE)
+   maxlen <- 80L
+   bookmarks2 <- sapply(bookmarks2, function(x) if (nchar(x) >= maxlen) paste0("...", substr(x, max(1L,nchar(x)-maxlen), nchar(x))) else x, USE.NAMES=FALSE)
 
    tab <- data.frame(sub("\\.rds$", "", bookmarks2))
    names(tab) <- ""

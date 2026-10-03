@@ -1865,6 +1865,36 @@
                          "Sound volume"
    ))}
 
+   if (x == "pgnmenu") {
+      return(switch(lang,
+                    de = "PGN <Z\U000000FCge> (oder <i> aus Datei importieren, <c> aus der Zwischenablage kopieren, <Enter> zum Verlassen): ",
+                         "PGN moves (or <i> import from file, <c> copy from clipboard, <enter> to quit): "
+   ))}
+
+   if (x == "pgnfileshort") {
+      return(switch(lang,
+                    de = "PGN Datei",
+                         "PGN file"
+   ))}
+
+   if (x == "pgnfile") {
+      return(switch(lang,
+                    de = "PGN Datei: ",
+                         "PGN file: "
+   ))}
+
+   if (x == "couldnotimport") {
+      return(switch(lang,
+                    de = "Die Partie konnte nicht importiert werden.",
+                         "Could not import the game."
+   ))}
+
+   if (x == "filenotfound") {
+      return(switch(lang,
+                    de = "Die Datei konnte nicht gefunden werden.",
+                         "File could not be found."
+   ))}
+
 }
 
 .confirm <- function(x) {

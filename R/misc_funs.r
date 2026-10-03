@@ -443,7 +443,7 @@
 
    if (!identical(fields[4], "-")) {
       attr(pos,"ispp") <- ifelse(fields[2] == "w", "b", "w")
-      letter <- substr(fields[4], 1, 1)
+      letter <- substr(fields[4], 1L, 1L)
       y1 <- as.numeric(which(letters[1:8] == letter))
       attr(pos,"y1") <- y1
    }
@@ -503,6 +503,432 @@
 
 }
 
+.pgn2seq <- function(pgn, sfproc, sfrun, depth, multipv, showeval, openings, lichessdb, speeds, ratings) {
+
+   pgn <- trimws(pgn) # remove any superfluous whitespace at the beginning and end of each line
+   pgn <- pgn[pgn != ""] # remove "" lines
+
+   # find/extract tags
+
+   istag <- startsWith(pgn, "[")
+
+   if (any(istag)) {
+
+      istag <- which(!istag)[1L] - 1L # first non-tag minus one
+      tags <- pgn[1:istag]
+      tags <- gsub("[", "", tags, fixed=TRUE)
+      tags <- gsub("]", "", tags, fixed=TRUE)
+      tags <- strsplit(tags, "\"", fixed=TRUE)
+
+      if (all(sapply(tags, length) == 2L)) {
+         tags <- do.call(rbind, tags)
+         tags <- trimws(tags)
+         tags <- as.data.frame(tags)
+         names(tags) <- c("tag", "value")
+      } else {
+         tags <- NULL
+      }
+
+   } else {
+
+      tags <- NULL
+      istag <- 0L
+
+   }
+
+   pgn <- pgn[istag+1L] # the first line after the tags is assumed to be the moves (single line!)
+
+   pgn <- gsub("\\{[^}]*\\}", "", pgn) # remove anything between {}
+
+   while (grepl("\\([^()]*\\)", pgn)) # iteratively remove variations between ()
+      pgn <- gsub("\\([^()]*\\)", "", pgn)
+
+   moves <- strsplit(pgn, "\\s+")[[1]] # split moves at one or more spaces
+   moves <- sub("^\\d+\\.{1,3}", "", moves) # remove move numbers and ...
+   moves <- moves[nzchar(moves)] # remove "" elements
+   moves <- moves[!moves %in% c("1-0", "0-1", "1/2-1/2", "*")] # remove result
+   moves <- gsub("[-+#?!]", "", moves) # remove -+#?! (anything else?)
+
+   if (length(moves) == 0L)
+      return()
+
+   flip <- FALSE
+   pos <- .get("pos")
+   sidetoplay <- "w"
+   sidetoplaystart <- "w"
+   opening <- ""
+   starteval <- 0.2
+
+   sub <- list(flip = flip, moves = data.frame(x1=numeric(), y1=numeric(), x2=numeric(), y2=numeric(), show=logical(), move=character(), san=character(), eval=numeric(),
+                                               comment=character(), circles=character(), arrows=character(), glyph=character(), nextseq=character(), fen=character()))
+   sub$startfen <- "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
+
+   letters8 <- letters[1:8]
+
+   i <- 1
+   nmoves <- length(moves)
+
+   while (i <= nmoves) {
+
+      move <- moves[i]
+      moveorig <- move
+      iscapture <- grepl("x", move, fixed=TRUE)
+      move <- sub("x", "", move, fixed=TRUE)
+
+      ######################################################################
+
+      # knight move
+
+      if (substr(move, 1L, 1L) == "N") {
+
+         if (nchar(move) == 5L) { # move like Nf2e4 where all files/rows are given
+            y1 <- which(substr(move, 2L, 2L) == letters8) # file where the knight starts
+            y2 <- which(substr(move, 4L, 4L) == letters8) # file where the knight ends up
+            x1 <- as.numeric(substr(move, 3L, 3L)) # row where the knight starts
+            x2 <- as.numeric(substr(move, 5L, 5L)) # row where the knight ends up
+         }
+
+         if (nchar(move) == 4L) { # moves like Nde8 or N2c4 where start file/row is given
+            y2 <- which(substr(move, 3L, 3L) == letters8) # file where the knight ends up
+            x2 <- as.numeric(substr(move, 4L, 4L)) # row where the knight ends up
+            if (substr(move, 2L, 2L) %in% letters8) { # start file is given
+               y1 <- which(substr(move, 2L, 2L) == letters8) # file where the knight starts
+               # knight must be 1 or 2 rows away
+               cand <- which(pos[,y1] == paste0(toupper(sidetoplay), "N"))
+               cand <- cand[abs(cand - x2) %in% 1:2 &
+                            abs(y1 - y2) %in% 1:2 &
+                            abs(cand - x2) + abs(y1 - y2) == 3]
+               cand <- cand[sapply(cand, function(x1) .islegal(x1, y1, x2, y2, pos=pos, flip=flip, sidetoplay=sidetoplay))]
+               x1 <- cand[1L]
+            } else { # start row is given
+               x1 <- as.numeric(substr(move, 2L, 2L)) # row where the knight starts
+               # knight must be 1 or 2 columns away
+               cand <- which(pos[x1,] == paste0(toupper(sidetoplay), "N"))
+               cand <- cand[abs(x1 - x2) %in% 1:2 &
+                            abs(cand - y2) %in% 1:2 &
+                            abs(x1 - x2) + abs(cand - y2) == 3]
+               cand <- cand[sapply(cand, function(y1) .islegal(x1, y1, x2, y2, pos=pos, flip=flip, sidetoplay=sidetoplay))]
+               y1 <- cand[1L]
+            }
+         }
+
+         if (nchar(move) == 3L) { # move like Nf3 where only the target row/file is given
+            y2 <- which(substr(move, 2L, 2L) == letters8) # file where the knight ends up
+            x2 <- as.numeric(substr(move, 3L, 3L)) # row where the knight ends up
+            # find all knights of this color
+            cand <- which(pos == paste0(toupper(sidetoplay), "N"), arr.ind=TRUE)
+            # retain those that can reach the target square
+            sel <- abs(cand[,1L] - x2) %in% 1:2 &
+                   abs(cand[,2L] - y2) %in% 1:2 &
+                   abs(cand[,1L] - x2) + abs(cand[,2L] - y2) == 3
+            cand <- cand[sel,,drop=FALSE]
+            sel <- apply(cand, 1L, function(z) .islegal(z[1L], z[2L], x2, y2, pos=pos, flip=flip, sidetoplay=sidetoplay))
+            cand <- cand[sel,,drop=FALSE]
+            x1 <- cand[1L,1L]
+            y1 <- cand[1L,2L]
+         }
+
+      }
+
+      ######################################################################
+
+      # bishop move
+
+      if (substr(move, 1L, 1L) == "B") {
+
+         if (nchar(move) == 5L) { # move like Bc1g5 where all files/rows are given
+            y1 <- which(substr(move, 2L, 2L) == letters8) # file where the bishop starts
+            y2 <- which(substr(move, 4L, 4L) == letters8) # file where the bishop ends up
+            x1 <- as.numeric(substr(move, 3L, 3L)) # row where the bishop starts
+            x2 <- as.numeric(substr(move, 5L, 5L)) # row where the bishop ends up
+         }
+
+         if (nchar(move) == 4L) { # moves like Bcg5 or B1g5 where start file/row is given
+            y2 <- which(substr(move, 3L, 3L) == letters8) # file where the bishop ends up
+            x2 <- as.numeric(substr(move, 4L, 4L)) # row where the bishop ends up
+            if (substr(move, 2L, 2L) %in% letters8) { # start file is given
+               y1 <- which(substr(move, 2L, 2L) == letters8)
+               cand <- which(pos[,y1] == paste0(toupper(sidetoplay), "B"))
+               # bishop must be on the same diagonal
+               cand <- cand[abs(cand - x2) == abs(y1 - y2)]
+               # retain only legal moves
+               cand <- cand[sapply(cand, function(x1) .islegal(x1, y1, x2, y2, pos=pos, flip=flip, sidetoplay=sidetoplay))]
+               x1 <- cand[1L]
+            } else { # start row is given
+               x1 <- as.numeric(substr(move, 2L, 2L))
+               cand <- which(pos[x1,] == paste0(toupper(sidetoplay), "B"))
+               # bishop must be on the same diagonal
+               cand <- cand[abs(x1 - x2) == abs(cand - y2)]
+               # retain only legal moves
+               cand <- cand[sapply(cand, function(y1) .islegal(x1, y1, x2, y2, pos=pos, flip=flip, sidetoplay=sidetoplay))]
+               y1 <- cand[1L]
+            }
+         }
+
+         if (nchar(move) == 3L) { # move like Bg5 where only the target row/file is given
+            y2 <- which(substr(move, 2L, 2L) == letters8)
+            x2 <- as.numeric(substr(move, 3L, 3L))
+            # find all bishops of this color
+            cand <- which(pos == paste0(toupper(sidetoplay), "B"), arr.ind=TRUE)
+            # retain those on the same diagonal as the target square
+            sel <- abs(cand[,1L] - x2) == abs(cand[,2L] - y2)
+            cand <- cand[sel,,drop=FALSE]
+            # retain only legal moves
+            sel <- apply(cand, 1L, function(z) .islegal(z[1L], z[2L], x2, y2, pos=pos, flip=flip, sidetoplay=sidetoplay))
+            cand <- cand[sel,,drop=FALSE]
+            x1 <- cand[1L,1L]
+            y1 <- cand[1L,2L]
+         }
+
+      }
+      ######################################################################
+
+      # rook move
+
+      if (substr(move, 1L, 1L) == "R") {
+
+         if (nchar(move) == 5L) { # move like Ra1e1 where all files/rows are given
+            y1 <- which(substr(move, 2L, 2L) == letters8) # file where the rook starts
+            y2 <- which(substr(move, 4L, 4L) == letters8) # file where the rook ends up
+            x1 <- as.numeric(substr(move, 3L, 3L)) # row where the rook starts
+            x2 <- as.numeric(substr(move, 5L, 5L)) # row where the rook ends up
+         }
+
+         if (nchar(move) == 4L) { # moves like Rae1 or R1e1 where start file/row is given
+            y2 <- which(substr(move, 3L, 3L) == letters8) # file where the rook ends up
+            x2 <- as.numeric(substr(move, 4L, 4L)) # row where the rook ends up
+            if (substr(move, 2L, 2L) %in% letters8) { # start file is given
+               y1 <- which(substr(move, 2L, 2L) == letters8)
+               cand <- which(pos[,y1] == paste0(toupper(sidetoplay), "R"))
+               # rook must be in the same row or column as the target
+               cand <- cand[cand == x2 | y1 == y2]
+               # retain only legal moves
+               cand <- cand[sapply(cand, function(x1) .islegal(x1, y1, x2, y2, pos=pos, flip=flip, sidetoplay=sidetoplay))]
+               x1 <- cand[1L]
+            } else { # start row is given
+               x1 <- as.numeric(substr(move, 2L, 2L))
+               cand <- which(pos[x1,] == paste0(toupper(sidetoplay), "R"))
+               # rook must be in the same row or column as the target
+               cand <- cand[x1 == x2 | cand == y2]
+               # retain only legal moves
+               cand <- cand[sapply(cand, function(y1) .islegal(x1, y1, x2, y2, pos=pos, flip=flip, sidetoplay=sidetoplay))]
+               y1 <- cand[1L]
+            }
+         }
+
+         if (nchar(move) == 3L) { # move like Re1 where only the target row/file is given
+            y2 <- which(substr(move, 2L, 2L) == letters8)
+            x2 <- as.numeric(substr(move, 3L, 3L))
+            # find all rooks of this color
+            cand <- which(pos == paste0(toupper(sidetoplay), "R"), arr.ind=TRUE)
+            # retain those in the same row or column as the target
+            sel <- cand[,1L] == x2 | cand[,2L] == y2
+            cand <- cand[sel,,drop=FALSE]
+            # retain only legal moves
+            sel <- apply(cand, 1L, function(z) .islegal(z[1L], z[2L], x2, y2, pos=pos, flip=flip, sidetoplay=sidetoplay))
+            cand <- cand[sel,,drop=FALSE]
+            x1 <- cand[1L,1L]
+            y1 <- cand[1L,2L]
+         }
+
+      }
+
+      ######################################################################
+
+      # queen move
+
+      if (substr(move, 1L, 1L) == "Q") {
+
+         if (nchar(move) == 5L) { # move like Qd1h5 where all files/rows are given
+            y1 <- which(substr(move, 2L, 2L) == letters8) # file where the queen starts
+            y2 <- which(substr(move, 4L, 4L) == letters8) # file where the queen ends up
+            x1 <- as.numeric(substr(move, 3L, 3L)) # row where the queen starts
+            x2 <- as.numeric(substr(move, 5L, 5L)) # row where the queen ends up
+         }
+
+         if (nchar(move) == 4L) { # moves like Qdh5 or Q1h5 where start file/row is given
+            y2 <- which(substr(move, 3L, 3L) == letters8) # file where the queen ends up
+            x2 <- as.numeric(substr(move, 4L, 4L)) # row where the queen ends up
+            if (substr(move, 2L, 2L) %in% letters8) { # start file is given
+               y1 <- which(substr(move, 2L, 2L) == letters8)
+               cand <- which(pos[,y1] == paste0(toupper(sidetoplay), "Q"))
+               # queen must be in the same row/column or on the same diagonal
+               cand <- cand[cand == x2 | y1 == y2 |
+                            abs(cand - x2) == abs(y1 - y2)]
+               # retain only legal moves
+               cand <- cand[sapply(cand, function(x1) .islegal(x1, y1, x2, y2, pos=pos, flip=flip, sidetoplay=sidetoplay))]
+               x1 <- cand[1L]
+            } else { # start row is given
+               x1 <- as.numeric(substr(move, 2L, 2L))
+               cand <- which(pos[x1,] == paste0(toupper(sidetoplay), "Q"))
+               # queen must be in the same row/column or on the same diagonal
+               cand <- cand[x1 == x2 | cand == y2 |
+                            abs(x1 - x2) == abs(cand - y2)]
+               # retain only legal moves
+               cand <- cand[sapply(cand, function(y1) .islegal(x1, y1, x2, y2, pos=pos, flip=flip, sidetoplay=sidetoplay))]
+               y1 <- cand[1L]
+            }
+         }
+
+         if (nchar(move) == 3L) { # move like Qh5 where only the target row/file is given
+            y2 <- which(substr(move, 2L, 2L) == letters8)
+            x2 <- as.numeric(substr(move, 3L, 3L))
+            # find all queens of this color
+            cand <- which(pos == paste0(toupper(sidetoplay), "Q"), arr.ind=TRUE)
+            # retain those in the same row/column or on the same diagonal
+            sel <- cand[,1L] == x2 |
+                   cand[,2L] == y2 |
+                   abs(cand[,1L] - x2) == abs(cand[,2L] - y2)
+            cand <- cand[sel,,drop=FALSE]
+            # retain only legal moves
+            sel <- apply(cand, 1L, function(z) .islegal(z[1L], z[2L], x2, y2, pos=pos, flip=flip, sidetoplay=sidetoplay))
+            cand <- cand[sel,,drop=FALSE]
+            x1 <- cand[1L,1L]
+            y1 <- cand[1L,2L]
+         }
+
+      }
+
+      ######################################################################
+
+      # king move
+
+      if (substr(move, 1L, 1L) == "K") {
+
+         y2 <- which(substr(move, 2L, 2L) == letters8)
+         x2 <- as.numeric(substr(move, 3L, 3L))
+         cand <- which(pos == paste0(toupper(sidetoplay), "K"), arr.ind=TRUE)
+         x1 <- cand[1L,1L]
+         y1 <- cand[1L,2L]
+
+      }
+
+      ######################################################################
+
+      # castling
+
+      if (move %in% c("OO", "OOO")) {
+
+         x1 <- ifelse(sidetoplay == "w", 1, 8)
+         y1 <- 5
+         x2 <- x1
+         y2 <- ifelse(move == "OO", 7, 3)
+
+      }
+
+      ######################################################################
+
+      # pawn move
+
+      if (substr(move, 1L, 1L) %in% letters8) {
+
+         if (iscapture) {
+            y1 <- which(substr(move, 1L, 1L) == letters8) # file in which the pawn starts
+            y2 <- which(substr(move, 2L, 2L) == letters8) # file in which the pawn ends up
+            x2 <- as.numeric(substr(move, 3L, 3L)) # row where it ends up
+            if (sidetoplay=="w") {
+               x1 <- x2 - 1
+            } else {
+               x1 <- x2 + 1
+            }
+         } else {
+            y1 <- which(substr(move, 1L, 1L) == letters8) # file in which the pawn moves forward
+            y2 <- y1
+            x2 <- as.numeric(substr(move, 2L, 2L)) # row where it ends up
+            if (sidetoplay=="w") {
+               if (pos[x2-1L,y1] == "WP") {
+                  x1 <- x2-1
+               } else {
+                  x1 <- x2-2
+               }
+            } else {
+               if (pos[x2+1L,y1] == "BP") {
+                  x1 <- x2+1
+               } else {
+                  x1 <- x2+2
+               }
+            }
+         }
+
+      }
+
+      ######################################################################
+
+      # TODO: check if the move is legal?
+
+      tmp <- .updateboard(pos, move=data.frame(x1, y1, x2, y2, NA, moveorig), flip=flip, autoprom=TRUE)
+      moveuci <- .lan2uci(attr(tmp,"move"), sidetoplay=sidetoplay)
+      movesan <- .parsemove(moveuci, pos=pos, flip=flip, evalval=NA, i=NA, sidetoplay=sidetoplay, rename=FALSE, returnline=2, hintdepth=1, san=TRUE)
+      pos <- tmp
+
+      i <- i + 1L
+      sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
+
+      fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
+      res.sf <- .sf.eval(sfproc=sfproc, sfrun=sfrun, depth=depth, fen=fen)
+      evalval  <- res.sf$eval[1:multipv]
+      bestmove <- res.sf$bestmove[1:multipv]
+
+      matetype <- res.sf$matetype
+      sfproc   <- res.sf$sfproc
+
+      .touchsfcachefile(fen)
+      #.touchlicachefile(fen, lichessdb, speeds, ratings)
+
+      .drawevalbar(evalval[1], i=i, starteval=starteval, flip=flip, showeval=showeval[["add"]])
+
+      # add the current move to sub
+
+      sub$moves <- rbind(sub$moves, data.frame(x1=x1, y1=y1, x2=x2, y2=y2, show=FALSE, move=attr(pos,"move"), san=movesan, eval=evalval[1], comment="", circles="", arrows="", glyph="", nextseq="", fen=fen))
+
+      # use the correct symbol if it is mate or draw by stalemate / threefold repetition / fifty-move rule
+
+      if (identical(matetype, "mate")) {
+         sub$moves$move[i-1L] <- sub("+", "#", sub$moves$move[i-1L], fixed=TRUE)
+         sub$moves$san[i-1L] <- sub("+", "#", sub$moves$san[i-1L], fixed=TRUE)
+      }
+
+      if (identical(matetype, "stalemate")) {
+         sub$moves$move[i-1L] <- paste0(sub$moves$move[i-1L], "%")
+         sub$moves$san[i-1L] <- paste0(sub$moves$san[i-1L], "%")
+      }
+
+      threefold <- any(table(sapply(sub$moves$fen, .fenpart, parts=1:4)) == 3L)
+
+      if (threefold) {
+         sub$moves$move[i-1L] <- paste0(sub$moves$move[i-1L], "%")
+         sub$moves$san[i-1L] <- paste0(sub$moves$san[i-1L], "%")
+      }
+
+      fifty <- identical(strsplit(fen, " ", fixed=TRUE)[[1]][5], "100")
+
+      if (fifty) {
+         sub$moves$move[i-1L] <- paste0(sub$moves$move[i-1L], "%")
+         sub$moves$san[i-1L] <- paste0(sub$moves$san[i-1L], "%")
+      }
+
+      .textbot(i=i, onlyi=TRUE)
+
+      # try to match the moves with the openings in the openings database
+
+      opening <- .findopening(sub$moves[seq_len(i-1L),1:4], pos=pos, flip=flip, sidetoplay=sidetoplay, sidetoplaystart=sidetoplaystart, i=i, opening=opening, openings=openings, posnull=is.null(sub$pos))
+
+   }
+
+   sub$moves$x1 <- as.numeric(sub$moves$x1)
+   sub$moves$x2 <- as.numeric(sub$moves$x2)
+   sub$moves$y1 <- as.numeric(sub$moves$y1)
+   sub$moves$y2 <- as.numeric(sub$moves$y2)
+
+   rownames(sub$moves) <- NULL
+
+   if (!is.null(tags))
+      sub$tags <- tags
+
+   return(list(sub=sub, pos=pos, sidetoplay=sidetoplay, i=i))
+
+}
+
 .parsemove <- function(move, pos, flip, evalval, i, sidetoplay, rename, returnline, hintdepth, space="", san=NULL) {
 
    move <- strsplit(move, "", fixed=TRUE)
@@ -532,7 +958,7 @@
          x2 <- as.numeric(which(move[[j]][4] == 8:1))
          y2 <- as.numeric(which(move[[j]][3] == letters8))
          colorpiece <- pos[9-x1,9-y1]
-         piece <- substr(pos[9-x1,9-y1], 2, 2)
+         piece <- substr(pos[9-x1,9-y1], 2L, 2L)
       } else {
          letters8 <- letters[1:8]
          x1 <- as.numeric(which(move[[j]][2] == 1:8))
@@ -540,7 +966,7 @@
          x2 <- as.numeric(which(move[[j]][4] == 1:8))
          y2 <- as.numeric(which(move[[j]][3] == letters8))
          colorpiece <- pos[x1,y1]
-         piece <- substr(pos[x1,y1], 2, 2)
+         piece <- substr(pos[x1,y1], 2L, 2L)
       }
 
       # change 960-compatible castling moves (king on top of rook) to standard chess castling moves
@@ -679,7 +1105,7 @@
                }
                if (length(startxy) > 1) {
                   # there is more than one rook that can reach the square
-                  if (sum(move[[j]][1] == substr(startxy, 1, 1)) == 1L) {
+                  if (sum(move[[j]][1] == substr(startxy, 1L, 1L)) == 1L) {
                      # there is a single rook on the file from which the rook is moving that can reach the target square
                      startletter <- move[[j]][1] # need to add the file
                   } else {
@@ -713,12 +1139,12 @@
                }
                if (length(startxy) > 1) {
                   # there is more than one bishop that can reach the square
-                  if (sum(move[[j]][1] == substr(startxy, 1, 1)) == 1L) {
+                  if (sum(move[[j]][1] == substr(startxy, 1L, 1L)) == 1L) {
                      # there is a single bishop on the file from which the bishop is moving that can reach the target square
                      startletter <- move[[j]][1] # need to add the file
                   } else {
                      # there are two bishops on the file from which the bishop is moving that can reach the target square
-                     if (sum(move[[j]][2] == substr(startxy, 2, 2)) == 1L) {
+                     if (sum(move[[j]][2] == substr(startxy, 2L, 2L)) == 1L) {
                         # there is a single bishop on the rank from which the bishop is moving that can reach the target square
                         startnumber <- move[[j]][2] # need to add the rank
                      } else {
@@ -757,12 +1183,12 @@
                   }
                }
                if (length(startxy) > 1) {
-                  if (sum(move[[j]][1] == substr(startxy, 1, 1)) == 1L) {
+                  if (sum(move[[j]][1] == substr(startxy, 1L, 1L)) == 1L) {
                      # there is a single queen on the file from which the queen is moving that can reach the target square
                      startletter <- move[[j]][1] # need to add the file
                   } else {
                      # there is more than one queen on the file from which the queen is moving that can reach the target square
-                     if (sum(move[[j]][2] == substr(startxy, 2, 2)) == 1L) {
+                     if (sum(move[[j]][2] == substr(startxy, 2L, 2L)) == 1L) {
                         # there is a single queen on the rank from which the queen is moving that can reach the target square
                         startnumber <- move[[j]][2] # need to add the rank
                      } else {
@@ -795,12 +1221,12 @@
                   }
                }
                if (length(startxy) > 1) {
-                  if (sum(move[[j]][1] == substr(startxy, 1, 1)) == 1L) {
+                  if (sum(move[[j]][1] == substr(startxy, 1L, 1L)) == 1L) {
                      # there is a single knight on the file from which the knight is moving that can reach the target square
                      startletter <- move[[j]][1] # need to add the file
                   } else {
                      # there is more than one knight on the file from which the knight is moving that can reach the target square
-                     if (sum(move[[j]][2] == substr(startxy, 2, 2)) == 1L) {
+                     if (sum(move[[j]][2] == substr(startxy, 2L, 2L)) == 1L) {
                         # there is a single knight on the rank from which the knight is moving that can reach the target square
                         startnumber <- move[[j]][2] # need to add the rank
                      } else {
@@ -947,6 +1373,11 @@
 
 .islegal <- function(x1, y1, x2, y2, pos, flip, sidetoplay) {
 
+   x1 <- as.numeric(x1)
+   x2 <- as.numeric(x2)
+   y1 <- as.numeric(y1)
+   y2 <- as.numeric(y2)
+
    islegal <- FALSE
 
    # get the piece moved and the piece on the target square ("" if the target square is empty)
@@ -966,20 +1397,65 @@
 
    # check if moving the wrong color
 
-   color <- tolower(substr(piece, 1, 1))
+   color <- tolower(substr(piece, 1L, 1L))
+
    if (sidetoplay != color)
       return(FALSE)
 
    # check if capturing own piece
 
-   targetcolor <- tolower(substr(target, 1, 1)) # if target is "", then this remains ""
+   targetcolor <- tolower(substr(target, 1L, 1L)) # if target is "", then this remains ""
+
    if (sidetoplay == targetcolor)
+      return(FALSE)
+
+   # check if the king is in check before the move
+
+   if (sidetoplay == "w") {
+      check.before <- .isattacked(pos, xy=c(which(pos=="WK", arr.ind=TRUE)), attackcolor="b")
+   } else {
+      check.before <- .isattacked(pos, xy=c(which(pos=="BK", arr.ind=TRUE)), attackcolor="w")
+   }
+
+   # try to make the move (note: using autoprom=TRUE and "=Q" to autopromote to queen, but this is only
+   # relevant if a pawn move for promotion would put the king in check, which would not be a legal move)
+
+   tmp <- .updateboard(pos, move=data.frame(x1, y1, x2, y2, NA, "=Q"), flip=flip, autoprom=TRUE, draw=FALSE, x2y2=FALSE)
+
+   check.after <- attr(tmp,"ischeck")
+
+   # checks to do if castling
+
+   if (startsWith(attr(tmp,"move"), "0-0")) {
+
+      # check if castling from a checked position (not a legal move)
+
+      if (check.before)
+         return(FALSE)
+
+      # check that the king does not pass through an attacked square (not a legal move)
+
+      if (sidetoplay == "w" && attr(tmp,"move") == "0-0" && .isattacked(pos, xy=c(1,6), attackcolor="b"))
+         return(FALSE)
+      if (sidetoplay == "w" && attr(tmp,"move") == "0-0-0" && .isattacked(pos, xy=c(1,4), attackcolor="b"))
+         return(FALSE)
+      if (sidetoplay == "b" && attr(tmp,"move") == "0-0" && .isattacked(pos, xy=c(8,6), attackcolor="w"))
+         return(FALSE)
+      if (sidetoplay == "b" && attr(tmp,"move") == "0-0-0" && .isattacked(pos, xy=c(8,4), attackcolor="w"))
+         return(FALSE)
+
+   }
+
+   # check if the king is in check after the move (not a legal move)
+
+   if (sidetoplay == "w" && check.after[1])
+      return(FALSE)
+   if (sidetoplay == "b" && check.after[2])
       return(FALSE)
 
    # check if king move is legal
 
    if (piece %in% c("WK","BK")) {
-      isrochade <- ""
       rochade <- attr(pos,"rochade")
       if (is.null(rochade))
          rochade <- rep(TRUE, 4)
@@ -1315,7 +1791,7 @@
 
       if (length(openingmatch) >= 1L) {
          opening <- openings[openingmatch[1],1:2]
-         opening <- paste0(opening[1], " (", substr(opening[2], 1, 120), ")", collapse="")
+         opening <- paste0(opening[1], " (", substr(opening[2], 1L, 120L), ")", collapse="")
          if (!identical(opening, oldopening) && draw)
             .textbot(opening=opening, onlyeco=TRUE)
       } else {
@@ -1324,7 +1800,7 @@
          fenmatch <- which(fen == openings$epd)
          if (length(fenmatch) >= 1L) {
             opening <- openings[fenmatch[1],1:2]
-            opening <- paste0(opening[1], " (", substr(opening[2], 1, 120), ")", collapse="")
+            opening <- paste0(opening[1], " (", substr(opening[2], 1L, 120L), ")", collapse="")
             if (!identical(opening, oldopening) && draw)
                .textbot(opening=opening, onlyeco=TRUE)
          }
@@ -1678,7 +2154,7 @@
       tab <- data.frame(files, rounds.selected, .fmtx(age.selected, digits=1), scores.selected, .fmtx(difficulty.selected, digits=1), .fmtx(probvals.selected, digits=1), bars)
       tab$bars <- format(tab$bars, justify="left")
       names(tab) <- c(.text("sequence"), .text("rounds"), .text("age"), .text("score"), .text("diff"), "%", "")
-      tab[[1]] <- substr(tab[[1]], 1, nchar(tab[[1]])-4) # remove .rds from name
+      tab[[1]] <- substr(tab[[1]], 1L, nchar(tab[[1]])-4L) # remove .rds from name
       tab[[1]] <- format(tab[[1]], justify="left")
       names(tab)[1] <- format(c(names(tab)[1], tab[[1]]), justify="left")[1]
       if (!is.null(selected))

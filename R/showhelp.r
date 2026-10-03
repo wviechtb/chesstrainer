@@ -97,6 +97,7 @@
       "0        - make the current position the starting position for the sequence",
       "g        - show the evaluation graph (also in play and analysis mode)",
       "b        - start the board editor",
+      "P        - import sequence from PGN file/text",
       "s        - save the sequence")
 
       txt.play <- c(
@@ -195,6 +196,7 @@
       "0        - aktuelle Stellung zur Ausgangsstellung der Sequenz machen",
       "g        - Bewertungsdiagram anzeigen (auch im Spiel/Analysemodus)",
       "b        - Bretteditor starten",
+      "P        - Sequenz aus PGN Datei/Text importieren",
       "s        - Sequenz abspeichern"
       )
 
@@ -313,7 +315,7 @@
          if (nchar(searchtxt) <= 1L) {
             searchtxt <- ""
          } else {
-            searchtxt <- substr(searchtxt, 1, nchar(searchtxt)-1)
+            searchtxt <- substr(searchtxt, 1L, nchar(searchtxt)-1L)
          }
          next
       }

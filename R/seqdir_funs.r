@@ -178,7 +178,7 @@
          if (nchar(num) == 1) {
             num <- 0
          } else {
-            num <- as.numeric(substr(num, 1, nchar(num)-1))
+            num <- as.numeric(substr(num, 1L, nchar(num)-1L))
          }
          next
       }
@@ -262,8 +262,8 @@
    seqdir2 <- seqdir
    seqdir2 <- gsub("\\", "/", seqdir2, fixed=TRUE)
    seqdirlen <- nchar(seqdir2)
-   maxlen <- 80
-   seqdir2 <- sapply(seqdir2, function(x) if (nchar(x) >= maxlen) paste0("...", substr(x, max(1,nchar(x)-maxlen), nchar(x))) else x, USE.NAMES=FALSE)
+   maxlen <- 80L
+   seqdir2 <- sapply(seqdir2, function(x) if (nchar(x) >= maxlen) paste0("...", substr(x, max(1L,nchar(x)-maxlen), nchar(x))) else x, USE.NAMES=FALSE)
 
    tab <- data.frame(seqdir2)
    names(tab) <- ""

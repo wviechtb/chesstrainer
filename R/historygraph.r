@@ -32,8 +32,8 @@
    dat.month <- aggregate(dat.day[c("playtime", "seqsplayed")], by=list(month=month), FUN=sum)
 
    # figure out start date of each week in dat.week
-   dat.week$year <- substr(dat.week$week, 1, 4)
-   dat.week$weeknum <- as.integer(substr(dat.week$week, 6, 7))
+   dat.week$year <- substr(dat.week$week, 1L, 4L)
+   dat.week$weeknum <- as.integer(substr(dat.week$week, 6L, 7L))
    dat.week$week <- as.Date(paste0(dat.week$year, "-01-01")) + (dat.week$weeknum * 7) - as.integer(format(as.Date(paste0(dat.week$year, "-01-01")), "%u")) + 1
 
    .drawbox()

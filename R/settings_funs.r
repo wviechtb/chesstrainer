@@ -698,9 +698,9 @@
    sfpath2 <- sfpath
    sfpath2 <- sub(path.expand("~"), "~", sfpath2)
    pathlen <- nchar(sfpath2)
-   maxlen <- 55
+   maxlen <- 55L
    if (pathlen >= maxlen)
-      sfpath2 <- paste0("...", substr(sfpath2, max(1,nchar(sfpath2)-maxlen), nchar(sfpath2)))
+      sfpath2 <- paste0("...", substr(sfpath2, max(1L,nchar(sfpath2)-maxlen), nchar(sfpath2)))
 
    text(title.xpos, title.ypos[1], .text("sfpath", sfpath2), pos=4, cex=cex, family=font.mono, col=col.help, font=2)
    text(title.xpos, title.ypos[2], .text("sfrunning"),       pos=4, cex=cex, family=font.mono, col=col.help, font=2)
@@ -881,7 +881,7 @@
                sfpath2 <- sub(path.expand("~"), "~", sfpath2)
                pathlen <- nchar(sfpath2)
                if (pathlen >= maxlen)
-                  sfpath2 <- paste0("...", substr(sfpath2, max(1,nchar(sfpath2)-maxlen), nchar(sfpath2)))
+                  sfpath2 <- paste0("...", substr(sfpath2, max(1L,nchar(sfpath2)-maxlen), nchar(sfpath2)))
                text(title.xpos, title.ypos[1], .text("sfpath", sfpath2), pos=4, cex=cex, family=font.mono, col=col.help, font=2)
                tmp <- .sf.stop(sfproc, sfrun)
                sfproc <- tmp$sfproc
@@ -1509,9 +1509,9 @@
    #txt <- c(lines, txt[-1], lines)
 
    if (nchar(seqdir) > maxchars-3)
-      seqdir <- paste0("...", substr(seqdir, nchar(seqdir)-maxchars-3+1, nchar(seqdir)))
+      seqdir <- paste0("...", substr(seqdir, nchar(seqdir)-maxchars-3L+1L, nchar(seqdir)))
    if (nchar(sfpath) > maxchars-3)
-      sfpath <- paste0("...", substr(sfpath, nchar(sfpath)-maxchars-3+1, nchar(sfpath)))
+      sfpath <- paste0("...", substr(sfpath, nchar(sfpath)-maxchars-3L+1L, nchar(sfpath)))
 
    txt <- gsub("<NA>", "NA  ", txt, fixed=TRUE)
    sfpos <- grep("depth1", txt, fixed=TRUE)

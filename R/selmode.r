@@ -114,7 +114,7 @@
          }
 
          if (is.element(click, paste0("F", 1:12))) {
-            click <- as.numeric(substring(click, 2))
+            click <- as.numeric(substring(click, 2L))
             selmode <- selmodes[click]
             break
          }

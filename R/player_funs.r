@@ -173,7 +173,7 @@
 
       if (identical(resp, "\b") || identical(resp, "ctrl-H")) {
          if (nchar(val) > 1L) {
-            val <- substr(val, 1, nchar(val)-1)
+            val <- substr(val, 1L, nchar(val)-1L)
          } else {
             val <- ""
          }

@@ -2,14 +2,14 @@
 
    # since Lichess uses 960-compatible castling moves, need to translate these back to standard chess
 
-   if (identical(substr(move,1,4), "e1h1") && pos[1,5] == "WK")
-      substr(move,1,4) <- "e1g1"
-   if (identical(substr(move,1,4), "e1a1") && pos[1,5] == "WK")
-      substr(move,1,4) <- "e1c1"
-   if (identical(substr(move,1,4), "e8h8") && pos[8,5] == "BK")
-      substr(move,1,4) <- "e8g8"
-   if (identical(substr(move,1,4), "e8a8") && pos[8,5] == "BK")
-      substr(move,1,4) <- "e8c8"
+   if (identical(substr(move,1L,4L), "e1h1") && pos[1,5] == "WK")
+      substr(move,1L,4L) <- "e1g1"
+   if (identical(substr(move,1L,4L), "e1a1") && pos[1,5] == "WK")
+      substr(move,1L,4L) <- "e1c1"
+   if (identical(substr(move,1L,4L), "e8h8") && pos[8,5] == "BK")
+      substr(move,1L,4L) <- "e8g8"
+   if (identical(substr(move,1L,4L), "e8a8") && pos[8,5] == "BK")
+      substr(move,1L,4L) <- "e8c8"
 
    return(move)
 

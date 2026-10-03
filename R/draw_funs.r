@@ -239,6 +239,9 @@
       rochade <- rep(TRUE, 4)
 
    if (draw)
+      dev.hold()
+
+   if (draw)
       .rmcheck(pos, flip=flip)
 
    # determine which piece is being moved
@@ -391,6 +394,9 @@
 
    }
 
+   if (draw)
+      dev.flush()
+
    # check for pawn promotion
 
    promotionpiece <- ""
@@ -500,6 +506,9 @@
       }
    }
 
+   if (draw)
+      dev.hold()
+
    if (draw) {
       .drawsquare(x1, y1, flip=flip)
       .drawsquare(x2, y2, flip=flip)
@@ -564,18 +573,18 @@
    ischeck <- c(.isattacked(pos, xy=c(which(pos=="WK", arr.ind=TRUE)), attackcolor="b"),
                 .isattacked(pos, xy=c(which(pos=="BK", arr.ind=TRUE)), attackcolor="w"))
 
-   piecename <- substr(piece, 2, 2)
+   piecename <- substr(piece, 2L, 2L)
    piecename <- ifelse(piecename == "P", "", piecename)
 
    if (flip) {
       if (identical(isrochade, "")) {
-         move <- paste0(piecename, letters[9-y1], 9-x1, ifelse(iscapture, "x", "-"), letters[9-y2], 9-x2, ifelse(promotionpiece != "", paste0("=", substr(promotionpiece,2,2)), ""), ifelse(any(ischeck), "+", ""))
+         move <- paste0(piecename, letters[9-y1], 9-x1, ifelse(iscapture, "x", "-"), letters[9-y2], 9-x2, ifelse(promotionpiece != "", paste0("=", substr(promotionpiece,2L,2L)), ""), ifelse(any(ischeck), "+", ""))
       } else {
          move <- paste0(isrochade, ifelse(any(ischeck), "+", ""))
       }
    } else {
       if (identical(isrochade, "")) {
-         move <- paste0(piecename, letters[y1], x1, ifelse(iscapture, "x", "-"), letters[y2], x2, ifelse(promotionpiece != "", paste0("=", substr(promotionpiece,2,2)), ""), ifelse(any(ischeck), "+", ""))
+         move <- paste0(piecename, letters[y1], x1, ifelse(iscapture, "x", "-"), letters[y2], x2, ifelse(promotionpiece != "", paste0("=", substr(promotionpiece,2L,2L)), ""), ifelse(any(ischeck), "+", ""))
       } else {
          move <- paste0(isrochade, ifelse(any(ischeck), "+", ""))
       }
@@ -644,6 +653,9 @@
 
    if (draw && (iscapture || promotionpiece != ""))
       .drawmatdiff(pos, flip)
+
+   if (draw)
+      dev.flush()
 
    if (x2y2)
       assign("x2y2", c(x2,y2), envir=.chesstrainer)
@@ -1339,7 +1351,7 @@
             text(xright, 0.00, paste0("Score:  ", score), pos=4, cex=cex, family=font, col=col)
          }
          if (redraw) {
-            seqname <- substr(seqname, 1, nchar(seqname)-4)
+            seqname <- substr(seqname, 1L, nchar(seqname)-4L)
             text(xleft,  0.45, paste0("Mode:      Test"), pos=4, cex=cex, family=font, col=col)
             text(xleft,  0.30, paste0("Selection: ", selmode), pos=4, cex=cex, family=font, col=col)
             text(xleft,  0.15, paste0("Name:      ", "(", seqnum, ") ", seqname), pos=4, cex=cex, family=font, col=col)
@@ -1424,7 +1436,7 @@
             text(xright, 0.00, paste0("          ", score), pos=4, cex=cex, family=font, col=col)
          }
          if (redraw) {
-            seqname <- substr(seqname, 1, nchar(seqname)-4)
+            seqname <- substr(seqname, 1L, nchar(seqname)-4L)
             text(xleft,  0.45, paste0("Modus:     Test"), pos=4, cex=cex, family=font, col=col)
             text(xleft,  0.30, paste0("Selektion: ", selmode), pos=4, cex=cex, family=font, col=col)
             text(xleft,  0.15, paste0("Name:      ", "(", seqnum, ") ", seqname), pos=4, cex=cex, family=font, col=col)
@@ -1914,10 +1926,10 @@
             next
          bestmovetxt[j] <- .parsemove(bestmove[[j]], pos=pos, flip=flip, evalval=evalval[j], i=i, sidetoplay=sidetoplay, rename=TRUE, returnline=1, hintdepth=hintdepth)$txt
          evalvals[j] <- evalval[j]
-         bestx1 <- as.numeric(substr(bestmove[[j]][1], 2, 2))
-         besty1 <- which(letters[1:8] == substr(bestmove[[j]][1], 1, 1))
-         bestx2 <- as.numeric(substr(bestmove[[j]][1], 4, 4))
-         besty2 <- which(letters[1:8] == substr(bestmove[[j]][1], 3, 3))
+         bestx1 <- as.numeric(substr(bestmove[[j]][1], 2L, 2L))
+         besty1 <- which(letters[1:8] == substr(bestmove[[j]][1], 1L, 1L))
+         bestx2 <- as.numeric(substr(bestmove[[j]][1], 4L, 4L))
+         besty2 <- which(letters[1:8] == substr(bestmove[[j]][1], 3L, 3L))
          if (flip) {
             bestx1 <- 9 - bestx1
             besty1 <- 9 - besty1

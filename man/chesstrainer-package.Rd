@@ -125,7 +125,7 @@
 
    The \sQuote{time per move} value can be adjusted in the \verb{<F6>} menu.
 
-   In the \verb{<F5>} menu, one can switch on a \emph{zen mode}. In this mode, all information at the bottom is hidden during \emph{test mode} to minimize distractions.
+   In the \verb{<F5>} menu, you can switch on a \emph{zen mode}. In this mode, all information at the bottom is hidden during the \emph{test mode} to minimize distractions.
 
 }
 \section{Sequence Difficulty}{
@@ -156,9 +156,9 @@
 
    If a sequence should commence not at the starting position of a chess game, but later on, you can move the pieces into the desired position and then use the \verb{<0>} key to make the current position the starting position for a particular sequence. Alternatively, you can use \verb{<b>} to start a board editor (see below for details).
 
-   Occasionally, you may want to construct sequences where the player also has to make the moves of the opposing side (i.e., for the computer). The \verb{<Z>} key can be used to toggle whether the computer moves will be automatically played or not (when this is toggled off, then this will also be indicated at the bottom left). For example, you could memorize entire games by pressing the \verb{<z>} and \verb{<Z>} keys at the very beginning and then making all moves of the game. A comment should then be added before making the first move to provide a reminder which game should be played.
+   Occasionally, you may want to construct sequences where the player also has to make the moves of the opposing side (i.e., for the computer). The \verb{<Z>} key can be used to toggle whether the computer moves will be automatically played or not (when this is toggled off, then this will also be indicated at the bottom left). For example, you could memorize entire games by pressing the \verb{<z>} and \verb{<Z>} keys at the very beginning and then making all moves of the game. A comment should then be added before making the first move to provide a reminder which game should be played. You can also import sequences/games from a PGN file/text with the \verb{<P>} key (either by directly copy-pasting the moves into the console, by copying the PGN text from the clipboard, or by importing the sequence/game from a file; in the latter two cases, PGN tags are also imported).
 
-   The \verb{<e>} key can be used to edit the comments for a particular sequence. This way, you can also add a \sQuote{start comment} and/or an \sQuote{end comment} to a particular sequence (the former will be shown in an overlay box before the sequence starts, the latter at the top after the last move). Using \sQuote{-} (or \sQuote{NA}) as a comment deletes it. One can also specify the name of a sequence that should always be played next, irrespective of the sequence selection mode. Finally, one can enter various PGN tags (these are not used at the moment, but possibly in the future).
+   The \verb{<e>} key can be used to edit the comments for a particular sequence. This way, you can also add a \sQuote{start comment} and/or an \sQuote{end comment} to a particular sequence (the former will be shown in an overlay box before the sequence starts, the latter at the top after the last move). Using \sQuote{-} (or \sQuote{NA}) as a comment deletes it. You can also specify the name of a sequence that should always be played next, irrespective of the sequence selection mode. Finally, various PGN tags can be entered (these are not used at the moment, but possibly in the future).
 
    The \verb{<E>} key opens up the \code{\link[=edit]{data editor}} on the data frame that contains the moves for the current sequence. This can also be used to add, edit, and remove comments in the \verb{comment} column or make adjustments to the other columns (but this should only be done if their meaning and format is clear).
 
