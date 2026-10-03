@@ -114,21 +114,43 @@
       # P or p = to edit PGN tags
 
       if (grepl("^[Pp]$", resp)) {
-         cat("\n")
-         tag.event  <- readline(prompt=style_bold("Event: "))  # Event
-         tag.site   <- readline(prompt=style_bold("Site: "))   # Site
-         tag.date   <- readline(prompt=style_bold("Date: "))   # Date
-         tag.round  <- readline(prompt=style_bold("Round: "))  # Round
-         tag.white  <- readline(prompt=style_bold("White: "))  # White
-         tag.black  <- readline(prompt=style_bold("Black: "))  # Black
-         tag.result <- readline(prompt=style_bold("Result: ")) # Result
-         if (!identical(tag.event, "") || !identical(tag.site, "") || !identical(tag.date, "") || !identical(tag.round, "") || !identical(tag.white, "") || !identical(tag.black, "") || !identical(tag.result, "")) {
-            sub$tags <- data.frame(tag=c("Event", "Site", "Date", "Round", "White", "Black", "Result"), value=c(tag.event, tag.site, tag.date, tag.round, tag.white, tag.black, tag.result))
-            sub$tags <- sub$tags[sub$tags$value != "",]
-            rownames(sub$tags) <- NULL
+         if (is.null(sub$tags)) {
+            sub$tags <- data.frame(tag=c("Event", "Site", "Date", "Round", "White", "Black", "Result"), value="")
          } else {
-            sub$tags <- NULL
+            first <- c("Event", "Site", "Date", "Round", "White", "Black", "Result")
+            ord <- c(match(first, sub$tags$tag, nomatch=0L), which(!sub$tags$tag %in% first))
+            sub$tags <- sub$tags[ord, , drop=FALSE]
+            rownames(sub$tags) <- NULL
          }
+         cat("\n")
+         for (j in 1:nrow(sub$tags)) {
+            if (sub$tags$value[j] == "") {
+               resp <- readline(prompt=style_bold(paste0(sub$tags$tag[j], ": ")))
+            } else {
+               resp <- readline(prompt=style_bold(paste0(sub$tags$tag[j], " (", sub$tags$value[j], "): ")))
+            }
+            if (identical(resp, ""))
+               next
+            if (identical(resp, "-") || identical(resp, "NA")) {
+               sub$tags$value[j] <- ""
+               next
+            }
+            sub$tags$value[j] <- resp
+         }
+         cat("\n")
+         while (TRUE) {
+            tag <- readline(prompt=style_bold(.text("addtag")))
+            if (identical(tag, ""))
+               break
+            value <- readline(prompt=style_bold(.text("tagvalue")))
+            if (identical(value, ""))
+               next
+            sub$tags <- rbind(sub$tags, data.frame(tag=tag, value=value))
+         }
+         sub$tags <- sub$tags[sub$tags$value != "",]
+         rownames(sub$tags) <- NULL
+         if (nrow(sub$tags) == 0L)
+            sub$tags <- NULL
          next
       }
 

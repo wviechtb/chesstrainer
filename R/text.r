@@ -983,6 +983,18 @@
                          "Flip 'show' values for these rows (<number>, <number1-number2>, 'e' = even rows, 'o' = odd rows): "
    ))}
 
+   if (x == "addtag") {
+      return(switch(lang,
+                    de = "Neues Feld: ",
+                         "Add tag: "
+   ))}
+
+   if (x == "tagvalue") {
+      return(switch(lang,
+                    de = "Eintrag: ",
+                         "Entry: "
+   ))}
+
    if (x == "nextseq") {
       return(switch(lang,
                     de = "N\U000000E4chste Sequenz: ",
