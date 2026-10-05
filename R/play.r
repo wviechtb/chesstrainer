@@ -683,6 +683,7 @@ play <- function(lang="en", online, ...) {
       drawcircles   <- TRUE
       drawarrows    <- TRUE
       showstartcom  <- TRUE
+      showpgntags   <- TRUE
       matetype      <- "none"
       threefold     <- FALSE
       fifty         <- FALSE
@@ -1086,7 +1087,7 @@ play <- function(lang="en", online, ...) {
 
             # show the start comment if there is one at move 1 (and showstartcom is TRUE)
 
-            if (i == 1 && !is.null(sub$commentstart) && showstartcom) {
+            if (i == 1L && showstartcom && !is.null(sub$commentstart)) {
                .startcomment(sub$commentstart) # waits for click
                dev.hold()
                .redrawpos(pos, flip=flip)
@@ -1100,6 +1101,63 @@ play <- function(lang="en", online, ...) {
                run.rnd <- FALSE
                seqno <- ifelse(seqno == k, 1L, seqno + 1L)
                next
+            }
+
+            if (i == 1L && showpgntags && !is.null(sub$tags)) { # show PGN tags
+               pgntags <- character(0)
+               tag.white <- sub$tags$value[sub$tags$tag == "White"]
+               tag.black <- sub$tags$value[sub$tags$tag == "Black"]
+               if (length(tag.white) != 0L && length(tag.black) != 0L) {
+                  if (grepl(",", tag.white, fixed=TRUE)) {
+                     tag.white <- strsplit(tag.white, ",", fixed=TRUE)[[1]]
+                     tag.white <- trimws(tag.white)
+                     tag.white <- paste(tag.white[2], tag.white[1])
+                  }
+                  if (grepl(",", tag.black, fixed=TRUE)) {
+                     tag.black <- strsplit(tag.black, ",", fixed=TRUE)[[1]]
+                     tag.black <- trimws(tag.black)
+                     tag.black <- paste(tag.black[2], tag.black[1])
+                  }
+                  pgntags <- paste0(tag.white, " \U00002013 ", tag.black)
+               }
+               tag.event <- sub$tags$value[sub$tags$tag == "Event"]
+               tag.site <- sub$tags$value[sub$tags$tag == "Site"]
+               tag.date <- sub$tags$value[sub$tags$tag == "Date"]
+               if (length(tag.date) != 0L) {
+                  if (tag.date == "??") {
+                     tag.date <- character(0)
+                  } else {
+                     tag.date <- try(as.Date(tag.date, tryFormats=c("%Y.%m.%d", "%Y-%m-%d", "%Y/%m/%d", "%Y")))
+                     if (inherits(tag.date, "try-error")) {
+                        tag.date <- character(0)
+                     } else {
+                        tag.date <- format(tag.date, "%Y")
+                     }
+                  }
+               }
+               if (length(tag.event) != 0L || length(tag.site) != 0L || length(tag.date) != 0L) {
+                  pgntags <- paste0(pgntags, "\n(")
+                  if (length(tag.event) != 0L) {
+                     pgntags <- paste0(pgntags, tag.event)
+                     if (length(tag.site) != 0L || length(tag.date) != 0L)
+                        pgntags <- paste0(pgntags, ", ")
+                  }
+                  if (length(tag.site) != 0L) {
+                     tag.site <- strsplit(tag.site, ",", fixed=TRUE)[[1]][1]
+                     pgntags <- paste0(pgntags, tag.site)
+                     if (length(tag.date) != 0L)
+                        pgntags <- paste0(pgntags, ", ")
+                  }
+                  if (length(tag.date) != 0L)
+                     pgntags <- paste0(pgntags, tag.date)
+                  pgntags <- paste0(pgntags, ")")
+               }
+               tag.comment <- sub$tags$value[sub$tags$tag == "Comment"]
+               if (length(tag.comment) != 0L)
+                  pgntags <- paste0(pgntags, "\n", tag.comment)
+               .texttop(pgntags)
+               if (sub$moves$show[i])
+                  .waitforclick()
             }
 
             if (!identical(sub$moves$comment[i], "")) {
@@ -4888,6 +4946,7 @@ play <- function(lang="en", online, ...) {
             drawcircles  <- FALSE # to prevent circles from being redrawn
             drawarrows   <- FALSE # to prevent arrows from being redrawn
             showstartcom <- FALSE # to prevent the start comment from being shown again
+            showpgntags  <- FALSE # to prevent the PGN tags from being shown again
             next
          }
 
@@ -4899,6 +4958,7 @@ play <- function(lang="en", online, ...) {
          drawcircles  <- TRUE
          drawarrows   <- TRUE
          showstartcom <- TRUE
+         showpgntags  <- TRUE
 
          # if the left button was used for the move and there are arrows/circles, remove the annotations before making the move
 
