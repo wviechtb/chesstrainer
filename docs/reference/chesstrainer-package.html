@@ -31,7 +31,7 @@ The main purpose of the chesstrainer package is to create sequences of moves (li
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chesstrainer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-201</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-202</span>
       </span>
     </div>
 
@@ -105,7 +105,7 @@ The main purpose of the chesstrainer package is to create sequences of moves (li
 <p>The trainer uses the score to choose the next sequence. Sequences with higher scores have a higher chance to be presented. The probability of playing a particular sequence is computed with \(p_i = s_i^e / \sum s_i^e\), where \(s_i\) is the score of the \(i\)th sequence and \(e\) is the ‘exponent value’. This is set to 2 by default and enhances the probability that sequences with higher scores are more likely to be played. The exponent value can be adjusted with the <kbd>^</kbd> (or <kbd>6</kbd>) key. Setting the exponent value to 0 makes all sequences equally likely to be played. Setting it to a large value (e.g., 10) makes it very likely that the sequence with the highest score is played next. The score for the current sequence can be set manually with the <kbd>%</kbd> key.</p>
 <p>Using the <kbd>M</kbd> key, you can trigger a mistake. This is useful if you made the correct move(s) but with a lot of uncertainty and want to increase the chances that you will encounter the sequence again in the future.</p>
 <p>After completing a sequence, the current score for the sequence is saved (together with the number of times that the sequence has been played and when it was last played) to the sequence file. This way, your progress in learning the sequence is saved permanently across sessions. Using the <kbd>g</kbd> key, a progress graph (showing the sequence scores over consecutive rounds) for the current sequence can be shown (if the sequence has been played before). This is useful to check whether progress is being made in learning the sequence. You can zoom into the graph by left-clicking twice (once for the start and once for the end of the interval). This can be repeated to zoom in further. Clicking the right mouse button zooms all the way out. With the <kbd>↓</kbd>/<kbd>↑</kbd> arrows (or the middle mouse button), you can toggle whether the rounds shown on the x-axis are equidistant or their distance is based on their actual dates. Clicking outside of the graph, right-clicking anywhere when zoomed out, or the <kbd>Escape</kbd> key closes the graph.</p>
-<p>Below you can see examples of progress graphs for two sequences, one which was easy to learn and memorize, while the other one is more difficult.</p>
+<p>Below you can see examples of progress graphs for two sequences, one which was easy to learn and memorize (with no mistakes at all), while the other one is more difficult.</p>
 <p><img src="figures/progress-graph.png" width="900"></p>
 <p></p>
 <p></p>

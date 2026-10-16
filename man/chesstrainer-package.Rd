@@ -44,7 +44,7 @@
 
    After completing a sequence, the current score for the sequence is saved (together with the number of times that the sequence has been played and when it was last played) to the sequence file. This way, your progress in learning the sequence is saved permanently across sessions. Using the \verb{<g>} key, a progress graph (showing the sequence scores over consecutive rounds) for the current sequence can be shown (if the sequence has been played before). This is useful to check whether progress is being made in learning the sequence. You can zoom into the graph by left-clicking twice (once for the start and once for the end of the interval). This can be repeated to zoom in further. Clicking the right mouse button zooms all the way out. With the \verb{<Down>}/\verb{<Up>} arrows (or the middle mouse button), you can toggle whether the rounds shown on the x-axis are equidistant or their distance is based on their actual dates. Clicking outside of the graph, right-clicking anywhere when zoomed out, or the \verb{<Escape>} key closes the graph.
 
-   \if{html}{Below you can see examples of progress graphs for two sequences, one which was easy to learn and memorize, while the other one is more difficult.}
+   \if{html}{Below you can see examples of progress graphs for two sequences, one which was easy to learn and memorize (with no mistakes at all), while the other one is more difficult.}
 
    \if{html}{\figure{progress-graph.png}{options: width=900}}
 

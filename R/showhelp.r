@@ -1,4 +1,4 @@
-   .showhelp <- function(page=1) {
+.showhelp <- function(page=1) {
 
    #.clearsideindicator()
    #.drawtimer(clear=TRUE)

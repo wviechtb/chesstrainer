@@ -1907,6 +1907,12 @@
                          "File could not be found."
    ))}
 
+   if (x == "showwelcome") {
+      return(switch(lang,
+                    de = "Diese Begr\U000000FC\U000000DFungsseite beim Start anzeigen",
+                         "Show this welcome screen at startup"
+   ))}
+
 }
 
 .confirm <- function(x) {

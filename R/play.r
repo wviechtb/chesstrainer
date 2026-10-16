@@ -27,7 +27,7 @@ play <- function(lang="en", online, ...) {
 
    ddd <- list(...)
 
-   defaults <- list(player="", seqdir="", seqdirpos=1, mode="add", advanced=FALSE, selmode="score_random", timed=FALSE, timepermove=5,
+   defaults <- list(player="", seqdir="", seqdirpos=1, mode="add", welcome=TRUE, advanced=FALSE, selmode="score_random", timed=FALSE, timepermove=5,
                     expval=2, target=0, multiplier=0.8, adjustwrong=40, adjusthint=20, showeval=TRUE, evalsteps=5, movestoshow=5,
                     showcoords=TRUE, showtransp=TRUE, showmatdiff=TRUE, showbestnumber=FALSE, san=TRUE, piecesymbols=1, wait=TRUE, delay=0.5, idletime=120, mintime=60, sleepadj=0, volume=50,
                     showgraph=FALSE, repmistake=FALSE, zenmode=FALSE, compseq=TRUE,
@@ -148,7 +148,7 @@ play <- function(lang="en", online, ...) {
       success <- dir.create(configdir, recursive=TRUE)
       if (!success)
          stop(.text("dircreateerror"), call.=FALSE)
-      settings <- list(lang=lang, player=player, seqdir=seqdir, seqdirpos=seqdirpos, advanced=advanced, selmode=selmode, timed=timed, timepermove=timepermove,
+      settings <- list(lang=lang, player=player, seqdir=seqdir, seqdirpos=seqdirpos, welcome=welcome, advanced=advanced, selmode=selmode, timed=timed, timepermove=timepermove,
                        expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, showeval=showeval, evalsteps=evalsteps, movestoshow=movestoshow,
                        showcoords=showcoords, showtransp=showtransp, showmatdiff=showmatdiff, showbestnumber=showbestnumber, san=san, piecesymbols=piecesymbols, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, volume=volume,
                        showgraph=showgraph, repmistake=repmistake, zenmode=zenmode, compseq=compseq,
@@ -181,7 +181,7 @@ play <- function(lang="en", online, ...) {
          }
       }
       sfpath <- suppressWarnings(normalizePath(sfpath))
-      settings <- list(lang=lang, player=player, seqdir=seqdir, seqdirpos=seqdirpos, advanced=advanced, selmode=selmode, timed=timed, timepermove=timepermove,
+      settings <- list(lang=lang, player=player, seqdir=seqdir, seqdirpos=seqdirpos, welcome=welcome, advanced=advanced, selmode=selmode, timed=timed, timepermove=timepermove,
                        expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, showeval=showeval, evalsteps=evalsteps, movestoshow=movestoshow,
                        showcoords=showcoords, showtransp=showtransp, showmatdiff=showmatdiff, showbestnumber=TRUE, san=san, piecesymbols=piecesymbols, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, volume=volume,
                        showgraph=showgraph, repmistake=repmistake, zenmode=zenmode, compseq=compseq,
@@ -398,15 +398,16 @@ play <- function(lang="en", online, ...) {
 
    # some defaults
 
-   selected <- NULL
-   seqno    <- 1L
-   filename <- ""
-   lastseq  <- ""
-   bestmove <- list("")
-   replast  <- FALSE
-   nextseq  <- FALSE
-   oldmode  <- ifelse(mode == "play", "add", mode)
-   .difffun <- eval(parse(text=paste0(".difffun", difffun)))
+   runwelcome   <- TRUE
+   selected     <- NULL
+   seqno        <- 1L
+   filename     <- ""
+   lastseq      <- ""
+   bestmove     <- list("")
+   replast      <- FALSE
+   nextseq      <- FALSE
+   oldmode      <- ifelse(mode == "play", "add", mode)
+   .difffun     <- eval(parse(text=paste0(".difffun", difffun)))
    contanalysis <- FALSE
    contliquery  <- FALSE
    updateall    <- FALSE
@@ -1062,6 +1063,27 @@ play <- function(lang="en", online, ...) {
       if (listseqs) {
          .listseqs(mode, k, files, files.all, selected, scores.selected, age.selected, rounds.selected, difficulty.selected, probvals.selected, seqname)
          listseqs <- FALSE
+      }
+
+      # show welcome screen (only once per session and only if welcome is TRUE)
+
+      if (welcome && runwelcome) {
+         oldlang <- lang
+         welcome <- .showwelcome()
+         lang <- .get("lang")
+         if (oldlang != lang) {
+            settings$lang <- lang # in case lang was switched in welcome screen
+            saveRDS(settings, file=file.path(configdir, "settings.rds"))
+            .textbot(show, showcomp, player, seqdir, seqdirpos, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
+         }
+         dev.hold()
+         .redrawpos(pos, flip=flip)
+         dev.flush()
+         if (!welcome) {
+            settings$welcome <- FALSE
+            saveRDS(settings, file=file.path(configdir, "settings.rds"))
+         }
+         runwelcome <- FALSE
       }
 
       run.rnd <- TRUE
