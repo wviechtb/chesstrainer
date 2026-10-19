@@ -15,7 +15,7 @@
    \if{html}{\figure{console-first-run.png}{options: width=900}}
    \if{latex}{\figure{console-first-run.png}{options: width=5.5in}}
 
-   The trainer then starts in \emph{add mode} (see the \sQuote{Note} section at the bottom if you receive an error that the graphics device does not support event handling; for RStudio / Windows users, see also the \sQuote{Note for RStudio / Windows Users} section below). For now, click on the window showing the chess board and press \verb{<Space>} (i.e., the space bar), which will switch to \emph{test mode} (note: in this manual, key presses are indicated as \verb{<key>}). One of the existing sequences will then be chosen at random. The trainer may immediately prompt you to play a certain opening (via a comment at the top of the window), it may make some moves for you, or it may start at a later position during a game. Either way, you will then have to make the correct move based on the position and instructions. You do this by either left-clicking and dragging the piece to be played from its current position to the desired target square or by left-clicking on the piece to be moved and then left-clicking on the target square.
+   The trainer then starts in \emph{add mode} (if you receive an error that the graphics device does not support event handling, see \link[=man-devices]{here}). For now, click on the window showing the chess board and press \verb{<Space>} (i.e., the space bar), which will switch to \emph{test mode} (note: in this manual, key presses are indicated as \verb{<key>}). One of the existing sequences will then be chosen at random. The trainer may immediately prompt you to play a certain opening (via a comment at the top of the window), it may make some moves for you, or it may start at a later position during a game. Either way, you will then have to make the correct move based on the position and instructions. You do this by either left-clicking and dragging the piece to be played from its current position to the desired target square or by left-clicking on the piece to be moved and then left-clicking on the target square.
 
    \if{html}{\figure{play-sequence.png}{options: width=900}}
    \if{latex}{\figure{play-sequence.png}{options: width=5.5in}}
@@ -46,10 +46,9 @@
 
    \if{html}{Below you can see examples of progress graphs for two sequences, one which was easy to learn and memorize (with no mistakes at all), while the other one is more difficult.}
 
+   \if{latex}{Below you can see examples of progress graphs for two sequences, one which was easy to learn and memorize (with no mistakes at all), while the other one is more difficult.}
+
    \if{html}{\figure{progress-graph.png}{options: width=900}}
-
-   \if{latex}{Below you can see examples of progress graphs for two sequences, one which was easy to learn and memorize, while the other one is more difficult.}
-
    \if{latex}{\figure{progress-graph.png}{options: width=5.5in}}
 
    Under the \verb{<F5>} menu, you can toggle whether the progress graph will be automatically shown at the end of each completed sequence.
@@ -117,10 +116,9 @@
 
    \if{html}{In the screenshots below, the first move was made quickly and the bar stays green. The second move was made slowly and the time is now below the amount of time that should have been spent on the moves so far. Therefore, the bar turns red.}
 
-   \if{html}{\figure{timed-mode.png}{options: width=900}}
-
    \if{latex}{In the screenshots below, the first move was made quickly and the bar stays green. The second move was made slowly and the time is now below the amount of time that should have been spent on the moves so far. Therefore, the bar turns red.}
 
+   \if{html}{\figure{timed-mode.png}{options: width=900}}
    \if{latex}{\figure{timed-mode.png}{options: width=5.5in}}
 
    The \sQuote{time per move} value can be adjusted in the \verb{<F6>} menu.
@@ -148,7 +146,7 @@
 }
 \section{Adding New Sequences}{
 
-   As described above, the trainer comes with a few example sequences to teach you how it can be used, but serious use of the trainer requires that you add your own sequences. With \verb{<Space>}, you can switch into \emph{add mode}, where you can enter new sequences. The first thing to decide is whether the player should play with white or black. With the \verb{<f>} key, the board can be flipped accordingly (the player always plays with the pieces shown at the bottom). Next, you need to decide whether some moves will be automatically played at the beginning of a sequence. If some moves should be played automatically, then simply make these moves on the board. Once you arrive at the position where a player should start making moves, press \verb{<z>} (note that \sQuote{Show} at the bottom left then turns from \sQuote{Yes} to \sQuote{No}). Now continue playing the line as it should be played. If you make a mistake when playing a move, use the \verb{<t>} key to take the move back. Once the sequence is complete, use the \verb{<s>} key to save the sequence. You will be prompted for a filename in the console. Once the sequence has been saved, it will automatically become part of the sequences that may be presented in \emph{test mode}.
+   As described above, the trainer comes with a few example sequences to teach you how it can be used, but serious use of the trainer requires that you add your own sequences. With \verb{<Space>}, you can switch into \emph{add mode}, where you can enter new sequences. The first thing to decide is whether the player should play with white or black. With the \verb{<f>} key, the board can be flipped accordingly (the player always moves the pieces shown at the bottom). Next, you need to decide whether some moves will be automatically played at the beginning of a sequence. If some moves should be played automatically, then simply make these moves on the board. Once you arrive at the position where a player should start making moves, press \verb{<z>} (note that \sQuote{Show} at the bottom left then turns from \sQuote{Yes} to \sQuote{No}). Now continue playing the line as it should be played. If you make a mistake when playing a move, use the \verb{<t>} key to take the move back. Once the sequence is complete, use the \verb{<s>} key to save the sequence. You will be prompted for a filename in the console (the \code{.rds} extension is added automatically). Once the sequence has been saved, it becomes part of the sequences that may be presented in \emph{test mode}.
 
    A sequence may also start immediately at the starting position. Here, you will press \verb{<z>} right at the beginning. Since it is then essentially impossible for a player to know what they should play (since there are many sensible moves one could make from the starting position of a chess game), you will have to instruct the player what they should do. Using the \verb{<c>} key, you can add a comment to the current move which will be shown to the player (before they have to make the move). For example, you could tell the player to play the Spanish (Ruy Lopez) opening. You should then make the appropriate moves on the board.
 
@@ -179,7 +177,7 @@
 
    When creating new opening sequences, the trainer tries to recognize the opening played and indicates the ECO code and opening name at the bottom left.
 
-   Also, the trainer automatically recognizes move transpositions (i.e., if there are sequences with the same position that were obtained via a different move order or via different moves). If such sequences are found, their names are printed to the console. This check can be toggled on/off under the \verb{<F5>} menu.
+   The trainer also recognizes move transpositions (i.e., if there are sequences with the same position that were obtained via a different move order or via different moves). If such sequences are found, their names are printed to the console. This check can be toggled on/off under the \verb{<F5>} menu.
 
    Also, any moves made are compared against the existing sequences. If there are sequences with the same current position and the move made is not one of the moves that are part of these sequences, then this will be noted at the top. You can toggle this on/off under the \verb{<F5>} menu.
 
@@ -221,10 +219,9 @@
 
    \if{html}{When using a separate plotting window, one should arrange the various windows so that the board, console, and window for the Lichess moves are placed side-by-side. A possible arrangement is shown below.}
 
-   \if{html}{\figure{arrangement2.png}{options: width=900}}
-
    \if{latex}{When using a separate plotting window, one should arrange the various windows so that the board, console, and window for the Lichess moves are placed side-by-side. A possible arrangement is shown below.}
 
+   \if{html}{\figure{arrangement2.png}{options: width=900}}
    \if{latex}{\figure{arrangement2.png}{options: width=5.5in}}
 
    In order to access the Lichess database via its API, you must set an API access token, which requires a Lichess account (on the Lichess website, go to Preferences, API access tokens, and then generate a token leaving all toggles off; then enter this token under the \verb{<F8>} menu by clicking on \sQuote{API Token}).
@@ -302,21 +299,16 @@
    With \verb{<F10>} (or \verb{<Ctrl-1>}), you can obtain histograms of the scores of the (selected) sequences, how many times they have been played so far (the number of rounds), how long ago they were played, their difficulty, and a scatterplot of the number of times they have been played versus their scores. In the scatterplot, the downward sloping dashed line indicates the best possible performance (i.e., never making a mistake when playing the sequence over and over) and the solid line indicates the actual performance (as estimated based on a regression model; only shown when there are 5 or more points). If a target value for the scores has been set (see above), this value is indicated as horizontal dotted line (and also as a vertical dotted line in the histogram of the scores).
 
 }
+\section{Advanced Mode}{
+
+   The trainer offers some advanced functionality that is documented \link[=man-advanced]{here}.
+
+}
 \section{Playing Sounds}{
 
    The trainer plays various sounds (e.g., when playing moves, when capturing pieces, when making a wrong move, when completing a sequence). This may or may not work depending on your operating system and configuration. See the \code{\link{playsound}} function for further details.
 
    The sound volume can be decreased/increased in the \verb{<F5>} menu or with the \verb{<_>} and \verb{<+>} keys (note that this does not work with the mpg123 player under Windows; see \code{\link{playsound}}). Setting the volume to 0 disables the sound. This can also be useful if playing sounds adds too much lag.
-
-}
-\section{Notes for RStudio / Windows Users}{
-   The \code{RStudioGD} graphics device that is used by RStudio does not support event handling (see the \sQuote{Note} section below). Running \code{windows()} (under Windows) or \code{x11()} (under macOS or Linux) before starting the trainer with \code{play()} should work. Under Windows, you could also run R with RGui, which uses the windows plotting device by default (this is actually the recommended way to run the trainer under Windows). Under macOS or Linux, you can just run R from the command line.
-
-   If the graphics look fuzzy under RGui, then this might be related to high DPI scaling (under high resolutions, it is common to scale apps by 150\% or 200\% so that text and graphical elements are not tiny; see the display settings under Windows). To avoid this issue, go the the properties of RGui, select Compatibility, Change high DPI settings, High DPI scaling override, and select \sQuote{Application}. After restarting RGui, the graphics should look sharper.
-
-   The \verb{<F10>} function key is registered under Windows, but is also the operating system key for activating the menu bar, which is annoying. You can use the \verb{<Ctrl-1>} keyboard shortcut instead. For some reason, the \verb{<F11>} and \verb{<F12>} function keys are not registered at all. You can use \verb{<Ctrl-2>} and \verb{<Ctrl-3>} respectively instead.
-
-   Occasionally, the graphics window flickers under Windows, especially when making rapid updates to the graphics being shown. The exact cause of this is unknown.
 
 }
 \section{Backing Up Sequences}{
@@ -339,9 +331,6 @@
 
    The opening database was obtained from \verb{https://github.com/lichess-org/chess-openings} where it is available under the CC0 Public Domain Dedication.
 
-}
-\note{
-   The trainer makes extensive use of \code{\link{getGraphicsEvent}} to capture mouse movements and keyboard inputs. Only some graphics devices support this. If you receive the error message \sQuote{The graphics device does not support event handling} when starting the trainer, then the current graphics device does not support this kind of interactivity. For example, this will be the case for the \code{RStudioGD} graphics device that is used by RStudio. You can try running \code{x11()} before starting the trainer with \code{play()}.
 }
 \author{
    Wolfgang Viechtbauer (\email{wvb@wvbauer.com})

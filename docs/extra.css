@@ -44,6 +44,7 @@ main a:visited,
 .contents a:link,
 .contents a:visited {
   color: #f0d9b5 !important;
+  text-decoration: underline !important;
 }
 
 main a:hover,

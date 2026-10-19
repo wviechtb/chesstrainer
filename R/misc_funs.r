@@ -59,9 +59,15 @@
 }
 
 .flush <- function() {
-   flush <- isTRUE(.get("flush"))
-   if (flush)
-      cat(c("\033[2J","\033[0;0H"))
+   if (.get("isrgui"))
+      return(NULL) # cannot get flushing behavior to work in Rgui.exe
+   if (isTRUE(.get("flush"))) {
+      if (.get("iswin")) {
+         invisible(try(system("cmd /c cls"), silent=TRUE)) # works in cmd.exe, PowerShell, RStudio
+      } else {
+         cat(c("\033[2J","\033[0;0H"))
+      }
+   }
    return(NULL)
 }
 

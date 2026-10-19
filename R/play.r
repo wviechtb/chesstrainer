@@ -14,8 +14,11 @@ play <- function(lang="en", online, ...) {
    options(warn=1)
    on.exit(options(warn=owarn))
 
-   iswin <- isTRUE(.Platform$OS.type == "windows")
-   gui <- tolower(.Platform$GUI)
+   iswin  <- isTRUE(identical(tolower(.Platform$OS.type), "windows"))
+   isrgui <- isTRUE(identical(tolower(.Platform$GUI), "rgui"))
+
+   assign("iswin",  iswin,  envir=.chesstrainer)
+   assign("isrgui", isrgui, envir=.chesstrainer)
 
    if (missing(online)) {
       isonline <- isTRUE(curl::has_internet())
@@ -27,7 +30,7 @@ play <- function(lang="en", online, ...) {
 
    ddd <- list(...)
 
-   defaults <- list(player="", seqdir="", seqdirpos=1, mode="add", welcome=TRUE, advanced=FALSE, selmode="score_random", timed=FALSE, timepermove=5,
+   defaults <- list(player="", seqdir="", seqdirpos=1, mode="add", welcome=TRUE, advanced=FALSE, flush=FALSE, selmode="score_random", timed=FALSE, timepermove=5,
                     expval=2, target=0, multiplier=0.8, adjustwrong=40, adjusthint=20, showeval=TRUE, evalsteps=5, movestoshow=5,
                     showcoords=TRUE, showtransp=TRUE, showmatdiff=TRUE, showbestnumber=FALSE, san=TRUE, piecesymbols=1, wait=TRUE, delay=0.5, idletime=120, mintime=60, sleepadj=0, volume=50,
                     showgraph=FALSE, repmistake=FALSE, zenmode=FALSE, compseq=TRUE,
@@ -37,11 +40,11 @@ play <- function(lang="en", online, ...) {
                     mar=c(5.5, 5.5, 5.5, 5.5), mar2=c(11, 11, 9, 9),
                     lichessdb="lichess", speeds="blitz,rapid,classical", ratings="1200,1400,1600,1800", liout=1, lisort=1, barlen=50, invertbar=FALSE,
                     token="", uselicache=TRUE, showlibar=TRUE, monthslicache=12, minfreq=0, minperc=0,
-                    switch1=ifelse(isTRUE(iswin) && identical(gui, "rgui"), "bringToTop(-1)",        "invisible()"),
-                    switch2=ifelse(isTRUE(iswin) && identical(gui, "rgui"), "bringToTop(dev.cur())", "invisible()"),
-                    quitanim=TRUE, inhibit=FALSE, flush=FALSE, raster=TRUE) # these are not saved as part of the settings
+                    switch1=ifelse(iswin && isrgui, "bringToTop(-1)",        "invisible()"),
+                    switch2=ifelse(iswin && isrgui, "bringToTop(dev.cur())", "invisible()"),
+                    quitanim=TRUE, inhibit=FALSE, raster=TRUE) # these are not saved as part of the settings
 
-   quitanim <- inhibit <- flush <- raster <- NULL # to avoid the 'no visible binding for global variable ...' warnings from R CMD check
+   quitanim <- inhibit <- raster <- NULL # to avoid the 'no visible binding for global variable ...' warnings from R CMD check
 
    for (element in names(defaults)) {
       if (is.null(ddd[[element]])) {
@@ -148,7 +151,7 @@ play <- function(lang="en", online, ...) {
       success <- dir.create(configdir, recursive=TRUE)
       if (!success)
          stop(.text("dircreateerror"), call.=FALSE)
-      settings <- list(lang=lang, player=player, seqdir=seqdir, seqdirpos=seqdirpos, welcome=welcome, advanced=advanced, selmode=selmode, timed=timed, timepermove=timepermove,
+      settings <- list(lang=lang, player=player, seqdir=seqdir, seqdirpos=seqdirpos, welcome=welcome, advanced=advanced, flush=flush, selmode=selmode, timed=timed, timepermove=timepermove,
                        expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, showeval=showeval, evalsteps=evalsteps, movestoshow=movestoshow,
                        showcoords=showcoords, showtransp=showtransp, showmatdiff=showmatdiff, showbestnumber=showbestnumber, san=san, piecesymbols=piecesymbols, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, volume=volume,
                        showgraph=showgraph, repmistake=repmistake, zenmode=zenmode, compseq=compseq,
@@ -181,7 +184,7 @@ play <- function(lang="en", online, ...) {
          }
       }
       sfpath <- suppressWarnings(normalizePath(sfpath))
-      settings <- list(lang=lang, player=player, seqdir=seqdir, seqdirpos=seqdirpos, welcome=welcome, advanced=advanced, selmode=selmode, timed=timed, timepermove=timepermove,
+      settings <- list(lang=lang, player=player, seqdir=seqdir, seqdirpos=seqdirpos, welcome=welcome, advanced=advanced, flush=flush, selmode=selmode, timed=timed, timepermove=timepermove,
                        expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, showeval=showeval, evalsteps=evalsteps, movestoshow=movestoshow,
                        showcoords=showcoords, showtransp=showtransp, showmatdiff=showmatdiff, showbestnumber=TRUE, san=san, piecesymbols=piecesymbols, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, volume=volume,
                        showgraph=showgraph, repmistake=repmistake, zenmode=zenmode, compseq=compseq,
@@ -205,9 +208,9 @@ play <- function(lang="en", online, ...) {
 
    # make sure that switch1/switch2 only make use of bringToTop() under Windows when using RGui
 
-   if (iswin && !identical(gui, "rgui") && grepl(switch1, "bringToTop", fixed=TRUE))
+   if (iswin && !isrgui && grepl(switch1, "bringToTop", fixed=TRUE))
       switch1 <- "invisible()"
-   if (iswin && !identical(gui, "rgui") && grepl(switch2, "bringToTop", fixed=TRUE))
+   if (iswin && !isrgui && grepl(switch2, "bringToTop", fixed=TRUE))
       switch2 <- "invisible()"
 
    # parse switch1/switch2 text
@@ -635,9 +638,9 @@ play <- function(lang="en", online, ...) {
              "a", "A", "f", "z", "Z", "c", "!", "@", "\"", "#", "$", "\U000000A7", "e", "E", "s", "b", "F",
              "^", "6", "R", "W", "-", "=", "_", "+", "[", "]", "i", "v", "V",
              "l", "L", "<", ">", "/", ",", ".", "|", "*", "8", "?", "'", ";", ":",
-             "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12",
              "ctrl-F", "ctrl-C", "ctrl-D", "ctrl-R", "ctrl-U", "ctrl-O", "ctrl-L", "ctrl-G", "ctrl-A", "ctrl-E", "ctrl-N", "ctrl-V", "ctrl-T", "ctrl-H", "ctrl-I", "ctrl-{", "ctrl-}", "ctrl-|",
-             "ctrl-!", "ctrl-@", "ctrl-\"", "ctrl-#", "ctrl-\U000000A7", # ctrl-1, ctrl-2, ctrl-3
+             "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12",
+             "ctrl-!", "ctrl-@", "ctrl-\"", "ctrl-#", "ctrl-\U000000A7", # ctrl-1, ctrl-2, ctrl-3 (as alternatives to F10, F11, and F12)
              "ctrl-_", "ctrl-+", # to adjust margin width
              "ctrl-(", "ctrl-)") # ctrl-9 and ctrl-0 to toggle advanced mode on/off and to edit the session history file
 
@@ -3175,6 +3178,7 @@ play <- function(lang="en", online, ...) {
                   .texttop(.text("testend", sub$testend), sleep=1)
                   eval(expr=switch1)
                   sub$commentend <- readline(prompt=style_bold(.text("testprompt")))
+                  .texttop(sub$commentend)
                   eval(expr=switch2)
                } else {
                   .texttop(.text("testend", FALSE), sleep=1)
@@ -3521,6 +3525,8 @@ play <- function(lang="en", online, ...) {
                flush <- .get("flush")
                flush <- !flush
                .texttop(.text("flush", flush), sleep=0.75)
+               settings$flush <- flush
+               saveRDS(settings, file=file.path(configdir, "settings.rds"))
                assign("flush", flush, envir=.chesstrainer)
                next
             }
