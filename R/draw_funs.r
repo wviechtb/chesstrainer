@@ -1039,12 +1039,16 @@
 
 }
 
-.drawglyph <- function(glyph) {
+.drawglyph <- function(glyph, x2y2=NULL) {
 
-   if (!.isglyph(glyph))
-      return()
+   if (is.null(x2y2)) {
 
-   x2y2 <- .get("x2y2")
+      if (!.isglyph(glyph))
+         return()
+
+      x2y2 <- .get("x2y2")
+
+   }
 
    x <- x2y2[1]
    y <- x2y2[2]
@@ -1056,6 +1060,7 @@
                  "??" = "#df5353",
                  "!?" = "#ea45d8",
                  "?!" = "#56b4e9",
+                 "#"  = "#df5353",
                  # glyphs1
                  "\U000025A1"           = "#a04049",
                  "\U000025B3"           = "#c8c832",

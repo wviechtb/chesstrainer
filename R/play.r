@@ -5336,6 +5336,29 @@ play <- function(lang="en", online, ...) {
 
                   .drawglyph(glyph)
 
+                  # if it is mate, show mate glyph on king
+
+                  ismate <- FALSE
+                  kingpos <- NULL
+
+                  if (endsWith(sub$moves$move[i-1L], "#")) {
+                     ismate <- TRUE
+                     if (flip) {
+                        if (sidetoplay == "w") {
+                           kingpos <- 9-which(pos == "WK", arr.ind=TRUE)[1,]
+                        } else {
+                           kingpos <- 9-which(pos == "BK", arr.ind=TRUE)[1,]
+                        }
+                     } else {
+                        if (sidetoplay == "w") {
+                           kingpos <- which(pos == "WK", arr.ind=TRUE)[1,]
+                        } else {
+                           kingpos <- which(pos == "BK", arr.ind=TRUE)[1,]
+                        }
+                     }
+                     .drawglyph("#", x2y2=kingpos)
+                  }
+
                   #if (!dowait && (!is.null(sub$commentend) || !is.null(sub$symbolend) || .isglyph(glyph) || (sidetoplay == "w" && !flip) || (sidetoplay == "s" && flip))) # to also wait if not ending on a player move
                   if (!dowait && (!is.null(sub$commentend) || !is.null(sub$symbolend) || !is.null(sub$endmoves) || .isglyph(glyph)))
                      .waitforclick()
@@ -5430,6 +5453,8 @@ play <- function(lang="en", online, ...) {
                         } else {
                            .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), glyph=glyph, flip=flip, hold=FALSE)
                         }
+                        if (ismate)
+                           .redrawpos(pos, flip=flip)
                         dev.flush()
                         saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
                         dosave <- FALSE
@@ -5480,6 +5505,8 @@ play <- function(lang="en", online, ...) {
                         } else {
                            .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), glyph=glyph, flip=flip, hold=FALSE)
                         }
+                        if (ismate)
+                           .redrawpos(pos, flip=flip)
                         dev.flush()
                         saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
                         dosave <- FALSE
@@ -5538,6 +5565,8 @@ play <- function(lang="en", online, ...) {
                         .redrawpos(pos, flip=flip)
                         .textbot(score=score, onlyscore=TRUE)
                         .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph)
+                        if (ismate)
+                           .drawglyph("#", x2y2=kingpos)
                         dev.flush()
                         sub$player[[player]]$score[length(sub$player[[player]]$score)] <- score
                         next
@@ -5618,6 +5647,8 @@ play <- function(lang="en", online, ...) {
                         dev.hold()
                         .redrawpos(pos, flip=flip)
                         .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
+                        if (ismate)
+                           .drawglyph("#", x2y2=kingpos)
                         dev.flush()
                         next
                      }
