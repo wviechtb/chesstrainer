@@ -5336,31 +5336,34 @@ play <- function(lang="en", online, ...) {
 
                   .drawglyph(glyph)
 
-                  # if it is mate, show mate glyph on king
+                  # if it is (stale)mate, show (stale)mate glyph(s) on king(s)
 
-                  ismate <- FALSE
-                  kingpos <- NULL
+                  ismate <- endsWith(sub$moves$move[i-1L], "#")
+                  isdraw <- endsWith(sub$moves$move[i-1L], "%")
 
-                  if (endsWith(sub$moves$move[i-1L], "#")) {
-                     ismate <- TRUE
+                  if (ismate || isdraw) {
+                     wkpos <- which(pos == "WK", arr.ind=TRUE)
+                     bkpos <- which(pos == "BK", arr.ind=TRUE)
                      if (flip) {
-                        if (sidetoplay == "w") {
-                           kingpos <- 9-which(pos == "WK", arr.ind=TRUE)[1,]
-                        } else {
-                           kingpos <- 9-which(pos == "BK", arr.ind=TRUE)[1,]
-                        }
-                     } else {
-                        if (sidetoplay == "w") {
-                           kingpos <- which(pos == "WK", arr.ind=TRUE)[1,]
-                        } else {
-                           kingpos <- which(pos == "BK", arr.ind=TRUE)[1,]
-                        }
+                        wkpos <- 9 - wkpos
+                        bkpos <- 9 - bkpos
                      }
-                     .drawglyph("#", x2y2=kingpos)
+                     if (sidetoplay == "w") {
+                        kingpos <- rbind(wkpos, bkpos)
+                     } else {
+                        kingpos <- rbind(bkpos, wkpos)
+                     }
+                  }
+
+                  if (ismate)
+                     .drawglyph("#", x2y2=kingpos[1,])
+                  if (isdraw) {
+                     .drawglyph("\U000000BD", x2y2=kingpos[1,])
+                     .drawglyph("\U000000BD", x2y2=kingpos[2,])
                   }
 
                   #if (!dowait && (!is.null(sub$commentend) || !is.null(sub$symbolend) || .isglyph(glyph) || (sidetoplay == "w" && !flip) || (sidetoplay == "s" && flip))) # to also wait if not ending on a player move
-                  if (!dowait && (!is.null(sub$commentend) || !is.null(sub$symbolend) || !is.null(sub$endmoves) || .isglyph(glyph)))
+                  if (!dowait && (!is.null(sub$commentend) || !is.null(sub$symbolend) || !is.null(sub$endmoves) || .isglyph(glyph) || ismate || isdraw))
                      .waitforclick()
 
                   rounds <- rounds + 1L
@@ -5453,8 +5456,8 @@ play <- function(lang="en", online, ...) {
                         } else {
                            .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), glyph=glyph, flip=flip, hold=FALSE)
                         }
-                        if (ismate)
-                           .redrawpos(pos, flip=flip)
+                        if (ismate || isdraw)
+                           .redrawall(pos, flip, show, showcomp, player, seqdir, seqdirpos, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
                         dev.flush()
                         saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
                         dosave <- FALSE
@@ -5505,8 +5508,8 @@ play <- function(lang="en", online, ...) {
                         } else {
                            .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), glyph=glyph, flip=flip, hold=FALSE)
                         }
-                        if (ismate)
-                           .redrawpos(pos, flip=flip)
+                        if (ismate || isdraw)
+                           .redrawall(pos, flip, show, showcomp, player, seqdir, seqdirpos, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
                         dev.flush()
                         saveRDS(sub, file=file.path(seqdir[seqdirpos], seqname))
                         dosave <- FALSE
@@ -5566,7 +5569,11 @@ play <- function(lang="en", online, ...) {
                         .textbot(score=score, onlyscore=TRUE)
                         .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph)
                         if (ismate)
-                           .drawglyph("#", x2y2=kingpos)
+                           .drawglyph("#", x2y2=kingpos[1,])
+                        if (isdraw) {
+                           .drawglyph("\U000000BD", x2y2=kingpos[1,])
+                           .drawglyph("\U000000BD", x2y2=kingpos[2,])
+                        }
                         dev.flush()
                         sub$player[[player]]$score[length(sub$player[[player]]$score)] <- score
                         next
@@ -5648,7 +5655,11 @@ play <- function(lang="en", online, ...) {
                         .redrawpos(pos, flip=flip)
                         .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
                         if (ismate)
-                           .drawglyph("#", x2y2=kingpos)
+                           .drawglyph("#", x2y2=kingpos[1,])
+                        if (isdraw) {
+                           .drawglyph("\U000000BD", x2y2=kingpos[1,])
+                           .drawglyph("\U000000BD", x2y2=kingpos[2,])
+                        }
                         dev.flush()
                         next
                      }
