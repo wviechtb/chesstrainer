@@ -2172,7 +2172,7 @@
          txt[length(txt)] <- style_bold(txt[length(txt)])
       }
       if (mode == "test" && length(txt) >= 3L) {
-         pos <- which(seqname == selected) + 1L
+         pos <- which(seqname == files) + 1L
          txt[pos] <- style_bold(style_inverse(txt[pos]))
       }
       txt[1] <- style_bold(style_underline(txt[1]))
