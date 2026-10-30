@@ -49,7 +49,7 @@
 
 .sample <- function(k) {
 
-   currentseed <- get(".Random.seed", envir=.GlobalEnv)
+   currentseed <- get(".Random.seed", envir=.GlobalEnv, inherits=FALSE)
    savedseed <- .get("seed")
    assign(".Random.seed", savedseed, envir=.GlobalEnv)
    res <- sample(k)

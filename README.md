@@ -29,7 +29,7 @@ The main purpose of the `chesstrainer` package is to create sequences of moves (
 - can query the Lichess games database and obtain Lichess cloud evaluations
 - can adjust colors, text sizes, and various other settings
 - can manage multiple sequence directories
-- can toggle the language (English or German)
+- can toggle the language (currently English or German)
 - can play move and capture sounds
 - keeps track of your session history
 
