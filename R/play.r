@@ -945,6 +945,7 @@ play <- function(lang="en", online, ...) {
          sub <- dat[[sel]]
          seqname <- files[sel]
          seqnum  <- which(seqname == files.all)
+         filename <- sub("\\.rds$", "", seqname)
 
          score <- .last(sub$player[[player]]$score)
          if (is.null(score) || is.na(score))
@@ -1665,7 +1666,7 @@ play <- function(lang="en", online, ...) {
 
             if (identical(click, "n") || identical(click, "ctrl-N") || identical(click, "N")) {
                .texttop(.text("startnewround"), sleep=1, showlast=FALSE)
-               if (mode %in% c("play","analysis")) { # from play/analysis mode, jump back to oldmode if not in contliquery mode)
+               if (mode %in% c("play","analysis")) { # from play/analysis mode, jump back to oldmode if not in contliquery mode
                   if (contliquery) {
                      mode <- "play"
                      assign("mode", mode, envir=.chesstrainer)
@@ -2540,7 +2541,7 @@ play <- function(lang="en", online, ...) {
                }
                .texttop(.text("replast"), sleep=0.75, showlast=FALSE)
                replast <- TRUE
-               seqno <- .incrseqno(seqno, k, selmode, seqname, lastseq, nextseq, filename, files, replast=TRUE)
+               seqno <- .incrseqno(seqno, k, selmode, seqname, lastseq, nextseq=FALSE, filename, files, replast=TRUE)
                filename <- files[seqno]
                .newround()
                next
@@ -4639,13 +4640,13 @@ play <- function(lang="en", online, ...) {
                settings$seqdirpos <- seqdirpos
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                if (!identical(seqdir, seqdirold) || !identical(seqdirpos, seqdirposold)) {
-                  selected <- NULL
-                  filename <- ""
-                  lastseq  <- ""
-                  bestmove <- list("")
-                  replast  <- FALSE
-                  nextseq  <- FALSE
-                  oldmode  <- ifelse(mode %in% c("play","analysis"), "add", mode)
+                  selected     <- NULL
+                  filename     <- ""
+                  lastseq      <- ""
+                  bestmove     <- list("")
+                  replast      <- FALSE
+                  nextseq      <- FALSE
+                  oldmode      <- ifelse(mode %in% c("play","analysis"), "add", mode)
                   mode <- "add"
                   assign("mode", mode, envir=.chesstrainer)
                   assign("seed", get(".Random.seed", envir=.GlobalEnv, inherits=FALSE), envir=.chesstrainer)

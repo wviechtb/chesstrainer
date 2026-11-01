@@ -2290,7 +2290,7 @@
       } else { # for all other selection modes
 
          if (replast) {
-            seqno <- seqno - 1L
+            seqno <- grep(lastseq, files)
          } else {
             seqno <- seqno + 1L
          }
@@ -2299,7 +2299,7 @@
 
    }
 
-   if (is.na(seqno)) # just in case
+   if (length(seqno) == 0L || is.na(seqno)) # just in case
       seqno <- 1L
 
    if (seqno > k || seqno < 1L)
