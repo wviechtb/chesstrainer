@@ -42,6 +42,7 @@
       "V        - Lichess evaluation bar on/off",
       "Ctrl-h   - get Stockfish position evaluations from the cache on/off",
       "Ctrl-i   - get Lichess position evaluations from the cache on/off",
+      "Ctrl-f   - copy the FEN of the current position to the clipboard",
       "<Escape> - redraw the board / exit a menu",
       "o        - open the current position on lichess.org",
       "F1       - show this help",
@@ -65,7 +66,8 @@
       "1 or \U00002191   - jump to the first player move or the beginning of the sequence/game",
       "2 or \U00002193   - jump to the end of the sequence/game",
       "3, 4, 5  - jump to the 1st quarter, middle, 3rd quarter of the sequence/game",
-      "Ctrl-f   - copy the FEN of the current position to the clipboard")
+      "u and U  - recalculate the evaluations for the current sequence / all sequences",
+      "a and A  - extend the current sequence / position (switches to add mode)")
 
       txt.test <- c(
       "Shortcuts for the test mode:",
@@ -78,8 +80,6 @@
       "r        - repeat the last sequence",
       "j        - jump to a sequence number (for sequential sequence selection modes)",
       "g        - show the progress graph for the current sequence",
-      "u and U  - recalculate the evaluations for the current sequence / all sequences",
-      "a and A  - extend the current sequence / position (switches to add mode)",
       "Ctrl-c   - copy the name of the current sequence to the clipboard",
       "Ctrl-d   - delete the current sequence")
 
@@ -141,6 +141,7 @@
       "V        - Lichess Bewertungsbalken an/aus",
       "Strg-h   - Stockfish Positionsbewertungen aus dem Cache abrufen an/aus",
       "Strg-i   - Lichess Positionsdaten aus dem Cache abrufen an/aus",
+      "Strg-f   - FEN der aktuellen Stellung in die Zwischenablage kopieren",
       "<Escape> - Brett neu zeichnen / ein Men\U000000FC verlassen",
       "o        - die aktuelle Stellung auf lichess.org \U000000F6ffnen",
       "F1       - diese Hilfe anzeigen",
@@ -164,7 +165,8 @@
       "1 oder \U00002191 - zum ersten Spielerzug oder an den Anfang der Sequenz/Partie springen",
       "2 oder \U00002193 - zum Ende der Sequenz/Partie springen",
       "3, 4, 5  - zum 1. Viertel, zur Mitte, zum 3. Viertel der Sequenz/Partie springen",
-      "Strg-f   - FEN der aktuellen Stellung in die Zwischenablage kopieren")
+      "u und U  - Bewertungen f\U000000FCr die aktuelle Sequenz / alle Sequenzen neu berechnen",
+      "a und A  - aktuelle Sequenz / Stellung erweitern (wechselt zum Hinzuf\U000000FCgen Modus)")
 
       txt.test <- c(
       "Tastenk\U000000FCrzel f\U000000FCr den Test Modus:",
@@ -175,10 +177,8 @@
       "M        - Fehler manuell ausl\U000000F6sen",
       "<        - Lesezeichen f\U000000FCr die aktuelle Sequenz setzen",
       "r        - letzte Sequenz wiederholen",
-      "j        - springe zu einer Sequenznummer (f\U000000FCr sequenzielle Sequenzauswahlmodi)",
+      "j        - zu einer Sequenznummer springen (f\U000000FCr sequenzielle Sequenzauswahlmodi)",
       "g        - Fortschrittsdiagramm f\U000000FCr die aktuelle Sequenz anzeigen",
-      "u und U  - Bewertungen f\U000000FCr die aktuelle Sequenz / alle Sequenzen neu berechnen",
-      "a und A  - akutelle Sequenz / Stellung erweitern (wechselt zum Hinzuf\U000000FCgen Modus)",
       "Strg-c   - den Namen der aktuellen Sequenz in die Zwischenablage kopieren",
       "Strg-d   - aktuelle Sequenz l\U000000F6schen")
 
