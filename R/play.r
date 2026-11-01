@@ -1474,7 +1474,9 @@ play <- function(lang="en", online, ...) {
             }
 
             if (advanced && identical(click, "ctrl-|")) {
+               cat("--------------------------------------------\n\n")
                print(sub)
+               cat("--------------------------------------------\n")
                next
             }
 
@@ -2657,7 +2659,21 @@ play <- function(lang="en", online, ...) {
                         k1A <- TRUE
                      click <- "a"
                   } else {
-                     next
+                     if (filename == "")
+                        next
+                     sel <- grep(filename, files.all)
+                     if (length(sel) == 0L)
+                        next
+                     sub <- dat.all[[sel]]
+                     seqname <- files.all[sel]
+                     seqnum <- which(seqname == files.all)
+                     score <- 100
+                     rounds <- 0L
+                     totalmoves <- nrow(sub$moves)
+                     flip <- sub$flip
+                     if (identical(click, "A"))
+                        k1A <- TRUE
+                     click <- "a"
                   }
                }
 
@@ -2726,7 +2742,12 @@ play <- function(lang="en", online, ...) {
 
                   sidetoplaystart <- sidetoplay
 
-                  if (!k1A) {
+                  if (k1A) {
+                     i <- 1L
+                     show <- sub$moves$show[i]
+                     glyph <- ""
+                     assign("x2y2", c(NA,NA), envir=.chesstrainer)
+                  } else {
                      for (i in 1:nrow(sub$moves)) {
                         pos <- .updateboard(pos, move=sub$moves[i,1:6], flip=flip, autoprom=TRUE)
                         if (identical(sub$moves$comment[i], "") && !identical(sub$moves$comment[i-1L], "")) {
@@ -2743,11 +2764,6 @@ play <- function(lang="en", online, ...) {
                      i <- i + 1L
                      show <- FALSE
                      glyph <- sub$moves$glyph[i-1L]
-                  } else {
-                     i <- 1L
-                     show <- sub$moves$show[i]
-                     glyph <- ""
-                     assign("x2y2", c(NA,NA), envir=.chesstrainer)
                   }
 
                }
@@ -2927,7 +2943,7 @@ play <- function(lang="en", online, ...) {
 
             # E to edit sub$moves using edit()
 
-            if (identical(click, "E")) {
+            if (advanced && identical(click, "E")) {
                tmp <- sub
                sub$moves <- edit(sub$moves)
                sub$moves$comment[is.na(sub$moves$comment)] <- ""

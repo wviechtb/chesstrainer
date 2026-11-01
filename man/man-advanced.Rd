@@ -98,6 +98,12 @@
 
 }
 
+\section{Edit the Move Data}{
+
+   The \verb{<E>} key opens up the \code{\link[=edit]{data editor}} on the data frame that contains the moves for the current sequence. This can be used to add, edit, and remove comments in the \verb{comment} column or make adjustments to the other columns. However, manually editing the move data and other elements should only be done if their meaning and format is clear.
+
+}
+
 \section{Edit the Session History}{
 
    With \verb{<Ctrl-0>}, one can edit the session history of the current player (i.e., delete one or multiple rows).

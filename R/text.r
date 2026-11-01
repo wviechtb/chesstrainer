@@ -938,7 +938,7 @@
    if (x == "elementedit") {
       return(switch(lang,
                     de = "Bearbeiten (<Nummer>, 's/e' (Start/Endkommentar) 'n' (n\U000000E4chste Sequenz), 'p' (PGN tags), <Enter> zum Verlassen): ",
-                         "Edit (<number>, 's/e' (start/end comment), 'n' (next sequence), 'p' (PGN tags), <enter> to quit): "
+                         "Edit (<number>, 's/e' (start/end comment), 'n' (next sequence), 'p' (PGN Tags), <enter> to quit): "
    ))}
 
    if (x == "endmovesedit") {
