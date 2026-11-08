@@ -495,7 +495,10 @@ play <- function(lang="en", online, ...) {
                givehint2 <<- FALSE
             }
             if (!empty.square && piece.color == sidetoplay) { # then check that the square is not empty and has a piece of the correct color
+               dev.hold()
                .addrect(pos.x, pos.y, col=.get("col.rect")) # if so, highlight the corresponding square (this is the starting square)
+               .drawglyph(glyph)
+               dev.flush()
                return(NULL) # note: if the mouse button is released right away, then mouseup() increases click.num to 2
             } else {
                # otherwise exit start over
@@ -518,8 +521,11 @@ play <- function(lang="en", online, ...) {
                return(NULL)
             }
             if (piece.color == sidetoplay) { # if another piece of the same color is clicked
+               dev.hold()
                .rmrect(click1.x, click1.y, flip=flip) # remove the highlight from the original square
                .addrect(pos.x, pos.y, col=.get("col.rect")) # highlight the new square
+               .drawglyph(glyph)
+               dev.flush()
                click1.x <<- pos.x
                click1.y <<- pos.y
                new.piece <<- TRUE
@@ -550,9 +556,13 @@ play <- function(lang="en", online, ...) {
                ###.drawsquare(click2.x, click2.y, flip=flip, col=ifelse(.is.even(click2.x+click2.y), .get("col.square.d"), .get("col.square.l")))
                ###.drawpiece(click2.x, click2.y, pos[click2.x,click2.y])
                # if the new square is the starting square, remove the highlight from the previous square
+               dev.hold()
                .rmrect(click2.x, click2.y, flip=flip)
+               .drawglyph(glyph)
+               dev.flush()
             } else {
                # if the new square is not the starting square, then highlight the new square and remove the highlight from the previous square but only if the previous square was not the starting square
+               dev.hold()
                .addrect(pos.x, pos.y, col=.get("col.rect"))
                ###if (flip) {
                ###   .drawpiece(pos.x, pos.y, pos[9-click1.x,9-click1.y])
@@ -564,6 +574,8 @@ play <- function(lang="en", online, ...) {
                   ###.drawpiece(click2.x, click2.y, pos[click2.x,click2.y])
                   .rmrect(click2.x, click2.y, flip=flip)
                }
+               .drawglyph(glyph)
+               dev.flush()
             }
          }
       }
@@ -1961,6 +1973,8 @@ play <- function(lang="en", online, ...) {
                if (mode == "add" && identical(click, "t")) {
                   sub$moves <- sub$moves[seq_len(i-1L),,drop=FALSE] # t in add mode removes all further moves
                   sub$endmoves <- NULL # and remove endmoves
+                  if (isTRUE(sub$testend))
+                     sub$testend <- NULL
                }
                if (mode %in% c("add","play","analysis")) {
                   fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
@@ -2542,7 +2556,16 @@ play <- function(lang="en", online, ...) {
                .texttop(.text("replast"), sleep=0.75, showlast=FALSE)
                replast <- TRUE
                seqno <- .incrseqno(seqno, k, selmode, seqname, lastseq, nextseq=FALSE, filename, files, replast=TRUE)
-               filename <- files[seqno]
+               #if (selmode == "sequential_ran") {
+               #   filename <- files[.sample(k)[seqno]]
+               #} else {
+               #   filename <- files[seqno]
+               #}
+               if (selmode == "sequential") {
+                  filename <- files[seqno]
+               } else {
+                  filename <- lastseq
+               }
                .newround()
                next
             }
@@ -2964,7 +2987,7 @@ play <- function(lang="en", online, ...) {
 
             # ctrl-e to edit sub$endmoves using prompts
 
-            if (advanced && identical(click, "ctrl-E")) {
+            if (advanced && mode == "add" && identical(click, "ctrl-E")) {
                if (is.null(sub$endmoves)) {
                   .texttop(.text("noendmoves"), sleep=1.5)
                   next
@@ -3025,7 +3048,7 @@ play <- function(lang="en", online, ...) {
                   .texttop(onlylast=TRUE)
                   next
                }
-               filename <- sub("\\.rds$", "", filename) # strip .rds from the end of filename
+               filename <- sub("\\.rds$", "", filename) # strip .rds from the end of the filename
                filenamefull <- file.path(seqdir[seqdirpos], paste0(filename, ".rds"))
                dosave <- TRUE
                if (file.exists(filenamefull)) {
@@ -3633,10 +3656,16 @@ play <- function(lang="en", online, ...) {
                tmp <- NULL
 
                if (seqname == "") {
-                  # in case a single sequence is selected but we are not in test mode
                   if (length(selected) == 1L) {
+                     # in case a single sequence is selected, copy the name of it
                      tmp <- selected
                      seqnum  <- which(selected == files.all)
+                  } else {
+                     # otherwise use 'filename'
+                     if (filename != "") {
+                        tmp <- filename
+                        seqnum <- grep(filename, files.all)
+                     }
                   }
                } else {
                   tmp <- seqname
@@ -3646,7 +3675,7 @@ play <- function(lang="en", online, ...) {
                if (!is.null(tmp)) {
                   eval(expr=switch1)
                   cat(seqnum, " ", tmp, "\n")
-                  tmp <- sub("\\.rds$", "", tmp) # strip .rds from end of filename
+                  tmp <- sub("\\.rds$", "", tmp) # strip .rds from the end of the filename
                   clipr::write_clip(tmp, object_type="character")
                   eval(expr=switch2)
                }

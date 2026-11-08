@@ -1770,7 +1770,7 @@
          tab <- cbind(tab, nextmoves)
       }
       rownames(tab) <- which(notnull)
-      #.printdf(tab, align=c("l",rep("r",movestoshow)))
+      .printdf(tab, align=c("l",rep("r",movestoshow)))
       if (contanalysis)
          .waitforclick()
       return(i)
@@ -2240,7 +2240,7 @@
 
 .incrseqno <- function(seqno, k, selmode, seqname, lastseq, nextseq, filename, files, replast=FALSE) {
 
-   # seqno    = current sequence number
+   # seqno    = current sequence number (1-k)
    # k        = number of (selected) sequences
    # selmode  = selection mode
    # seqname  = name of the current sequence
@@ -2248,6 +2248,7 @@
    # nextseq  = logical whether the next sequence is the one specified in sub$moves$nextseq
    # filename = corresponding entry for sub$moves$nextseq
    # files    = filenames of the (selected) sequences
+   # replast  = logical for replast
 
    seqname  <- sub("\\.rds$", "", seqname)
    lastseq  <- sub("\\.rds$", "", lastseq)
@@ -2290,7 +2291,7 @@
       } else { # for all other selection modes
 
          if (replast) {
-            seqno <- grep(lastseq, files)
+            seqno <- seqno - 1L
          } else {
             seqno <- seqno + 1L
          }
