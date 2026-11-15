@@ -30,7 +30,7 @@ play <- function(lang="en", online, ...) {
 
    ddd <- list(...)
 
-   defaults <- list(player="", seqdir="", seqdirpos=1, mode="add", welcome=TRUE, advanced=FALSE, flush=FALSE, selmode="score_random", timed=FALSE, timepermove=5,
+   defaults <- list(player="", seqdir="", seqdirpos=1, mode="add", welcome=TRUE, advanced=FALSE, flush=FALSE, selmode="score_random", timed=FALSE, timepermove=5, showwhich="searchterms",
                     expval=2, target=0, multiplier=0.8, adjustwrong=40, adjusthint=20, showeval=TRUE, evalsteps=5, movestoshow=5,
                     showcoords=TRUE, showtransp=TRUE, showmatdiff=TRUE, showbestnumber=FALSE, san=TRUE, piecesymbols=1, wait=TRUE, delay=0.5, idletime=120, mintime=60, sleepadj=0, volume=50,
                     showgraph=FALSE, repmistake=FALSE, zenmode=FALSE, compseq=TRUE,
@@ -151,7 +151,7 @@ play <- function(lang="en", online, ...) {
       success <- dir.create(configdir, recursive=TRUE)
       if (!success)
          stop(.text("dircreateerror"), call.=FALSE)
-      settings <- list(lang=lang, player=player, seqdir=seqdir, seqdirpos=seqdirpos, welcome=welcome, advanced=advanced, flush=flush, selmode=selmode, timed=timed, timepermove=timepermove,
+      settings <- list(lang=lang, player=player, seqdir=seqdir, seqdirpos=seqdirpos, welcome=welcome, advanced=advanced, flush=flush, selmode=selmode, timed=timed, timepermove=timepermove, showwhich=showwhich,
                        expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, showeval=showeval, evalsteps=evalsteps, movestoshow=movestoshow,
                        showcoords=showcoords, showtransp=showtransp, showmatdiff=showmatdiff, showbestnumber=showbestnumber, san=san, piecesymbols=piecesymbols, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, volume=volume,
                        showgraph=showgraph, repmistake=repmistake, zenmode=zenmode, compseq=compseq,
@@ -184,7 +184,7 @@ play <- function(lang="en", online, ...) {
          }
       }
       sfpath <- suppressWarnings(normalizePath(sfpath))
-      settings <- list(lang=lang, player=player, seqdir=seqdir, seqdirpos=seqdirpos, welcome=welcome, advanced=advanced, flush=flush, selmode=selmode, timed=timed, timepermove=timepermove,
+      settings <- list(lang=lang, player=player, seqdir=seqdir, seqdirpos=seqdirpos, welcome=welcome, advanced=advanced, flush=flush, selmode=selmode, timed=timed, timepermove=timepermove, showwhich=showwhich,
                        expval=expval, target=target, multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, showeval=showeval, evalsteps=evalsteps, movestoshow=movestoshow,
                        showcoords=showcoords, showtransp=showtransp, showmatdiff=showmatdiff, showbestnumber=TRUE, san=san, piecesymbols=piecesymbols, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, volume=volume,
                        showgraph=showgraph, repmistake=repmistake, zenmode=zenmode, compseq=compseq,
@@ -254,6 +254,7 @@ play <- function(lang="en", online, ...) {
    assign("showlibar", showlibar, envir=.chesstrainer)
    assign("lastapirequest", proc.time()[[3]], envir=.chesstrainer)
    assign("evalsteps", evalsteps, envir=.chesstrainer)
+   assign("showwhich", showwhich, envir=.chesstrainer)
 
    # create cache directories
 
@@ -418,6 +419,7 @@ play <- function(lang="en", online, ...) {
    upsidedown   <- FALSE
    listseqs     <- FALSE
    isstart      <- TRUE
+   searchterm   <- ""
 
    assign("contliquery", contliquery, envir=.chesstrainer)
 
@@ -649,9 +651,9 @@ play <- function(lang="en", online, ...) {
              " ", "m", "d", "\\", "\U000000E4", "n", "N", "B", "p",
              "g", "h", "H", "y", "Y", "Left", "Right", "Up", "Down", "t", "0", "1", "2", "3", "4", "5", "9",
              "r", "o", "u", "U", "M", "j", "%", "P",
-             "a", "A", "f", "z", "Z", "c", "!", "@", "\"", "#", "$", "\U000000A7", "e", "E", "s", "b", "F",
-             "^", "6", "R", "W", "-", "=", "_", "+", "[", "]", "i", "v", "V",
-             "l", "L", "<", ">", "/", ",", ".", "|", "*", "8", "?", "'", ";", ":",
+             "a", "A", "f", "z", "Z", "c", "!", "@", "#", "$", "\U000000A7", "e", "E", "s", "b", "F",
+             "^", "6", "W", "-", "=", "_", "+", "[", "]", "i", "v", "V",
+             "l", "L", "<", ">", "/", ",", ".", "|", "*", "8", "?", "'", ";", ":", "\"",
              "ctrl-F", "ctrl-C", "ctrl-D", "ctrl-R", "ctrl-U", "ctrl-O", "ctrl-L", "ctrl-G", "ctrl-A", "ctrl-E", "ctrl-N", "ctrl-V", "ctrl-T", "ctrl-H", "ctrl-I", "ctrl-{", "ctrl-}", "ctrl-|",
              "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12",
              "ctrl-!", "ctrl-@", "ctrl-\"", "ctrl-#", "ctrl-\U000000A7", # ctrl-1, ctrl-2, ctrl-3 (as alternatives to F10, F11, and F12)
@@ -707,6 +709,7 @@ play <- function(lang="en", online, ...) {
       fifty         <- FALSE
       savgame       <- NULL
       transposi     <- 10000L
+      issavedsearch <- FALSE
       assign("lasteval", NULL, envir=.chesstrainer)
       assign("checkpos", c(NA,NA), envir=.chesstrainer)
       assign("mattdiff", 0, envir=.chesstrainer)
@@ -2885,9 +2888,9 @@ play <- function(lang="en", online, ...) {
                next
             }
 
-            # !, @ (or "), # (or \U000000A7), and $ to add glyphs (exclamation marks, question marks, other)
+            # !, @, # (or \U000000A7), and $ to add glyphs (exclamation marks, question marks, other)
 
-            if (identical(click, "!") || identical(click, "@") || identical(click, "\"") || identical(click, "#") || identical(click, "$") || identical(click, "\U000000A7")) {
+            if (identical(click, "!") || identical(click, "@") || identical(click, "#") || identical(click, "$") || identical(click, "\U000000A7")) {
                if (i == 1 || identical(.get("x2y2"), c(NA,NA)))
                   next
                dev.hold()
@@ -2925,7 +2928,7 @@ play <- function(lang="en", online, ...) {
                      glyph <- glyphs2[1]
                   }
                }
-               if (identical(click, "!") || identical(click, "@") || identical(click, "\"")) {
+               if (identical(click, "!") || identical(click, "@")) {
                   if (any(matchglyph1) || any(matchglyph2))
                      glyph <- ""
                   glyphchar <- ifelse(identical(click, "!"), "!", "?")
@@ -3620,8 +3623,11 @@ play <- function(lang="en", online, ...) {
             if (identical(click, ">")) {
                bookmark <- .bookmarks(seqdir, seqdirpos) # returns NA if bookmark screen was not draw
                if (isTRUE(bookmark != "")) { # only TRUE if bookmark is neither NA nor ""
+                  proc.start <- proc.time()[[3]]
                   selected <- grepl(bookmark, files.all)
                   selected <- list.files(seqdir[seqdirpos], pattern="\\.rds$")[selected]
+                  while (proc.time()[[3]] - proc.start <= 0.4)
+                     Sys.sleep(0.05)
                   mode <- oldmode <- "add"
                   assign("mode", mode, envir=.chesstrainer)
                   .newround(seqno1=TRUE)
@@ -3700,11 +3706,52 @@ play <- function(lang="en", online, ...) {
                next
             }
 
-            # / or , to select one or more sequences, . to select the last saved sequence, | to search/show sequences based on their filename without selecting them
+            # , to save/select searches
 
-            if (identical(click, "/") || identical(click, ",") || identical(click, ".") || identical(click, "|")) {
+            if (identical(click, ",")) {
 
-               doprompt <- TRUE
+               tmp <- .searchterms(seqdir, seqdirpos, cursearchterm=searchterm)
+
+               if (is.null(tmp))
+                  next
+
+               if (!identical(showwhich, tmp$showwhich)) {
+                  showwhich <- tmp$showwhich
+                  assign("showwhich", showwhich, envir=.chesstrainer)
+                  settings$showwhich <- showwhich
+                  saveRDS(settings, file=file.path(configdir, "settings.rds"))
+               }
+
+               proc.start <- proc.time()[[3]]
+               while (proc.time()[[3]] - proc.start <= 0.4)
+                  Sys.sleep(0.05)
+               dev.hold()
+               .redrawpos(pos, flip=flip)
+               .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
+               dev.flush()
+
+               if (tmp$searchterm == "") {
+                  next
+               } else {
+                  searchterm <- tmp$searchterm
+                  click <- "/"
+                  issavedsearch <- TRUE
+               }
+
+            }
+
+            # / to select one or more sequences, . to select the last saved sequence, | to search/show sequences based on their filename without selecting them
+
+            if (identical(click, "/") || identical(click, ".") || identical(click, "|")) {
+
+               if (issavedsearch) {
+                  doprompt <- FALSE
+                  issavedsearch <- FALSE
+               } else {
+                  doprompt <- TRUE
+               }
+
+               oldsearchterm <- searchterm
 
                if (identical(click, ".")) {
                   if (filename != "") {
@@ -3722,10 +3769,15 @@ play <- function(lang="en", online, ...) {
                   searchterm <- readline(prompt="")
                }
 
+               # save full searchterm for potential saving
+
+               searchtermfull <- searchterm
+
                # empty prompt = do nothing
 
                if (identical(searchterm , "")) {
                   eval(expr=switch2)
+                  searchterm <- oldsearchterm
                   next
                }
 
@@ -4669,13 +4721,14 @@ play <- function(lang="en", online, ...) {
                settings$seqdirpos <- seqdirpos
                saveRDS(settings, file=file.path(configdir, "settings.rds"))
                if (!identical(seqdir, seqdirold) || !identical(seqdirpos, seqdirposold)) {
-                  selected     <- NULL
-                  filename     <- ""
-                  lastseq      <- ""
-                  bestmove     <- list("")
-                  replast      <- FALSE
-                  nextseq      <- FALSE
-                  oldmode      <- ifelse(mode %in% c("play","analysis"), "add", mode)
+                  selected   <- NULL
+                  filename   <- ""
+                  lastseq    <- ""
+                  bestmove   <- list("")
+                  replast    <- FALSE
+                  nextseq    <- FALSE
+                  searchterm <- ""
+                  oldmode    <- ifelse(mode %in% c("play","analysis"), "add", mode)
                   mode <- "add"
                   assign("mode", mode, envir=.chesstrainer)
                   assign("seed", get(".Random.seed", envir=.GlobalEnv, inherits=FALSE), envir=.chesstrainer)
@@ -5283,6 +5336,8 @@ play <- function(lang="en", online, ...) {
                      if (is.na(click1.x) || is.na(click2.x) || is.na(click1.y) || is.na(click2.y))
                         next
                      if (identical(button, 0L)) {
+                        if (nrow(circles) == 0L && nrow(arrows) == 0L)
+                           next
                         if (nrow(circles) >= 1L)
                            circlesvar <- paste0(apply(circles, 1, function(x) paste0("(",x[1],",",x[2],")")), collapse=";")
                         if (nrow(arrows) >= 1L)

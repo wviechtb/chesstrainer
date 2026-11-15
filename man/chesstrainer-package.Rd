@@ -65,7 +65,7 @@
 
    In \emph{test mode}, you can use \verb{<Ctrl-d>} to delete the current sequence. Note that this is permanent and all progress information about the sequence will be lost. You will receive a prompt to confirm the deletion.
 
-   With \verb{</>} (or \verb{<,>}), you can select a subset of the sequences in various ways by entering:
+   With \verb{</>}, you can select a subset of the sequences in various ways by entering:
 
    \itemize{
    \item a text string (which is applied as a regular expression to the filenames of the sequences),
@@ -85,6 +85,8 @@
    When entering a text string, you can refine your search by prefixing the string with either \sQuote{\verb{& }} or \sQuote{\verb{| }}, that is, \sQuote{\verb{& <text string>}} searches for the intersection of the currently selected sequences and those matching the new text string while \sQuote{\verb{| <text string>}} searches for their union.
 
    Just pressing \verb{<Enter>} at the prompt (i.e., not entering any search string) keeps the current selection. Entering \verb{*} at the prompt selects all sequences. The \verb{<*>} (or \verb{<8>}) key also selects all sequences without using \verb{</>} first. If you only want to search for sequences (without selecting them), you can use the \verb{<|>} key (instead of \verb{</>}).
+
+   It is possible to save the last entered search query with \verb{<,>}. In the overlay menu, you can use \verb{<s>} to save the current query or select an already saved query. When saving a query, a prompt in the console allows entering a description corresponding to the query. The \verb{<t>} key toggles between showing the search queries or their description.
 
    In \emph{test mode}, sequences are played by default at random based on the score as described above. However, you can toggle into a different sequence selection mode with the \verb{<m>} key. Selection can be based on:
 
@@ -160,7 +162,7 @@
 
    Clicking the right mouse button on a square adds a circle to the square. Dragging the mouse from one square to another while pressing the right mouse button draws an arrow. Clicking with the left mouse button on a square, \verb{<Escape>}, or making a move removes these visualizations. When adding a sequence, circles and arrows that are drawn are also saved and will be shown when replaying the sequence in \emph{test mode}. When such annotations are shown as part of a move that is made by the trainer, the sequence will only proceed after a click.
 
-   Similarly, with the \verb{<!>}, \verb{<@>} (or \verb{<">}), \verb{<#>} (or \verb{<§>}), and \verb{<$>} keys, you can add (and remove) annotation glyphs (e.g., exclamation and question marks) to moves. Such annotations are also shown in \emph{test mode}.
+   Similarly, with the \verb{<!>}, \verb{<@>}, \verb{<#>} (or \verb{<§>}), and \verb{<$>} keys, you can add (and remove) annotation glyphs (e.g., exclamation and question marks) to moves. Such annotations are also shown in \emph{test mode}.
 
    \if{html}{\figure{annotations.png}{options: width=900}}
    \if{latex}{\figure{annotations.png}{options: width=5.5in}}
@@ -171,7 +173,7 @@
 
    With \verb{<.>}, you can select the last saved sequence (if one was saved before in the current session). This is useful for checking a newly created sequence in \emph{test mode} and/or creating multiple branching lines from the ending position of this sequence. After selecting a single sequence, the \verb{<a>} key will create a copy of that sequence, which can then be extended with additional moves and saved as a new sequence. If more than one sequence is selected, the \verb{<a>} extends the last played/saved sequence. The \verb{<A>} key does the same thing, but shows the position at the very beginning of the sequence, not at the end. One can also use these keys in \emph{test mode} (here, \verb{<A>} switches to \emph{add mode} starting at the current position).
 
-   In \emph{add mode} or \emph{test mode}, you can bookmark a sequence with the \verb{<<>} key. In \emph{add mode}, the last saved sequence is bookmarked. In \emph{test mode}, the currently played sequence is bookmarked. With the \verb{<>>} key, you can select and manage bookmarks (use \verb{<F1>} while managing the bookmarks to obtain help). This is useful for creating multiple branching lines from the ending position of certain sequences or to remember sequences that you want to come back to at a later point.
+   In \emph{add mode} or \emph{test mode}, you can bookmark a sequence with the \verb{<<>} key. In \emph{add mode}, the last played/saved sequence is bookmarked. In \emph{test mode}, the currently played sequence is bookmarked. With the \verb{<>>} key, you can select and manage bookmarks (use \verb{<F1>} while managing the bookmarks to obtain help). This is useful for creating multiple branching lines from the ending position of certain sequences or to remember sequences that you want to come back to at a later point.
 
    When creating new opening sequences, the trainer tries to recognize the opening played and indicates the ECO code and opening name at the bottom left.
 
@@ -236,7 +238,7 @@
 }
 \section{Managing and Selecting Sequence Directories}{
 
-   Sequences are saved to and selected from the current sequence directory. You can add, remove, and select sequence directories with \verb{<F9>} (use \verb{<F1>} while managing sequence directories to obtain help). Removing a sequence directory simply removes it from being shown in the list of sequence directories (i.e., it does not delete the directory or any sequences therein). Bookmarks are specific to each sequence directory. Also, selecting a sequence directory switches to the sequence selection mode that was active when it was last selected.
+   Sequences are saved to and selected from the current sequence directory. You can add, remove, and select sequence directories with \verb{<F9>} (use \verb{<F1>} while managing sequence directories to obtain help). Removing a sequence directory simply removes it from being shown in the list of sequence directories (i.e., it does not delete the directory or any sequences therein). Bookmarks and saved search queries are specific to each sequence directory. Also, selecting a sequence directory switches to the sequence selection mode that was active when it was last selected.
 
 }
 \section{The Board Editor}{

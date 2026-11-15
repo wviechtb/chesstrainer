@@ -11,7 +11,7 @@
       return(NA)
    }
 
-   # if .bookmarks is empty, read.table() generates an error so we exit again
+   # try to read the .bookmarks file; if it is empty, read.table() generates an error so we exit again
 
    tmp <- try(read.table(file.path(seqdir[seqdirpos], ".bookmarks"), header=FALSE), silent=TRUE)
 
@@ -23,7 +23,6 @@
 
    # remove duplicates and keep only the existing bookmarks
 
-   bookmarks <- tmp[[1]]
    bookmarks <- unique(tmp[[1]])
    bookmarks <- bookmarks[is.element(bookmarks, list.files(seqdir[seqdirpos], pattern="\\.rds$"))]
 
@@ -36,9 +35,9 @@
    }
 
    bookmark <- ""
-   num <- 0
-   keymode <- "s"
-   whichnum <- 1
+   num <- 0L
+   keymode <- "select"
+   whichpos <- 1L
 
    tmp <- .drawbookmarks(bookmarks)
    cex <- tmp$cex
@@ -51,19 +50,23 @@
       if (length(bookmarks) == 0L)
          break
 
+      dev.hold()
+
       rect(1.4, 1.9, 8.7, 2.2, col=col.bg, border=NA)
 
-      if (keymode=="s")
-         text(1.8, 2, .text("selbookmark", ifelse(num==0, "", num)), pos=4, offset=0, cex=cex, family=font.mono, font=1, col=col.help)
+      if (keymode=="select")
+         text(1.8, 2, .text("selbookmark", ifelse(num==0L, "", num)), pos=4, offset=0, cex=cex, family=font.mono, font=1, col=col.help)
 
-      if (keymode=="r")
-         text(1.8, 2, .text("bookmarktoremove", ifelse(num==0, "", num)), pos=4, offset=0, cex=cex, family=font.mono, font=1, col=col.help)
+      if (keymode=="remove")
+         text(1.8, 2, .text("bookmarktoremove", ifelse(num==0L, "", num)), pos=4, offset=0, cex=cex, family=font.mono, font=1, col=col.help)
 
-      if (keymode=="p" && whichnum==1)
-         text(1.8, 2, .text("bookmarktomove", ifelse(num==0, "", num)), pos=4, offset=0, cex=cex, family=font.mono, font=1, col=col.help)
+      if (keymode=="position" && whichpos==1L)
+         text(1.8, 2, .text("bookmarktomove", ifelse(num==0L, "", num)), pos=4, offset=0, cex=cex, family=font.mono, font=1, col=col.help)
 
-      if (keymode=="p" && whichnum==2)
-         text(1.8, 2, .text("bookmarknewpos", ifelse(num==0, "", num)), pos=4, offset=0, cex=cex, family=font.mono, font=1, col=col.help)
+      if (keymode=="position" && whichpos==2L)
+         text(1.8, 2, .text("bookmarknewpos", ifelse(num==0L, "", num)), pos=4, offset=0, cex=cex, family=font.mono, font=1, col=col.help)
+
+      dev.flush()
 
       key <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.mousedownfun, onKeybd=.keyfun)
 
@@ -73,34 +76,34 @@
          if (x >= 1.5 && x <= 8.2 & y <= segpos[1] & y >= segpos[2]) {
             click <- which(y < ypos + dist & y > ypos - dist)
             if (length(click) == 1L) {
-               if (keymode=="s") {
+               if (keymode=="select") {
                   bookmark <- bookmarks[click]
                   .drawbookmarks(bookmarks, sel=click)
                   break
                }
-               if (keymode=="r") {
+               if (keymode=="remove") {
                   bookmarks <- bookmarks[-click]
-                  num <- 0
-                  whichnum <- 1
-                  keymode <- "s"
+                  num <- 0L
+                  whichpos <- 1L
+                  keymode <- "select"
                   tmp <- .drawbookmarks(bookmarks)
                   cex <- tmp$cex
                   ypos <- tmp$ypos
                   dist <- tmp$dist
                   segpos <- tmp$segpos
                }
-               if (keymode=="p") {
-                  if (whichnum==1) {
+               if (keymode=="position") {
+                  if (whichpos==1L) {
                      posfrom <- click
-                     num <- 0
-                     whichnum <- 2
+                     num <- 0L
+                     whichpos <- 2L
                      next
                   }
-                  if (whichnum==2) {
+                  if (whichpos==2L) {
                      posto <- click
-                     num <- 0
-                     whichnum <- 1
-                     keymode <- "s"
+                     num <- 0L
+                     whichpos <- 1L
+                     keymode <- "select"
                      bookmarktomove <- bookmarks[posfrom]
                      bookmarks <- bookmarks[-posfrom]
                      bookmarks <- append(bookmarks, bookmarktomove, after=posto-1)
@@ -117,8 +120,21 @@
 
       # Escape or q to exit
 
-      if (identical(key, "\033") || identical(key, "ctrl-[") || identical(key, "q") || identical(key, ">"))
+      if (identical(key, "\033") || identical(key, "ctrl-[") || identical(key, "q") || identical(key, ">")) {
+         if (keymode == "remove") {
+            num <- 0L
+            whichpos <- 1L
+            keymode <- "select"
+            next
+         }
+         if (keymode == "position") {
+            num <- 0L
+            whichpos <- 1L
+            keymode <- "select"
+            next
+         }
          break
+      }
 
       # F1 to show the help
 
@@ -132,7 +148,7 @@
 
       if (is.element(key, 0:9)) {
          newnum <- paste0(num, key, collapse="")
-         newnum <- as.numeric(newnum)
+         newnum <- as.integer(newnum)
          if (nchar(newnum) > nchar(length(bookmarks))) {
             next
          } else {
@@ -144,42 +160,42 @@
       # enter = enter selected number
 
       if (identical(key, "\r") || identical(key, "ctrl-J")) {
-         if (keymode=="s" && num==0)
+         if (keymode=="select" && num==0L)
             break
-         if (num < 1 || num > length(bookmarks)) {
-            num <- 0
-            whichnum <- 1
-            keymode <- "s"
+         if (num < 1L || num > length(bookmarks)) {
+            num <- 0L
+            whichpos <- 1L
+            keymode <- "select"
             next
          }
-         if (keymode=="s") {
+         if (keymode=="select") {
             bookmark <- bookmarks[num]
             .drawbookmarks(bookmarks, sel=num)
             break
          }
-         if (keymode=="r") {
+         if (keymode=="remove") {
             bookmarks <- bookmarks[-num]
-            num <- 0
-            whichnum <- 1
-            keymode <- "s"
+            num <- 0L
+            whichpos <- 1L
+            keymode <- "select"
             tmp <- .drawbookmarks(bookmarks)
             cex <- tmp$cex
             ypos <- tmp$ypos
             dist <- tmp$dist
             next
          }
-         if (keymode=="p") {
-            if (whichnum==1) {
+         if (keymode=="position") {
+            if (whichpos==1L) {
                posfrom <- num
-               num <- 0
-               whichnum <- 2
+               num <- 0L
+               whichpos <- 2L
                next
             }
-            if (whichnum==2) {
+            if (whichpos==2L) {
                posto <- num
-               num <- 0
-               whichnum <- 1
-               keymode <- "s"
+               num <- 0L
+               whichpos <- 1L
+               keymode <- "select"
                bookmarktomove <- bookmarks[posfrom]
                bookmarks <- bookmarks[-posfrom]
                bookmarks <- append(bookmarks, bookmarktomove, after=posto-1)
@@ -192,8 +208,8 @@
       # backspace = remove last entered number
 
       if (identical(key, "\b") || identical(key, "ctrl-H")) {
-         if (nchar(num) == 1) {
-            num <- 0
+         if (nchar(num) == 1L) {
+            num <- 0L
          } else {
             num <- as.numeric(substr(num, 1L, nchar(num)-1L))
          }
@@ -203,15 +219,15 @@
       # r or e = go into removal mode
 
       if (identical(key, "r") || identical(key, "e")) {
-         keymode <- "r"
-         num <- 0
-         whichnum <- 1
+         keymode <- "remove"
+         num <- 0L
+         whichpos <- 1L
          next
       }
 
-      # a = remove all bookmarks
+      # R or E = remove all bookmarks
 
-      if (identical(key, "a")) {
+      if (identical(key, "R") || identical(key, "E")) {
          rect(1.4, 1.5, 8.7, 2.4, col=col.bg, border=NA)
          text(1.8, 2, .text("rlydelallbookmarks"), pos=4, offset=0, cex=cex, family=font.mono, font=1, col=col.help)
          answer <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=.keyfun)
@@ -223,10 +239,10 @@
 
       # p = enter into change position mode
 
-      if (identical(key, "p")) {
-         keymode <- "p"
-         num <- 0
-         whichnum <- 1
+      if (identical(key, "p") && length(bookmarks) >= 2L) {
+         keymode <- "position"
+         num <- 0L
+         whichpos <- 1L
          next
       }
 
@@ -261,7 +277,7 @@
    tab <- data.frame(sub("\\.rds$", "", bookmarks2))
    names(tab) <- ""
    txt <- capture.output(print(tab, right=FALSE, print.gap=2))[-1]
-   txt <- c(.text("bookmark"), "", txt, "")
+   txt <- c(.text("bookmarks"), "", txt, "")
 
    ypos1 <- 8
    ypos2 <- max(2.5, 8-0.75*length(bookmarks2))
@@ -300,7 +316,7 @@
       "Bookmark help:",
       "<number> - select a bookmark (or click on bookmark)",
       "r        - remove a bookmark",
-      "a        - remove all bookmarks",
+      "R        - remove all bookmarks",
       "p        - change position of a bookmark",
       "F1       - show this help")
 
@@ -312,7 +328,7 @@
       "Lesezeichen Hilfe:",
       "<Nummer> - Lesezeichen ausw\U000000E4hlen (oder auf das Lesezeichen klicken)",
       "e        - Lesezeichen entfernen",
-      "a        - alle Lesezeichen entfernen",
+      "E        - alle Lesezeichen entfernen",
       "p        - Position von Lesezeichen \U000000E4ndern",
       "F1       - diese Hilfe anzeigen")
 

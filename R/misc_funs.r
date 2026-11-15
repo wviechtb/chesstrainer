@@ -71,6 +71,22 @@
    return(NULL)
 }
 
+.confirm <- function(x) {
+
+   lang <- .get("lang")
+
+   x <- tolower(x)
+
+   if (lang == "en")
+      return(identical(x, "y"))
+
+   if (lang == "de")
+      return(identical(x, "j"))
+
+   return(FALSE)
+
+}
+
 .findcex <- function(txt, font, x1, x2, y1, y2, mincex=1) {
 
    rootfun <- function(x)

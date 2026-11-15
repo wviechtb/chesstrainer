@@ -31,7 +31,7 @@ The trainer offers some advanced functionality that is documented on this page. 
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">chesstrainer</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-208</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="">0.9-209</span>
       </span>
     </div>
 
@@ -96,11 +96,11 @@ The trainer offers some advanced functionality that is documented on this page. 
 
 
 <p>Sometimes, it may be of interest to continue sequences after the various end moves. In this way, branching can be introduced into a set of sequences.</p>
-<p>Consider again the example above. After Rae1+, black may capture the rook with the bishop (Bxe1), which is best followed by Rfe1+. Similarly, if we first play Rfe1+, then Bxe1 should be followed by Rae1+. So, depending on the end move chosen, we may want to continue down these two branches. This can be accomplished as follows.</p>
+<p>Consider again the example above. After Rae1+, black may capture the rook with the bishop (Bxe1), which is best followed by Rfxe1+. Similarly, if we first play Rfe1+, then Bxe1 should be followed by Raxe1+. So, depending on the end move chosen, we may want to continue down these two branches. This can be accomplished as follows.</p>
 <p>First, we create a sequence with the two end moves described above (i.e., Rae1+ and Rfe1+). However, before saving this sequence, press <kbd>Ctrl</kbd> + <kbd>e</kbd>. In the console, you can then edit the end moves that were entered. Press <code>n</code> in the console followed by <code>1</code> to specify the filename of the sequence that should be played automatically when Rae1+ is made as the end move. Similarly, press <code>n</code> followed by <code>2</code> to specify the filename of the sequence that should be played automatically when Rfe1+ is made as the end move. Now you can save the current sequence with these two end moves.</p>
-<p>Next, you need to create the two sequences that should be the continuations of these two end moves. The first should start immediately after the Rae1+ move. Here, the first move will be Bxe1, followed by Rfe1+. Save this sequence with the appropriate filename.</p>
+<p>Next, you need to create the two sequences that should be the continuations of these two end moves. The first should start immediately after the Rae1+ move. Here, the first move will be Bxe1, followed by Rfxe1+. Save this sequence with the appropriate filename.</p>
 <p><img src="figures/branching1.png" width="900"></p>
-<p>The second continuation sequence should start immediately after the Rfe1+ move. Here, the first move will again be Bxe1, followed by Rae1+. Again, save this sequence with the appropriate filename.</p>
+<p>The second continuation sequence should start immediately after the Rfe1+ move. Here, the first move will again be Bxe1, followed by Raxe1+. Again, save this sequence with the appropriate filename.</p>
 <p><img src="figures/branching2.png" width="900"></p>
 <p>In <em>test mode</em>, when playing the sequence that can end with either Rae1+ or Rfe1+, the respective continuation sequence will automatically be played.</p>
 <p>Note that one does not have to specify a continuation for all end moves that were entered. Also, in principle, one can introduce further branching in a particular branch. However, such sub-branching can become cumbersome to enter.</p>

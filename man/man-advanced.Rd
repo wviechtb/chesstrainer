@@ -43,16 +43,16 @@
 
    Sometimes, it may be of interest to continue sequences after the various end moves. In this way, branching can be introduced into a set of sequences.
 
-   Consider again the example above. After Rae1+, black may capture the rook with the bishop (Bxe1), which is best followed by Rfe1+. Similarly, if we first play Rfe1+, then Bxe1 should be followed by Rae1+. So, depending on the end move chosen, we may want to continue down these two branches. This can be accomplished as follows.
+   Consider again the example above. After Rae1+, black may capture the rook with the bishop (Bxe1), which is best followed by Rfxe1+. Similarly, if we first play Rfe1+, then Bxe1 should be followed by Raxe1+. So, depending on the end move chosen, we may want to continue down these two branches. This can be accomplished as follows.
 
    First, we create a sequence with the two end moves described above (i.e., Rae1+ and Rfe1+). However, before saving this sequence, press \verb{<Ctrl-e>}. In the console, you can then edit the end moves that were entered. Press \verb{n} in the console followed by \verb{1} to specify the filename of the sequence that should be played automatically when Rae1+ is made as the end move. Similarly, press \verb{n} followed by \verb{2} to specify the filename of the sequence that should be played automatically when Rfe1+ is made as the end move. Now you can save the current sequence with these two end moves.
 
-   Next, you need to create the two sequences that should be the continuations of these two end moves. The first should start immediately after the Rae1+ move. Here, the first move will be Bxe1, followed by Rfe1+. Save this sequence with the appropriate filename.
+   Next, you need to create the two sequences that should be the continuations of these two end moves. The first should start immediately after the Rae1+ move. Here, the first move will be Bxe1, followed by Rfxe1+. Save this sequence with the appropriate filename.
 
    \if{html}{\figure{branching1.png}{options: width=900}}
    \if{latex}{\figure{branching1.png}{options: width=5.5in}}
 
-   The second continuation sequence should start immediately after the Rfe1+ move. Here, the first move will again be Bxe1, followed by Rae1+. Again, save this sequence with the appropriate filename.
+   The second continuation sequence should start immediately after the Rfe1+ move. Here, the first move will again be Bxe1, followed by Raxe1+. Again, save this sequence with the appropriate filename.
 
    \if{html}{\figure{branching2.png}{options: width=900}}
    \if{latex}{\figure{branching2.png}{options: width=5.5in}}

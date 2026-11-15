@@ -1031,7 +1031,7 @@
                          "Copied FEN to the clipboard."
    ))}
 
-   if (x == "bookmark") {
+   if (x == "bookmarks") {
       return(switch(lang,
                     de = "Lesezeichen",
                          "Bookmarks"
@@ -1057,8 +1057,8 @@
 
    if (x == "bookmarktoremove") {
       return(switch(lang,
-                    de = paste0("Lesezeichen zum Entfernen: ", arg),
-                         paste0("Bookmark to remove: ", arg)
+                    de = paste0("Entferne Lesezeichen: ", arg),
+                         paste0("Remove bookmark: ", arg)
    ))}
 
    if (x == "bookmarktomove") {
@@ -1077,6 +1077,66 @@
       return(switch(lang,
                     de = "Wirklich alle Lesezeichen l\U000000F6schen? (j/N): ",
                          "Really delete all bookmarks? (y/N): "
+   ))}
+
+   if (x == "searchterms") {
+      return(switch(lang,
+                    de = "Gesicherte Suchen",
+                         "Saved Queries"
+   ))}
+
+   if (x == "nosearchterms") {
+      return(switch(lang,
+                    de = "Keine Suchen gefunden.",
+                         "No queries found."
+   ))}
+
+   if (x == "selsearchterm") {
+      return(switch(lang,
+                    de = paste0("Suche ausw\U000000E4hlen (<F1> f\U000000FCr Hilfe): ", arg),
+                         paste0("Select query (<F1> for help): ", arg)
+   ))}
+
+   if (x == "savesearchterm") {
+      return(switch(lang,
+                    de = "Suche sichern? (J/n)",
+                         "Save query (J/n)"
+   ))}
+
+   if (x == "searchterm") {
+      return(switch(lang,
+                    de = paste0("Suche: ", arg),
+                         paste0("Query: ", arg)
+   ))}
+
+   if (x == "searchtermtoremove") {
+      return(switch(lang,
+                    de = paste0("Entferne Suche: ", arg),
+                         paste0("Remove query: ", arg)
+   ))}
+
+   if (x == "searchtermtomove") {
+      return(switch(lang,
+                    de = paste0("Suche dessen Position ver\U000000E4ndert werden soll: ", arg),
+                         paste0("Query whose position should be changed: ", arg)
+   ))}
+
+   if (x == "searchtermnewpos") {
+      return(switch(lang,
+                    de = paste0("Neue Position f\U000000FCr die Suche: ", arg),
+                         paste0("New position for the query: ", arg)
+   ))}
+
+   if (x == "rlydelallsearchterms") {
+      return(switch(lang,
+                    de = "Wirklich alle Suchen l\U000000F6schen? (j/N): ",
+                         "Really delete all queries? (y/N): "
+   ))}
+
+   if (x == "description") {
+      return(switch(lang,
+                    de = "Beschreibung: ",
+                         "Description: "
    ))}
 
    if (x == "allmovesshown") {
@@ -1912,21 +1972,5 @@
                     de = "Diese Begr\U000000FC\U000000DFungsseite beim Start anzeigen",
                          "Show this welcome screen at startup"
    ))}
-
-}
-
-.confirm <- function(x) {
-
-   lang <- .get("lang")
-
-   x <- tolower(x)
-
-   if (lang == "en")
-      return(identical(x, "y"))
-
-   if (lang == "de")
-      return(identical(x, "j"))
-
-   return(FALSE)
 
 }
