@@ -183,9 +183,9 @@
          next
       }
 
-      # a or h = add directory
+      # a = add directory
 
-      if (keymode=="s" && identical(key, "a") || identical(key, "h")) {
+      if (keymode=="s" && identical(key, "a")) {
          if (.Platform$OS.type == "windows") {
             seqdirnew <- choose.dir(caption="")
             if (is.na(seqdirnew))
@@ -222,9 +222,9 @@
          next
       }
 
-      # r or e = go into removal mode
+      # r = go into removal mode
 
-      if (identical(key, "r") || identical(key, "e")) {
+      if (identical(key, "r")) {
          keymode <- "r"
          num <- 0
          whichnum <- 1
@@ -317,8 +317,8 @@
       txt <- c(
       "Sequenzverzeichnis Hilfe:",
       "<Nummer> - Verzeichnis ausw\U000000E4hlen (oder auf das Verzeichnis klicken)",
-      "h        - Verzeichnis hinzuf\U000000FCgen",
-      "e        - Verzeichnis entfernen",
+      "a        - Verzeichnis hinzuf\U000000FCgen",
+      "r        - Verzeichnis entfernen",
       "p        - Position von Verzeichnis \U000000E4ndern",
       "F1       - diese Hilfe anzeigen")
 

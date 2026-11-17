@@ -1003,7 +1003,7 @@
 
    if (x == "nextseqwhich") {
       return(switch(lang,
-                    de = "Die n\U000000E4chste Sequenz f\U000000FCr diesen Zug editieren (<Nummer>, '-' zum l\U000000F6schen, <Enter> zum Verlassen): ",
+                    de = "Die n\U000000E4chste Sequenz f\U000000FCr diesen Zug bearbeiten (<Nummer>, '-' zum l\U000000F6schen, <Enter> zum Verlassen): ",
                          "Edit the next sequence entry for this move (<number>, '-' to delete, <enter> to quit): "
    ))}
 

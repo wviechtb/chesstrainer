@@ -216,18 +216,18 @@
          next
       }
 
-      # r or e = go into removal mode
+      # r = go into removal mode
 
-      if (identical(key, "r") || identical(key, "e")) {
+      if (identical(key, "r")) {
          keymode <- "remove"
          num <- 0L
          whichpos <- 1L
          next
       }
 
-      # R or E = remove all bookmarks
+      # R = remove all bookmarks
 
-      if (identical(key, "R") || identical(key, "E")) {
+      if (identical(key, "R")) {
          rect(1.4, 1.5, 8.7, 2.4, col=col.bg, border=NA)
          text(1.8, 2, .text("rlydelallbookmarks"), pos=4, offset=0, cex=cex, family=font.mono, font=1, col=col.help)
          answer <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=.keyfun)
@@ -327,8 +327,8 @@
       txt <- c(
       "Lesezeichen Hilfe:",
       "<Nummer> - Lesezeichen ausw\U000000E4hlen (oder auf das Lesezeichen klicken)",
-      "e        - Lesezeichen entfernen",
-      "E        - alle Lesezeichen entfernen",
+      "r        - Lesezeichen entfernen",
+      "R        - alle Lesezeichen entfernen",
       "p        - Position von Lesezeichen \U000000E4ndern",
       "F1       - diese Hilfe anzeigen")
 

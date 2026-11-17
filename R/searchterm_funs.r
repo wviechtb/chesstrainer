@@ -255,18 +255,18 @@
          next
       }
 
-      # r or e = go into removal mode
+      # r = go into removal mode
 
-      if ((identical(key, "r") || identical(key, "e")) && length(searchterms) >= 1L) {
+      if (identical(key, "r") && length(searchterms) >= 1L) {
          keymode <- "remove"
          num <- 0L
          whichpos <- 1L
          next
       }
 
-      # R or E = remove all searchterms
+      # R = remove all searchterms
 
-      if (identical(key, "R") || identical(key, "E")) {
+      if (identical(key, "R")) {
          rect(1.4, 1.5, 8.7, 2.4, col=col.bg, border=NA)
          text(1.8, 2, .text("rlydelallsearchterms"), pos=4, offset=0, cex=cex, family=font.mono, font=1, col=col.help)
          answer <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=.keyfun)
@@ -295,6 +295,21 @@
 
       if (identical(key, "t") && length(searchterms) >= 1L) {
          showwhich <- ifelse(showwhich == "searchterms", "descriptions", "searchterms")
+         tmp <- .drawsearchterms(searchterms, descriptions, showwhich)
+         cex <- tmp$cex
+         ypos <- tmp$ypos
+         dist <- tmp$dist
+         segpos <- tmp$segpos
+         next
+      }
+
+      # e = to edit the searchterms/descriptions
+
+      if (identical(key, "e")) {
+         tmp <- data.frame(searchterm=searchterms, description=descriptions)
+         tmp <- edit(tmp)
+         searchterms <- tmp$searchterm
+         descriptions <- tmp$description
          tmp <- .drawsearchterms(searchterms, descriptions, showwhich)
          cex <- tmp$cex
          ypos <- tmp$ypos
@@ -393,6 +408,7 @@
       "R        - remove all queries",
       "p        - change position of a query",
       "t        - toggle between queries and descriptions",
+      "e        - edit queries / descriptions",
       "F1       - show this help")
 
    }
@@ -403,10 +419,11 @@
       "Hilfe:",
       "<Nummer> - Suche ausw\U000000E4hlen (oder auf die Suche klicken)",
       "s        - Suche sichern",
-      "e        - Suche entfernen",
-      "E        - alle Suchen entfernen",
+      "r        - Suche entfernen",
+      "R        - alle Suchen entfernen",
       "p        - Position von Suche \U000000E4ndern",
       "t        - zwischen Suchen und Beschreibungen wechseln",
+      "e        - Suchen / Beschreibungen bearbeiten",
       "F1       - diese Hilfe anzeigen")
 
    }
