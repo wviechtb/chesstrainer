@@ -3722,9 +3722,12 @@ play <- function(lang="en", online, ...) {
                   saveRDS(settings, file=file.path(configdir, "settings.rds"))
                }
 
-               proc.start <- proc.time()[[3]]
-               while (proc.time()[[3]] - proc.start <= 0.4)
-                  Sys.sleep(0.05)
+               if (tmp$searchterm != "") {
+                  proc.start <- proc.time()[[3]]
+                  while (proc.time()[[3]] - proc.start <= 0.4)
+                     Sys.sleep(0.05)
+               }
+
                dev.hold()
                .redrawpos(pos, flip=flip)
                .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)

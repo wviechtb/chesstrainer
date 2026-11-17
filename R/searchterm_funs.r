@@ -237,7 +237,6 @@
 
       if ((identical(key, "s") || identical(key, "a")) && cursearchterm != "") {
          rect(1.4, 1.5, 8.7, 2.4, col=col.bg, border=NA)
-         # TODO: catch cases where cursearchterm is very long
          text(1.8, 2, .text("savesearchterm"), pos=4, offset=0, cex=cex, family=font.mono, font=1, col=col.help)
          text(1.8, 1.7, .text("searchterm", cursearchterm2), pos=4, offset=0, cex=cex, family=font.mono, font=1, col=col.help)
          answer <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=.keyfun)
