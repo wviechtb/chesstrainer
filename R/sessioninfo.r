@@ -1,4 +1,4 @@
-.sessiongraph <- function(seqsplayed, mean.scores, playtime) {
+.sessioninfo <- function(seqsplayed, mean.scores, playtime) {
 
    isnull <- seqsplayed == 0
    seqsplayed <- seqsplayed[!isnull]
@@ -43,14 +43,16 @@
 
       click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.mousedownfun, onKeybd=.keyfun)
 
-      if (identical(click, "F11") || identical(click, "ctrl-@") || identical(click, "ctrl-\"") || identical(click, "\r") || identical(click, "ctrl-J") || identical(click, "q") || identical(click, "\033") || identical(click, "ctrl-[") || identical(click, " "))
+      # F11, q, or Escape to exit
+
+      if (.iskey(click, "sessioninfo")  || .iskey(click, "quit") || .iskey(click, "escape"))
          break
 
       if (is.numeric(click))
          break
 
-      if (identical(click, "ctrl-+") || identical(click, "ctrl-_")) {
-         if (identical(click, "ctrl-_")) {
+      if (.iskey(click, "margin-") || .iskey(click, "margin+")) {
+         if (.iskey(click, "margin-")) {
             mar2 <- pmax(1, mar2 - 0.5)
          } else {
             mar2 <- mar2 + 0.5

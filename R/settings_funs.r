@@ -482,7 +482,7 @@
 
       }
 
-      if (identical(resp, "F5") || identical(resp, "\r") || identical(resp, "ctrl-J") || identical(resp, "q") || identical(resp, "\033") || identical(resp, "ctrl-[") || identical(resp, " "))
+      if (.iskey(resp, "mainsettings") || .iskey(resp, "quit") || .iskey(resp, "escape"))
          break
 
    }
@@ -661,7 +661,7 @@
 
       }
 
-      if (identical(resp, "F6") || identical(resp, "\r") || identical(resp, "ctrl-J") || identical(resp, "q") || identical(resp, "\033") || identical(resp, "ctrl-[") || identical(resp, " "))
+      if (.iskey(resp, "miscsettings") || .iskey(resp, "quit") || .iskey(resp, "escape"))
          break
 
    }
@@ -1024,7 +1024,7 @@
 
       }
 
-      if (identical(resp, "F7") || identical(resp, "\r") || identical(resp, "ctrl-J") || identical(resp, "q") || identical(resp, "\033") || identical(resp, "ctrl-[") || identical(resp, " "))
+      if (.iskey(resp, "sfsettings") || .iskey(resp, "quit") || .iskey(resp, "escape"))
          break
 
    }
@@ -1053,7 +1053,7 @@
 
 }
 
-.lichesssettings <- function(speeds, ratings, lichessdb, uselicache, liout, lisort, barlen, invertbar, minfreq, minperc, token, monthslicache, isonline) {
+.lisettings <- function(speeds, ratings, lichessdb, uselicache, liout, lisort, barlen, invertbar, minfreq, minperc, token, monthslicache, isonline) {
 
    col.bg    <- .get("col.bg")
    col.help  <- .get("col.help")
@@ -1408,7 +1408,7 @@
 
       }
 
-      if (identical(resp, "i")) {
+      if (.iskey(resp, "liquery")) {
          uselicache <- .get("uselicache")
          contliquery <- .get("contliquery")
          assign("uselicache", FALSE, envir=.chesstrainer)
@@ -1421,7 +1421,7 @@
          next
       }
 
-      if (identical(resp, "F8") || identical(resp, "\r") || identical(resp, "ctrl-J") || identical(resp, "q") || identical(resp, "\033") || identical(resp, "ctrl-[") || identical(resp, " "))
+      if (.iskey(resp, "lisettings") || .iskey(resp, "quit") || .iskey(resp, "escape"))
          break
 
    }
@@ -1529,7 +1529,7 @@
 
    click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.mousedownfun, onKeybd=.keyfun)
 
-   if (identical(click, "ctrl-L")) {
+   if (.iskey(click, "language")) {
       if (lang == "de") {
          lang <- "en"
       } else {

@@ -119,7 +119,7 @@
          }
       }
 
-      if (identical(resp, "\033") || identical(resp, "ctrl-[")) {
+      if (.iskey(resp, "escape")) {
          if (mustselect) {
             rect(1.8+sw.string, ypos.string.bot, 8.5, ypos.string.top, col=col.bg, border=NA)
             val <- ""
@@ -140,7 +140,7 @@
          sw.val <- strwidth(val, family=font.mono, cex=cex)
       }
 
-      if (identical(resp, "\r") || identical(resp, "ctrl-J")) {
+      if (.iskey(resp, "enter")) {
          val <- paste0(val, collapse="")
          if (identical(val, "")) {
             if (mustselect) {
@@ -171,7 +171,7 @@
          break
       }
 
-      if (identical(resp, "\b") || identical(resp, "ctrl-H")) {
+      if (.iskey(resp, "backspace")) {
          if (nchar(val) > 1L) {
             val <- substr(val, 1L, nchar(val)-1L)
          } else {

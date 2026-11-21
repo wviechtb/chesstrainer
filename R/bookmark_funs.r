@@ -118,9 +118,9 @@
          }
       }
 
-      # Escape or q to exit
+      # >, q, or Escape to exit
 
-      if (identical(key, "\033") || identical(key, "ctrl-[") || identical(key, "q") || identical(key, ">")) {
+      if (.iskey(key, "bookmarks") || .iskey(key, "quit") || .iskey(key, "escape")) {
          if (keymode == "remove") {
             num <- 0L
             whichpos <- 1L
@@ -138,7 +138,7 @@
 
       # F1 to show the help
 
-      if (identical(key, "F1")) {
+      if (.iskey(key, "showhelp")) {
          .showhelp.bookmarks()
          .drawbookmarks(bookmarks)
          next
@@ -159,7 +159,7 @@
 
       # enter = enter selected number
 
-      if (identical(key, "\r") || identical(key, "ctrl-J")) {
+      if (.iskey(key, "enter")) {
          if (keymode=="select" && num==0L)
             break
          if (num < 1L || num > length(bookmarks)) {
@@ -207,7 +207,7 @@
 
       # backspace = remove last entered number
 
-      if (identical(key, "\b") || identical(key, "ctrl-H")) {
+      if (.iskey(key, "backspace")) {
          if (nchar(num) == 1L) {
             num <- 0L
          } else {
@@ -218,7 +218,7 @@
 
       # r = go into removal mode
 
-      if (identical(key, "r")) {
+      if (.iskey(key, "bookmarkremove")) {
          keymode <- "remove"
          num <- 0L
          whichpos <- 1L
@@ -227,7 +227,7 @@
 
       # R = remove all bookmarks
 
-      if (identical(key, "R")) {
+      if (.iskey(key, "bookmarkremoveall")) {
          rect(1.4, 1.5, 8.7, 2.4, col=col.bg, border=NA)
          text(1.8, 2, .text("rlydelallbookmarks"), pos=4, offset=0, cex=cex, family=font.mono, font=1, col=col.help)
          answer <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=.keyfun)
@@ -239,7 +239,7 @@
 
       # p = enter into change position mode
 
-      if (identical(key, "p") && length(bookmarks) >= 2L) {
+      if (.iskey(key, "bookmarkposition") && length(bookmarks) >= 2L) {
          keymode <- "position"
          num <- 0L
          whichpos <- 1L

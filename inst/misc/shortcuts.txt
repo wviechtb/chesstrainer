@@ -1,0 +1,186 @@
+############################################################################
+
+# Shortcuts for the chess trainer
+# - one can define one or multiple keys for the same action
+# - the same shortcut can be used for different actions as long as they are mode specific
+# - shortcuts with ctrl must use the upper case letter on the keyboard
+
+"\033"      "escape"             # escape key
+"ctrl-["    "escape"
+"\r"        "enter"              # enter key
+"ctrl-J"    "enter"
+"\b"        "backspace"          # backspace key
+"ctrl-H"    "backspace"
+
+"q"         "quit"               # quit the chesstrainer (or overlay menus)
+"ctrl-Q"    "quit"
+"ctrl-L"    "language"           # toggle the language
+" "         "switchmode"         # toggle between add and test mode
+\\          "playmode"           # toggle to/between play and analysis mode
+"p"         "selplayer"          # select a player
+"ctrl-R"    "rmplayer"           # remove the current player
+"m"         "selmode"            # choose a sequence selection mode
+"d"         "difffun"            # choose a difficulty calculation method
+"^"         "expval"             # specify the exponent value
+"6"         "expval"
+"W"         "wait"               # wait after completing a sequence on/off
+"-"         "delay-"             # decrease the time between moves
+"="         "delay+"             # increase the time between moves
+"_"         "volume-"            # decrease the sound volume
+"+"         "volume+"            # increase the sound volume
+"ctrl-_"    "margin-"            # decrease the margin width
+"ctrl-+"    "margin+"            # increase the margin width
+
+"F1"        "showhelp"           # show help (also on board editor and overlay menus)
+"F2"        "leaderboard"        # show the leaderboard and player statistics
+"F3"        "showsettings"       # show the settings
+"F4"        "vizsettings"        # settings for colors and text sizes
+"F5"        "mainsettings"       # settings for the trainer
+"F6"        "miscsettings"       # settings for miscellanea
+"F7"        "sfsettings"         # settings for Stockfish
+"F8"        "lisettings"         # settings for Lichess
+"F9"        "seqdirsettings"     # add, remove, and select sequence directories
+"F10"       "distributions"      # show histograms/scatterplot
+"ctrl-!"    "distributions"
+"F11"       "sessioninfo"        # show session info
+"ctrl-@"    "sessioninfo"
+"ctrl-\""   "sessioninfo"
+"F12"       "historygraph"       # show session history
+"ctrl-#"    "historygraph"
+"ctrl-§"    "historygraph"
+
+"l"         "listseqs"           # list all (selected) sequences
+"/"         "searchseqs"         # search for and select sequences
+"."         "selectlast"         # select the last saved sequence
+"|"         "searchseqsshow"     # search for sequences (without selecting them)
+"*"         "selectall"          # select all sequences
+"8"         "selectall"
+"?"         "findmoves"          # select sequences that start with the same moves
+"'"         "findpos"            # select sequences that contain the same position
+"]"         "findposshow"        # show sequences that contain the same position
+"["         "findposfreq"        # show the next moves of sequences that contain the same position
+";"         "findend"            # select sequences that end on the same position
+":"         "findpiecepos"       # select sequences with the last-moved piece on its current square
+","         "saveselsearch"      # save/select search queries
+"<"         "addbookmark"        # bookmark the current sequence
+">"         "bookmarks"          # select and manage bookmarks
+"j"         "jumptoseqno"        # jump to a sequence number (for sequential sequence selection modes)
+"P"         "importpgn"          # import a sequence from a PGN file/text
+
+"ctrl-F"    "copyfen"            # copy the FEN of the current position to the clipboard (also for board editor)
+"ctrl-C"    "copyseqname"        # copy the name of the current sequence to the clipboard
+"ctrl-D"    "delseq"             # delete the current sequence (test mode)
+
+"n"         "next"               # start new/next sequence
+"ctrl-N"    "next1"              # start new/next sequence (force seqno + 1)
+"N"         "nextres"            # start new/next sequence (also resets savpos, flip, and sidetoplay)
+"B"         "endseqnext"         # end the sequence and go to the next one (only in test mode and when upsidedown is TRUE)
+
+"o"         "openfenli"          # open the current position on lichess.org
+"g"         "progressgraph"      # show the progress graph for the current sequence (in test mode)
+"g"         "evalgraph"          # show the evaluation graph for the current sequence (in add/play/analysis mode)
+"v"         "showsfbar"          # Stockfish evaluation bar on/off
+"V"         "showlibar"          # Lichess evaluation bar on/off
+"h"         "givehint"           # get a hint (in test mode)
+"h"         "bestmovefast"       # show the best move(s) according to Stockfish (fast evaluation) (in add/play/analysis mode)
+"H"         "bestmovedeep"       # show the best move(s) according to Stockfish (deep evaluation) (in add/play/analysis mode)
+"L"         "bestmoveli"         # get the position evaluation from Lichess and show the best move(s) (in add/play/analysis mode)
+"y"         "contanalysis"       # continuous analysis with Stockfish on/off (in add/analysis mode)
+"i"         "liquery"            # query the Lichess games database
+"Y"         "contliquery"        # toggle continuous query of the Lichess games database on/off
+"ctrl-H"    "usesfcache"         # get Stockfish position evaluations from the cache on/off
+"ctrl-I"    "uselicache"         # get Lichess position evaluations from the cache on/off
+"u"         "recalcevals"        # recalculate the evaluations for the current sequence
+"U"         "recalcallevals"     # recalculate the evaluations for all (selected) sequences
+
+"1"         "jumptobegin"        # jump to the first player move or the beginning of the sequence/game
+"Up"        "jumptobegin"
+"t"         "takebackscoreincr"  # take back a score increase (in test mode)
+"t"         "takebackmove"       # take back the last move (computer move and own move in play mode) (in add/play/analysis mode)
+"Left"      "gobackmove"         # go back one move
+"Right"     "nextmove"           # go forward one move / play the next/best move
+"2"         "jumptoend"          # jump to the end of the sequence/game
+"Down"      "jumptoend"
+"3"         "jumpto14"           # jump to the 1st quarter of the sequence/game
+"4"         "jumpto24"           # jump to the middle of the sequence/game
+"5"         "jumpto34"           # jump to the 3rd quarter of the sequence/game
+
+"0"         "makestartpos"       # make the current position the starting position for the sequence (in add mode)
+"0"         "storeasmainvar"     # store the current moves and position as the main variation (in play/analysis mode)
+"9"         "jumptomainvar"      # jump to the main variation (in play/analysis mode)
+
+"r"         "replast"            # repeat the last sequence (test mode)
+"%"         "setscore"           # manually enter the score for the current sequence (test mode)
+"M"         "triggermistake"     # manually trigger a mistake (test mode)
+
+"a"         "addnewseq"          # extend the current sequence / position (switches to add mode)
+"A"         "addnewseqatpos"     # extend the current position (switches to add mode)
+"f"         "flip"               # flip the board
+"z"         "show"               # show own moves on/off (add mode)
+"Z"         "showcomp"           # show computer moves on/off (add mode)
+"c"         "comment"            # add a comment to the current move (add mode)
+"e"         "editcomments"       # edit the comments / PGN tags
+"s"         "saveseq"            # save the sequence (add mode)
+"b"         "boardeditor"        # start the board editor (in add/play/analysis mode)
+"!"         "glyph!"             # add ! glyphs
+"@"         "glyph@"             # add ? glyphs
+"#"         "glyph#"             # add rectangle/triangle/arrow glyphs
+"§"         "glyph#"
+"$"         "glyph$"             # add =+- glyphs
+
+# shortcuts for the advanced mode
+
+"ctrl-("    "advanced"           # toggle advanced mode on/off
+"ctrl-{"    "printmoves"         # print sub$moves
+"ctrl-}"    "printpos"           # print pos
+"ctrl-|"    "printsub"           # print sub
+"ctrl-U"    "upsidedown"         # toggle upside down mode on/off
+"E"         "editmoves"          # use edit() on sub$moves
+"ctrl-A"    "addendmove"         # add an end move (add mode)
+"ctrl-E"    "editendmoves"       # edit the end moves (add mode)
+"ctrl-T"    "testend"            # add a test (add mode)
+"ctrl-V"    "verbose"            # toggle verbose mode on/off
+"F"         "flush"              # toggle flush on/off
+"ctrl-)"    "edithistory"        # edit the session history file
+
+# board editor shortcuts
+
+"n"         "boareeditornew"     # reset the board into the starting position
+"f"         "boareeditorflip"    # flip the board
+"s"         "boareeditorside"    # set which side plays the first move
+"c"         "boareeditorclear"   # clear the board
+"e"         "boareeditorfen"     # enter the FEN for a given position
+"o"         "boareeditoropenli"  # open the position on lichess.org
+
+# bookmarks screen shortcuts
+
+"r"         "bookmarkremove"     # remove a bookmark
+"R"         "bookmarkremoveall"  # remove all bookmarks
+"p"         "bookmarkposition"   # change the position of a bookmark
+
+# saved search queries screen shortcuts
+
+"s"         "searchsave"         # save/add a search query
+"a"         "searchsave"
+"r"         "searchremove"       # remove a search query
+"r"         "searchremoveall"    # remove all search queries
+"p"         "searchposition"     # change the position of a search query
+"t"         "searchtoggle"       # toggle between search queries and descriptions
+"e"         "searchedit"         # edit the search queries / descriptions
+
+# sequence directories screen shortcuts
+
+"a"         "seqdiradd"          # add a sequence directory
+"s"         "seqdiradd"
+"r"         "seqdirremove"       # remove a sequence directory
+"p"         "seqdirposition"     # change the position of a sequence directory
+
+# help screen shortcuts
+
+"ctrl-M"    "helpbrowsemanual"   # open the manual online
+"ctrl-T"    "helpprintmanual"    # print the manual in the console
+
+# disabled / for development use only
+
+"ctrl-O"    "chkmovesalltsv"
+"ctrl-G"    "genseqs"

@@ -109,6 +109,15 @@
    With \verb{<Ctrl-0>}, one can edit the session history of the current player (i.e., delete one or multiple rows).
 
 }
+\section{Keyboard Shortcuts}{
+
+   The keyboard shortcuts of the chess trainer are completely configurable. The first time the trainer is run, the shortcut file \file{shortcuts.txt} is copied to:
+
+   \code{tools::R_user_dir(package="chesstrainer", which="config")}
+
+   It can be edited by hand as deemed necessary. Note that adjustments to the shortcuts are not reflected for example in the \verb{<F1>} help overlay. This may be added in the future.
+
+}
 \author{
    Wolfgang Viechtbauer (\email{wvb@wvbauer.com})
 }

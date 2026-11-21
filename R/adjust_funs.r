@@ -29,7 +29,7 @@
       if (is.numeric(resp))
          break
 
-      if (identical(resp, "q") || identical(resp, "\033") || identical(resp, "ctrl-["))
+      if (.iskey(resp, "quit") || .iskey(resp, "escape"))
          break
 
       if (grepl("^[0-9]$", resp)) {
@@ -41,7 +41,7 @@
          sw.val <- strwidth(val, family=font.mono, cex=cex)
       }
 
-      if (identical(resp, "\r") || identical(resp, "ctrl-J")) {
+      if (.iskey(resp, "enter")) {
          val <- as.numeric(paste0(val, collapse=""))
          if (is.na(val))
             break
@@ -51,7 +51,7 @@
          break
       }
 
-      if (identical(resp, "\b") || identical(resp, "ctrl-H")) {
+      if (.iskey(resp, "backspace")) {
          if (nchar(val) > 1L) {
             val <- substr(val, 1L, nchar(val)-1L)
          } else {
@@ -108,7 +108,7 @@
       if (is.numeric(resp))
          break
 
-      if (identical(resp, "q") || identical(resp, "\033") || identical(resp, "ctrl-["))
+      if (.iskey(resp, "quit") || .iskey(resp, "escape"))
          break
 
       if (grepl("^[0-9.]+$", resp)) {
@@ -120,7 +120,7 @@
          sw.val <- strwidth(val, family=font.mono, cex=cex)
       }
 
-      if (identical(resp, "\r") || identical(resp, "ctrl-J")) {
+      if (.iskey(resp, "enter")) {
          val <- as.numeric(paste0(val, collapse=""))
          if (is.na(val))
             break
@@ -129,7 +129,7 @@
          break
       }
 
-      if (identical(resp, "\b") || identical(resp, "ctrl-H")) {
+      if (.iskey(resp, "backspace")) {
          if (nchar(val) > 1L) {
             val <- substr(val, 1L, nchar(val)-1L)
          } else {
@@ -186,7 +186,7 @@
       if (is.numeric(resp))
          break
 
-      if (identical(resp, "q") || identical(resp, "\033") || identical(resp, "ctrl-["))
+      if (.iskey(resp, "quit") || .iskey(resp, "escape"))
          break
 
       if (grepl("^[0-9]$", resp)) {
@@ -198,7 +198,7 @@
          sw.val <- strwidth(val, family=font.mono, cex=cex)
       }
 
-      if (identical(resp, "\r") || identical(resp, "ctrl-J")) {
+      if (.iskey(resp, "enter")) {
          val <- as.integer(paste0(val, collapse=""))
          if (is.na(val))
             break
@@ -213,7 +213,7 @@
          break
       }
 
-      if (identical(resp, "\b") || identical(resp, "ctrl-H")) {
+      if (.iskey(resp, "backspace")) {
          if (nchar(val) > 1L) {
             val <- substr(val, 1L, nchar(val)-1L)
          } else {

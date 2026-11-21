@@ -90,8 +90,8 @@
       if (is.numeric(click) && (click[[3]] == 0 || click[[3]] == 2)) # left/right mouse button exits
          break
 
-      if (identical(click, "ctrl-+") || identical(click, "ctrl-_")) {
-         if (identical(click, "ctrl-_")) {
+      if (.iskey(click, c("margin-", "margin+"))) {
+         if (.iskey(click, "margin-")) {
             mar2 <- pmax(1, mar2 - 0.5)
          } else {
             mar2 <- mar2 + 0.5
@@ -112,7 +112,7 @@
          }
       }
 
-      if (identical(click, "g") || identical(click, "\r") || identical(click, "ctrl-J") || identical(click, "q") || identical(click, "\033") || identical(click, "ctrl-[") || identical(click, " "))
+      if (.iskey(click, "evalgraph") || .iskey(click, "quit") || .iskey(click, "escape"))
          break
 
    }

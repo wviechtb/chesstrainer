@@ -128,22 +128,22 @@ anzuzeigen."))
          }
       }
 
-      if (identical(click, "F1") || identical(click, "q") || identical(click, "\r") || identical(click, "ctrl-J") || identical(click, "\033") || identical(click, "ctrl-["))
+      if (.iskey(click, "showhelp") || .iskey(click, "quit") || .iskey(click, "escape"))
          break
 
-      if (identical(click, "m")) {
+      if (.iskey(click, "helpbrowsemanual")) {
          browseURL("https://wviechtb.github.io/chesstrainer/reference/chesstrainer-package.html")
          redraw <- FALSE
          next
       }
 
-      if (identical(click, "t")) {
+      if (.iskey(click, "helpprintmanual")) {
          print(help("chesstrainer", help_type="text"))
          redraw <- FALSE
          next
       }
 
-      if (identical(click, "ctrl-L")) {
+      if (.iskey(click, "language")) {
          if (lang == "de") {
             lang <- "en"
          } else {

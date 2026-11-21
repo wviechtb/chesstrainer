@@ -23,7 +23,7 @@
       "n        - start new/next sequence",
       "l        - list all (selected) sequences",
       "^ or 6   - specify the exponent value",
-      "/        - select sequences",
+      "/        - search for and select sequences",
       ",        - save/select search queries",
       "|        - search for sequences (without selecting them)",
       "* or 8   - select all sequences",
@@ -74,7 +74,7 @@
       "Shortcuts for the test mode:",
       "h        - get a hint (can be selected twice)",
       "t        - take back a score increase",
-      "W        - wait after completing a sequence",
+      "W        - wait after completing a sequence on/off",
       "%        - manually enter the score for the current sequence",
       "M        - manually trigger a mistake",
       "<        - bookmark the current sequence",
@@ -91,7 +91,7 @@
       "c        - add a comment to the current move",
       "e        - edit the comments / PGN tags",
       "h and H  - show the best move according to Stockfish (fast / deep evaluation)",
-      "L        - get the position evaluation from Lichess",
+      "L        - get the position evaluation from Lichess and show the best move",
       "y        - continuous analysis with Stockfish on/off (also in analysis mode)",
       "i        - query the Lichess games database (also in analysis/play mode)",
       "Y        - toggle continuous query of the Lichess games database on/off",
@@ -117,13 +117,13 @@
       "Allgemeine Tastenk\U000000FCrzel:",
       "Strg-l   - Sprache wechseln (Englisch/Deutsch)",
       "<Space>  - Modus wechseln (Test/Hinzuf\U000000FCgen)",
-      "\\ oder \U000000E4 - in den Spielmodus wechseln",
+      "\\        - in den Spielmodus wechseln",
       "p        - Spieler ausw\U000000E4hlen",
       "Strg-r   - Spieler l\U000000F6schen",
       "n        - neue/n\U000000E4chste Sequenz starten",
       "l        - alle (ausgew\U000000E4hlten) Sequenzen auflisten",
       "^ oder 6 - Exponentenwert angeben",
-      "/        - Sequenzen ausw\U000000E4hlen",
+      "/        - nach Sequenzen suchen und ausw\U000000E4hlen",
       ",        - Suchen sichern/ausw\U000000E4hlen",
       "|        - nach Sequenzen suchen (ohne sie auszuw\U000000E4hlen)",
       "* oder 8 - alle Sequenzen ausw\U000000E4hlen",
@@ -174,7 +174,7 @@
       "Tastenk\U000000FCrzel f\U000000FCr den Test Modus:",
       "h        - einen Tipp bekommen (kann zweimal gew\U000000E4hlt werden)",
       "t        - Punktekerh\U000000F6hung zur\U000000FCcknehmen",
-      "W        - Nach Abschluss einer Sequenz warten",
+      "W        - Nach Abschluss einer Sequenz warten an/aus",
       "%        - Punktewert f\U000000FCr die aktuelle Sequenz manuell eingeben",
       "M        - Fehler manuell ausl\U000000F6sen",
       "<        - Lesezeichen f\U000000FCr die aktuelle Sequenz setzen",
@@ -191,7 +191,7 @@
       "c        - Kommentar zum aktuellen Zug hinzuf\U000000FCgen",
       "e        - Kommentare / PGN Tags bearbeiten",
       "h und H  - den besten Zug laut Stockfish anzeigen (schnelle / tiefe Analyse)",
-      "L        - Positionsbewertung von Lichess abrufen",
+      "L        - Positionsbewertung von Lichess abrufen und den besten Zug anzeigen",
       "y        - kontinuierliche Analyse mit Stockfish an/aus (auch im Analysemodus)",
       "i        - die Lichess Spieldatenbank abfragen (auch im Spiel/Analysemodus)",
       "Y        - kontinuierliche Abfrage der Lichess Spieldatenbank an/aus",
@@ -205,7 +205,7 @@
       txt.play <- c(
       "Tastenk\U000000FCrzel f\U000000FCr den Spielmodus:",
       "t        - den letzten Zug zur\U000000FCcknehmen (Computerzug und eigener Zug)",
-      "\\ oder \U000000E4 - zwischen dem Spiel- und Analysemodus wechseln",
+      "\\        - zwischen dem Spiel- und Analysemodus wechseln",
       "0        - aktuelle Zugfolge und Stellung als Hauptvariante sichern",
       "9        - zur Hauptvariante springen",
       "a und A  - in den Hinzuf\U000000FCgen Modus wechseln")
@@ -273,10 +273,10 @@
          }
       }
 
-      if (identical(click, "F1") || identical(click, "\r") || identical(click, "ctrl-J"))
+      if (.iskey(click, "showhelp") || .iskey(click, "enter"))
          break
 
-      if (identical(click, "\033") || identical(click, "ctrl-[")) {
+      if (.iskey(click, "escape")) {
          if (nchar(searchtxt) == 0L) {
             break
          } else {
@@ -285,19 +285,19 @@
          next
       }
 
-      if (identical(click, "ctrl-M")) {
+      if (.iskey(click, "helpbrowsemanual")) {
          browseURL("https://wviechtb.github.io/chesstrainer/reference/chesstrainer-package.html")
          redraw <- FALSE
          next
       }
 
-      if (identical(click, "ctrl-T")) {
+      if (.iskey(click, "helpprintmanual")) {
          print(help("chesstrainer", help_type="text"))
          redraw <- FALSE
          next
       }
 
-      if (identical(click, "ctrl-L")) {
+      if (.iskey(click, "language")) {
          if (lang == "de") {
             lang <- "en"
          } else {
@@ -313,7 +313,7 @@
          next
       }
 
-      if (identical(click, "\b") || identical(click, "ctrl-H")) {
+      if (.iskey(click, "backspace")) {
          if (nchar(searchtxt) <= 1L) {
             searchtxt <- ""
          } else {

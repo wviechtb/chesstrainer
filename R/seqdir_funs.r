@@ -86,14 +86,14 @@
          }
       }
 
-      # Escape or q to exit
+      # F9, Escape, or q to exit
 
-      if (identical(key, "F9") || identical(key, "q") || identical(key, "\033") || identical(key, "ctrl-["))
+      if (.iskey(key, "seqdirsettings") || .iskey(key, "quit") || .iskey(key, "escape"))
          break
 
       # F1 to show the help
 
-      if (identical(key, "F1")) {
+      if (.iskey(key, "showhelp")) {
          .showhelp.seqdir()
          .drawseqdir(seqdir, seqdirpos)
          next
@@ -114,7 +114,7 @@
 
       # enter = enter selected number
 
-      if (identical(key, "\r") || identical(key, "ctrl-J")) {
+      if (.iskey(key, "enter")) {
          if (keymode=="s" && num==0)
             break
          if (num < 1 || num > length(seqdir)) {
@@ -174,7 +174,7 @@
 
       # backspace = remove last entered number
 
-      if (identical(key, "\b") || identical(key, "ctrl-H")) {
+      if (.iskey(key, "backspace")) {
          if (nchar(num) == 1) {
             num <- 0
          } else {
@@ -185,7 +185,7 @@
 
       # a = add directory
 
-      if (keymode=="s" && identical(key, "a")) {
+      if (keymode=="s" && .iskey(key, "seqdiradd")) {
          if (.Platform$OS.type == "windows") {
             seqdirnew <- choose.dir(caption="")
             if (is.na(seqdirnew))
@@ -224,7 +224,7 @@
 
       # r = go into removal mode
 
-      if (identical(key, "r")) {
+      if (.iskey(key, "seqdirremove")) {
          keymode <- "r"
          num <- 0
          whichnum <- 1
@@ -233,7 +233,7 @@
 
       # p = enter into change position mode
 
-      if (identical(key, "p")) {
+      if (.iskey(key, "seqdirposition")) {
          keymode <- "p"
          num <- 0
          whichnum <- 1

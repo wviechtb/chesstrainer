@@ -130,9 +130,9 @@
          }
       }
 
-      # Escape or q to exit
+      # comma, q, or Escape to exit
 
-      if (identical(key, "\033") || identical(key, "ctrl-[") || identical(key, "q") || identical(key, ">")) {
+      if (.iskey(key, "saveselsearch") || .iskey(key, "quit") || .iskey(key, "escape")) {
          if (keymode == "remove") {
             num <- 0L
             whichpos <- 1L
@@ -150,7 +150,7 @@
 
       # F1 to show the help
 
-      if (identical(key, "F1")) {
+      if (.iskey(key, "showhelp")) {
          .showhelp.searchterms()
          .drawsearchterms(searchterms, descriptions, showwhich)
          next
@@ -171,7 +171,7 @@
 
       # enter = enter selected number
 
-      if (identical(key, "\r") || identical(key, "ctrl-J")) {
+      if (.iskey(key, "enter")) {
          if (keymode=="select" && num==0L)
             break
          if (num < 1L || num > length(searchterms)) {
@@ -224,7 +224,7 @@
 
       # backspace = remove last entered number
 
-      if (identical(key, "\b") || identical(key, "ctrl-H")) {
+      if (.iskey(key, "backspace")) {
          if (nchar(num) == 1L) {
             num <- 0L
          } else {
@@ -235,7 +235,7 @@
 
       # s or a = save/add searchterm
 
-      if ((identical(key, "s") || identical(key, "a")) && cursearchterm != "") {
+      if (.iskey(key, "searchsave") && cursearchterm != "") {
          rect(1.4, 1.5, 8.7, 2.4, col=col.bg, border=NA)
          text(1.8, 2, .text("savesearchterm"), pos=4, offset=0, cex=cex, family=font.mono, font=1, col=col.help)
          text(1.8, 1.7, .text("searchterm", cursearchterm2), pos=4, offset=0, cex=cex, family=font.mono, font=1, col=col.help)
@@ -257,7 +257,7 @@
 
       # r = go into removal mode
 
-      if (identical(key, "r") && length(searchterms) >= 1L) {
+      if (.iskey(key, "searchremove") && length(searchterms) >= 1L) {
          keymode <- "remove"
          num <- 0L
          whichpos <- 1L
@@ -266,7 +266,7 @@
 
       # R = remove all searchterms
 
-      if (identical(key, "R")) {
+      if (.iskey(key, "searchremoveall")) {
          rect(1.4, 1.5, 8.7, 2.4, col=col.bg, border=NA)
          text(1.8, 2, .text("rlydelallsearchterms"), pos=4, offset=0, cex=cex, family=font.mono, font=1, col=col.help)
          answer <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=.keyfun)
@@ -284,7 +284,7 @@
 
       # p = enter into change position mode
 
-      if (identical(key, "p") && length(searchterms) >= 2L) {
+      if (.iskey(key, "searchposition") && length(searchterms) >= 2L) {
          keymode <- "position"
          num <- 0L
          whichpos <- 1L
@@ -293,7 +293,7 @@
 
       # t = toggle between showing searchterms and descriptions
 
-      if (identical(key, "t") && length(searchterms) >= 1L) {
+      if (.iskey(key, "searchtoggle") && length(searchterms) >= 1L) {
          showwhich <- ifelse(showwhich == "searchterms", "descriptions", "searchterms")
          tmp <- .drawsearchterms(searchterms, descriptions, showwhich)
          cex <- tmp$cex
@@ -305,7 +305,7 @@
 
       # e = to edit the searchterms/descriptions
 
-      if (identical(key, "e")) {
+      if (.iskey(key, "searchedit")) {
          tmp <- data.frame(searchterm=searchterms, description=descriptions)
          tmp <- edit(tmp)
          searchterms <- tmp$searchterm

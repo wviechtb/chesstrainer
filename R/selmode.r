@@ -90,7 +90,7 @@
 
       } else {
 
-         if (identical(click, "m") || identical(click, "\r") || identical(click, "ctrl-J") || identical(click, "q") || identical(click, "\033") || identical(click, "ctrl-["))
+         if (.iskey(click, "selmode") || .iskey(click, "quit") || .iskey(click, "escape"))
             break
 
          if (is.element(click, 0:9)) {
@@ -101,13 +101,13 @@
             break
          }
 
-         if (is.element(click, c("-"))) {
+         if (identical(click, "-")) {
             click <- 11
             selmode <- selmodes[click]
             break
          }
 
-         if (is.element(click, c("="))) {
+         if (identical(click, "=")) {
             click <- 12
             selmode <- selmodes[click]
             break

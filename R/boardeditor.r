@@ -96,6 +96,21 @@
    cex <- .get("cex.top")
    cex.fen <- cex * 0.8
 
+   shortcuts <- .get("shortcuts")
+
+   keys <- c(shortcuts$key[shortcuts$purpose=="escape"], shortcuts$key[shortcuts$purpose=="quit"], # escape, q
+             shortcuts$key[shortcuts$purpose=="boareeditornew"], # n
+             shortcuts$key[shortcuts$purpose=="boareeditorflip"], # f
+             shortcuts$key[shortcuts$purpose=="boareeditorside"], # s
+             shortcuts$key[shortcuts$purpose=="boareeditorclear"], # c
+             shortcuts$key[shortcuts$purpose=="boareeditorfen"], # e
+             shortcuts$key[shortcuts$purpose=="boareeditoropenli"], # o
+             shortcuts$key[shortcuts$purpose=="showhelp"], # F1
+             shortcuts$key[shortcuts$purpose=="copyfen"], # ctrl-f
+             shortcuts$key[shortcuts$purpose=="printpos"] # ctrl-}
+             )
+   keys <- unique(keys)
+
    text(6, 0.5, paste("FEN: ", curfen), col=col, cex=cex.fen)
 
    while (TRUE) {
@@ -160,8 +175,6 @@
          next
       }
 
-      keys <- c("q", "\033", "ctrl-[", "n", "f", "s", "c", "e", "o", "F1", "ctrl-F", "ctrl-P")
-
       if (is.character(click) && !is.element(click, keys))
          next
 
@@ -169,7 +182,7 @@
 
       # q or escape to quit the board editor
 
-      if (identical(click, "q") || identical(click, "\033") || identical(click, "ctrl-[")) {
+      if (.iskey(click, "quit") || .iskey(click, "escape")) {
          tmp <- pos[2:9,2:9]
          if (sum(tmp == "WK") != 1L || sum(tmp == "BK") != 1L) {
             .texttop(.text("kingswrong"), sleep=2, xadj=1, yadj=2, showlast=FALSE)
@@ -194,7 +207,7 @@
 
       # n to reset the board into the starting position
 
-      if (identical(click, "n")) {
+      if (.iskey(click, "boareeditornew")) {
          pos <- .get("boardeditorpos")
          sidetoplay <- "w"
          oldfen <- NULL
@@ -205,7 +218,7 @@
 
       # f to flip the board
 
-      if (identical(click, "f")) {
+      if (.iskey(click, "boareeditorflip")) {
          flip <- !flip
          oldfen <- NULL
          oldrochade <- NULL
@@ -215,7 +228,7 @@
 
       # s to switch sidetoplay
 
-      if (identical(click, "s")) {
+      if (.iskey(click, "boareeditorside")) {
          oldfen <- NULL
          sidetoplay <- ifelse(sidetoplay == "w", "b", "w")
          .drawsideindicator(sidetoplay, flip=flip, adj=1)
@@ -224,7 +237,7 @@
 
       # c to clear the board
 
-      if (identical(click, "c")) {
+      if (.iskey(click, "boareeditorclear")) {
          pos[2:9,2:9] <- ""
          attr(pos,"rochade") <- rep(FALSE, 4)
          attr(pos,"ispp") <- NULL
@@ -237,7 +250,7 @@
 
       # e to enter FEN
 
-      if (identical(click, "e")) {
+      if (.iskey(click, "boareeditorfen")) {
          eval(expr=switch1)
          fen <- readline(prompt=style_bold(.text("enterfen")))
          eval(expr=switch2)
@@ -276,7 +289,7 @@
 
       # o to open the position on lichess.org
 
-      if (identical(click, "o")) {
+      if (.iskey(click, "boareeditoropenli")) {
          eval(expr=switch1)
          fen <- .genfen(.shrinkpos(pos), flip, sidetoplay, sidetoplay, i=1)
          cat(fen, "\n")
@@ -292,7 +305,7 @@
 
       # F1 to show the help
 
-      if (identical(click, "F1")) {
+      if (.iskey(click, "showhelp")) {
          .showhelp.boardeditor()
          oldfen <- NULL
          oldrochade <- NULL
@@ -302,7 +315,7 @@
 
       # ctrl-f to print and copy the FEN to the clipboard
 
-      if (identical(click, "ctrl-F")) {
+      if (.iskey(click, "copyfen")) {
          #eval(expr=switch1)
          cat(curfen, "\n")
          #eval(expr=switch2)
@@ -310,9 +323,9 @@
          next
       }
 
-      # ctrl-p to print 'pos'
+      # ctrl-] to print 'pos'
 
-      if (identical(click, "ctrl-P")) {
+      if (.iskey(click, "printpos")) {
          #eval(expr=switch1)
          print(pos)
          #eval(expr=switch2)

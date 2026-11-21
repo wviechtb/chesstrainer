@@ -94,13 +94,13 @@
          if (is.numeric(resp))
             next
 
-         if (identical(resp, "\033") || identical(resp, "ctrl-[")) {
+         if (.iskey(resp, "escape")) {
             setlen <- setmin <- FALSE
             rect(1.5, .last(ypos) - 7*dist, 8.4, .last(ypos) - 9*dist, col=col.bg, border=NA)
             break
          }
 
-         if (identical(resp, "\r") || identical(resp, "ctrl-J")) {
+         if (.iskey(resp, "enter")) {
             val <- as.numeric(paste0(val, collapse=""))
             if (is.na(val)) {
                setlen <- setmin <- FALSE
@@ -142,7 +142,7 @@
             sw.val <- strwidth(val, family=font.mono, cex=cex)
          }
 
-         if (identical(resp, "\b") || identical(resp, "ctrl-H")) {
+         if (.iskey(resp, "backspace")) {
             if (nchar(val) > 1L) {
                val <- substr(val, 1L, nchar(val)-1L)
             } else {
@@ -183,7 +183,7 @@
 
       } else {
 
-         if (identical(click, "d") || identical(click, "\r") || identical(click, "ctrl-J") || identical(click, "q") || identical(click, "\033") || identical(click, "ctrl-["))
+         if (.iskey(click, "difffun") || .iskey(click, "quit") || .iskey(click, "escape"))
             break
 
          if (identical(click, "n"))

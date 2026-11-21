@@ -10,6 +10,12 @@
 .keyfun <- function(key)
    return(key)
 
+.iskey <- function(x, purpose, shortcuts) {
+   shortcuts <- .get("shortcuts")
+   keys <- shortcuts$key[shortcuts$purpose %in% purpose]
+   return(any(vapply(keys, identical, logical(1), x)))
+}
+
 .print <- function(x, addn=FALSE) {
    n <- length(x)
    for (i in 1:n) {
@@ -24,7 +30,12 @@
 
 .get <- function(x) {
    if (exists(x,envir=.chesstrainer)) {
-      unname(get(x, envir=.chesstrainer))
+      x <- get(x, envir=.chesstrainer)
+      if (inherits(x, "data.frame")) {
+         return(x)
+      } else {
+         return(unname(x))
+      }
    } else {
       return(NULL)
    }
@@ -2326,5 +2337,5 @@
 
 }
 
-.genlines <- function(pos, sub, nmoves, genminperc, genminfreq, movedb, basename, level, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc, sfproc, sfrun, depth, seqdir)
+.genseqs <- function(pos, sub, nmoves, genminperc, genminfreq, movedb, basename, level, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc, sfproc, sfrun, depth, seqdir)
    return()

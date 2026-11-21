@@ -206,6 +206,15 @@ play <- function(lang="en", online, ...) {
       }
    }
 
+   # copy shortcuts.txt file to config dir if it doesn't exist
+
+   if (!file.exists(file.path(configdir, "shortcuts.txt")))
+      file.copy(system.file("misc", "shortcuts.txt", package="chesstrainer"), configdir)
+
+   # read in shortcuts.txt
+
+   shortcuts <- read.table(file.path(configdir, "shortcuts.txt"), header=FALSE, col.names=c("key", "purpose"), allowEscapes=TRUE)
+
    # make sure that switch1/switch2 only make use of bringToTop() under Windows when using RGui
 
    if (iswin && !isrgui && grepl(switch1, "bringToTop", fixed=TRUE))
@@ -255,6 +264,7 @@ play <- function(lang="en", online, ...) {
    assign("lastapirequest", proc.time()[[3]], envir=.chesstrainer)
    assign("evalsteps", evalsteps, envir=.chesstrainer)
    assign("showwhich", showwhich, envir=.chesstrainer)
+   assign("shortcuts", shortcuts, envir=.chesstrainer)
 
    # create cache directories
 
@@ -646,19 +656,67 @@ play <- function(lang="en", online, ...) {
 
    # define keys
 
-   keys <- c("q", "ctrl-Q", # to quit
-             "\033", "ctrl-[", # escape
-             " ", "m", "d", "\\", "\U000000E4", "n", "N", "B", "p",
-             "g", "h", "H", "y", "Y", "Left", "Right", "Up", "Down", "t", "0", "1", "2", "3", "4", "5", "9",
-             "r", "o", "u", "U", "M", "j", "%", "P",
-             "a", "A", "f", "z", "Z", "c", "!", "@", "#", "$", "\U000000A7", "e", "E", "s", "b", "F",
-             "^", "6", "W", "-", "=", "_", "+", "[", "]", "i", "v", "V",
-             "l", "L", "<", ">", "/", ",", ".", "|", "*", "8", "?", "'", ";", ":", "\"",
-             "ctrl-F", "ctrl-C", "ctrl-D", "ctrl-R", "ctrl-U", "ctrl-O", "ctrl-L", "ctrl-G", "ctrl-A", "ctrl-E", "ctrl-N", "ctrl-V", "ctrl-T", "ctrl-H", "ctrl-I", "ctrl-{", "ctrl-}", "ctrl-|",
-             "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "F10", "F11", "F12",
-             "ctrl-!", "ctrl-@", "ctrl-\"", "ctrl-#", "ctrl-\U000000A7", # ctrl-1, ctrl-2, ctrl-3 (as alternatives to F10, F11, and F12)
-             "ctrl-_", "ctrl-+", # to adjust margin width
-             "ctrl-(", "ctrl-)") # ctrl-9 and ctrl-0 to toggle advanced mode on/off and to edit the session history file
+   keys <- c(shortcuts$key[shortcuts$purpose=="quit"], # q and ctrl-q to quit
+             shortcuts$key[shortcuts$purpose=="escape"], # escape to update the board
+             shortcuts$key[shortcuts$purpose=="switchmode"], shortcuts$key[shortcuts$purpose=="selmode"], shortcuts$key[shortcuts$purpose=="difffun"], # space, m, d
+             shortcuts$key[shortcuts$purpose=="playmode"], # \
+             shortcuts$key[shortcuts$purpose=="next"], shortcuts$key[shortcuts$purpose=="next1"], shortcuts$key[shortcuts$purpose=="nextres"], # n, ctrl-n, N
+             shortcuts$key[shortcuts$purpose=="selplayer"], shortcuts$key[shortcuts$purpose=="rmplayer"], # p, "ctrl-r",
+             shortcuts$key[shortcuts$purpose=="openfenli"], # o
+             shortcuts$key[shortcuts$purpose=="progressgraph"], shortcuts$key[shortcuts$purpose=="evalgraph"], # g
+             shortcuts$key[shortcuts$purpose=="givehint"], shortcuts$key[shortcuts$purpose=="bestmovefast"], shortcuts$key[shortcuts$purpose=="bestmovedeep"], shortcuts$key[shortcuts$purpose=="bestmoveli"], # h, H, L
+             shortcuts$key[shortcuts$purpose=="contanalysis"], shortcuts$key[shortcuts$purpose=="liquery"], shortcuts$key[shortcuts$purpose=="contliquery"], # y, i, Y
+             shortcuts$key[shortcuts$purpose=="usesfcache"], shortcuts$key[shortcuts$purpose=="uselicache"], # ctrl-h, ctrl-i
+             shortcuts$key[shortcuts$purpose=="takebackscoreincr"], # t
+             shortcuts$key[shortcuts$purpose=="jumptobegin"], # 1, up arrow
+             shortcuts$key[shortcuts$purpose=="takebackmove"], shortcuts$key[shortcuts$purpose=="gobackmove"], # t, left arrow
+             shortcuts$key[shortcuts$purpose=="nextmove"], # right arrow
+             shortcuts$key[shortcuts$purpose=="jumptoend"], shortcuts$key[shortcuts$purpose=="jumpto14"], shortcuts$key[shortcuts$purpose=="jumpto24"], shortcuts$key[shortcuts$purpose=="jumpto34"], # down arrow, 2, 3, 4, 5
+             shortcuts$key[shortcuts$purpose=="makestartpos"], shortcuts$key[shortcuts$purpose=="storeasmainvar"], shortcuts$key[shortcuts$purpose=="jumptomainvar"], # 0, 9
+             shortcuts$key[shortcuts$purpose=="recalcevals"], shortcuts$key[shortcuts$purpose=="recalcallevals"], # u, U
+             shortcuts$key[shortcuts$purpose=="upsidedown"], # ctrl-u
+             shortcuts$key[shortcuts$purpose=="jumptoseqno"], # j
+             shortcuts$key[shortcuts$purpose=="importpgn"], # P
+             shortcuts$key[shortcuts$purpose=="replast"], # r
+             shortcuts$key[shortcuts$purpose=="setscore"], # %
+             shortcuts$key[shortcuts$purpose=="triggermistake"], # M
+             shortcuts$key[shortcuts$purpose=="endseqnext"], # B
+             shortcuts$key[shortcuts$purpose=="addnewseq"], shortcuts$key[shortcuts$purpose=="addnewseqatpos"], # a, A
+             shortcuts$key[shortcuts$purpose=="flip"], # f
+             shortcuts$key[shortcuts$purpose=="show"], shortcuts$key[shortcuts$purpose=="showcomp"], # z, Z
+             shortcuts$key[shortcuts$purpose=="comment"], # c
+             shortcuts$key[shortcuts$purpose=="glyph!"], shortcuts$key[shortcuts$purpose=="glyph@"], shortcuts$key[shortcuts$purpose=="glyph#"], shortcuts$key[shortcuts$purpose=="glyph$"], # ! @ # $
+             shortcuts$key[shortcuts$purpose=="editcomments"], shortcuts$key[shortcuts$purpose=="editmoves"], shortcuts$key[shortcuts$purpose=="editendmoves"], # e, E, ctrl-e
+             shortcuts$key[shortcuts$purpose=="addendmove"], shortcuts$key[shortcuts$purpose=="testend"], # ctrl-a, ctrl-t
+             shortcuts$key[shortcuts$purpose=="saveseq"], # s
+             shortcuts$key[shortcuts$purpose=="boardeditor"], # b
+             shortcuts$key[shortcuts$purpose=="expval"], # ^, 6
+             shortcuts$key[shortcuts$purpose=="wait"], # W
+             shortcuts$key[shortcuts$purpose=="delay-"], shortcuts$key[shortcuts$purpose=="delay+"], # - =
+             shortcuts$key[shortcuts$purpose=="volume-"], shortcuts$key[shortcuts$purpose=="volume+"], # _ +
+             shortcuts$key[shortcuts$purpose=="margin-"], shortcuts$key[shortcuts$purpose=="margin+"], # ctrl--, ctrl-=
+             shortcuts$key[shortcuts$purpose=="language"], # ctrl-l
+             shortcuts$key[shortcuts$purpose=="verbose"], # ctrl-v
+             shortcuts$key[shortcuts$purpose=="showsfbar"], shortcuts$key[shortcuts$purpose=="showlibar"], # v, V
+             shortcuts$key[shortcuts$purpose=="flush"], # F
+             shortcuts$key[shortcuts$purpose=="listseqs"], # l
+             shortcuts$key[shortcuts$purpose=="addbookmark"], shortcuts$key[shortcuts$purpose=="bookmarks"], # <, >
+             shortcuts$key[shortcuts$purpose=="copyfen"], shortcuts$key[shortcuts$purpose=="copyseqname"], shortcuts$key[shortcuts$purpose=="delseq"], # ctrl-f, ctrl-c, ctrl-d
+             shortcuts$key[shortcuts$purpose=="saveselsearch"], # ,
+             shortcuts$key[shortcuts$purpose=="searchseqs"], shortcuts$key[shortcuts$purpose=="selectlast"], shortcuts$key[shortcuts$purpose=="searchseqsshow"], # / . |
+             shortcuts$key[shortcuts$purpose=="selectall"], # * 8
+             shortcuts$key[shortcuts$purpose=="findmoves"], shortcuts$key[shortcuts$purpose=="findpos"], shortcuts$key[shortcuts$purpose=="findposshow"], shortcuts$key[shortcuts$purpose=="findposfreq"], shortcuts$key[shortcuts$purpose=="findend"], shortcuts$key[shortcuts$purpose=="findpiecepos"], # ? ' ] [ ; :
+             shortcuts$key[shortcuts$purpose=="showhelp"], shortcuts$key[shortcuts$purpose=="leaderboard"], shortcuts$key[shortcuts$purpose=="showsettings"], # F1, F2, F3
+             shortcuts$key[shortcuts$purpose=="vizsettings"], shortcuts$key[shortcuts$purpose=="mainsettings"], shortcuts$key[shortcuts$purpose=="miscsettings"], # F4, F5, F6
+             shortcuts$key[shortcuts$purpose=="sfsettings"], shortcuts$key[shortcuts$purpose=="lisettings"], shortcuts$key[shortcuts$purpose=="seqdirsettings"], # F7, F8, F9
+             shortcuts$key[shortcuts$purpose=="distributions"], shortcuts$key[shortcuts$purpose=="sessioninfo"], shortcuts$key[shortcuts$purpose=="historygraph"], # F10 (or ctrl-1), F11 (or ctrl-2), F12 (or ctrl-3)
+             shortcuts$key[shortcuts$purpose=="advanced"], # ctrl-9
+             shortcuts$key[shortcuts$purpose=="printmoves"], shortcuts$key[shortcuts$purpose=="printpos"], shortcuts$key[shortcuts$purpose=="printsub"], # ctrl-[, ctrl-], ctrl-\
+             shortcuts$key[shortcuts$purpose=="edithistory"], # ctrl-0
+             shortcuts$key[shortcuts$purpose=="chkmovesalltsv"], shortcuts$key[shortcuts$purpose=="genseqs"] # ctrl-o, ctrl-g
+             )
+
+   keys <- unique(keys)
 
    run.all <- TRUE
 
@@ -1427,7 +1485,7 @@ play <- function(lang="en", online, ...) {
             timestart <- proc.time()[[3]]
 
             if (updateall) { # see [u]
-               click <- "u"
+               click <- shortcuts$key[shortcuts$purpose=="recalcevals"][1]
             } else {
                click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=mousedown, onMouseMove=mousemove, onMouseUp=mouseup, onKeybd=.keyfun)
             }
@@ -1474,7 +1532,17 @@ play <- function(lang="en", online, ...) {
 
             ### general keys
 
-            if (advanced && identical(click, "ctrl-{")) {
+            # ctrl-9 to toggle advanced mode on/off
+
+            if (.iskey(click, "advanced")) {
+               advanced <- !advanced
+               .texttop(.text("advanced", advanced), sleep=0.75)
+               settings$advanced <- advanced
+               saveRDS(settings, file=file.path(configdir, "settings.rds"))
+               next
+            }
+
+            if (advanced && .iskey(click, "printmoves")) {
                cat("--------------------------------------------\n\n")
                if (seqname != "")
                   cat("Sequence name:", seqname, "\n\n")
@@ -1484,31 +1552,21 @@ play <- function(lang="en", online, ...) {
                next
             }
 
-            if (advanced && identical(click, "ctrl-}")) {
+            if (advanced && .iskey(click, "printpos")) {
                print(pos)
                next
             }
 
-            if (advanced && identical(click, "ctrl-|")) {
+            if (advanced && .iskey(click, "printsub")) {
                cat("--------------------------------------------\n\n")
                print(sub)
                cat("--------------------------------------------\n")
                next
             }
 
-            # ctrl-( to toggle advanced mode on/off
-
-            if (identical(click, "ctrl-(")) {
-               advanced <- !advanced
-               .texttop(.text("advanced", advanced), sleep=0.75)
-               settings$advanced <- advanced
-               saveRDS(settings, file=file.path(configdir, "settings.rds"))
-               next
-            }
-
             # q (or ctrl-q) to quit the trainer
 
-            if (identical(click, "q") || identical(click, "ctrl-Q")) {
+            if (.iskey(click, "quit")) {
                session.date.end <- Sys.time()
                session.time.end <- proc.time()[[3]]
                session.playtime <- round(session.time.end - session.time.start)
@@ -1535,7 +1593,7 @@ play <- function(lang="en", online, ...) {
 
             # Escape to update the board
 
-            if (identical(click, "\033") || identical(click, "ctrl-[")) {
+            if (.iskey(click, "escape")) {
                dev.hold()
                .redrawall(pos, flip, show, showcomp, player, seqdir, seqdirpos, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove)
                .drawglyph(glyph)
@@ -1551,7 +1609,7 @@ play <- function(lang="en", online, ...) {
 
             # <space> to select the mode (add versus test) (starts a new round)
 
-            if (identical(click, " ")) {
+            if (.iskey(click, "switchmode")) {
                if (mode %in% c("play","analysis")) {
                   mode <- oldmode
                   assign("mode", mode, envir=.chesstrainer)
@@ -1567,7 +1625,7 @@ play <- function(lang="en", online, ...) {
 
             # m to choose a sequence selection mode
 
-            if (identical(click, "m")) {
+            if (.iskey(click, "selmode")) {
                selmodeold <- selmode
                selmode <- .selmode(selmode)
                if (selmodeold != selmode) {
@@ -1580,13 +1638,13 @@ play <- function(lang="en", online, ...) {
                   .redrawpos(pos, flip=flip)
                   .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
                   dev.flush()
-            }
+               }
                next
             }
 
             # d to choose a difficulty calculation method
 
-            if (identical(click, "d")) {
+            if (.iskey(click, "difffun")) {
                difffunold <- difffun
                difflenold <- difflen
                diffminold <- diffmin
@@ -1618,9 +1676,9 @@ play <- function(lang="en", online, ...) {
                next
             }
 
-            # \ (or ä) to switch into play mode or to analysis mode from play mode
+            # \ to switch into play mode or to analysis mode from play mode
 
-            if (identical(click, "\\") || identical(click, "\U000000E4")) {
+            if (.iskey(click, "playmode")) {
                if (!contliquery && !sfrun) {
                   .texttop(.text("noplaymodewoutsf"), sleep=1.5)
                   next
@@ -1679,7 +1737,7 @@ play <- function(lang="en", online, ...) {
 
             # n, ctrl-n, or N to start a new sequence / round
 
-            if (identical(click, "n") || identical(click, "ctrl-N") || identical(click, "N")) {
+            if (.iskey(click, c("next", "next1", "nextres"))) {
                .texttop(.text("startnewround"), sleep=1, showlast=FALSE)
                if (mode %in% c("play","analysis")) { # from play/analysis mode, jump back to oldmode if not in contliquery mode
                   if (contliquery) {
@@ -1691,7 +1749,7 @@ play <- function(lang="en", online, ...) {
                   }
                }
                if (mode == "test" && selmode %in% c("sequential","sequential_len","sequential_mov","sequential_ran","age_oldest")) {
-                  if (identical(click, "ctrl-N")) {
+                  if (.iskey(click, "next1")) { # ctrl-n force seqno + 1 in sequential modes
                      seqno <- ifelse(seqno == k, 1L, seqno + 1L)
                   } else {
                      seqno <- .incrseqno(seqno, k, selmode, seqname, lastseq, nextseq, filename, files)
@@ -1702,7 +1760,7 @@ play <- function(lang="en", online, ...) {
                      .texttop(.text("finishedround"), sleep=2, showlast=FALSE)
                   }
                }
-               if (identical(click, "N")) { # N also resets savpos, flip, and sidetoplay
+               if (.iskey(click, "nextres")) { # N also resets savpos, flip, and sidetoplay
                   savpos <- NULL
                   flip <- FALSE
                   sidetoplay <- "w"
@@ -1713,7 +1771,7 @@ play <- function(lang="en", online, ...) {
 
             # p to select a player (starts a new round if a new player is selected)
 
-            if (identical(click, "p")) {
+            if (.iskey(click, "selplayer")) {
                oldplayer <- player
                player <- .selectplayer(player, seqdir[seqdirpos])
                if (player != oldplayer) {
@@ -1742,13 +1800,13 @@ play <- function(lang="en", online, ...) {
                   .redrawpos(pos, flip=flip)
                   .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
                   dev.flush()
-            }
+               }
                next
             }
 
             # ctrl-r to remove the current player (starts a new round)
 
-            if (identical(click, "ctrl-R")) {
+            if (.iskey(click, "rmplayer")) {
                .texttop(.text("rlydelplayer", player), assign=FALSE)
                answer <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=.keyfun)
                answer <- .confirm(answer)
@@ -1773,30 +1831,36 @@ play <- function(lang="en", online, ...) {
                next
             }
 
-            # g to show the progress graph (in test mode) or the evaluation graph (in add/play/analysis mode)
+            # g to show the progress graph (in test mode)
 
-            if (identical(click, "g")) {
-               if (mode == "test") {
-                  if (is.null(sub$player[[player]]$score))
-                     next
-                  tmp <- .progressgraph(sub$player[[player]])
-                  if (!identical(mar2, tmp$mar2)) {
-                     mar2 <- tmp$mar2
-                     settings$mar2 <- mar2
-                     saveRDS(settings, file=file.path(configdir, "settings.rds"))
-                  }
+            if (mode == "test" && .iskey(click, "progressgraph")) {
+               if (is.null(sub$player[[player]]$score))
+                  next
+               tmp <- .progressgraph(sub$player[[player]])
+               if (!identical(mar2, tmp$mar2)) {
+                  mar2 <- tmp$mar2
+                  settings$mar2 <- mar2
+                  saveRDS(settings, file=file.path(configdir, "settings.rds"))
                }
-               if (mode %in% c("add","play","analysis")) {
-                  if (anyNA(sub$moves$eval) || i == 1) {
-                     .texttop(.text("noevalgraph"), sleep=1.5)
-                     next
-                  }
-                  tmp <- .evalgraph(sub$moves, i=i, flip=flip)
-                  if (!identical(mar2, tmp$mar2)) {
-                     mar2 <- tmp$mar2
-                     settings$mar2 <- mar2
-                     saveRDS(settings, file=file.path(configdir, "settings.rds"))
-                  }
+               dev.hold()
+               .redrawpos(pos, flip=flip)
+               .drawannot(circles=circles, arrows=arrows, harrows=harrows, glyph=glyph, hint=TRUE, evalvals=evalvals, sidetoplay=sidetoplay)
+               dev.flush()
+               next
+            }
+
+            # g to show the evaluation graph (in add/play/analysis mode)
+
+            if (mode %in% c("add","play","analysis") && .iskey(click, "evalgraph")) {
+               if (anyNA(sub$moves$eval) || i == 1) {
+                  .texttop(.text("noevalgraph"), sleep=1.5)
+                  next
+               }
+               tmp <- .evalgraph(sub$moves, i=i, flip=flip)
+               if (!identical(mar2, tmp$mar2)) {
+                  mar2 <- tmp$mar2
+                  settings$mar2 <- mar2
+                  saveRDS(settings, file=file.path(configdir, "settings.rds"))
                }
                dev.hold()
                .redrawpos(pos, flip=flip)
@@ -1807,7 +1871,7 @@ play <- function(lang="en", online, ...) {
 
             # 1 or up arrow to go to the beginning of the first player move / beginning of the game
 
-            if (identical(click, "1") || identical(click, "Up")) {
+            if (.iskey(click, "jumptobegin")) {
                if (i == 1)
                   next
                dev.hold()
@@ -1886,28 +1950,30 @@ play <- function(lang="en", online, ...) {
                   if (contliquery && identical(matetype, "none"))
                      .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc)
                }
-
                next
             }
 
-            # t to take back a score increase in test mode or take back a move (two moves in play mode)
+            # t to take back a score increase (in test mode)
+
+            if (mode == "test" && .iskey(click, "takebackscoreincr")) {
+               if (scoreadd > 0) {
+                  score <- score - scoreadd
+                  .texttop(.text("setscoreback", score), sleep=1)
+                  .textbot(score=score, onlyscore=TRUE)
+                  scoreadd <- 0
+               } else {
+                  if (score == 100) {
+                     .texttop(.text("setscoreback100"), sleep=1)
+                  }
+               }
+               mistake <- FALSE
+               next
+            }
+
+            # t to take back a move (two moves in play mode) (in add/play/analysis mode)
             # left arrow to go back one move (in play mode goes into analysis mode)
 
-            if (identical(click, "Left") || identical(click, "t")) {
-               if (mode == "test" && identical(click, "t")) {
-                  if (scoreadd > 0) {
-                     score <- score - scoreadd
-                     .texttop(.text("setscoreback", score), sleep=1)
-                     .textbot(score=score, onlyscore=TRUE)
-                     scoreadd <- 0
-                  } else {
-                     if (score == 100) {
-                        .texttop(.text("setscoreback100"), sleep=1)
-                     }
-                  }
-                  mistake <- FALSE
-                  next
-               }
+            if (mode %in% c("add","play","analysis") && .iskey(click, c("takebackmove","gobackmove"))) {
                if (i == 1)
                   next
                dev.hold()
@@ -1929,11 +1995,11 @@ play <- function(lang="en", online, ...) {
                neweval <- starteval
                sidetoplay <- sidetoplaystart
                comment <- ""
-               if (i == 2L || (mode == "play" && identical(click, "t") && i == 3L)) {
+               if (i == 2L || (mode == "play" && .iskey(click, "takebackmove") && i == 3L)) {
                   # when a single move has been played, go back to the starting position
                   i <- 1L
                } else {
-                  if (mode == "play" && identical(click, "t")) {
+                  if (mode == "play" && .iskey(click, "takebackmove")) {
                      # in play mode, t takes back the computer move and the player move
                      i <- i - 2L
                      sub$moves <- sub$moves[seq_len(i-1L),,drop=FALSE] # also remove the two moves that were played from sub$moves
@@ -1949,7 +2015,7 @@ play <- function(lang="en", online, ...) {
                   i <- i + 1L
                }
                .redrawpos(pos, posold, flip=flip)
-               if (mode %in% c("add","test") && identical(click, "Left")) {
+               if (mode %in% c("add","test") && .iskey(click, "gobackmove")) {
                   .texttop(sub$moves$comment[i])
                   circles <- .parseannot(sub$moves$circles[i], cols=2)
                   arrows  <- .parseannot(sub$moves$arrows[i], cols=4)
@@ -1958,7 +2024,7 @@ play <- function(lang="en", online, ...) {
                } else {
                   .texttop("")
                }
-               if (mode == "play" && identical(click, "Left")) {
+               if (mode == "play" && .iskey(click, "gobackmove")) {
                   mode <- "analysis"
                   assign("mode", mode, envir=.chesstrainer)
                   .textbot(show, showcomp, player, seqdir, seqdirpos, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, selmode, k, seqno)
@@ -1973,7 +2039,7 @@ play <- function(lang="en", online, ...) {
                dev.flush()
                playsound(system.file("sounds", "move.ogg", package="chesstrainer"))
                .drawevalbar(neweval, i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]])
-               if (mode == "add" && identical(click, "t")) {
+               if (mode == "add" && .iskey(click, "takebackmove")) {
                   sub$moves <- sub$moves[seq_len(i-1L),,drop=FALSE] # t in add mode removes all further moves
                   sub$endmoves <- NULL # and remove endmoves
                   if (isTRUE(sub$testend))
@@ -2002,7 +2068,7 @@ play <- function(lang="en", online, ...) {
 
             # right arrow to play the next/best move
 
-            if (identical(click, "Right")) {
+            if (.iskey(click, "nextmove")) {
                if (nrow(sub$moves) == 0L)
                   next
                if (i > nrow(sub$moves)) {
@@ -2164,22 +2230,20 @@ play <- function(lang="en", online, ...) {
 
             # 2 or down arrow to go to the end of the sequence/game (3, 4, and 5 to jump to 1/4, 2/4, and 3/4 of the moves)
 
-            if (identical(click, "Down") || identical(click, "2") || identical(click, "3") || identical(click, "4") || identical(click, "5")) {
+            if (.iskey(click, c("jumptoend", "jumpto14", "jumpto24", "jumpto34"))) {
                if (nrow(sub$moves) == 0L)
                   next
-               if (identical(click, "Down"))
-                  click <- "2"
-               if (identical(click, "2") && i > nrow(sub$moves)) {
+               if (.iskey(click, "jumptoend") && i > nrow(sub$moves)) {
                   .texttop(.text("waslastmove"), sleep=0.75)
                   next
                }
-               if (identical(click, "2"))
+               if (.iskey(click, "jumptoend"))
                   movnumber <- max(1, nrow(sub$moves))
-               if (identical(click, "3"))
+               if (.iskey(click, "jumpto14"))
                   movnumber <- max(1, round(nrow(sub$moves) * 1/4))
-               if (identical(click, "4"))
+               if (.iskey(click, "jumpto24"))
                   movnumber <- max(1, round(nrow(sub$moves) * 2/4))
-               if (identical(click, "5"))
+               if (.iskey(click, "jumpto34"))
                   movnumber <- max(1, round(nrow(sub$moves) * 3/4))
                if (movnumber == i-1L)
                   next
@@ -2264,7 +2328,7 @@ play <- function(lang="en", online, ...) {
 
             # 0 to store the current game as the main variation (in play/analysis mode)
 
-            if (mode %in% c("play","analysis") && identical(click, "0")) {
+            if (mode %in% c("play","analysis") && .iskey(click, "storeasmainvar")) {
                .texttop(.text("storegame"), sleep=1)
                savgame <- sub$moves
                next
@@ -2272,7 +2336,7 @@ play <- function(lang="en", online, ...) {
 
             # 9 to jump to the main variation
 
-            if (mode %in% c("play","analysis") && identical(click, "9") && !is.null(savgame)) {
+            if (mode %in% c("play","analysis") && .iskey(click, "jumptomainvar") && !is.null(savgame)) {
                .texttop(.text("retstoregame"), sleep=1)
                dev.hold()
                .rmannot(pos, circles=circles, arrows=rbind(arrows, harrows), glyph=glyph, flip=flip, hold=FALSE)
@@ -2325,9 +2389,9 @@ play <- function(lang="en", online, ...) {
                next
             }
 
-            # u to update the evaluations for the current sequence/game
+            # u to recalculate the evaluations for the current sequence/game
 
-            if (identical(click, "u")) {
+            if (.iskey(click, "recalcevals")) {
 
                if (is.null(sfproc) || !sfrun) {
 
@@ -2441,7 +2505,7 @@ play <- function(lang="en", online, ...) {
 
             # U to update all (selected) sequences ([u])
 
-            if (mode == "test" && identical(click, "U")) {
+            if (mode == "test" && .iskey(click, "recalcallevals")) {
                if (is.null(sfproc) || !sfrun) {
                   .texttop(.text("evalupdatenosf"), sleep=1.5)
                   next
@@ -2469,7 +2533,7 @@ play <- function(lang="en", online, ...) {
 
             # ctrl-u to toggle upsidedown
 
-            if (advanced && identical(click, "ctrl-U")) {
+            if (advanced && .iskey(click, "upsidedown")) {
                upsidedown <- !upsidedown
                .texttop(.text("upsidedown", upsidedown), sleep=1.5)
                .newround()
@@ -2478,7 +2542,7 @@ play <- function(lang="en", online, ...) {
 
             # j to manually jump to a seqno value when playing sequences sequentially
 
-            if (identical(click, "j")) {
+            if (.iskey(click, "jumptoseqno")) {
                if (selmode %in% c("sequential","sequential_len","sequential_mov","sequential_ran")) {
                   seqnoold <- seqno
                   seqno <- .setseqno(seqno, k)
@@ -2498,7 +2562,7 @@ play <- function(lang="en", online, ...) {
 
             # P to import (TODO: export) a game in PGN format
 
-            if (mode == "add" && identical(click, "P")) {
+            if (mode == "add" && .iskey(click, "importpgn")) {
                eval(expr=switch1)
                pgn <- ""
                resp <- readline(prompt=style_bold(.text("pgnmenu")))
@@ -2551,7 +2615,7 @@ play <- function(lang="en", online, ...) {
 
             # r to repeat the last played sequence (only in test mode)
 
-            if (mode == "test" && identical(click, "r")) {
+            if (mode == "test" && .iskey(click, "replast")) {
                if (lastseq == "") {
                   .texttop(.text("nolastseq"), sleep=1)
                   next
@@ -2575,7 +2639,7 @@ play <- function(lang="en", online, ...) {
 
             # % to edit the score for the current sequence (only in test mode)
 
-            if (mode == "test" && identical(click, "%")) {
+            if (mode == "test" && .iskey(click, "setscore")) {
                score <- .setscore(score)
                dev.hold()
                .redrawpos(pos, flip=flip)
@@ -2587,7 +2651,7 @@ play <- function(lang="en", online, ...) {
 
             # M to trigger a mistake (only in test mode)
 
-            if (mode == "test" && identical(click, "M")) {
+            if (mode == "test" && .iskey(click, "triggermistake")) {
                mistake <- TRUE
                scoreadd <- min(adjustwrong, 100-score)
                score <- score + scoreadd
@@ -2598,7 +2662,7 @@ play <- function(lang="en", online, ...) {
 
             # B to end the sequence and go to the next one (only in test mode and when upsidedown is TRUE)
 
-            if (mode == "test" && identical(click, "B") && upsidedown) {
+            if (mode == "test" && upsidedown && .iskey(click, "endseqnext")) {
                playsound(system.file("sounds", "complete.ogg", package="chesstrainer"))
                if (is.null(sub$commentend)) {
                   if (mistake) {
@@ -2659,7 +2723,7 @@ play <- function(lang="en", online, ...) {
             # a to copy the current sequence to add new moves as a new sequence
             # A does the same but starts at the position when A is pressed
 
-            if (identical(click, "a") || identical(click, "A")) {
+            if (.iskey(click, c("addnewseq", "addnewseqatpos"))) {
 
                if (unflip) {
                   flip <- !flip
@@ -2682,9 +2746,9 @@ play <- function(lang="en", online, ...) {
                      rounds <- 0L
                      totalmoves <- nrow(sub$moves)
                      flip <- sub$flip
-                     if (identical(click, "A"))
+                     if (.iskey(click, "addnewseqatpos"))
                         k1A <- TRUE
-                     click <- "a"
+                     click <- shortcuts$key[shortcuts$purpose=="addnewseq"][1]
                   } else {
                      if (filename == "")
                         next
@@ -2698,14 +2762,14 @@ play <- function(lang="en", online, ...) {
                      rounds <- 0L
                      totalmoves <- nrow(sub$moves)
                      flip <- sub$flip
-                     if (identical(click, "A"))
+                     if (.iskey(click, "addnewseqatpos"))
                         k1A <- TRUE
-                     click <- "a"
+                     click <- shortcuts$key[shortcuts$purpose=="addnewseq"][1]
                   }
                }
 
                if (mode %in% c("play","analysis")) # in play/analysis mode, always use A
-                  click <- "A"
+                  click <- shortcuts$key[shortcuts$purpose=="addnewseqatpos"][1]
 
                mode <- oldmode <- "add"
                assign("mode", mode, envir=.chesstrainer)
@@ -2719,7 +2783,7 @@ play <- function(lang="en", online, ...) {
 
                .texttop("")
 
-               if (identical(click, "A")) {
+               if (.iskey(click, "addnewseqatpos")) {
 
                   # when 'A' is pressed at the start position sub$pos, then i is 1
                   # and sub$moves has 0 rows, so we need to skip the following step
@@ -2823,7 +2887,7 @@ play <- function(lang="en", online, ...) {
 
             # 0 to make the current position the starting position (only in add mode)
 
-            if (mode == "add" && identical(click, "0")) {
+            if (mode == "add" && .iskey(click, "makestartpos")) {
                if (!.is.start.pos(pos)) {
                   .texttop(.text("setposstart"), sleep=1)
                   if (i >= 2L && !is.na(sub$moves$eval[i-1L]))
@@ -2843,7 +2907,7 @@ play <- function(lang="en", online, ...) {
 
             # f to flip the board
 
-            if (identical(click, "f")) {
+            if (.iskey(click, "flip")) {
                flip <- !flip
                circles <- matrix(nrow=0, ncol=2)
                arrows  <- matrix(nrow=0, ncol=4)
@@ -2862,7 +2926,7 @@ play <- function(lang="en", online, ...) {
 
             # z to switch show moves on/off (only in add mode)
 
-            if (mode == "add" && identical(click, "z")) {
+            if (mode == "add" && .iskey(click, "show")) {
                show <- !show
                .texttop(.text("showmoves", show), sleep=0.75)
                .textbot(show, showcomp, onlyshow=TRUE)
@@ -2871,7 +2935,7 @@ play <- function(lang="en", online, ...) {
 
             # Z to switch show computer moves on/off (only in add mode)
 
-            if (mode == "add" && identical(click, "Z")) {
+            if (mode == "add" && .iskey(click, "showcomp")) {
                showcomp <- !showcomp
                .texttop(.text("showmovescomp", showcomp), sleep=1)
                .textbot(show, showcomp, onlyshow=TRUE)
@@ -2880,7 +2944,7 @@ play <- function(lang="en", online, ...) {
 
             # c to add a comment to the current move (only in add mode)
 
-            if (mode == "add" && identical(click, "c")) {
+            if (mode == "add" && .iskey(click, "comment")) {
                eval(expr=switch1)
                comment <- readline(prompt=style_bold(.text("comment")))
                eval(expr=switch2)
@@ -2888,9 +2952,9 @@ play <- function(lang="en", online, ...) {
                next
             }
 
-            # !, @, # (or \U000000A7), and $ to add glyphs (exclamation marks, question marks, other)
+            # !, @, #, and $ to add glyphs (exclamation marks, question marks, other)
 
-            if (identical(click, "!") || identical(click, "@") || identical(click, "#") || identical(click, "$") || identical(click, "\U000000A7")) {
+            if (.iskey(click, c("glyph!", "glyph@", "glyph#", "glyph$"))) {
                if (i == 1 || identical(.get("x2y2"), c(NA,NA)))
                   next
                dev.hold()
@@ -2898,7 +2962,7 @@ play <- function(lang="en", online, ...) {
                glyphs2 <- c("=", "\U00002A72", "\U000000B1", "\U0000002B\U00002212", "\U00002A71", "\U00002213", "\U00002212\U0000002B", "\U0000221E")
                matchglyph1 <- glyph == glyphs1
                matchglyph2 <- glyph == glyphs2
-               if (identical(click, "#") || identical(click, "\U000000A7")) {
+               if (.iskey(click, "glyph#")) {
                   if (any(matchglyph1)) {
                      matchglyph1 <- which(matchglyph1)
                      if (matchglyph1 == length(glyphs1)) {
@@ -2913,7 +2977,7 @@ play <- function(lang="en", online, ...) {
                      glyph <- glyphs1[1]
                   }
                }
-               if (identical(click, "$")) {
+               if (.iskey(click, "glyph$")) {
                   if (any(matchglyph2)) {
                      matchglyph2 <- which(matchglyph2)
                      if (matchglyph2 == length(glyphs2)) {
@@ -2928,10 +2992,10 @@ play <- function(lang="en", online, ...) {
                      glyph <- glyphs2[1]
                   }
                }
-               if (identical(click, "!") || identical(click, "@")) {
+               if (.iskey(click, c("glyph!","glyph@"))) {
                   if (any(matchglyph1) || any(matchglyph2))
                      glyph <- ""
-                  glyphchar <- ifelse(identical(click, "!"), "!", "?")
+                  glyphchar <- ifelse(.iskey(click, "glyph!"), "!", "?")
                   if (nchar(glyph) == 0L) {
                      glyph <- glyphchar
                   } else if (nchar(glyph) == 1L) {
@@ -2952,7 +3016,7 @@ play <- function(lang="en", online, ...) {
 
             # e to edit the comments using prompts
 
-            if (identical(click, "e")) {
+            if (.iskey(click, "editcomments")) {
                tmp <- sub
                eval(expr=switch1)
                sub <- .editseq(sub)
@@ -2970,7 +3034,7 @@ play <- function(lang="en", online, ...) {
 
             # E to edit sub$moves using edit()
 
-            if (advanced && identical(click, "E")) {
+            if (advanced && .iskey(click, "editmoves")) {
                tmp <- sub
                sub$moves <- edit(sub$moves)
                sub$moves$comment[is.na(sub$moves$comment)] <- ""
@@ -2990,7 +3054,7 @@ play <- function(lang="en", online, ...) {
 
             # ctrl-e to edit sub$endmoves using prompts
 
-            if (advanced && mode == "add" && identical(click, "ctrl-E")) {
+            if (advanced && mode == "add" && .iskey(click, "editendmoves")) {
                if (is.null(sub$endmoves)) {
                   .texttop(.text("noendmoves"), sleep=1.5)
                   next
@@ -3011,7 +3075,7 @@ play <- function(lang="en", online, ...) {
 
             # s to save the sequence (in add mode)
 
-            if (mode == "add" && identical(click, "s")) {
+            if (mode == "add" && .iskey(click, "saveseq")) {
                if (all(sub$moves$show) && is.null(sub$testend)) {
                   .texttop(.text("allmovesshown"), sleep=1.5)
                   next
@@ -3082,7 +3146,7 @@ play <- function(lang="en", online, ...) {
 
             # b to start the board editor (in add, play, and analysis mode)
 
-            if (mode %in% c("add","play","analysis") && identical(click, "b")) {
+            if (mode %in% c("add","play","analysis") && .iskey(click, "boardeditor")) {
                out <- .boardeditor(pos, flip, sidetoplay)
                pos <- out$pos
                colnames(pos) <- LETTERS[1:8]
@@ -3144,7 +3208,7 @@ play <- function(lang="en", online, ...) {
 
             # ctrl-a to add an end move
 
-            if (advanced && mode == "add" && identical(click, "ctrl-A")) {
+            if (advanced && mode == "add" && .iskey(click, "addendmove")) {
                if (i == 1 || flip && sidetoplay == "b" || !flip && sidetoplay == "w")
                   next
                if (is.null(sub$endmoves)) {
@@ -3215,9 +3279,9 @@ play <- function(lang="en", online, ...) {
                next
             }
 
-            # ctrl-t to toggle test at the end of the sequence
+            # ctrl-t to run test at the end of the sequence
 
-            if (advanced && mode == "add" && identical(click, "ctrl-T")) {
+            if (advanced && mode == "add" && .iskey(click, "testend")) {
                if (is.null(sub$testend) || isFALSE(sub$testend)) {
                   sub$testend <- TRUE
                   .texttop(.text("testend", sub$testend), sleep=1)
@@ -3237,9 +3301,9 @@ play <- function(lang="en", online, ...) {
 
             ### toggles and keys related to getting position evaluations and Lichess queries
 
-            # H to do a deep evaluation in add, play, and analysis mode and show the best move(s)
+            # H to do a deep evaluation (in add, play, and analysis mode) and show the best move(s)
 
-            if (mode %in% c("add","play","analysis") && identical(click, "H")) {
+            if (mode %in% c("add","play","analysis") && .iskey(click, "bestmovedeep")) {
                if (!sfrun) {
                   .texttop(.text("nomovewoutsf"), sleep=1.5)
                   next
@@ -3266,12 +3330,12 @@ play <- function(lang="en", online, ...) {
                   }
                }
                .drawevalbar(evalval[[1]], i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]])
-               click <- "h"
+               click <- shortcuts$key[shortcuts$purpose=="bestmovefast"][1]
             }
 
-            # L to get the Lichess cloud evaluation of the current position
+            # L to get the Lichess cloud evaluation of the current position and show the best move(s)
 
-            if (mode %in% c("add","play","analysis") && identical(click, "L")) {
+            if (mode %in% c("add","play","analysis") && .iskey(click, "bestmoveli")) {
                if (!isonline) {
                   .texttop(.text("nointqueryli"), sleep=2)
                   next
@@ -3298,50 +3362,53 @@ play <- function(lang="en", online, ...) {
                   }
                }
                .drawevalbar(evalval[[1]], i=i, starteval=starteval, flip=flip, showeval=showeval[[mode]])
-               click <- "h"
+               click <- shortcuts$key[shortcuts$purpose=="bestmovefast"][1]
             }
 
-            # h to get a hint in test mode or show the best move in add/play/analysis mode
+            # h to get a hint (in test mode)
 
-            if (identical(click, "h")) {
-               if (mode == "test") {
-                  if (!givehint1) {
-                     hintx1 <- sub$moves$x1[i]
-                     hinty1 <- sub$moves$y1[i]
-                     .addrect(hintx1, hinty1, col=.get("col.hint"))
-                     score <- min(100, score + adjusthint)
-                     givehint1 <- TRUE
-                     mistake <- TRUE
-                  } else {
-                     if (!givehint2) {
-                        hintx2 <- sub$moves$x2[i]
-                        hinty2 <- sub$moves$y2[i]
-                        .addrect(hintx2, hinty2, col=.get("col.hint"))
-                        score <- min(100, score + adjusthint)
-                        givehint2 <- TRUE
-                     }
-                  }
-                  .textbot(score=score, onlyscore=TRUE)
+            if (mode == "test" && .iskey(click, "givehint")) {
+               if (!givehint1) {
+                  hintx1 <- sub$moves$x1[i]
+                  hinty1 <- sub$moves$y1[i]
+                  .addrect(hintx1, hinty1, col=.get("col.hint"))
+                  score <- min(100, score + adjusthint)
+                  givehint1 <- TRUE
+                  mistake <- TRUE
                } else {
-                  tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1)
-                  harrows  <- tmp$harrows
-                  evalvals <- tmp$evalvals
-                  .drawdepth(showeval[[mode]])
-                  # recalculate after showing the best move (not done at the moment)
-                  #res.sf   <- .sf.eval(sfproc=sfproc, sfrun=sfrun, depth=depth1, fen=fen)
-                  #evalval  <- res.sf$eval[1:multipv1]
-                  #bestmove <- res.sf$bestmove[1:multipv1]
-                  #bestmove[.is.null(bestmove)] <- ""
-                  #matetype <- res.sf$matetype
-                  #sfproc   <- res.sf$sfproc
-                  #sfrun    <- res.sf$sfrun
+                  if (!givehint2) {
+                     hintx2 <- sub$moves$x2[i]
+                     hinty2 <- sub$moves$y2[i]
+                     .addrect(hintx2, hinty2, col=.get("col.hint"))
+                     score <- min(100, score + adjusthint)
+                     givehint2 <- TRUE
+                  }
                }
+               .textbot(score=score, onlyscore=TRUE)
+               next
+            }
+
+            # h to show the best move(s) (in add/play/analysis mode)
+
+            if (mode %in% c("add","play","analysis") && .iskey(click, "bestmovefast")) {
+               tmp <- .showbestmove(pos, flip, sidetoplay, sidetoplaystart, i, circles, arrows, harrows, glyph, bestmove, evalval, hintdepth, sfproc, sfrun, depth1, multipv1)
+               harrows  <- tmp$harrows
+               evalvals <- tmp$evalvals
+               .drawdepth(showeval[[mode]])
+               # recalculate after showing the best move (not done at the moment)
+               #res.sf   <- .sf.eval(sfproc=sfproc, sfrun=sfrun, depth=depth1, fen=fen)
+               #evalval  <- res.sf$eval[1:multipv1]
+               #bestmove <- res.sf$bestmove[1:multipv1]
+               #bestmove[.is.null(bestmove)] <- ""
+               #matetype <- res.sf$matetype
+               #sfproc   <- res.sf$sfproc
+               #sfrun    <- res.sf$sfrun
                next
             }
 
             # y to toggle continuous analysis on/off (only in add and analysis mode)
 
-            if (mode %in% c("add","analysis") && identical(click, "y")) {
+            if (mode %in% c("add","analysis") && .iskey(click, "contanalysis")) {
                if (!sfrun) {
                   .texttop(.text("nomovewoutsf"), sleep=1.5)
                   contanalysis <- FALSE
@@ -3367,14 +3434,14 @@ play <- function(lang="en", online, ...) {
 
             # i to query the Lichess opening database for the current position
 
-            if (identical(click, "i")) {
+            if (.iskey(click, "liquery")) {
                .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc)
                next
             }
 
             # Y to toggle continuous querying of the Lichess opening database on/off
 
-            if (identical(click, "Y")) {
+            if (.iskey(click, "contliquery")) {
                if (is.null(token) || token == "") {
                   .texttop(.text("needtoken"), sleep=2)
                   next
@@ -3398,7 +3465,7 @@ play <- function(lang="en", online, ...) {
 
             # ctrl-h to toggle usesfcache
 
-            if (identical(click, "ctrl-H")) {
+            if (.iskey(click, "usesfcache")) {
                usesfcache <- !usesfcache
                .texttop(.text("usesfcache", usesfcache), sleep=1.5)
                assign("usesfcache", usesfcache, envir=.chesstrainer)
@@ -3409,7 +3476,7 @@ play <- function(lang="en", online, ...) {
 
             # ctrl-i to toggle uselicache
 
-            if (identical(click, "ctrl-I")) {
+            if (.iskey(click, "uselicache")) {
                uselicache <- !uselicache
                .texttop(.text("uselicache", uselicache), sleep=1.5)
                assign("uselicache", uselicache, envir=.chesstrainer)
@@ -3424,7 +3491,7 @@ play <- function(lang="en", online, ...) {
 
             # ^ (or 6) to edit the exponent value
 
-            if (identical(click, "^") || identical(click, "6")) {
+            if (.iskey(click, "expval")) {
                expvalold <- expval
                expval <- .setexpval(expval)
                dev.hold()
@@ -3441,7 +3508,7 @@ play <- function(lang="en", online, ...) {
 
             # W to switch wait on/off
 
-            if (identical(click, "W")) {
+            if (.iskey(click, "wait")) {
                wait <- !wait
                .texttop(.text("waitonoff", wait), sleep=0.75)
                settings$wait <- wait
@@ -3451,8 +3518,8 @@ play <- function(lang="en", online, ...) {
 
             # -/= to decrease/increase the time between moves
 
-            if (identical(click, "-") || identical(click, "=")) {
-               if (identical(click, "-")) {
+            if (.iskey(click, c("delay-", "delay+"))) {
+               if (.iskey(click, "delay-")) {
                   delay <- max(0, delay - 0.25)
                } else {
                   delay <- min(2, delay + 0.25)
@@ -3465,8 +3532,8 @@ play <- function(lang="en", online, ...) {
 
             # _/+ to decrease/increase the sound volume
 
-            if (identical(click, "_") || identical(click, "+")) {
-               if (identical(click, "_")) {
+            if (.iskey(click, c("volume-", "volume+"))) {
+               if (.iskey(click, "volume-")) {
                   volume <- round(max(0, volume - 25))
                } else {
                   volume <- round(min(100, volume + 25))
@@ -3481,8 +3548,8 @@ play <- function(lang="en", online, ...) {
 
             # ctrl--/ctrl-= to decrease/increase the margin width
 
-            if (identical(click, "ctrl-_") || identical(click, "ctrl-+")) {
-               if (identical(click, "ctrl-_")) {
+            if (.iskey(click, c("margin-", "margin+"))) {
+               if (.iskey(click, "margin-")) {
                   mar <- pmax(1, mar - 0.5)
                } else {
                   mar <- mar + 0.5
@@ -3504,7 +3571,7 @@ play <- function(lang="en", online, ...) {
 
             # ctrl-L to toggle the language
 
-            if (identical(click, "ctrl-L")) {
+            if (.iskey(click, "language")) {
                if (lang == "de") {
                   lang <- "en"
                } else {
@@ -3520,7 +3587,7 @@ play <- function(lang="en", online, ...) {
 
             # v to toggle the evaluation bar on/off
 
-            if (identical(click, "v")) {
+            if (.iskey(click, "showsfbar")) {
                showeval[[mode]] <- !showeval[[mode]]
                .texttop(.text("eval", showeval[[mode]]), sleep=0.75)
                if (showeval[[mode]]) {
@@ -3535,7 +3602,7 @@ play <- function(lang="en", online, ...) {
 
             # V to toggle the Lichess bar on/off
 
-            if (identical(click, "V")) {
+            if (.iskey(click, "showlibar")) {
                showlibar <- !showlibar
                assign("showlibar", showlibar, envir=.chesstrainer)
                .texttop(.text("libar", showlibar), sleep=0.75)
@@ -3552,7 +3619,7 @@ play <- function(lang="en", online, ...) {
 
             # ctrl-v to toggle verbose mode on/off
 
-            if (advanced && identical(click, "ctrl-V")) {
+            if (advanced && .iskey(click, "verbose")) {
                verbose <- !verbose
                if (verbose) {
                   eval(expr=switch1)
@@ -3566,7 +3633,7 @@ play <- function(lang="en", online, ...) {
 
             # F to toggle flush on/off
 
-            if (advanced && identical(click, "F")) {
+            if (advanced && .iskey(click, "flush")) {
                flush <- .get("flush")
                flush <- !flush
                .texttop(.text("flush", flush), sleep=0.75)
@@ -3582,7 +3649,7 @@ play <- function(lang="en", online, ...) {
 
             # l to list all (selected) sequences
 
-            if (identical(click, "l")) {
+            if (.iskey(click, "listseqs")) {
                eval(expr=switch1)
                .flush()
                .listseqs(mode, k, files, files.all, selected, scores.selected, age.selected, rounds.selected, difficulty.selected, probvals.selected, seqname)
@@ -3592,7 +3659,7 @@ play <- function(lang="en", online, ...) {
 
             # < to bookmark a sequence (in add mode, last saved sequence; in test mode, current sequence)
 
-            if (mode %in% c("add","test") && identical(click, "<")) {
+            if (mode %in% c("add","test") && .iskey(click, "addbookmark")) {
                bookmark <- ""
                if (mode == "add") {
                   if (filename != "")
@@ -3620,7 +3687,7 @@ play <- function(lang="en", online, ...) {
 
             # > to select / manage bookmarks
 
-            if (identical(click, ">")) {
+            if (.iskey(click, "bookmarks")) {
                bookmark <- .bookmarks(seqdir, seqdirpos) # returns NA if bookmark screen was not draw
                if (isTRUE(bookmark != "")) { # only TRUE if bookmark is neither NA nor ""
                   proc.start <- proc.time()[[3]]
@@ -3645,7 +3712,7 @@ play <- function(lang="en", online, ...) {
 
             # ctrl-f to print and copy the FEN to the clipboard
 
-            if (identical(click, "ctrl-F")) {
+            if (.iskey(click, "copyfen")) {
                eval(expr=switch1)
                fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                cat(style_bold("FEN:"), fen, "\n")
@@ -3657,7 +3724,7 @@ play <- function(lang="en", online, ...) {
 
             # ctrl-c to print and copy the sequence name to the clipboard
 
-            if (identical(click, "ctrl-C")) {
+            if (.iskey(click, "copyseqname")) {
 
                tmp <- NULL
 
@@ -3692,7 +3759,7 @@ play <- function(lang="en", online, ...) {
 
             # ctrl-d to delete the current sequence (only in test mode)
 
-            if (mode == "test" && identical(click, "ctrl-D")) {
+            if (mode == "test" && .iskey(click, "delseq")) {
                .texttop(.text("rlydelseq"), assign=FALSE)
                answer <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=.keyfun)
                answer <- .confirm(answer)
@@ -3708,7 +3775,7 @@ play <- function(lang="en", online, ...) {
 
             # , to save/select searches
 
-            if (identical(click, ",")) {
+            if (.iskey(click, "saveselsearch")) {
 
                tmp <- .searchterms(seqdir, seqdirpos, cursearchterm=searchterm)
 
@@ -3737,7 +3804,7 @@ play <- function(lang="en", online, ...) {
                   next
                } else {
                   searchterm <- tmp$searchterm
-                  click <- "/"
+                  click <- shortcuts$key[shortcuts$purpose=="searchseqs"][1]
                   issavedsearch <- TRUE
                }
 
@@ -3745,7 +3812,7 @@ play <- function(lang="en", online, ...) {
 
             # / to select one or more sequences, . to select the last saved sequence, | to search/show sequences based on their filename without selecting them
 
-            if (identical(click, "/") || identical(click, ".") || identical(click, "|")) {
+            if (.iskey(click, c("searchseqs","selectlast","searchseqsshow"))) {
 
                if (issavedsearch) {
                   doprompt <- FALSE
@@ -3756,7 +3823,7 @@ play <- function(lang="en", online, ...) {
 
                oldsearchterm <- searchterm
 
-               if (identical(click, ".")) {
+               if (.iskey(click, "selectlast")) {
                   if (filename != "") {
                      searchterm <- filename
                      doprompt <- FALSE
@@ -3786,7 +3853,7 @@ play <- function(lang="en", online, ...) {
 
                # * = select all sequences
 
-               if (identical(searchterm , "*") && !identical(click, "|")) {
+               if (identical(searchterm , "*") && !.iskey(click, "searchseqsshow")) {
                   cat(.text("allseqselected"))
                   assign("seed", get(".Random.seed", envir=.GlobalEnv, inherits=FALSE), envir=.chesstrainer)
                   selected <- NULL
@@ -4083,7 +4150,7 @@ play <- function(lang="en", online, ...) {
                if (inherits(tmp, "try-error") || length(grep(searchterm, files.all)) == 0L) {
                   cat(.text("noseqsfound"))
                } else {
-                  if (identical(click, "|")) {
+                  if (.iskey(click, "searchseqsshow")) {
                      tmp <- grepl(searchterm, files.all)
                      tab <- data.frame(Name=files.all[tmp])
                      tab$Name <- format(tab$Name, justify="left")
@@ -4118,7 +4185,7 @@ play <- function(lang="en", online, ...) {
 
             # * (or 8) to select all sequences (starts a new round) (only in add and test mode)
 
-            if (mode %in% c("add","test") && (identical(click, "*") || identical(click, "8"))) {
+            if (mode %in% c("add","test") && .iskey(click, "selectall")) {
                if (!is.null(selected)) {
                   .texttop(.text("allseqselected"), sleep=1, showlast=FALSE)
                   selected <- NULL
@@ -4132,9 +4199,9 @@ play <- function(lang="en", online, ...) {
                next
             }
 
-            # ? to find sequences that start with the same moves
+            # ? to select sequences that start with the same moves
 
-            if (identical(click, "?")) {
+            if (.iskey(click, "findmoves")) {
                if (i == 1)
                   next
                seqident <- lapply(dat.all.short, function(x) {
@@ -4188,9 +4255,9 @@ play <- function(lang="en", online, ...) {
                next
             }
 
-            # ' and ] to find sequences that include the same position; ] just shows them without selecting
+            # ' to select sequences that include the same position; ] just shows them without selecting
 
-            if (identical(click, "'") || identical(click, "]")) {
+            if (.iskey(click, c("findpos","findposshow"))) {
                searchterm <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                searchterm <- .fenpart(searchterm)
                seqident <- lapply(dat.all.short, function(x) {
@@ -4227,7 +4294,7 @@ play <- function(lang="en", online, ...) {
                   }
                   rownames(tab) <- which(notnull)
                   .printdf(tab, align=c("l",rep("r",movestoshow)))
-                  if (identical(click, "'")) {
+                  if (.iskey(click, "findpos")) {
                      .texttop(.text("selmatchestop"), assign=FALSE)
                      selmatches <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onKeybd=.keyfun)
                      if (identical(selmatches, "\r") || identical(selmatches, "ctrl-J") || .confirm(selmatches)) {
@@ -4247,7 +4314,7 @@ play <- function(lang="en", online, ...) {
 
             # [ to find sequences that include the same position and show a frequency table for the next moves
 
-            if (identical(click, "[")) {
+            if (.iskey(click, "findposfreq")) {
                searchterm <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                searchterm <- .fenpart(searchterm)
                seqident <- lapply(dat.all.short, function(x) {
@@ -4292,9 +4359,9 @@ play <- function(lang="en", online, ...) {
                next
             }
 
-            # ; to find sequences that end in the same position
+            # ; to select sequences that end in the same position
 
-            if (identical(click, ";")) {
+            if (.iskey(click, "findend")) {
                if (i == 1)
                   next
                searchterm <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
@@ -4325,9 +4392,9 @@ play <- function(lang="en", online, ...) {
                next
             }
 
-            # : to find sequences where a particular piece is on a particular square
+            # : to select sequences where a particular piece is on a particular square
 
-            if (identical(click, ":")) {
+            if (.iskey(click, "findpiecepos")) {
                if (i == 1)
                   next
                lastmove <- attr(pos,"move")
@@ -4413,7 +4480,7 @@ play <- function(lang="en", online, ...) {
 
             # F1 to show the help overlay
 
-            if (identical(click, "F1")) {
+            if (.iskey(click, "showhelp")) {
                oldlang <- lang
                .showhelp()
                lang <- .get("lang")
@@ -4431,7 +4498,7 @@ play <- function(lang="en", online, ...) {
 
             # F2 to show the leaderboard and player statistics
 
-            if (identical(click, "F2")) {
+            if (.iskey(click, "leaderboard")) {
                tmp <- .leaderboard(seqdir[seqdirpos], files)
                if (tmp == 0) {
                   if (is.null(selected)) {
@@ -4448,9 +4515,9 @@ play <- function(lang="en", online, ...) {
                next
             }
 
-            # F3 to print the settings
+            # F3 to show the settings
 
-            if (identical(click, "F3")) {
+            if (.iskey(click, "showsettings")) {
                tab <- list(lang=lang, player=player, mode=mode, seqdir=seqdir[seqdirpos], selmode=selmode, zenmode=zenmode, timed=timed, timepermove=timepermove, expval=expval,
                            multiplier=multiplier, adjustwrong=adjustwrong, adjusthint=adjusthint, showeval=showeval, evalsteps=evalsteps, movestoshow=movestoshow,
                            showcoords=showcoords, showtransp=showtransp, showmatdiff=showmatdiff, showbestnumber=showbestnumber, san=san, piecesymbols=piecesymbols, wait=wait, delay=delay, idletime=idletime, mintime=mintime, sleepadj=sleepadj, mar=mar, mar2=mar2,
@@ -4469,7 +4536,7 @@ play <- function(lang="en", online, ...) {
 
             # F4 to adjust the colors and sizes
 
-            if (identical(click, "F4")) {
+            if (.iskey(click, "vizsettings")) {
                eval(expr=switch1)
                .vizsettings(cols.all, flip, show, showcomp, player, seqdir, seqdirpos, seqname, seqnum, opening, score, rounds, age, difficulty, i, totalmoves, sidetoplay, selmode, k, seqno, movestoplay, movesplayed, timetotal, timepermove, liout)
                eval(expr=switch2)
@@ -4506,7 +4573,7 @@ play <- function(lang="en", online, ...) {
 
             # F5 to adjust the main settings
 
-            if (identical(click, "F5")) {
+            if (.iskey(click, "mainsettings")) {
                oldtimed <- timed
                oldmar <- mar
                oldshoweval <- showeval
@@ -4606,7 +4673,7 @@ play <- function(lang="en", online, ...) {
 
             # F6 to adjust the miscellaneous settings
 
-            if (identical(click, "F6")) {
+            if (.iskey(click, "miscsettings")) {
                tmp <- .miscsettings(multiplier, adjustwrong, adjusthint, timepermove, movestoshow, idletime, mintime, evalsteps, target)
                dev.hold()
                .redrawpos(pos, flip=flip)
@@ -4637,7 +4704,7 @@ play <- function(lang="en", online, ...) {
 
             # F7 to adjust the Stockfish settings
 
-            if (identical(click, "F7")) {
+            if (.iskey(click, "sfsettings")) {
                tmp <- .sfsettings(sfproc, sfrun, sfpath, usesfcache, depth1, depth2, depth3, sflim, multipv1, multipv2, threads, hash, hintdepth, monthssfcache)
                dev.hold()
                .redrawpos(pos, flip=flip)
@@ -4676,8 +4743,8 @@ play <- function(lang="en", online, ...) {
 
             # F8 to adjust the Lichess database settings
 
-            if (identical(click, "F8")) {
-               tmp <- .lichesssettings(speeds, ratings, lichessdb, uselicache, liout, lisort, barlen, invertbar, minfreq, minperc, token, monthslicache, isonline)
+            if (.iskey(click, "lisettings")) {
+               tmp <- .lisettings(speeds, ratings, lichessdb, uselicache, liout, lisort, barlen, invertbar, minfreq, minperc, token, monthslicache, isonline)
                dev.hold()
                .redrawpos(pos, flip=flip)
                .drawannot(circles=circles, arrows=arrows, glyph=glyph)
@@ -4714,7 +4781,7 @@ play <- function(lang="en", online, ...) {
 
             # F9 to select / manage sequence directories
 
-            if (identical(click, "F9")) {
+            if (.iskey(click, "seqdirsettings")) {
                tmp <- .seqdirsettings(seqdir, seqdirpos)
                seqdirold <- seqdir
                seqdirposold <- seqdirpos
@@ -4754,7 +4821,7 @@ play <- function(lang="en", online, ...) {
 
             # o to print the FEN and open the position on lichess.org
 
-            if (identical(click, "o")) {
+            if (.iskey(click, "openfenli")) {
                eval(expr=switch1)
                fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                cat(style_bold("FEN:"), fen, "\n")
@@ -4770,7 +4837,7 @@ play <- function(lang="en", online, ...) {
 
             # F10 (or ctrl-1) to show the histograms / scatterplot
 
-            if (identical(click, "F10") || identical(click, "ctrl-!")) {
+            if (.iskey(click, "distributions")) {
                if (k <= 1L) {
                   .texttop(.text("toofewscores"), sleep=1.5)
                   next
@@ -4791,14 +4858,14 @@ play <- function(lang="en", online, ...) {
 
             # F11 (or ctrl-2) to show the session info
 
-            if (identical(click, "F11") || identical(click, "ctrl-@") || identical(click, "ctrl-\"")) {
+            if (.iskey(click, "sessioninfo")) {
                if (sum(session.seqsplayed) <= 1L) {
                   .texttop(.text("toofewseqsplayed"), sleep=1.5)
                   next
                }
                session.playtime <- round(proc.time()[[3]] - session.time.start)
                texttop <- .get("texttop")
-               tmp <- .sessiongraph(session.seqsplayed, session.mean.scores, session.playtime)
+               tmp <- .sessioninfo(session.seqsplayed, session.mean.scores, session.playtime)
                assign("texttop", texttop, envir=.chesstrainer)
                if (!identical(mar2, tmp$mar2)) {
                   mar2 <- tmp$mar2
@@ -4815,7 +4882,7 @@ play <- function(lang="en", online, ...) {
 
             # F12 (or ctrl-3) to show the session history graph
 
-            if (identical(click, "F12") || identical(click, "ctrl-#") || identical(click, "ctrl-\U000000A7")) {
+            if (.iskey(click, "historygraph")) {
                player.file <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "sessions", paste0(player, ".rds"))
                if (file.exists(player.file)) {
                   session.playtime <- round(proc.time()[[3]] - session.time.start)
@@ -4841,7 +4908,7 @@ play <- function(lang="en", online, ...) {
 
             # ctrl-0 to edit the session history file
 
-            if (advanced && identical(click, "ctrl-)")) {
+            if (advanced && .iskey(click, "edithistory")) {
                player.file <- file.path(tools::R_user_dir(package="chesstrainer", which="data"), "sessions", paste0(player, ".rds"))
                if (file.exists(player.file)) {
                   dat.player <- readRDS(player.file)
@@ -4893,8 +4960,8 @@ play <- function(lang="en", online, ...) {
 
             # ctrl-o to check if the FENs in the openings database (all.tsv) match those constructed when making the same moves
 
-            if (identical(click, "ctrl-O")) {
-               next # remove to be able to run this
+            if (.iskey(click, "chkmovesalltsv")) {
+               next # disabled
                openings$fen <- ""
                flip <- FALSE
                dev.hold()
@@ -4925,7 +4992,9 @@ play <- function(lang="en", online, ...) {
 
             # ctrl-g to generate sequences
 
-            if (advanced && identical(click, "ctrl-G")) {
+            if (.iskey(click, "genseqs")) {
+
+               next # disabled
 
                if (flip && sidetoplay == "b" || !flip && sidetoplay == "w") {
                   cat("Wrong side to play.\n")
@@ -4978,9 +5047,9 @@ play <- function(lang="en", online, ...) {
 
                .texttop(.text("genseqs"), sleep=1)
 
-               .genlines(pos, sub, nmoves=nmoves, genminperc=genminperc, genminfreq=genminfreq, movedb=movedb, basename=basename, level=0, flip=flip, sidetoplay=sidetoplay, sidetoplaystart=sidetoplaystart, i=i,
-                         isonline=isonline, lichessdb=lichessdb, token=token, speeds=speeds, ratings=ratings, liout=liout, lisort=lisort, barlen=barlen, invertbar=invertbar, minfreq=minfreq, minperc=minperc,
-                         sfproc=sfproc, sfrun=sfrun, depth=depth2, seqdir=seqdir[seqdirpos])
+               .genseqs(pos, sub, nmoves=nmoves, genminperc=genminperc, genminfreq=genminfreq, movedb=movedb, basename=basename, level=0, flip=flip, sidetoplay=sidetoplay, sidetoplaystart=sidetoplaystart, i=i,
+                        isonline=isonline, lichessdb=lichessdb, token=token, speeds=speeds, ratings=ratings, liout=liout, lisort=lisort, barlen=barlen, invertbar=invertbar, minfreq=minfreq, minperc=minperc,
+                        sfproc=sfproc, sfrun=sfrun, depth=depth2, seqdir=seqdir[seqdirpos])
 
                cat("Done!\n")
                playsound(system.file("sounds", "complete.ogg", package="chesstrainer"))
@@ -5538,19 +5607,19 @@ play <- function(lang="en", online, ...) {
                      if (is.numeric(click) && identical(click[3], 0)) # left button goes to next sequence
                         break
 
-                     if (identical(click, "n")) { # n goes to next sequence without saving without saving
+                     if (.iskey(click, "next")) { # n goes to next sequence without saving without saving
                         dosave <- FALSE
                         break
                      }
 
-                     if (identical(click, "r") || (is.numeric(click) && identical(click[3], 1))) { # r or middle button repeats the sequence
+                     if (.iskey(click, "replast") || (is.numeric(click) && identical(click[3], 1))) { # r or middle button repeats the sequence
                         .texttop(.text("replast"), sleep=0.75, showlast=FALSE)
                         replast <- TRUE
                         filename <- seqname
                         break
                      }
 
-                     if (identical(click, " ") || identical(click, "a") || identical(click, "A") || (is.numeric(click) && identical(click[3], 2))) { # space, a/A, and right mouse button goes to add mode
+                     if (.iskey(click, "switchmode") || .iskey(click, "addnewseq") || .iskey(click, "addnewseqatpos") || (is.numeric(click) && identical(click[3], 2))) { # space, a/A, and right mouse button goes to add mode
                         dev.hold()
                         if (!contliquery)
                            .drawlibar(clear=TRUE)
@@ -5603,7 +5672,7 @@ play <- function(lang="en", online, ...) {
                         break
                      }
 
-                     if (identical(click, "\\") || identical(click, "\U000000E4")) { # \ or ä goes to play mode
+                     if (.iskey(click, "playmode")) { # \ goes to play mode
                         dev.hold()
                         .drawlibar(clear=TRUE)
                         if (unflip) {
@@ -5668,7 +5737,7 @@ play <- function(lang="en", online, ...) {
                         break
                      }
 
-                     if (identical(click, "%")) {
+                     if (.iskey(click, "setscore")) {
                         score <- .setscore(score)
                         dev.hold()
                         .redrawpos(pos, flip=flip)
@@ -5685,7 +5754,7 @@ play <- function(lang="en", online, ...) {
                         next
                      }
 
-                     if (identical(click, "<")) {
+                     if (.iskey(click, "addbookmark")) {
                         bookmark <- seqname
                         if (file.exists(file.path(seqdir[seqdirpos], ".bookmarks"))) {
                            tmp <- try(read.table(file.path(seqdir[seqdirpos], ".bookmarks"), header=FALSE), silent=TRUE)
@@ -5703,7 +5772,7 @@ play <- function(lang="en", online, ...) {
                         next
                      }
 
-                     if (identical(click, "o")) {
+                     if (.iskey(click, "openfenli")) {
                         eval(expr=switch1)
                         fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i)
                         cat(style_bold("FEN:"), fen, "\n")
@@ -5717,7 +5786,7 @@ play <- function(lang="en", online, ...) {
                         next
                      }
 
-                     if (identical(click, "M")) {
+                     if (.iskey(click, "triggermistake")) {
                         scoreadd <- min(adjustwrong, 100-score)
                         score <- score + scoreadd
                         .textbot(score=score, onlyscore=TRUE)
@@ -5730,7 +5799,7 @@ play <- function(lang="en", online, ...) {
                         next
                      }
 
-                     if (identical(click, "ctrl-F")) {
+                     if (.iskey(click, "copyfen")) {
                         eval(expr=switch1)
                         fen <- .genfen(pos, flip, sidetoplay, sidetoplaystart, i+1L)
                         cat(style_bold("FEN:"), fen, "\n")
@@ -5740,7 +5809,7 @@ play <- function(lang="en", online, ...) {
                         next
                      }
 
-                     if (identical(click, "ctrl-C")) {
+                     if (.iskey(click, "copyseqname")) {
                         eval(expr=switch1)
                         cat(seqnum, " ", seqname, "\n")
                         clipr::write_clip(seqname, object_type="character")
@@ -5748,7 +5817,7 @@ play <- function(lang="en", online, ...) {
                         next
                      }
 
-                     if (identical(click, "g")) {
+                     if (.iskey(click, "progressgraph")) {
                         if (is.null(sub$player[[player]]$score))
                            next
                         tmp <- .progressgraph(sub$player[[player]])
@@ -5770,14 +5839,14 @@ play <- function(lang="en", online, ...) {
                         next
                      }
 
-                     if (identical(click, "i")) {
+                     if (.iskey(click, "liquery")) {
                         assign("contliquery", TRUE, envir=.chesstrainer)
                         .liquery(pos, flip, sidetoplay, sidetoplaystart, i, isonline, lichessdb, token, speeds, ratings, liout, lisort, barlen, invertbar, minfreq, minperc)
                         assign("contliquery", contliquery, envir=.chesstrainer)
                         next
                      }
 
-                     if (identical(click, "ctrl-I")) {
+                     if (.iskey(click, "uselicache")) {
                         uselicache <- !uselicache
                         .texttop(.text("uselicache", uselicache), sleep=1.5)
                         assign("uselicache", uselicache, envir=.chesstrainer)
@@ -5786,22 +5855,22 @@ play <- function(lang="en", online, ...) {
                         next
                      }
 
-                     if (advanced && identical(click, "ctrl-{")) {
+                     if (advanced && .iskey(click, "printmoves")) {
                         print(sub$moves)
                         next
                      }
 
-                     if (advanced && identical(click, "ctrl-}")) {
+                     if (advanced && .iskey(click, "printpos")) {
                         print(pos)
                         next
                      }
 
-                     if (advanced && identical(click, "ctrl-|")) {
+                     if (advanced && .iskey(click, "printsub")) {
                         print(sub)
                         next
                      }
 
-                     if (identical(click, "ctrl-V")) {
+                     if (advanced && .iskey(click, "verbose")) {
                         eval(expr=switch1)
                         .printverbose(selected, seqno, filename, lastseq, upsidedown, flip, unflip, replast, nextseq, oldmode, i, seqname, seqnum, score, rounds, totalmoves, show, showcomp, comment, bestmove, starteval, evalval, scoreadd, sidetoplay, givehint1, givehint2, mistake, timetotal, movesplayed, movestoplay, drawcircles, drawarrows, showstartcom, pos)
                         eval(expr=switch2)

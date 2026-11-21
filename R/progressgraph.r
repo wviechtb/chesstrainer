@@ -59,11 +59,11 @@
 
       click <- getGraphicsEvent(prompt="Chesstrainer", consolePrompt="", onMouseDown=.mousedownfun, onKeybd=.keyfun)
 
-      if (identical(click, "g") || identical(click, "\r") || identical(click, "ctrl-J") || identical(click, "q") || identical(click, "\033") || identical(click, "ctrl-[") || identical(click, " "))
+      if (.iskey(click, "progressgraph") || .iskey(click, "quit") || .iskey(click, "escape"))
          break
 
-      if (identical(click, "ctrl-+") || identical(click, "ctrl-_")) {
-         if (identical(click, "ctrl-_")) {
+      if (.iskey(click, "margin-") || .iskey(click, "margin+")) {
+         if (.iskey(click, "margin-")) {
             mar2 <- pmax(1, mar2 - 0.5)
          } else {
             mar2 <- mar2 + 0.5
