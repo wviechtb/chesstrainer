@@ -196,24 +196,31 @@ play <- function(lang="en", online, ...) {
                        switch1=switch1, switch2=switch2, firstrun=settings$firstrun)
       saveRDS(settings, file=file.path(configdir, "settings.rds"))
       if (file.exists(file.path(configdir, "colors.rds"))) {
+         cat(style_bold(.text("loadcolors")))
+         cat(file.path(configdir, "colors.rds"), "\n")
          cols <- readRDS(file.path(configdir, "colors.rds"))
          for (j in 1:length(cols.all)) {
             assign(cols.all[j], cols[cols.all[j]], envir=.chesstrainer)
          }
       } else {
+         cat(style_bold(.text("createcolors")))
+         cat(file.path(configdir, "colors.rds"), "\n")
          cols <- sapply(cols.all, function(x) .get(x))
          saveRDS(cols, file=file.path(configdir, "colors.rds"))
       }
    }
 
-   # copy shortcuts.txt file to config dir if it doesn't exist
+   # copy shortcuts.txt file to config dir if it doesn't exist; otherwise load it
 
-   if (!file.exists(file.path(configdir, "shortcuts.txt")))
+   if (!file.exists(file.path(configdir, "shortcuts.txt"))) {
+      cat(style_bold(.text("copyshortcuts")))
+      cat(file.path(configdir, "shortcuts.txt"), "\n")
       file.copy(system.file("misc", "shortcuts.txt", package="chesstrainer"), configdir)
-
-   # read in shortcuts.txt
-
-   shortcuts <- read.table(file.path(configdir, "shortcuts.txt"), header=FALSE, col.names=c("key", "purpose"), allowEscapes=TRUE)
+   } else {
+      cat(style_bold(.text("loadshortcuts")))
+      cat(file.path(configdir, "shortcuts.txt"), "\n")
+      shortcuts <- read.table(file.path(configdir, "shortcuts.txt"), header=FALSE, col.names=c("key", "purpose"), allowEscapes=TRUE)
+   }
 
    # make sure that switch1/switch2 only make use of bringToTop() under Windows when using RGui
 

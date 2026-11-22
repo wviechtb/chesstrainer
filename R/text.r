@@ -44,6 +44,30 @@
                          "Loading settings: "
    ))}
 
+   if (x == "createcolors") {
+      return(switch(lang,
+                    de = "Erstelle Farbkonfigurationsdatei: ",
+                         "Creating color settings file: "
+   ))}
+
+   if (x == "loadcolors") {
+      return(switch(lang,
+                    de = "Lade Farbeinstellungen: ",
+                         "Loading color settings: "
+   ))}
+
+   if (x == "copyshortcuts") {
+      return(switch(lang,
+                    de = "Erstelle Tastenk\U000000FCrzel-Datei: ",
+                         "Creating keyboard shortcuts file: "
+   ))}
+
+   if (x == "loadshortcuts") {
+      return(switch(lang,
+                    de = "Lade Tastenk\U000000FCrzel: ",
+                         "Loading keyboard shortcuts: "
+   ))}
+
    if (x == "dircreateerror") {
       return(switch(lang,
                     de = "Das Verzeichnis konnte nicht erstellt werden.\n",
@@ -70,8 +94,8 @@
 
    if (x == "useseqdir") {
       return(switch(lang,
-                    de = "Benutze Sequenzverzeichnis: ",
-                         "Using sequence directory: "
+                    de = "Sequenzverzeichnis: ",
+                         "Sequence directory: "
    ))}
 
    if (x == "newplayername") {

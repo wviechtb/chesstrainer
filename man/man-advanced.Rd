@@ -111,7 +111,7 @@
 }
 \section{Keyboard Shortcuts}{
 
-   The keyboard shortcuts of the chess trainer are completely configurable. The first time the trainer is run, the shortcut file \file{shortcuts.txt} is copied to:
+   The keyboard shortcuts of the chess trainer are completely configurable. The first time the trainer is run, the shortcuts file \file{shortcuts.txt} is copied to:
 
    \code{tools::R_user_dir(package="chesstrainer", which="config")}
 

@@ -1,8 +1,8 @@
-cleanup <- function(config=FALSE, colors=FALSE, seqdir=FALSE, history=FALSE, mpg123=FALSE, stockfish=FALSE, cache=FALSE) {
+cleanup <- function(config=FALSE, colors=FALSE, shortcuts=FALSE, seqdir=FALSE, history=FALSE, mpg123=FALSE, stockfish=FALSE, cache=FALSE) {
 
    interactive <- TRUE
 
-   if (config || colors || seqdir || history || mpg123 || stockfish || cache)
+   if (config || colors || shortcuts || seqdir || history || mpg123 || stockfish || cache)
       interactive <- FALSE
 
    cat("\n")
@@ -52,6 +52,34 @@ cleanup <- function(config=FALSE, colors=FALSE, seqdir=FALSE, history=FALSE, mpg
 
       if (dorm) {
          res <- file.remove(file.colors)
+         if (res) {
+            cat("File removed successfully.\n")
+         } else {
+            cat("File could not be removed.\n")
+         }
+      }
+
+      cat("\n")
+
+   }
+
+   # remove the config file with the shortcuts
+
+   file.shortcuts <- file.path(tools::R_user_dir(package="chesstrainer", which="config"), "shortcuts.txt")
+
+   if (file.exists(file.shortcuts)) {
+
+      cat("Keyboard shortcuts file found at:", file.shortcuts, "\n")
+
+      if (interactive) {
+         resp <- readline(prompt="Remove the file with the keyboard shortcuts (y/N)? ")
+         dorm <- identical(resp, "y")
+      } else {
+         dorm <- isTRUE(shortcuts)
+      }
+
+      if (dorm) {
+         res <- file.remove(file.shortcuts)
          if (res) {
             cat("File removed successfully.\n")
          } else {

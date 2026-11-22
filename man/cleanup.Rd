@@ -5,12 +5,13 @@
    Function to clean up files and directories created by the \pkg{chesstrainer} package.
 }
 \usage{
-cleanup(config=FALSE, colors=FALSE, seqdir=FALSE, history=FALSE,
-        mpg123=FALSE, stockfish=FALSE, cache=FALSE)
+cleanup(config=FALSE, colors=FALSE, shortcuts=FALSE, seqdir=FALSE,
+        history=FALSE, mpg123=FALSE, stockfish=FALSE, cache=FALSE)
 }
 \arguments{
    \item{config}{logical to determine if the config file should be removed.}
    \item{colors}{logical to determine if the color settings file should be removed.}
+   \item{shortcuts}{logical to determine if the keyboard shortcuts file should be removed.}
    \item{seqdir}{logical to determine if the default directory where sequences are stored (and all files therein) should be removed.}
    \item{history}{logical to determine if the directory where the session histories of players are stored (and all files therein) should be removed.}
    \item{mpg123}{logical to determine if the directory where mpg123 is installed (and all files therein) should be removed.}
@@ -25,7 +26,7 @@ cleanup(config=FALSE, colors=FALSE, seqdir=FALSE, history=FALSE,
 
    If at least one argument is set to \code{TRUE}, then the arguments determine which files and directories should be removed non-interactively.
 
-   Removing the config file or the colors settings file may be useful in case these files were corrupted with nonsensical settings. The files will be recreated (with default values) when restarting the trainer.
+   Removing the config, colors, or shortcuts files may be useful in case these files were corrupted with nonsensical settings. The files will be recreated (with default values) when restarting the trainer.
 
    Be careful with removing the other files and directories! Once deleted, they cannot be recovered.
 
